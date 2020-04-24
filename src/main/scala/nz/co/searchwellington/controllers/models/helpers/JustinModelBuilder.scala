@@ -24,8 +24,9 @@ import scala.concurrent.Future
   }
 
   def populateContentModel(request: HttpServletRequest, loggedInUser: Option[User]): Future[Option[ModelAndView]] = {
+    val page = getPage(request)
     for {
-      websites <- contentRetrievalService.getLatestWebsites(MAX_NEWSITEMS, loggedInUser = loggedInUser)
+      websites <- contentRetrievalService.getLatestWebsites(MAX_NEWSITEMS, loggedInUser = loggedInUser, page = page)
     } yield {
       import scala.collection.JavaConverters._
       val mv = new ModelAndView().
@@ -34,8 +35,6 @@ import scala.concurrent.Future
         addObject("link", urlBuilder.getJustinUrl).
         addObject(MAIN_CONTENT, websites._1.asJava)
 
-
-      val page = getPage(request)
       val startIndex = getStartIndex(page, MAX_NEWSITEMS)
 
       def paginationLinks(page: Int): String = {
