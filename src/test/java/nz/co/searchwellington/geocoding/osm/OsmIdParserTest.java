@@ -29,7 +29,7 @@ public class OsmIdParserTest {
 	}
 	
 	@Test
-	public void canAccomodateVaryingLengthsOfTheOsmIds() {
+	public void canAccommodateVaryingLengthsOfTheOsmIds() {
 		OsmIdParser parser = new OsmIdParser();
 
 		final OsmId parsedOsmId = parser.parseOsmId("123/WAY");
