@@ -10,7 +10,7 @@ import reactivemongo.api.collections.bson.BSONCollection
 import reactivemongo.api.commands.{UpdateWriteResult, WriteResult}
 import reactivemongo.api.indexes.{Index, IndexType}
 import reactivemongo.api.{Cursor, DB, MongoConnection, MongoDriver}
-import reactivemongo.bson.{BSONBoolean, BSONDateTime, BSONDocument, BSONDocumentReader, BSONDocumentWriter, BSONObjectID, BSONReader, BSONString, BSONValue, BSONWriter, Macros}
+import reactivemongo.bson.{BSONDateTime, BSONDocument, BSONDocumentReader, BSONDocumentWriter, BSONObjectID, BSONReader, BSONString, BSONValue, BSONWriter, Macros}
 
 import scala.concurrent.{Await, ExecutionContext, Future}
 
@@ -62,7 +62,23 @@ class MongoRepository @Autowired()(@Value("#{config['mongo.uri']}") mongoUri: St
 
   implicit def taggingReader: BSONDocumentReader[Tagging] = Macros.reader[Tagging]
 
-  implicit def geocodeReader: BSONDocumentReader[Geocode] = Macros.reader[Geocode]
+  // TODO This can be removed if we migrate the osm fields to a nested object in Mongo
+  implicit object GeocodeReader extends BSONDocumentReader[Geocode] {
+    override def read(bson: BSONDocument): Geocode = {
+      val osmId = for {
+        i <- bson.getAs[Long]("osm_id")
+        t <- bson.getAs[String]("osm_type")
+      } yield {
+        OsmId(id = i, `type` = t)
+      }
+      Geocode(
+        address = bson.getAs[String]("address"),
+        latitude = bson.getAs[Double]("latitude"),
+        longitude = bson.getAs[Double]("longitude"),
+        osmId = osmId
+      )
+    }
+  }
 
   implicit def feedReader: BSONDocumentReader[Feed] = Macros.reader[Feed]
 
@@ -96,7 +112,17 @@ class MongoRepository @Autowired()(@Value("#{config['mongo.uri']}") mongoUri: St
 
   implicit def taggingWriter: BSONDocumentWriter[Tagging] = Macros.writer[Tagging]
 
-  implicit def geocodeWriter: BSONDocumentWriter[Geocode] = Macros.writer[Geocode]
+  implicit object FormResponseWriter extends BSONDocumentWriter[Geocode] {
+    override def write(t: Geocode): BSONDocument = {
+      BSONDocument(
+        "address" -> t.address,
+        "latitude" -> t.latitude,
+        "longitude" -> t.longitude,
+        "osm_id" -> t.osmId.map(_.id),
+        "osm_type" -> t.osmId.map(_.`type`)
+      )
+    }
+  }
 
   implicit def feedWriter: BSONDocumentWriter[Feed] = Macros.writer[Feed]
 

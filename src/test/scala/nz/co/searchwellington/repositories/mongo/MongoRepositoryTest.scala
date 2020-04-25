@@ -78,7 +78,8 @@ class MongoRepositoryTest extends ReasonableWaits {
 
   @Test
   def canPersistTagGeocode = {
-    val geocode = Geocode(osmId = Some(123), osmType = Some("N"))
+    val osmId = OsmId(id = 123L, `type` = "N")
+    val geocode = Geocode(osmId = Some(osmId))
     val tagWithGeocode = Tag(name = "Test " + UUID.randomUUID().toString, geocode = Some(geocode))
     Await.result(mongoRepository.saveTag(tagWithGeocode), TenSeconds)
 
@@ -89,7 +90,8 @@ class MongoRepositoryTest extends ReasonableWaits {
 
   @Test
   def canPersistResourceGeocode = {
-    val resourceWithGeocode = Website(geocode = Some(Geocode(osmId = Some(123L), osmType = Some("N"))))
+    val osmId = OsmId(id = 123L, `type` = "N")
+    val resourceWithGeocode = Website(geocode = Some(Geocode(osmId = Some(osmId))))
     Await.result(mongoRepository.saveResource(resourceWithGeocode), TenSeconds)
 
     val reloaded = Await.result(mongoRepository.getResourceByObjectId(resourceWithGeocode._id), TenSeconds).get

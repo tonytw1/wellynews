@@ -38,10 +38,8 @@ class EditWebsiteController @Autowired()(contentUpdateService: ContentUpdateServ
         editWebsite.setDescription(w.description.getOrElse(""))
         w.geocode.map { g =>
           editWebsite.setGeocode(g.getAddress)
-          val osmId = g.osmId.flatMap { i =>
-            g.osmType.map { t =>
-              i + t
-            }
+          val osmId = g.osmId.map { i =>
+            i.id + i.`type`
           }
           editWebsite.setSelectedGeocode(osmId.getOrElse(""))
         }
@@ -77,9 +75,10 @@ class EditWebsiteController @Autowired()(contentUpdateService: ContentUpdateServ
           val geocode = Option(editWebsite.getGeocode).flatMap { address =>
             Option(editWebsite.getSelectedGeocode).flatMap { osmId =>
               if (osmId.nonEmpty) {
-                val id = osmId.split("/")(0).toLong
+                val id = osmId.split("/")(0).toLong // TODO push to OSM object
                 val `type` = osmId.split("/")(1)
-                Some(Geocode(address = Some(address), osmId = Some(id), osmType = Some(`type`)))
+                val osm = OsmId(id = id, `type` = `type`)
+                Some(Geocode(address = Some(address), osmId = Some(osm))) // TODO resolve lat/long for osm id
               } else {
                 None
               }
