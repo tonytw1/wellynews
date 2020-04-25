@@ -67,7 +67,8 @@ class ElasticSearchIndexer @Autowired()(val showBrokenDecisionService: ShowBroke
             keywordField(Owner),
             geopointField(LatLong),
             keywordField(FeedAcceptancePolicy),
-            dateField(FeedLatestItemDate)
+            dateField(FeedLatestItemDate),
+            dateField(LastChanged)
           )
         }
 
@@ -126,7 +127,8 @@ class ElasticSearchIndexer @Autowired()(val showBrokenDecisionService: ShowBroke
         latLong.map(ll => LatLong -> Map("lat" -> ll.getLatitude, "lon" -> ll.getLongitude)),
         Some(TaggingUsers, r._1.resource_tags.map(_.user_id.stringify)),
         feedAcceptancePolicy.map(ap => FeedAcceptancePolicy -> ap.toString),
-        feedLatestItemDate.map(fid => FeedLatestItemDate -> new DateTime(fid))
+        feedLatestItemDate.map(fid => FeedLatestItemDate -> new DateTime(fid)),
+        r._1.last_changed.map(lc => LastChanged -> new DateTime(lc))
       )
 
       indexInto(Index / Resources).fields(fields.flatten) id r._1._id.stringify
@@ -221,6 +223,8 @@ class ElasticSearchIndexer @Autowired()(val showBrokenDecisionService: ShowBroke
   def byDateDescending(request: SearchRequest): SearchRequest = request sortByFieldDesc Date
 
   def byTitleAscending(request: SearchRequest): SearchRequest = request sortByFieldAsc TitleSort
+
+  def byLastChangedDescending(request: SearchRequest): SearchRequest = request sortByFieldDesc LastChanged
 
   def byFeedLatestFeedItemDate(request: SearchRequest): SearchRequest = request sortByFieldDesc FeedLatestItemDate
 
