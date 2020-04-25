@@ -10,7 +10,7 @@ import uk.co.eelpieconsulting.common.geo.model.OsmType;
 public class OsmIdParserTest {
 
 	@Test
-	public void canParseIdSlashTypeStyleOsmIdString() throws Exception {
+	public void canParseIdSlashTypeStyleOsmIdString() {
 		OsmIdParser parser = new OsmIdParser();
 
 		final OsmId parsedOsmId = parser.parseOsmId("123456/WAY");
@@ -20,7 +20,7 @@ public class OsmIdParserTest {
 	}
 	
 	@Test
-	public void canAccomodateVaryingLengthsOfTheOsmTypes() throws Exception {
+	public void canAccommodateVaryingLengthsOfTheOsmTypes() {
 		OsmIdParser parser = new OsmIdParser();
 
 		final OsmId parsedOsmId = parser.parseOsmId("123456/RELATION");
@@ -29,7 +29,7 @@ public class OsmIdParserTest {
 	}
 	
 	@Test
-	public void canAccomodateVaryingLengthsOfTheOsmIds() throws Exception {
+	public void canAccomodateVaryingLengthsOfTheOsmIds() {
 		OsmIdParser parser = new OsmIdParser();
 
 		final OsmId parsedOsmId = parser.parseOsmId("123/WAY");
