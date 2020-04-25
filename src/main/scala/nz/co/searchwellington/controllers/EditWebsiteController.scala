@@ -3,6 +3,7 @@ package nz.co.searchwellington.controllers
 import javax.validation.Valid
 import nz.co.searchwellington.ReasonableWaits
 import nz.co.searchwellington.forms.EditWebsite
+import nz.co.searchwellington.geocoding.osm.CachingNominatimResolveOsmIdService
 import nz.co.searchwellington.model._
 import nz.co.searchwellington.modification.ContentUpdateService
 import nz.co.searchwellington.repositories.TagDAO
@@ -24,7 +25,9 @@ import scala.concurrent.ExecutionContext.Implicits.global
 class EditWebsiteController @Autowired()(contentUpdateService: ContentUpdateService,
                                          mongoRepository: MongoRepository,
                                          urlWordsGenerator: UrlWordsGenerator, urlBuilder: UrlBuilder,
-                                         loggedInUserFilter: LoggedInUserFilter, tagDAO: TagDAO) extends ReasonableWaits with AcceptancePolicyOptions with Errors {
+                                         loggedInUserFilter: LoggedInUserFilter, tagDAO: TagDAO,
+                                         cachingNominatimResolveOsmIdService: CachingNominatimResolveOsmIdService
+                                        ) extends ReasonableWaits with AcceptancePolicyOptions with Errors {
 
   private val log = Logger.getLogger(classOf[EditWebsiteController])
 
@@ -78,7 +81,18 @@ class EditWebsiteController @Autowired()(contentUpdateService: ContentUpdateServ
                 val id = osmId.split("/")(0).toLong // TODO push to OSM object
                 val `type` = osmId.split("/")(1)
                 val osm = OsmId(id = id, `type` = `type`)
-                Some(Geocode(address = Some(address), osmId = Some(osm))) // TODO resolve lat/long for osm id
+
+                val meh = new uk.co.eelpieconsulting.common.geo.model.OsmId {
+                  osm.`type`
+                  , osm.id
+                }
+
+                val resolvedPlace = cachingNominatimResolveOsmIdService.callService(meh)
+                val resolvedLatLong = resolvedPlace.getLatLong
+                Some(Geocode(address = Some(address), osmId = Some(osm),
+                  latitude = Some(resolvedLatLong.getLatitude),
+                  longitude = Some(resolvedLatLong.getLongitude)
+                ))
               } else {
                 None
               }
