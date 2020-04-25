@@ -7,9 +7,7 @@
 		$geocode.address
 	#end
 	#if ($geocode.osmId)
-		(<a href="$urlBuilder.getOsmWebsiteUrl($geocode.osmId)">OpenStreetMap</a>
-		    $geocode.osmId
-		)
+		(<a href="$urlBuilder.getOsmWebsiteUrl($geocode.osmId)">OpenStreetMap</a>)
 	#end
 	</p>
 #end
