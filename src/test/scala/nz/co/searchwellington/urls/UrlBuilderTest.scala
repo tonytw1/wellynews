@@ -3,13 +3,13 @@ package nz.co.searchwellington.urls
 import java.util.UUID
 
 import nz.co.searchwellington.model.frontend.{FrontendFeed, FrontendNewsitem, FrontendWebsite}
-import nz.co.searchwellington.model.{ArchiveLink, PublisherArchiveLink, SiteInformation, Tag, UrlWordsGenerator, Website}
+import nz.co.searchwellington.model.{ArchiveLink, OsmId, PublisherArchiveLink, SiteInformation, Tag, UrlWordsGenerator, Website}
 import org.joda.time.{DateTime, Interval}
 import org.junit.Assert.{assertEquals, assertNull}
 import org.junit.{Before, Test}
 import org.mockito.Mockito
 import org.mockito.Mockito.mock
-import uk.co.eelpieconsulting.common.geo.model.{LatLong, OsmId, OsmType, Place}
+import uk.co.eelpieconsulting.common.geo.model.{LatLong, OsmType, Place}
 
 class UrlBuilderTest {
 
@@ -49,7 +49,8 @@ class UrlBuilderTest {
 
   @Test
   def locationsShouldBeLinkedByOSMIdIfAvailable(): Unit = {
-    val somewhereWithOSMid = new Place("Somewhere,Far away", new LatLong(3.1, 4.2), new OsmId(12345, OsmType.NODE))
+    val somewhereWithOSMid = new Place("Somewhere,Far away", new LatLong(3.1, 4.2),
+      new uk.co.eelpieconsulting.common.geo.model.OsmId(12345, OsmType.NODE))
     assertEquals(SITE_URL + "/geotagged?osm=12345%2FNODE", urlBuilder.getLocationUrlFor(somewhereWithOSMid))
   }
 
@@ -71,7 +72,7 @@ class UrlBuilderTest {
 
   @Test
   def canComposeOsmWebsiteLinkforOsmIds(): Unit = {
-    val osmId = new OsmId(24724709, OsmType.WAY)
+    val osmId = new OsmId(24724709, OsmType.WAY.toString)
     assertEquals("http://www.openstreetmap.org/browse/way/24724709", urlBuilder.getOsmWebsiteUrl(osmId))
   }
 

@@ -82,12 +82,10 @@ class EditWebsiteController @Autowired()(contentUpdateService: ContentUpdateServ
                 val `type` = osmId.split("/")(1)
                 val osm = OsmId(id = id, `type` = `type`)
 
-                val meh = new uk.co.eelpieconsulting.common.geo.model.OsmId {
-                  osm.`type`
-                  , osm.id
-                }
-
-                val resolvedPlace = cachingNominatimResolveOsmIdService.callService(meh)
+                val commonOsm = new uk.co.eelpieconsulting.common.geo.model.OsmId(
+                  osm.id, uk.co.eelpieconsulting.common.geo.model.OsmType.valueOf(osm.`type`)
+                )
+                val resolvedPlace = cachingNominatimResolveOsmIdService.callService(commonOsm)
                 val resolvedLatLong = resolvedPlace.getLatLong
                 Some(Geocode(address = Some(address), osmId = Some(osm),
                   latitude = Some(resolvedLatLong.getLatitude),
