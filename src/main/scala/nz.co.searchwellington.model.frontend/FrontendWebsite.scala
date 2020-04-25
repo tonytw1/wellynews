@@ -1,6 +1,6 @@
 package nz.co.searchwellington.model.frontend
 
-import java.util.{Date, List}
+import java.util.Date
 
 import nz.co.searchwellington.model.{Geocode, Tag}
 
@@ -18,4 +18,7 @@ case class FrontendWebsite(id: String,
                            handTags: Seq[Tag] = Seq.empty,
                            owner: String = null,
                            place: Option[Geocode] = None,
-                           held: Boolean = false) extends FrontendResource
+                           held: Boolean = false,
+                           lastScanned: Option[Date] = None,
+                           lastChanged: Option[Date] = None) extends FrontendResource
+

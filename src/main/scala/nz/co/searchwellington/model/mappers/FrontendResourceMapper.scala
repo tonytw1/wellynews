@@ -72,7 +72,9 @@ import scala.concurrent.{ExecutionContext, Future}
             publisher = publisher.map(_.asInstanceOf[Website]),
             tags = tags,
             handTags = handTags,
-            httpStatus = n.http_status
+            httpStatus = n.http_status,
+            lastScanned = n.last_scanned,
+            lastChanged = n.last_changed
           )
         }
 
@@ -109,7 +111,9 @@ import scala.concurrent.{ExecutionContext, Future}
             lastRead = f.last_read,
             acceptancePolicy = f.acceptance,
             publisher = frontendPublisher,
-            httpStatus = f.http_status
+            httpStatus = f.http_status,
+            lastScanned = f.last_scanned,
+            lastChanged = f.last_changed
           )
         }
 
@@ -127,7 +131,9 @@ import scala.concurrent.{ExecutionContext, Future}
             description = l.description.orNull,
             place = place,
             tags = tags,
-            httpStatus = l.http_status
+            httpStatus = l.http_status,
+            lastScanned = l.last_scanned,
+            lastChanged = l.last_changed
           )
         }
 
@@ -188,7 +194,9 @@ import scala.concurrent.{ExecutionContext, Future}
         place = website.geocode,
         tags = tags,
         httpStatus = website.http_status,
-        date = website.date.orNull
+        date = website.date.orNull,
+        lastScanned = website.last_scanned,
+        lastChanged = website.last_changed
       )
     }
   }

@@ -21,6 +21,8 @@ trait FrontendResource extends RssFeedable with Serializable {
   val owner: String
   val place: Option[Geocode]
   val held: Boolean
+  val lastChanged: Option[Date]
+  val lastScanned: Option[Date]
 
   def getId: String = id
 
@@ -74,5 +76,9 @@ trait FrontendResource extends RssFeedable with Serializable {
     }
 
   }.orNull
+
+  def getLastScanned: Date = lastScanned.orNull
+
+  def getLastChanged: Date = lastChanged.orNull
 
 }

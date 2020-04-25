@@ -24,7 +24,9 @@ case class FrontendNewsitem(id: String,
                             acceptedFrom: Option[FrontendFeed] = None,
                             acceptedBy: Option[User] = None, // TODO Frontend user
                             accepted: Date = null,
-                            image: FrontendImage = null) extends FrontendResource with RssFeedable {
+                            image: FrontendImage = null,
+                            lastScanned: Option[Date] = None,
+                            lastChanged: Option[Date] = None) extends FrontendResource with RssFeedable {
 
   def getPublisherName: String = publisher.flatMap(_.title).orNull
 
