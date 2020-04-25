@@ -29,7 +29,7 @@
 	<h2>$heading</h2>
 #end
 
-#set($location = $publisher.place)
+#set($geocode = $publisher.place)
 #parse("includes/place.vm")
 
 #parse("includes/search_widget.vm")

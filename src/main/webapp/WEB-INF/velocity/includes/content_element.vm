@@ -130,7 +130,7 @@
 			#end
 					
 			#if ($item.place)
-                #set($location = $item.place)
+                #set($geocode = $item.place)
                 #parse("includes/place.vm")
             #end
 
