@@ -22,6 +22,8 @@ public class EditTag {
 
     private Boolean featured;
 
+    private String geocode, selectedGeocode;
+
     public String getDisplayName() {
         return displayName;
     }
@@ -62,6 +64,22 @@ public class EditTag {
         this.featured = featured;
     }
 
+    public String getGeocode() {
+        return geocode;
+    }
+
+    public void setGeocode(String geocode) {
+        this.geocode = geocode;
+    }
+
+    public String getSelectedGeocode() {
+        return selectedGeocode;
+    }
+
+    public void setSelectedGeocode(String selectedGeocode) {
+        this.selectedGeocode = selectedGeocode;
+    }
+
     @Override
     public String toString() {
         return "EditTag{" +
@@ -70,7 +88,10 @@ public class EditTag {
                 ", parent='" + parent + '\'' +
                 ", autotagHints='" + autotagHints + '\'' +
                 ", featured=" + featured +
+                ", geocode='" + geocode + '\'' +
+                ", selectedGeocode='" + selectedGeocode + '\'' +
                 '}';
     }
-
 }
+
+

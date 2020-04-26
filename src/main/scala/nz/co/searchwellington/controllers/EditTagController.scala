@@ -3,7 +3,8 @@ package nz.co.searchwellington.controllers
 import javax.validation.Valid
 import nz.co.searchwellington.ReasonableWaits
 import nz.co.searchwellington.forms.EditTag
-import nz.co.searchwellington.model.{Tag, UrlWordsGenerator}
+import nz.co.searchwellington.geocoding.osm.CachingNominatimResolveOsmIdService
+import nz.co.searchwellington.model.{Geocode, OsmId, Tag, UrlWordsGenerator}
 import nz.co.searchwellington.modification.{ContentUpdateService, TagModificationService}
 import nz.co.searchwellington.repositories.TagDAO
 import nz.co.searchwellington.repositories.elasticsearch.ElasticSearchIndexRebuildService
@@ -19,7 +20,7 @@ import org.springframework.web.servlet.ModelAndView
 import org.springframework.web.servlet.view.RedirectView
 import reactivemongo.bson.BSONObjectID
 
-import scala.concurrent.{Await, Future}
+import scala.concurrent.Await
 import scala.concurrent.ExecutionContext.Implicits.global
 
 @Controller
@@ -29,7 +30,8 @@ class EditTagController @Autowired()(contentUpdateService: ContentUpdateService,
                                      urlBuilder: UrlBuilder,
                                      loggedInUserFilter: LoggedInUserFilter,
                                      tagModificationService: TagModificationService,
-                                     elasticSearchIndexRebuildService: ElasticSearchIndexRebuildService)
+                                     elasticSearchIndexRebuildService: ElasticSearchIndexRebuildService,
+                                     cachingNominatimResolveOsmIdService: CachingNominatimResolveOsmIdService)
   extends ReasonableWaits with Errors with InputParsing {
 
   private val log = Logger.getLogger(classOf[EditTagController])
@@ -37,12 +39,22 @@ class EditTagController @Autowired()(contentUpdateService: ContentUpdateService,
   @RequestMapping(value = Array("/edit-tag/{id}"), method = Array(RequestMethod.GET))
   def prompt(@PathVariable id: String): ModelAndView = {
     Await.result(mongoRepository.getTagById(id), TenSeconds).map { tag =>
-      renderEditForm(tag, new EditTag(tag.display_name,
+
+      val editTag = new EditTag(tag.display_name,
         tag.description.getOrElse(""),
         tag.parent.map(_.stringify).orNull,
         tag.getAutotagHints.orNull,
         tag.isFeatured,
-      ))
+      )
+      tag.geocode.map { g =>
+        editTag.setGeocode(g.getAddress)
+        val osmId = g.osmId.map { i =>
+          i.id + i.`type`
+        }
+        editTag.setSelectedGeocode(osmId.getOrElse(""))
+      }
+
+      renderEditForm(tag, editTag)
 
     }.getOrElse {
       NotFound
@@ -75,12 +87,35 @@ class EditTagController @Autowired()(contentUpdateService: ContentUpdateService,
           maybeTag
         }
 
+        // TODO Big duplication
+        val geocode = Option(editTag.getGeocode).flatMap { address =>
+          Option(editTag.getSelectedGeocode).flatMap { osmId =>
+            if (osmId.nonEmpty) {
+              val id = osmId.split("/")(0).toLong // TODO push to OSM object
+              val `type` = osmId.split("/")(1)
+              val osm = OsmId(id = id, `type` = `type`)
+
+              val commonOsm = new uk.co.eelpieconsulting.common.geo.model.OsmId(
+                osm.id, uk.co.eelpieconsulting.common.geo.model.OsmType.valueOf(osm.`type`)
+              )
+              val resolvedPlace = cachingNominatimResolveOsmIdService.callService(commonOsm)
+              val resolvedLatLong = resolvedPlace.getLatLong
+              Some(Geocode(address = Some(address), osmId = Some(osm),
+                latitude = Some(resolvedLatLong.getLatitude),
+                longitude = Some(resolvedLatLong.getLongitude)
+              ))
+            } else {
+              None
+            }
+          }
+        }
+
         val updatedTag = tag.copy(
           display_name = editTag.getDisplayName,
           description = Option(editTag.getDescription),
           parent = parentTag.map(_._id),
           autotag_hints = Some(editTag.getAutotagHints),
-          featured =  editTag.getFeatured,
+          featured = editTag.getFeatured,
         )
 
         Await.result(mongoRepository.saveTag(updatedTag), TenSeconds)
