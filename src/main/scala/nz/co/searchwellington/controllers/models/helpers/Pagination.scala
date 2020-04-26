@@ -36,9 +36,13 @@ trait Pagination {
 
   private def makePaginationLinks(startIndex: Int, totalCount: Long, pageSize: Int, linkBuilder: Int => String): Seq[PaginationLink] = {
     val maxPageNumber = (totalCount / pageSize) + 1
-    val pages = 1 to maxPageNumber.toInt
-    pages.map { page =>
-      PaginationLink(page, linkBuilder(page))
+    if (maxPageNumber > 1) {
+      val pages = 1 to maxPageNumber.toInt
+      pages.map { page =>
+        PaginationLink(page, linkBuilder(page))
+      }
+    } else {
+      Seq.empty
     }
   }
 

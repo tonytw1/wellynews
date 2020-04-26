@@ -16,7 +16,6 @@ class PaginationTest extends Pagination {
     import scala.collection.JavaConverters._
     val pageLinks = mv.getModel.get("page_links").asInstanceOf[java.util.List[PaginationLink]].asScala
 
-    println(pageLinks)
     assertTrue(pageLinks.isEmpty)
   }
 
