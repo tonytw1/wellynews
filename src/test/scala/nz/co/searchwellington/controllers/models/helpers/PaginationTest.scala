@@ -8,7 +8,7 @@ import org.springframework.web.servlet.ModelAndView
 class PaginationTest extends Pagination {
 
   @Test
-  def shouldOmitPageLinksIfOnlyOnePageOfMainCotent {
+  def shouldOmitPageLinksIfOnlyOnePageOfMainCotent() {
     val mv = new ModelAndView()
 
     populatePagination(mv, 0, 10, 30, dummyLinkBuilder)
