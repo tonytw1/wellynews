@@ -116,6 +116,7 @@ class EditTagController @Autowired()(contentUpdateService: ContentUpdateService,
           parent = parentTag.map(_._id),
           autotag_hints = Some(editTag.getAutotagHints),
           featured = editTag.getFeatured,
+          geocode = geocode,
         )
 
         Await.result(mongoRepository.saveTag(updatedTag), TenSeconds)
