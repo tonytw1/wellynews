@@ -7,8 +7,6 @@ import org.springframework.web.servlet.ModelAndView
 
 trait Pagination {
 
-  def urlBuilder: UrlBuilder
-
   def getPage(request: HttpServletRequest): Int = {
     if (request.getAttribute("page") != null) {
       request.getAttribute("page").asInstanceOf[Integer]
