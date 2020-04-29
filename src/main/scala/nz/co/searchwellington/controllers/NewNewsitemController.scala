@@ -69,12 +69,7 @@ class NewNewsitemController @Autowired()(contentUpdateService: ContentUpdateServ
       contentUpdateService.create(newsitem)
       log.info("Created newsitem: " + newsitem)
 
-      val redirection = publisher.map { p =>
-        new RedirectView(urlBuilder.getPublisherUrl(p))
-      }.getOrElse{
-        new RedirectView("/TODO")
-      }
-      new ModelAndView(redirection)
+      exitFromPublisherSubmit(publisher)
     }
   }
 
@@ -86,6 +81,15 @@ class NewNewsitemController @Autowired()(contentUpdateService: ContentUpdateServ
     new ModelAndView("newNewsitem").
       addObject("heading", "Adding a newsitem").
       addObject("newNewsitem", newNewsitem)
+  }
+
+  private def exitFromPublisherSubmit(publisher: Option[Website]) = {
+    val redirection = publisher.map { p =>
+      new RedirectView(urlBuilder.getPublisherUrl(p))
+    }.getOrElse {
+      new RedirectView("/TODO")
+    }
+    new ModelAndView(redirection)
   }
 
 }
