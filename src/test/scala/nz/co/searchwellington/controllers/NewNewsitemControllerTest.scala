@@ -4,6 +4,7 @@ import nz.co.searchwellington.forms.NewNewsitem
 import nz.co.searchwellington.model.{Newsitem, User, Website}
 import nz.co.searchwellington.modification.ContentUpdateService
 import nz.co.searchwellington.repositories.mongo.MongoRepository
+import nz.co.searchwellington.urls.UrlBuilder
 import org.joda.time.DateTime
 import org.junit.Assert.assertEquals
 import org.junit.Test
@@ -19,8 +20,9 @@ class NewNewsitemControllerTest {
   private val contentUpdateService = mock(classOf[ContentUpdateService])
   private val loggedInUserFilter = mock(classOf[LoggedInUserFilter])
   private val mongoRepository = mock(classOf[MongoRepository])
+  private val urlBuilder = mock(classOf[UrlBuilder])
 
-  val controller = new NewNewsitemController(contentUpdateService, loggedInUserFilter, mongoRepository)
+  val controller = new NewNewsitemController(contentUpdateService, loggedInUserFilter, mongoRepository, urlBuilder)
 
   @Test
   def canSubmitNewsitems(): Unit = {

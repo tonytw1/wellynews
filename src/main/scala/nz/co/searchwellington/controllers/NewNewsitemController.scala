@@ -6,6 +6,7 @@ import nz.co.searchwellington.forms.NewNewsitem
 import nz.co.searchwellington.model.{Newsitem, User, Website}
 import nz.co.searchwellington.modification.ContentUpdateService
 import nz.co.searchwellington.repositories.mongo.MongoRepository
+import nz.co.searchwellington.urls.UrlBuilder
 import org.apache.log4j.Logger
 import org.joda.time.DateTime
 import org.joda.time.format.ISODateTimeFormat
@@ -22,7 +23,7 @@ import scala.concurrent.ExecutionContext.Implicits.global
 @Controller
 class NewNewsitemController @Autowired()(contentUpdateService: ContentUpdateService,
                                          loggedInUserFilter: LoggedInUserFilter,
-                                         mongoRepository: MongoRepository) extends ReasonableWaits {
+                                         mongoRepository: MongoRepository, urlBuilder: UrlBuilder) extends ReasonableWaits {
 
   private val log = Logger.getLogger(classOf[NewNewsitemController])
   private val dateFormatter = ISODateTimeFormat.basicDate()
@@ -67,7 +68,13 @@ class NewNewsitemController @Autowired()(contentUpdateService: ContentUpdateServ
 
       contentUpdateService.create(newsitem)
       log.info("Created newsitem: " + newsitem)
-      new ModelAndView(new RedirectView("/TODO"))
+
+      val redirection = publisher.map { p =>
+        new RedirectView(urlBuilder.getPublisherUrl(p))
+      }.getOrElse{
+        new RedirectView("/TODO")
+      }
+      new ModelAndView(redirection)
     }
   }
 
