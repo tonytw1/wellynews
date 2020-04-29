@@ -2,6 +2,7 @@ package nz.co.searchwellington.controllers.models.helpers
 
 import nz.co.searchwellington.ReasonableWaits
 import nz.co.searchwellington.controllers.RssUrlBuilder
+import nz.co.searchwellington.model.PaginationLink
 import nz.co.searchwellington.model.frontend.FrontendWatchlist
 import nz.co.searchwellington.repositories.ContentRetrievalService
 import nz.co.searchwellington.urls.UrlBuilder
@@ -24,14 +25,17 @@ class WatchlistModelBuilderTest extends ReasonableWaits with ContentFields {
   @Test
   def mainContentShouldBeWatchlistItems() {
     val request = new MockHttpServletRequest
-    val watchlistItems = Seq(FrontendWatchlist(id = "789", lastChanged = None, lastScanned = None))
+    val watchlistItems = (Seq(FrontendWatchlist(id = "789", lastChanged = None, lastScanned = None)), 40L)
 
     when(contentRetrievalService.getAllWatchlists(None)).thenReturn(Future.successful(watchlistItems))
 
     val mv = Await.result(modelBuilder.populateContentModel(request), TenSeconds).get
 
     import scala.collection.JavaConverters._
-    assertEquals(watchlistItems.asJava, mv.getModel.get(MAIN_CONTENT))
+    assertEquals(watchlistItems._1.asJava, mv.getModel.get(MAIN_CONTENT))
+
+    val pageLinks = mv.getModel.get("page_links").asInstanceOf[java.util.List[PaginationLink]].asScala
+    assertEquals(2, pageLinks.size)
   }
 
 }

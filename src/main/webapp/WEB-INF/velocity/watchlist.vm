@@ -26,9 +26,9 @@
 
 <p>The following pages are currently in the watchlist.</p>
 
-
-
 #parse("includes/main_content.vm")
+
+#parse("includes/page_links.vm")
 </div>
 
 <div class="right">

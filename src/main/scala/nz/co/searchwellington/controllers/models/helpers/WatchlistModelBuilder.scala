@@ -16,23 +16,33 @@ import scala.concurrent.Future
 @Component class WatchlistModelBuilder @Autowired()(val contentRetrievalService: ContentRetrievalService,
                                                     rssUrlBuilder: RssUrlBuilder,
                                                     urlBuilder: UrlBuilder,
-                                                    commonAttributesModelBuilder: CommonAttributesModelBuilder) extends ModelBuilder {
+                                                    commonAttributesModelBuilder: CommonAttributesModelBuilder) extends ModelBuilder
+  with Pagination with CommonSizes {
 
   def isValid(request: HttpServletRequest): Boolean = {
     request.getPathInfo.matches("^/watchlist(/(rss|json))?$")
   }
 
   def populateContentModel(request: HttpServletRequest, loggedInUser: Option[User]): Future[Option[ModelAndView]] = {
+    val page = getPage(request)
     for {
       watchlists <- contentRetrievalService.getAllWatchlists(loggedInUser)
     } yield {
       import scala.collection.JavaConverters._
+
       val mv = new ModelAndView().
         addObject("heading", "News watchlist").
         addObject("description", "The news watchlist").
         addObject("link", urlBuilder.getWatchlistUrl).
-        addObject(MAIN_CONTENT, watchlists.asJava)
+        addObject(MAIN_CONTENT, watchlists._1.asJava)
       commonAttributesModelBuilder.setRss(mv, rssUrlBuilder.getRssTitleForJustin, rssUrlBuilder.getRssUrlForWatchlist)
+
+      val startIndex = getStartIndex(page, MAX_NEWSITEMS)
+      def paginationLinks(page: Int): String = {
+        urlBuilder.getWatchlistUrl + "?page=" + page
+      }
+      populatePagination(mv, startIndex, watchlists._2, MAX_NEWSITEMS, paginationLinks)
+
       Some(mv)
     }
   }

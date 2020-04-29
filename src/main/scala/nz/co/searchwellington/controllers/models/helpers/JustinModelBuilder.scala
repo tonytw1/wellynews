@@ -36,7 +36,6 @@ import scala.concurrent.Future
         addObject(MAIN_CONTENT, websites._1.asJava)
 
       val startIndex = getStartIndex(page, MAX_NEWSITEMS)
-
       def paginationLinks(page: Int): String = {
         urlBuilder.getJustinUrl + "?page=" + page
       }
