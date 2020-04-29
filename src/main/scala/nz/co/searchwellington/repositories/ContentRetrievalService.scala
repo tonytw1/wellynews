@@ -1,6 +1,7 @@
 package nz.co.searchwellington.repositories
 
 import nz.co.searchwellington.ReasonableWaits
+import nz.co.searchwellington.controllers.models.helpers.CommonSizes
 import nz.co.searchwellington.controllers.{RelatedTagsService, ShowBrokenDecisionService}
 import nz.co.searchwellington.model._
 import nz.co.searchwellington.model.frontend.FrontendResource
@@ -22,11 +23,10 @@ import scala.concurrent.{Await, Future}
                                                       showBrokenDecisionService: ShowBrokenDecisionService,
                                                       tagDAO: TagDAO, relatedTagsService: RelatedTagsService,
                                                       frontendResourceMapper: FrontendResourceMapper, elasticSearchIndexer: ElasticSearchIndexer,
-                                                      mongoRepository: MongoRepository) extends ReasonableWaits {
+                                                      mongoRepository: MongoRepository) extends ReasonableWaits with CommonSizes {
 
   private val log = Logger.getLogger(classOf[ContentRetrievalService])
 
-  val MAX_NEWSITEMS_TO_SHOW = 30
   val ALL_ITEMS = 1000
 
   def getAllPublishers(loggedInUser: Option[User]): Future[Seq[Website]] = {
@@ -87,7 +87,7 @@ import scala.concurrent.{Await, Future}
     elasticSearchIndexer.getResources(geotaggedNewsitemsForTag, loggedInUser = loggedInUser).flatMap(i => fetchByIds(i._1))
   }
 
-  def getLatestNewsitems(maxItems: Int = MAX_NEWSITEMS_TO_SHOW, page: Int = 1, loggedInUser: Option[User]): Future[Seq[FrontendResource]] = {
+  def getLatestNewsitems(maxItems: Int = MAX_NEWSITEMS, page: Int = 1, loggedInUser: Option[User]): Future[Seq[FrontendResource]] = {
     elasticSearchIndexer.getResources(ResourceQuery(`type` = Some("N"), maxItems = maxItems, startIndex = maxItems * (page - 1)), loggedInUser = loggedInUser).flatMap(i => fetchByIds(i._1))
   }
 
@@ -125,7 +125,7 @@ import scala.concurrent.{Await, Future}
     elasticSearchIndexer.getResources(
       ResourceQuery(
         owner = Some(user._id),
-        maxItems = MAX_NEWSITEMS_TO_SHOW
+        maxItems = MAX_NEWSITEMS
       ),
       loggedInUser = loggedInUser
     ).flatMap(i => fetchByIds(i._1))
@@ -135,7 +135,7 @@ import scala.concurrent.{Await, Future}
     elasticSearchIndexer.getResources(
       ResourceQuery(
         taggingUser = Some(user._id),
-        maxItems = MAX_NEWSITEMS_TO_SHOW
+        maxItems = MAX_NEWSITEMS
       ),
       loggedInUser = loggedInUser
     ).flatMap(i => fetchByIds(i._1))
@@ -170,7 +170,7 @@ import scala.concurrent.{Await, Future}
     elasticSearchIndexer.getResources(allFeeds, elasticSearchIndexer.byFeedLatestFeedItemDate, loggedInUser = loggedInUser).flatMap(i => fetchByIds(i._1)) // TODO order
   }
 
-  def getTaggedNewsitems(tag: Tag, startIndex: Int = 0, maxItems: Int = MAX_NEWSITEMS_TO_SHOW, loggedInUser: Option[User]): Future[(Seq[FrontendResource], Long)] = {
+  def getTaggedNewsitems(tag: Tag, startIndex: Int = 0, maxItems: Int = MAX_NEWSITEMS, loggedInUser: Option[User]): Future[(Seq[FrontendResource], Long)] = {
     getTaggedNewsitems(tags = Set(tag), startIndex = startIndex, maxItems = maxItems, loggedInUser)
   }
 
@@ -179,9 +179,9 @@ import scala.concurrent.{Await, Future}
     elasticSearchIndexer.getResources(taggedNewsitems, loggedInUser = loggedInUser).flatMap(buildFrontendResourcesFor)
   }
 
-  def getAllWatchlists(loggedInUser: Option[User]): Future[(Seq[FrontendResource], Long)] = {
-    val watchLists = ResourceQuery(`type` = Some("L"))
-    elasticSearchIndexer.getResources(watchLists, loggedInUser = loggedInUser).flatMap(buildFrontendResourcesFor)
+  def getWatchlistItems(loggedInUser: Option[User], page: Int): Future[(Seq[FrontendResource], Long)] = {
+    val watchListItems = ResourceQuery(`type` = Some("L"), maxItems = MAX_NEWSITEMS, startIndex = MAX_NEWSITEMS * (page - 1))
+    elasticSearchIndexer.getResources(watchListItems, loggedInUser = loggedInUser).flatMap(buildFrontendResourcesFor)
   }
 
   def getTaggedWebsites(tag: Tag, maxItems: Int, loggedInUser: Option[User]): Future[Seq[FrontendResource]] = {

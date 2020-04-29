@@ -26,7 +26,7 @@ import scala.concurrent.Future
   def populateContentModel(request: HttpServletRequest, loggedInUser: Option[User]): Future[Option[ModelAndView]] = {
     val page = getPage(request)
     for {
-      watchlists <- contentRetrievalService.getAllWatchlists(loggedInUser)
+      watchlists <- contentRetrievalService.getWatchlistItems(loggedInUser, page = page)
     } yield {
       import scala.collection.JavaConverters._
 

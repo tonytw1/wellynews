@@ -27,7 +27,7 @@ class WatchlistModelBuilderTest extends ReasonableWaits with ContentFields {
     val request = new MockHttpServletRequest
     val watchlistItems = (Seq(FrontendWatchlist(id = "789", lastChanged = None, lastScanned = None)), 40L)
 
-    when(contentRetrievalService.getAllWatchlists(None)).thenReturn(Future.successful(watchlistItems))
+    when(contentRetrievalService.getWatchlistItems(None, page = 1)).thenReturn(Future.successful(watchlistItems))
 
     val mv = Await.result(modelBuilder.populateContentModel(request), TenSeconds).get
 
