@@ -189,11 +189,11 @@ import scala.concurrent.ExecutionContext.Implicits.global
   }
 
   @RequestMapping(Array("/delete")) def delete(request: HttpServletRequest, response: HttpServletResponse): ModelAndView = {
-    val mv = new ModelAndView("deletedResource").
-      addObject("heading", "Resource Deleted")
+    val mv = new ModelAndView("deletedResource").addObject("heading", "Resource Deleted")
 
     adminRequestFilter.loadAttributesOntoRequest(request)
     var editResource = request.getAttribute("resource").asInstanceOf[Resource]
+    log.info("Resource to delete is: " + editResource)
     if (editResource != null && editPermissionService.canDelete(editResource)) {
       mv.addObject("resource", editResource)
       editResource = request.getAttribute("resource").asInstanceOf[Resource]
