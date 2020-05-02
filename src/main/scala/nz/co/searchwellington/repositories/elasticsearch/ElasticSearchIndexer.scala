@@ -35,6 +35,8 @@ class ElasticSearchIndexer @Autowired()(val showBrokenDecisionService: ShowBroke
   private val Index = "searchwellington"
   private val Resources = "resources"
 
+  private val newsitems = Some("N")
+
   private val client = {
     def ensureIndexes(client: ElasticClient): Unit = {
       val exists = Await.result((client execute indexExists(Index)).map { r =>
@@ -149,17 +151,17 @@ class ElasticSearchIndexer @Autowired()(val showBrokenDecisionService: ShowBroke
 
   def getResourcesMatchingKeywordsNotTaggedByUser(keywords: Set[String], user: User, tag: Tag): Future[(Seq[BSONObjectID], Long)] = {
     // TODO exclude tagged by user
-    val query = ResourceQuery(`type` = Some("N"), q = Some(keywords.mkString(" ")))
+    val query = ResourceQuery(`type` = newsitems, q = Some(keywords.mkString(" ")))
     getResources(query, loggedInUser = Some(user))
   }
 
   def getAllPublishers(loggedInUser: Option[User]): Future[Seq[(String, Long)]] = {
-    val allNewsitems = ResourceQuery(`type` = Some("N"))    // TODO or F or L
+    val allNewsitems = ResourceQuery(`type` = newsitems)    // TODO or F or L
     getPublisherAggregationFor(allNewsitems, loggedInUser)
   }
 
   def getPublishersForTag(tag: Tag, loggedInUser: Option[User]): Future[Seq[(String, Long)]] = {
-    val newsitemsForTag = ResourceQuery(`type` = Some("N"), tags = Some(Set(tag)))
+    val newsitemsForTag = ResourceQuery(`type` = newsitems, tags = Some(Set(tag)))
     getPublisherAggregationFor(newsitemsForTag, loggedInUser)
   }
 
@@ -168,7 +170,7 @@ class ElasticSearchIndexer @Autowired()(val showBrokenDecisionService: ShowBroke
   }
 
   def getPublishersForInterval(interval: Interval, loggedInUser: Option[User]): Future[Seq[(String, Long)]] = {
-    val newsitemsForInterval = ResourceQuery(`type` = Some("N"), interval = Some(interval))
+    val newsitemsForInterval = ResourceQuery(`type` = newsitems, interval = Some(interval))
     getPublisherAggregationFor(newsitemsForInterval, loggedInUser)
   }
 
@@ -177,12 +179,12 @@ class ElasticSearchIndexer @Autowired()(val showBrokenDecisionService: ShowBroke
   }
 
   def getPublisherTags(publisher: Website, loggedInUser: Option[User]):  Future[Seq[(String, Long)]] = {
-    val publishersNewsitems = ResourceQuery(`type` = Some("N"), publisher = Some(publisher))
+    val publishersNewsitems = ResourceQuery(`type` = newsitems, publisher = Some(publisher))
     getAggregationFor(publishersNewsitems, Tags, loggedInUser)
   }
 
   def getTagAggregation(tag: Tag, loggedInUser: Option[User]): Future[Seq[(String, Long)]] = {
-    val newsitemsForTag = ResourceQuery(`type` = Some("N"), tags = Some(Set(tag)))
+    val newsitemsForTag = ResourceQuery(`type` = newsitems, tags = Some(Set(tag)))
     getAggregationFor(newsitemsForTag, Tags, loggedInUser)
   }
 
@@ -203,7 +205,7 @@ class ElasticSearchIndexer @Autowired()(val showBrokenDecisionService: ShowBroke
   }
 
   def getPublisherArchiveMonths(publisher: Website, loggedInUser: Option[User]): Future[Seq[ArchiveLink]] = {
-    val publisherNewsitems = ResourceQuery(`type` = Some("N"), publisher = Some(publisher))
+    val publisherNewsitems = ResourceQuery(`type` = newsitems, publisher = Some(publisher))
     archiveMonthsAggregationFor(publisherNewsitems, loggedInUser)
   }
 
@@ -283,9 +285,9 @@ class ElasticSearchIndexer @Autowired()(val showBrokenDecisionService: ShowBroke
     withModeration(must(conditions), loggedInUser)
   }
 
-  private val allNewsitems = ResourceQuery(`type` = Some("N"))
+  private val allNewsitems = ResourceQuery(`type` = newsitems)
 
-  private def nearbyNewsitemsQuery(latLong: LatLong, radius: Double) = ResourceQuery(`type` = Some("N"), circle = Some(Circle(latLong, radius)))
+  private def nearbyNewsitemsQuery(latLong: LatLong, radius: Double) = ResourceQuery(`type` = newsitems, circle = Some(Circle(latLong, radius)))
 
   private def archiveMonthsAggregationFor(query: ResourceQuery, loggedInUser: Option[User]) = {
     val aggs = Seq(dateHistogramAgg("date", "date").interval(DateHistogramInterval.Month))
