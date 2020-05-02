@@ -24,7 +24,7 @@ import scala.concurrent.ExecutionContext.Implicits.global
 @Controller
 class EditWebsiteController @Autowired()(contentUpdateService: ContentUpdateService,
                                          mongoRepository: MongoRepository,
-                                         urlWordsGenerator: UrlWordsGenerator, urlBuilder: UrlBuilder,
+                                         urlBuilder: UrlBuilder,
                                          loggedInUserFilter: LoggedInUserFilter, tagDAO: TagDAO,
                                          cachingNominatimResolveOsmIdService: CachingNominatimResolveOsmIdService
                                         ) extends ReasonableWaits with AcceptancePolicyOptions with Errors {
@@ -115,7 +115,7 @@ class EditWebsiteController @Autowired()(contentUpdateService: ContentUpdateServ
           contentUpdateService.update(updatedWebsite)
           log.info("Updated website: " + updatedWebsite)
 
-          new ModelAndView(new RedirectView(urlBuilder.getPublisherUrl(updatedWebsite.url_words.get)))
+          new ModelAndView(new RedirectView(urlBuilder.getPublisherUrl(updatedWebsite)))
         }
 
       }.getOrElse(NotFound)
