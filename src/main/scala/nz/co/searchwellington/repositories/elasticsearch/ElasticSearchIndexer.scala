@@ -191,7 +191,13 @@ class ElasticSearchIndexer @Autowired()(val showBrokenDecisionService: ShowBroke
 
   private def composeQueryFor(query: ResourceQuery, loggedInUser: Option[User]): Query = {
     val conditions = Seq(
-      query.`type`.map(t => matchQuery(Type, t)),
+      query.`type`.map { `type` =>
+        should {
+          `type`.map { t =>
+            matchQuery(Type, t)
+          }
+        }
+      },
       query.tags.map { tags =>
         should { // TODO AND or OR
           tags.map { t =>

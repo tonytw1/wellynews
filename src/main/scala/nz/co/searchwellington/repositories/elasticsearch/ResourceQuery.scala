@@ -5,7 +5,7 @@ import org.joda.time.Interval
 import reactivemongo.bson.BSONObjectID
 import uk.co.eelpieconsulting.common.geo.model.LatLong
 
-case class ResourceQuery(`type`: Option[String] = None,
+case class ResourceQuery(`type`: Option[Set[String]] = None,
                          tags: Option[Set[Tag]] = None,
                          maxItems: Int = 30,
                          startIndex: Int = 0,

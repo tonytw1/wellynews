@@ -26,13 +26,13 @@ class ElasticSearchIndexerTest extends ReasonableWaits {
 
   val rebuild = new ElasticSearchIndexRebuildService(mongoRepository, elasticSearchIndexer, taggingReturnsOfficerService)
 
-  val loggedInUser = User()
+  private val loggedInUser = User()
 
   {
     when(showBrokenDecisionService.shouldShowBroken(Some(loggedInUser))).thenReturn(true) // TODO This is in an awkward position
   }
 
-  private val allNewsitems = ResourceQuery(`type` = Some("N"))
+  private val allNewsitems = ResourceQuery(`type` = Some(Set("N")))
 
   @Test
   def canFilterByType {
@@ -49,11 +49,11 @@ class ElasticSearchIndexerTest extends ReasonableWaits {
     eventually(timeout(TenSeconds), interval(OneHundredMilliSeconds), newsitems.nonEmpty)
     assertTrue(newsitems.forall(i => i.`type` == "N"))
 
-    val websites = queryForResources(ResourceQuery(`type` = Some("W")))
+    val websites = queryForResources(ResourceQuery(`type` = Some(Set("W"))))
     eventually(timeout(TenSeconds), interval(OneHundredMilliSeconds), websites.nonEmpty)
     assertTrue(websites.forall(i => i.`type` == "W"))
 
-    val feeds = queryForResources(ResourceQuery(`type` = Some("F")))
+    val feeds = queryForResources(ResourceQuery(`type` = Some(Set("F"))))
     eventually(timeout(TenSeconds), interval(OneHundredMilliSeconds), feeds.nonEmpty)
     assertTrue(feeds.forall(i => i.`type` == "F"))
   }
@@ -66,7 +66,7 @@ class ElasticSearchIndexerTest extends ReasonableWaits {
     Await.result(mongoRepository.saveResource(ignoredFeed), TenSeconds)
     indexResources(Seq(acceptedFeed, ignoredFeed))
 
-    def acceptedFeeds= queryForResources(ResourceQuery(`type` = Some("F"), feedAcceptancePolicy = Some(FeedAcceptancePolicy.ACCEPT)))
+    def acceptedFeeds = queryForResources(ResourceQuery(`type` = Some(Set("F")), feedAcceptancePolicy = Some(FeedAcceptancePolicy.ACCEPT)))
 
     eventually(timeout(TenSeconds), interval(OneHundredMilliSeconds), acceptedFeeds.size == 2)
     eventually(timeout(TenSeconds), interval(OneHundredMilliSeconds), acceptedFeeds.contains(acceptedFeed))
@@ -94,7 +94,8 @@ class ElasticSearchIndexerTest extends ReasonableWaits {
     indexResources(Seq(newsitem, website, taggedNewsitem, taggedWebsite))
 
     val withTag = ResourceQuery(tags = Some(Set(tag)))
-    val taggedNewsitemsQuery = withTag.copy(`type` = Some("N"))
+    val taggedNewsitemsQuery = withTag.copy(`type` = Some(Set("N")))
+
     def taggedNewsitems = queryForResources(taggedNewsitemsQuery)
 
     eventually(timeout(TenSeconds), interval(OneHundredMilliSeconds), taggedNewsitems.nonEmpty)
@@ -103,9 +104,10 @@ class ElasticSearchIndexerTest extends ReasonableWaits {
     assertTrue(taggedNewsitems.forall(i => i.`type` == "N"))
     assertTrue(taggedNewsitems.forall(i => i.resource_tags.exists(t => t.tag_id == tag._id)))
 
-    val taggedWebsitesQuery = withTag.copy(`type` = Some("W"))
+    val taggedWebsitesQuery = withTag.copy(`type` = Some(Set("W")))
 
     def taggedWebsites = queryForResources(taggedWebsitesQuery)
+
     eventually(timeout(TenSeconds), interval(OneHundredMilliSeconds), taggedNewsitems.nonEmpty)
     assertTrue(taggedWebsites.forall(i => i.`type` == "W"))
     assertTrue(taggedWebsites.forall(i => i.resource_tags.exists(t => t.tag_id == tag._id)))
@@ -125,7 +127,8 @@ class ElasticSearchIndexerTest extends ReasonableWaits {
 
     indexResources(Seq(publishersNewsitem, anotherPublishersNewsitem))
 
-    val publisherNewsitemsQuery = ResourceQuery(`type` = Some("N"), publisher = Some(publisher))
+    val publisherNewsitemsQuery = ResourceQuery(`type` = Some(Set("N")), publisher = Some(publisher))
+
     def publisherNewsitems = queryForResources(publisherNewsitemsQuery)
 
     eventually(timeout(TenSeconds), interval(OneHundredMilliSeconds), publisherNewsitems.nonEmpty)
@@ -144,7 +147,7 @@ class ElasticSearchIndexerTest extends ReasonableWaits {
 
     indexResources(Seq(publisher, publishersFeed))
 
-    val publisherFeedsQuery = ResourceQuery(`type` = Some("F"), publisher = Some(publisher))
+    val publisherFeedsQuery = ResourceQuery(`type` = Some(Set("F")), publisher = Some(publisher))
     val publisherFeeds = queryForResources(publisherFeedsQuery)
 
     eventually(timeout(TenSeconds), interval(OneHundredMilliSeconds), publisherFeeds.nonEmpty)
@@ -163,7 +166,7 @@ class ElasticSearchIndexerTest extends ReasonableWaits {
 
     indexResources(Seq(newsitem, anotherNewsitem, yetAnotherNewsitem))
 
-    def archiveLinks = Await.result(elasticSearchIndexer.createdMonthAggregationFor(allNewsitems,  loggedInUser = Some(loggedInUser)), TenSeconds)
+    def archiveLinks = Await.result(elasticSearchIndexer.createdMonthAggregationFor(allNewsitems, loggedInUser = Some(loggedInUser)), TenSeconds)
 
     eventually(timeout(TenSeconds), interval(OneHundredMilliSeconds), archiveLinks.nonEmpty)
     val monthStrings = archiveLinks.map(_._1.getStart.toDate.toString)
@@ -183,10 +186,11 @@ class ElasticSearchIndexerTest extends ReasonableWaits {
 
     val startOfMonth = new DateTime(2016, 2, 1, 0, 0)
     val month = new Interval(startOfMonth, startOfMonth.plusMonths(1))
-    def monthNewsitems = queryForResources(ResourceQuery(`type` = Some("N"), interval = Some(month)))
+
+    def monthNewsitems = queryForResources(ResourceQuery(`type` = Some(Set("N")), interval = Some(month)))
 
     eventually(timeout(TenSeconds), interval(OneHundredMilliSeconds), monthNewsitems.contains(newsitem))
-    assertTrue(monthNewsitems.forall (n => month.contains(n.date.get.getTime)))
+    assertTrue(monthNewsitems.forall(n => month.contains(n.date.get.getTime)))
   }
 
   @Test
@@ -210,6 +214,7 @@ class ElasticSearchIndexerTest extends ReasonableWaits {
 
   private def indexResources(resources: Seq[Resource]) = {
     def indexWithHandTaggings(resource: Resource) = (resource, resource.resource_tags.map(_.tag_id.stringify))
+
     Await.result(elasticSearchIndexer.updateMultipleContentItems(resources.map(indexWithHandTaggings)), TenSeconds)
   }
 

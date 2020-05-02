@@ -29,11 +29,12 @@ import scala.concurrent.{Await, Future}
 
   val ALL_ITEMS = 1000
 
-  private val feeds = Some("F")
-  private val newsitems = Some("N")
-  private val watchlists = Some("L")
+  private val feeds = Some(Set("F"))
+  private val newsitems = Some(Set("N"))
+  private val watchlists = Some(Set("L"))
+  private val websites = Some(Set("W"))
+
   private val allNewsitems = ResourceQuery(`type` = newsitems)
-  private val allWebsites = Some("W")
 
   def getAllPublishers(loggedInUser: Option[User]): Future[Seq[Website]] = {
 
@@ -143,8 +144,8 @@ import scala.concurrent.{Await, Future}
   }
 
   def getLatestWebsites(maxItems: Int, page: Int = 1, loggedInUser: Option[User]): Future[(Seq[FrontendResource], Long)] = {
-    val websites = ResourceQuery(`type` = allWebsites, maxItems = maxItems, startIndex = maxItems * (page - 1))
-    elasticSearchIndexer.getResources(websites, loggedInUser = loggedInUser).flatMap(buildFrontendResourcesFor)
+    val latestWebsites = ResourceQuery(`type` = websites, maxItems = maxItems, startIndex = maxItems * (page - 1))
+    elasticSearchIndexer.getResources(latestWebsites, loggedInUser = loggedInUser).flatMap(buildFrontendResourcesFor)
   }
 
   def getOwnedBy(user: User, loggedInUser: Option[User]): Future[Seq[FrontendResource]] = {
@@ -223,7 +224,7 @@ import scala.concurrent.{Await, Future}
   }
 
   def getTaggedWebsites(tag: Tag, maxItems: Int, loggedInUser: Option[User]): Future[Seq[FrontendResource]] = {
-    val taggedWebsites = ResourceQuery(`type` = allWebsites, tags = Some(Set(tag)), maxItems = maxItems)
+    val taggedWebsites = ResourceQuery(`type` = websites, tags = Some(Set(tag)), maxItems = maxItems)
     elasticSearchIndexer.getResources(taggedWebsites, elasticSearchIndexer.byTitleAscending, loggedInUser = loggedInUser).flatMap(i => fetchByIds(i._1))
   }
 

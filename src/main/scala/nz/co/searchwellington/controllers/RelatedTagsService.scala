@@ -21,6 +21,8 @@ import scala.concurrent.{Await, Future}
                                                  val mongoRepository: MongoRepository,
                                                  elasticSearchIndexer: ElasticSearchIndexer) extends ReasonableWaits with TagAncestors {
 
+  private val newsitems = Some(Set("N"))
+
   def getRelatedTagsForTag(tag: Tag, maxItems: Int, loggedInUser: Option[User]): Future[Seq[TagContentCount]] = {
 
     val tagsAncestors = Await.result(parentsOf(tag), TenSeconds) // TODO Await
@@ -41,7 +43,7 @@ import scala.concurrent.{Await, Future}
     }
 
     def getTagAggregation(tag: Tag, loggedInUser: Option[User]): Future[Seq[(String, Long)]] = {
-      val newsitemsForTag = ResourceQuery(`type` = Some("N"), tags = Some(Set(tag)))
+      val newsitemsForTag = ResourceQuery(`type` = newsitems, tags = Some(Set(tag)))
       elasticSearchIndexer.getAggregationFor(newsitemsForTag, elasticSearchIndexer.Tags, loggedInUser)
     }
 
@@ -61,7 +63,7 @@ import scala.concurrent.{Await, Future}
   def getRelatedPublishersForTag(tag: Tag, maxItems: Int, loggedInUser: Option[User]): Future[Seq[PublisherContentCount]] = {
 
     def getPublishersForTag(tag: Tag, loggedInUser: Option[User]): Future[Seq[(String, Long)]] = {
-      val newsitemsForTag = ResourceQuery(`type` = Some("N"), tags = Some(Set(tag)))
+      val newsitemsForTag = ResourceQuery(`type` = newsitems, tags = Some(Set(tag)))
       elasticSearchIndexer.getPublisherAggregationFor(newsitemsForTag, loggedInUser)
     }
 
@@ -88,7 +90,7 @@ import scala.concurrent.{Await, Future}
   def getRelatedTagsForPublisher(publisher: Website, loggedInUser: Option[User]): Future[Seq[TagContentCount]] = {
 
     def getPublisherTags(publisher: Website, loggedInUser: Option[User]): Future[Seq[(String, Long)]] = {
-      val publishersNewsitems = ResourceQuery(`type` = Some("N"), publisher = Some(publisher))
+      val publishersNewsitems = ResourceQuery(`type` = newsitems, publisher = Some(publisher))
       elasticSearchIndexer.getAggregationFor(publishersNewsitems, elasticSearchIndexer.Tags, loggedInUser)
     }
 
@@ -134,6 +136,6 @@ import scala.concurrent.{Await, Future}
     }
   }
 
-  private def nearbyNewsitemsQuery(latLong: LatLong, radius: Double) = ResourceQuery(`type` = Some("N"), circle = Some(Circle(latLong, radius)))
+  private def nearbyNewsitemsQuery(latLong: LatLong, radius: Double) = ResourceQuery(`type` = newsitems, circle = Some(Circle(latLong, radius)))
 
 }
