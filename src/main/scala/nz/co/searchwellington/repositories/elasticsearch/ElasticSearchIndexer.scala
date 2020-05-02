@@ -235,6 +235,7 @@ class ElasticSearchIndexer @Autowired()(val showBrokenDecisionService: ShowBroke
   }
 
   def archiveMonthsAggregationFor(query: ResourceQuery, loggedInUser: Option[User]): Future[Seq[ArchiveLink]] = {
+    // TODO sequence of interval would be a better return
     val aggs = Seq(dateHistogramAgg("date", "date").interval(DateHistogramInterval.Month))
     val request = search(Index / Resources) query composeQueryFor(query, loggedInUser) limit 0 aggregations aggs
 
