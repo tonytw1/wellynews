@@ -163,10 +163,10 @@ class ElasticSearchIndexerTest extends ReasonableWaits {
 
     indexResources(Seq(newsitem, anotherNewsitem, yetAnotherNewsitem))
 
-    def archiveLinks = Await.result(elasticSearchIndexer.archiveMonthsAggregationFor(allNewsitems,  loggedInUser = Some(loggedInUser)), TenSeconds)
+    def archiveLinks = Await.result(elasticSearchIndexer.createdMonthAggregationFor(allNewsitems,  loggedInUser = Some(loggedInUser)), TenSeconds)
 
     eventually(timeout(TenSeconds), interval(OneHundredMilliSeconds), archiveLinks.nonEmpty)
-    val monthStrings = archiveLinks.map(_.interval.getStart.toDate.toString)
+    val monthStrings = archiveLinks.map(_._1.getStart.toDate.toString)
     assertTrue(monthStrings.contains("Tue Jan 01 00:00:00 GMT 2019"))
     assertTrue(monthStrings.contains("Thu Mar 01 00:00:00 GMT 2018"))
     assertTrue(monthStrings.contains("Sat Jul 01 01:00:00 BST 2017"))

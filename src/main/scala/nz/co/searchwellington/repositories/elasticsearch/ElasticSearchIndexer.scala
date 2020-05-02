@@ -234,8 +234,7 @@ class ElasticSearchIndexer @Autowired()(val showBrokenDecisionService: ShowBroke
     withModeration(must(conditions), loggedInUser)
   }
 
-  def archiveMonthsAggregationFor(query: ResourceQuery, loggedInUser: Option[User]): Future[Seq[ArchiveLink]] = {
-    // TODO sequence of interval would be a better return
+  def createdMonthAggregationFor(query: ResourceQuery, loggedInUser: Option[User]): Future[Seq[(Interval, Long)]] = {
     val aggs = Seq(dateHistogramAgg("date", "date").interval(DateHistogramInterval.Month))
     val request = search(Index / Resources) query composeQueryFor(query, loggedInUser) limit 0 aggregations aggs
 
@@ -244,9 +243,9 @@ class ElasticSearchIndexer @Autowired()(val showBrokenDecisionService: ShowBroke
       val archiveLinks = dateAgg.buckets.map { b =>
         val startOfMonth = ISODateTimeFormat.dateTimeParser().parseDateTime(b.date)
         val month = new Interval(startOfMonth, startOfMonth.plusMonths(1))
-        ArchiveLink(month, b.docCount)
+        (month, b.docCount)
       }
-      archiveLinks.filter(_.getCount > 0).reverse
+      archiveLinks.filter(_._2 > 0).reverse
     }
   }
 

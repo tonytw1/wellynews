@@ -32,13 +32,13 @@ import scala.concurrent.{Await, Future}
   private val feeds = Some("F")
   private val newsitems = Some("N")
   private val watchlists = Some("L")
+  private val allNewsitems = ResourceQuery(`type` = newsitems)
   private val allWebsites = Some("W")
 
   def getAllPublishers(loggedInUser: Option[User]): Future[Seq[Website]] = {
 
     def getAllPublisherIds(loggedInUser: Option[User]): Future[Seq[(String, Long)]] = {
-      val allNewsitems = ResourceQuery(`type` = newsitems) // TODO or F or L
-      elasticSearchIndexer.getPublisherAggregationFor(allNewsitems, loggedInUser)
+      elasticSearchIndexer.getPublisherAggregationFor(allNewsitems, loggedInUser) // TODO or F or L
     }
 
     getAllPublisherIds(loggedInUser).flatMap { ids =>
@@ -131,7 +131,7 @@ import scala.concurrent.{Await, Future}
     getPublishersForInterval(interval, loggedInUser).flatMap { meh =>
       Future.sequence(meh.map { t =>
         val bid = BSONObjectID.parse(t._1).get // TODO naked get
-      val eventualMaybeResource = mongoRepository.getResourceByObjectId(bid)
+        val eventualMaybeResource = mongoRepository.getResourceByObjectId(bid)
         eventualMaybeResource.map { ro =>
           ro.map { r =>
             val eventualFrontennResource = frontendResourceMapper.createFrontendResourceFrom(r)
@@ -176,23 +176,19 @@ import scala.concurrent.{Await, Future}
   }
 
   def getArchiveMonths(loggedInUser: Option[User]): Future[Seq[ArchiveLink]] = {
-
-    def getArchiveMonths(loggedInUser: Option[User]): Future[Seq[ArchiveLink]] = {
-      val allNewsitems = ResourceQuery(`type` = newsitems)
-      elasticSearchIndexer.archiveMonthsAggregationFor(allNewsitems, loggedInUser)
+    def getArchiveMonths(loggedInUser: Option[User]): Future[Seq[(Interval, Long)]] = {
+      elasticSearchIndexer.createdMonthAggregationFor(allNewsitems, loggedInUser)
     }
 
-    getArchiveMonths(loggedInUser)
+    getArchiveMonths(loggedInUser).map(archiveLinksFromIntervals)
   }
 
   def getPublisherArchiveMonths(publisher: Website, loggedInUser: Option[User]): Future[Seq[ArchiveLink]] = {
-
-    def getPublisherArchiveMonths(publisher: Website, loggedInUser: Option[User]): Future[Seq[ArchiveLink]] = {
+    def getPublisherArchiveMonths(publisher: Website, loggedInUser: Option[User]): Future[Seq[(Interval, Long)]] = {
       val publisherNewsitems = ResourceQuery(`type` = newsitems, publisher = Some(publisher))
-      elasticSearchIndexer.archiveMonthsAggregationFor(publisherNewsitems, loggedInUser)
+      elasticSearchIndexer.createdMonthAggregationFor(publisherNewsitems, loggedInUser)
     }
-
-    getPublisherArchiveMonths(publisher, loggedInUser)
+    getPublisherArchiveMonths(publisher, loggedInUser).map(archiveLinksFromIntervals)
   }
 
   def getArchiveCounts(loggedInUser: Option[User]): Future[Map[String, Long]] = elasticSearchIndexer.getArchiveCounts(loggedInUser)
@@ -304,6 +300,12 @@ import scala.concurrent.{Await, Future}
 
     eventualResources.flatMap { rs =>
       Future.sequence(rs.map(r => frontendResourceMapper.createFrontendResourceFrom(r)))
+    }
+  }
+
+  private def archiveLinksFromIntervals(intervals: Seq[(Interval, Long)]) = {
+    intervals.map { i =>
+      ArchiveLink(i._1, i._2)
     }
   }
 
