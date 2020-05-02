@@ -35,7 +35,13 @@ import scala.concurrent.{Await, Future}
   private val allWebsites = Some("W")
 
   def getAllPublishers(loggedInUser: Option[User]): Future[Seq[Website]] = {
-    elasticSearchIndexer.getAllPublishers(loggedInUser).flatMap { ids =>
+
+    def getAllPublisherIds(loggedInUser: Option[User]): Future[Seq[(String, Long)]] = {
+      val allNewsitems = ResourceQuery(`type` = newsitems) // TODO or F or L
+      elasticSearchIndexer.getPublisherAggregationFor(allNewsitems, loggedInUser)
+    }
+
+    getAllPublisherIds(loggedInUser).flatMap { ids =>
       log.info("Got " + ids.size + " publisher ids")
       Future.sequence(ids.map { id =>
         mongoRepository.getResourceByObjectId(BSONObjectID(id._1)).map(ro => ro.map(_.asInstanceOf[Website]))
@@ -45,14 +51,21 @@ import scala.concurrent.{Await, Future}
 
   def getPublisherNamesByStartingLetters(q: String, loggedInUser: Option[User]): Future[Seq[Website]] = {
     log.info("Get publishers starting with '" + q + "'")
-    val isAdminUser = loggedInUser.exists(_.isAdmin)  // TODO push down to same level as all publishers
+    val isAdminUser = loggedInUser.exists(_.isAdmin) // TODO push down to same level as all publishers
     mongoRepository.getWebsitesByNamePrefix(q, isAdminUser)
   }
 
   def getTopLevelTags: Future[Seq[Tag]] = tagDAO.getTopLevelTags
 
   def getResourcesMatchingKeywordsNotTaggedByUser(keywords: Set[String], user: User, tag: Tag): Future[Seq[FrontendResource]] = {
-    elasticSearchIndexer.getResourcesMatchingKeywordsNotTaggedByUser(keywords, user, tag).flatMap(i => fetchByIds(i._1))
+
+    def getResourcesMatchingKeywordsNotTaggedByUser(keywords: Set[String], user: User, tag: Tag): Future[(Seq[BSONObjectID], Long)] = {
+      // TODO exclude tagged by user
+      val query = ResourceQuery(`type` = newsitems, q = Some(keywords.mkString(" ")))
+      elasticSearchIndexer.getResources(query, loggedInUser = Some(user))
+    }
+
+    getResourcesMatchingKeywordsNotTaggedByUser(keywords, user, tag).flatMap(i => fetchByIds(i._1))
   }
 
   def getNewsitemsMatchingKeywords(keywords: String, startIndex: Int, maxNewsitems: Int, loggedInUser: Option[User], tag: Option[Tag] = None, publisher: Option[Website] = None): Future[(Seq[FrontendResource], Long)] = {
@@ -109,7 +122,13 @@ import scala.concurrent.{Await, Future}
   }
 
   def getPublishersForInterval(interval: Interval, loggedInUser: Option[User]): Future[Seq[(FrontendResource, Long)]] = {
-    elasticSearchIndexer.getPublishersForInterval(interval, loggedInUser).flatMap { meh =>
+
+    def getPublishersForInterval(interval: Interval, loggedInUser: Option[User]): Future[Seq[(String, Long)]] = {
+      val newsitemsForInterval = ResourceQuery(`type` = newsitems, interval = Some(interval))
+      elasticSearchIndexer.getPublisherAggregationFor(newsitemsForInterval, loggedInUser)
+    }
+
+    getPublishersForInterval(interval, loggedInUser).flatMap { meh =>
       Future.sequence(meh.map { t =>
         val bid = BSONObjectID.parse(t._1).get // TODO naked get
       val eventualMaybeResource = mongoRepository.getResourceByObjectId(bid)
@@ -156,9 +175,25 @@ import scala.concurrent.{Await, Future}
     keywordSearchService.getWebsitesMatchingKeywords(keywords, showBrokenDecisionService.shouldShowBroken(loggedInUser), tag, startIndex, maxItems)
   }
 
-  def getArchiveMonths(loggedInUser: Option[User]): Future[Seq[ArchiveLink]] = elasticSearchIndexer.getArchiveMonths(loggedInUser)
+  def getArchiveMonths(loggedInUser: Option[User]): Future[Seq[ArchiveLink]] = {
 
-  def getPublisherArchiveMonths(publisher: Website, loggedInUser: Option[User]): Future[Seq[ArchiveLink]] = elasticSearchIndexer.getPublisherArchiveMonths(publisher, loggedInUser)
+    def getArchiveMonths(loggedInUser: Option[User]): Future[Seq[ArchiveLink]] = {
+      val allNewsitems = ResourceQuery(`type` = newsitems)
+      elasticSearchIndexer.archiveMonthsAggregationFor(allNewsitems, loggedInUser)
+    }
+
+    getArchiveMonths(loggedInUser)
+  }
+
+  def getPublisherArchiveMonths(publisher: Website, loggedInUser: Option[User]): Future[Seq[ArchiveLink]] = {
+
+    def getPublisherArchiveMonths(publisher: Website, loggedInUser: Option[User]): Future[Seq[ArchiveLink]] = {
+      val publisherNewsitems = ResourceQuery(`type` = newsitems, publisher = Some(publisher))
+      elasticSearchIndexer.archiveMonthsAggregationFor(publisherNewsitems, loggedInUser)
+    }
+
+    getPublisherArchiveMonths(publisher, loggedInUser)
+  }
 
   def getArchiveCounts(loggedInUser: Option[User]): Future[Map[String, Long]] = elasticSearchIndexer.getArchiveCounts(loggedInUser)
 

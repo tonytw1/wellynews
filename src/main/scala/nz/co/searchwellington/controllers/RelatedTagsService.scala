@@ -5,13 +5,13 @@ import nz.co.searchwellington.ReasonableWaits
 import nz.co.searchwellington.model.mappers.FrontendResourceMapper
 import nz.co.searchwellington.model._
 import nz.co.searchwellington.repositories.TagDAO
-import nz.co.searchwellington.repositories.elasticsearch.ElasticSearchIndexer
+import nz.co.searchwellington.repositories.elasticsearch.{Circle, ElasticSearchIndexer, ResourceQuery}
 import nz.co.searchwellington.repositories.mongo.MongoRepository
 import nz.co.searchwellington.tagging.TagAncestors
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
 import reactivemongo.bson.BSONObjectID
-import uk.co.eelpieconsulting.common.geo.model.Place
+import uk.co.eelpieconsulting.common.geo.model.{LatLong, Place}
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.{Await, Future}
@@ -23,7 +23,7 @@ import scala.concurrent.{Await, Future}
 
   def getRelatedTagsForTag(tag: Tag, maxItems: Int, loggedInUser: Option[User]): Future[Seq[TagContentCount]] = {
 
-    val tagsAncestors = Await.result(parentsOf(tag), TenSeconds)  // TODO Await
+    val tagsAncestors = Await.result(parentsOf(tag), TenSeconds) // TODO Await
     val tagsDescendants = Await.result(descendantsOf(tag), TenSeconds) // TODO Await
 
 
@@ -34,13 +34,18 @@ import scala.concurrent.{Await, Future}
         val isNotParentOf = !tagsAncestors.contains(relatedTag)
         val isNotDescendantOf = !tagsDescendants.contains(relatedTag)
 
-        tag != relatedTag && isNotParentOf && isNotDescendantOf// TODO implement all
+        tag != relatedTag && isNotParentOf && isNotDescendantOf // TODO implement all
       }
 
       isTagSuitableRelatedTag(tagFacetsForTag.tag)
     }
 
-    val eventualTagContentCounts: Future[Seq[TagContentCount]] = elasticSearchIndexer.getTagAggregation(tag, loggedInUser).flatMap { ts =>
+    def getTagAggregation(tag: Tag, loggedInUser: Option[User]): Future[Seq[(String, Long)]] = {
+      val newsitemsForTag = ResourceQuery(`type` = Some("N"), tags = Some(Set(tag)))
+      elasticSearchIndexer.getAggregationFor(newsitemsForTag, elasticSearchIndexer.Tags, loggedInUser)
+    }
+
+    val eventualTagContentCounts: Future[Seq[TagContentCount]] = getTagAggregation(tag, loggedInUser).flatMap { ts =>
       Future.sequence(ts.map(toTagContentCount)).map(_.flatten)
     }
 
@@ -54,7 +59,13 @@ import scala.concurrent.{Await, Future}
   }
 
   def getRelatedPublishersForTag(tag: Tag, maxItems: Int, loggedInUser: Option[User]): Future[Seq[PublisherContentCount]] = {
-    elasticSearchIndexer.getPublishersForTag(tag, loggedInUser).flatMap { publisherFacetsForTag =>
+
+    def getPublishersForTag(tag: Tag, loggedInUser: Option[User]): Future[Seq[(String, Long)]] = {
+      val newsitemsForTag = ResourceQuery(`type` = Some("N"), tags = Some(Set(tag)))
+      elasticSearchIndexer.getPublisherAggregationFor(newsitemsForTag, loggedInUser)
+    }
+
+    getPublishersForTag(tag, loggedInUser).flatMap { publisherFacetsForTag =>
       Future.sequence(publisherFacetsForTag.map { publisherFacet =>
         toPublisherContentCount(publisherFacet)
       }).map(_.flatten)
@@ -62,7 +73,12 @@ import scala.concurrent.{Await, Future}
   }
 
   def getRelatedPublishersForLocation(place: Place, radius: Double, loggedInUser: Option[User]): Future[Seq[PublisherContentCount]] = {
-    elasticSearchIndexer.getPublishersNear(place.getLatLong, radius, loggedInUser).flatMap { publisherFacetsNear =>
+
+    def getPublishersNear(latLong: LatLong, radius: Double, loggedInUser: Option[User]): Future[Seq[(String, Long)]] = {
+      elasticSearchIndexer.getPublisherAggregationFor(nearbyNewsitemsQuery(latLong, radius), loggedInUser)
+    }
+
+    getPublishersNear(place.getLatLong, radius, loggedInUser).flatMap { publisherFacetsNear =>
       Future.sequence(publisherFacetsNear.map { publisherFacet =>
         toPublisherContentCount(publisherFacet)
       }).map(_.flatten)
@@ -70,13 +86,24 @@ import scala.concurrent.{Await, Future}
   }
 
   def getRelatedTagsForPublisher(publisher: Website, loggedInUser: Option[User]): Future[Seq[TagContentCount]] = {
-    elasticSearchIndexer.getPublisherTags(publisher, loggedInUser).flatMap { ts =>
+
+    def getPublisherTags(publisher: Website, loggedInUser: Option[User]): Future[Seq[(String, Long)]] = {
+      val publishersNewsitems = ResourceQuery(`type` = Some("N"), publisher = Some(publisher))
+      elasticSearchIndexer.getAggregationFor(publishersNewsitems, elasticSearchIndexer.Tags, loggedInUser)
+    }
+
+    getPublisherTags(publisher, loggedInUser).flatMap { ts =>
       Future.sequence(ts.map(toTagContentCount)).map(_.flatten)
     }
   }
 
   def getRelatedTagsForLocation(place: Place, radius: Double, loggedInUser: Option[User]): Future[Seq[TagContentCount]] = {
-    elasticSearchIndexer.getTagsNear(place.getLatLong, radius, loggedInUser).flatMap { ts =>
+
+    def getTagsNear(latLong: LatLong, radius: Double, loggedInUser: Option[User]): Future[Seq[(String, Long)]] = {
+      elasticSearchIndexer.getAggregationFor(nearbyNewsitemsQuery(latLong, radius), elasticSearchIndexer.Tags, loggedInUser)
+    }
+
+    getTagsNear(place.getLatLong, radius, loggedInUser).flatMap { ts =>
       Future.sequence(ts.map(toTagContentCount)).map(_.flatten)
     }
   }
@@ -106,5 +133,7 @@ import scala.concurrent.{Await, Future}
       }
     }
   }
+
+  private def nearbyNewsitemsQuery(latLong: LatLong, radius: Double) = ResourceQuery(`type` = Some("N"), circle = Some(Circle(latLong, radius)))
 
 }

@@ -11,6 +11,7 @@ import org.junit.Assert.{assertEquals, assertFalse, assertTrue}
 import org.junit.Test
 import org.mockito.Mockito.{mock, when}
 import org.scalatest.concurrent.Eventually.{eventually, interval, _}
+import uk.co.eelpieconsulting.common.geo.model.LatLong
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.{Await, Future}
@@ -149,20 +150,7 @@ class ElasticSearchIndexerTest extends ReasonableWaits {
     assertTrue(publisherFeeds.forall(i => i.asInstanceOf[Feed].publisher.contains(publisher._id)))
   }
 
-  @Test
-  def canGetIdsOfAllPublishersWithAtLeastOneNewsitem: Unit = {  // TODO a feed some count as well
-    val publisher = Website()
-    Await.result(mongoRepository.saveResource(publisher), TenSeconds)
-    val newsitem = Newsitem(publisher = Some(publisher._id))
-    Await.result(mongoRepository.saveResource(newsitem), TenSeconds)
-
-    indexResources(Seq(publisher, newsitem))
-
-    def publisherIds = Await.result(elasticSearchIndexer.getAllPublishers(loggedInUser = Some(loggedInUser)), TenSeconds)
-
-    eventually(timeout(TenSeconds), interval(OneHundredMilliSeconds), publisherIds.map(_._1).contains(publisher._id.stringify))
-  }
-
+  /
   @Test
   def canObtainsNewsitemArchiveMonths {
     val newsitem = Newsitem(date = Some(new DateTime(2019, 1, 1, 0, 0, 0).toDate))
@@ -174,7 +162,8 @@ class ElasticSearchIndexerTest extends ReasonableWaits {
 
     indexResources(Seq(newsitem, anotherNewsitem, yetAnotherNewsitem))
 
-    def archiveLinks = Await.result(elasticSearchIndexer.getArchiveMonths(loggedInUser = Some(loggedInUser)), TenSeconds)
+    def archiveLinks = Await.result(elasticSearchIndexer.archiveMonthsAggregationFor(
+      ResourceQuery(`type` = Some("N")), None), TenSeconds)
 
     eventually(timeout(TenSeconds), interval(OneHundredMilliSeconds), archiveLinks.nonEmpty)
     val monthStrings = archiveLinks.map(_.interval.getStart.toDate.toString)
