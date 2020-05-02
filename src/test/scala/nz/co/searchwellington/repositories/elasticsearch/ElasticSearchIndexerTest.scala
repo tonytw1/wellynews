@@ -32,6 +32,8 @@ class ElasticSearchIndexerTest extends ReasonableWaits {
     when(showBrokenDecisionService.shouldShowBroken(Some(loggedInUser))).thenReturn(true) // TODO This is in an awkward position
   }
 
+  private val allNewsitems = ResourceQuery(`type` = Some("N"))
+
   @Test
   def canFilterByType {
     val newsitem = Newsitem()
@@ -43,7 +45,7 @@ class ElasticSearchIndexerTest extends ReasonableWaits {
 
     indexResources(Seq(newsitem, website, feed))
 
-    val newsitems = queryForResources(ResourceQuery(`type` = Some("N")))
+    val newsitems = queryForResources(allNewsitems)
     eventually(timeout(TenSeconds), interval(OneHundredMilliSeconds), newsitems.nonEmpty)
     assertTrue(newsitems.forall(i => i.`type` == "N"))
 
@@ -151,7 +153,7 @@ class ElasticSearchIndexerTest extends ReasonableWaits {
   }
 
   @Test
-  def canObtainsNewsitemArchiveMonths {
+  def canGetNewsitemMonthlyCounts {
     val newsitem = Newsitem(date = Some(new DateTime(2019, 1, 1, 0, 0, 0).toDate))
     Await.result(mongoRepository.saveResource(newsitem), TenSeconds)
     val anotherNewsitem = Newsitem(date = Some(new DateTime(2018, 3, 7, 0, 0, 0).toDate))
@@ -161,8 +163,7 @@ class ElasticSearchIndexerTest extends ReasonableWaits {
 
     indexResources(Seq(newsitem, anotherNewsitem, yetAnotherNewsitem))
 
-    def archiveLinks = Await.result(elasticSearchIndexer.archiveMonthsAggregationFor(
-      ResourceQuery(`type` = Some("N")), None), TenSeconds)
+    def archiveLinks = Await.result(elasticSearchIndexer.archiveMonthsAggregationFor(allNewsitems,  loggedInUser = Some(loggedInUser)), TenSeconds)
 
     eventually(timeout(TenSeconds), interval(OneHundredMilliSeconds), archiveLinks.nonEmpty)
     val monthStrings = archiveLinks.map(_.interval.getStart.toDate.toString)
