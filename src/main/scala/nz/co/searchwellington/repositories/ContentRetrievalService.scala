@@ -39,7 +39,8 @@ import scala.concurrent.{Await, Future}
   def getAllPublishers(loggedInUser: Option[User]): Future[Seq[Website]] = {
 
     def getAllPublisherIds(loggedInUser: Option[User]): Future[Seq[(String, Long)]] = {
-      elasticSearchIndexer.getPublisherAggregationFor(allNewsitems, loggedInUser) // TODO or F or L
+      val allPublishedTypes = ResourceQuery(`type` = Some(Set("N", "F", "L")))
+      elasticSearchIndexer.getPublisherAggregationFor(allPublishedTypes, loggedInUser)
     }
 
     getAllPublisherIds(loggedInUser).flatMap { ids =>
@@ -189,6 +190,7 @@ import scala.concurrent.{Await, Future}
       val publisherNewsitems = ResourceQuery(`type` = newsitems, publisher = Some(publisher))
       elasticSearchIndexer.createdMonthAggregationFor(publisherNewsitems, loggedInUser)
     }
+
     getPublisherArchiveMonths(publisher, loggedInUser).map(archiveLinksFromIntervals)
   }
 
@@ -206,7 +208,8 @@ import scala.concurrent.{Await, Future}
 
   def getAllFeedsOrderedByLatestItemDate(loggedInUser: Option[User]): Future[Seq[FrontendResource]] = {
     val allFeeds = ResourceQuery(`type` = feeds)
-    elasticSearchIndexer.getResources(allFeeds, elasticSearchIndexer.byFeedLatestFeedItemDate, loggedInUser = loggedInUser).flatMap(i => fetchByIds(i._1)) // TODO order
+    elasticSearchIndexer.getResources(allFeeds, elasticSearchIndexer.byFeedLatestFeedItemDate, loggedInUser = loggedInUser).
+      flatMap(i => fetchByIds(i._1)) // TODO order
   }
 
   def getTaggedNewsitems(tag: Tag, startIndex: Int = 0, maxItems: Int = MAX_NEWSITEMS, loggedInUser: Option[User]): Future[(Seq[FrontendResource], Long)] = {
