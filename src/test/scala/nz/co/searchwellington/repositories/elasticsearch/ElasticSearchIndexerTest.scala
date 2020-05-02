@@ -150,7 +150,6 @@ class ElasticSearchIndexerTest extends ReasonableWaits {
     assertTrue(publisherFeeds.forall(i => i.asInstanceOf[Feed].publisher.contains(publisher._id)))
   }
 
-  /
   @Test
   def canObtainsNewsitemArchiveMonths {
     val newsitem = Newsitem(date = Some(new DateTime(2019, 1, 1, 0, 0, 0).toDate))
