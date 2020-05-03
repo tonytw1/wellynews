@@ -2,7 +2,7 @@ package nz.co.searchwellington.urls
 
 import nz.co.searchwellington.controllers.models.helpers.ArchiveMonth
 import nz.co.searchwellington.model._
-import nz.co.searchwellington.model.frontend.{FrontendFeed, FrontendResource, FrontendWebsite}
+import nz.co.searchwellington.model.frontend.{FrontendFeed, FrontendNewsitem, FrontendResource, FrontendWebsite}
 import org.joda.time.{DateTimeZone, Interval}
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
@@ -78,13 +78,20 @@ class UrlBuilder @Autowired()(siteInformation: SiteInformation, urlWordsGenerato
   }
 
   def getLocalPageUrl(resource: FrontendResource): String = {
-    siteInformation.getUrl + "/" + resource.getUrlWords
+    resource match {
+      case n: FrontendNewsitem =>
+        "/newsitem/" + n.id
+      case f: FrontendFeed =>
+        "/feed/" + f.getUrlWords
+      case _ =>
+        siteInformation.getUrl + "/" + resource.getUrlWords
+    }
   }
 
   def getPublisherUrl(publisher: Website): String = "/" + publisher.url_words.get // TODO Naked get
 
   def getPublisherPageUrl(publisher: Website, page: Int): String = {
-      getPublisherUrl(publisher) + "?page=" + page
+    getPublisherUrl(publisher) + "?page=" + page
   }
 
   @Deprecated
@@ -199,6 +206,7 @@ class UrlBuilder @Autowired()(siteInformation: SiteInformation, urlWordsGenerato
   def getSubmitFeedUrl: String = {
     siteInformation.getUrl + "/new-feed"
   }
+
   def getSubmitNewsitemUrl: String = {
     siteInformation.getUrl + "/new-newsitem"
   }

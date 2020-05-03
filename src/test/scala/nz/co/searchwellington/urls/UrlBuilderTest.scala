@@ -57,7 +57,13 @@ class UrlBuilderTest {
   @Test
   def shouldConstructPageUrlForFrontendResourceFromResourcesUrlWords(): Unit = {
     assertNull(frontendNewsitem.getPublisherName)
-    assertEquals(SITE_URL + "/2010/oct/12/quick-brown-fox-jumps-over-lazy-dog", urlBuilder.getLocalPageUrl(frontendNewsitem))
+    assertEquals("/newsitem/" + frontendNewsitem.id, urlBuilder.getLocalPageUrl(frontendNewsitem))
+  }
+
+  @Test
+  def urlForFeedsShouldPointTaggingFeedPage(): Unit = {
+    val frontendFeed = FrontendFeed(id = UUID.randomUUID().toString, urlWords = "my-local-sports-team-match-reports")
+    assertEquals("/feed/my-local-sports-team-match-reports", urlBuilder.getLocalPageUrl(frontendFeed))
   }
 
   @Test
@@ -66,7 +72,6 @@ class UrlBuilderTest {
   @Test
   def urlForFeedsShouldPointToOurFeedPage(): Unit = {
     val frontendFeed = FrontendFeed(id = UUID.randomUUID().toString, urlWords = "my-local-sports-team-match-reports")
-
     assertEquals(SITE_URL + "/feed/my-local-sports-team-match-reports", urlBuilder.getFeedUrl(frontendFeed))
   }
 
