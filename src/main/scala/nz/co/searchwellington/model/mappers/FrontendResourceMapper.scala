@@ -11,7 +11,8 @@ import org.springframework.stereotype.Component
 
 import scala.concurrent.{ExecutionContext, Future}
 
-@Component class FrontendResourceMapper @Autowired()(taggingReturnsOfficerService: TaggingReturnsOfficerService, urlWordsGenerator: UrlWordsGenerator,
+@Component class FrontendResourceMapper @Autowired()(taggingReturnsOfficerService: TaggingReturnsOfficerService,
+                                                     urlWordsGenerator: UrlWordsGenerator,
                                                      mongoRepository: MongoRepository) extends ReasonableWaits {
 
   private val log = Logger.getLogger(classOf[FrontendResourceMapper])
@@ -202,7 +203,7 @@ import scala.concurrent.{ExecutionContext, Future}
   }
 
   private def frontendTagsFor(resource: Resource): Future[Seq[Tag]] = {
-    taggingReturnsOfficerService.getHandTagsForResource(resource)
+    taggingReturnsOfficerService.getHandTagsForResource(resource) // TODO duplicate call as it stands?
   }
 
 }
