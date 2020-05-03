@@ -270,11 +270,6 @@ import scala.concurrent.{Await, Future}
     resourceDAO.getOwnedByUserCount(loggedInUser)
   }
 
-  def getNewsPage(pathInfo: String): Option[FrontendResource] = {
-    //elasticSearchBackedResourceDAO.getNewspage(pathInfo, showBrokenDecisionService.shouldShowBroken)
-    None
-  }
-
   def getFeaturedTags: Future[Seq[Tag]] = tagDAO.getFeaturedTags
 
   private def buildFrontendResourcesFor(i: (Seq[BSONObjectID], Long)): Future[(Seq[FrontendResource], Long)] = {

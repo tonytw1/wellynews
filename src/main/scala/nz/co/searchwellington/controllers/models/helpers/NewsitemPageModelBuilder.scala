@@ -1,9 +1,12 @@
 package nz.co.searchwellington.controllers.models.helpers
 
+import java.util.regex.Pattern
+
 import javax.servlet.http.HttpServletRequest
 import nz.co.searchwellington.ReasonableWaits
 import nz.co.searchwellington.controllers.models.ModelBuilder
 import nz.co.searchwellington.model.User
+import nz.co.searchwellington.model.mappers.FrontendResourceMapper
 import nz.co.searchwellington.repositories.mongo.MongoRepository
 import nz.co.searchwellington.repositories.{ContentRetrievalService, HandTaggingDAO}
 import nz.co.searchwellington.tagging.TaggingReturnsOfficerService
@@ -12,7 +15,6 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
 import org.springframework.web.servlet.ModelAndView
 
-import scala.collection.JavaConverters._
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
@@ -20,32 +22,47 @@ import scala.concurrent.Future
                                                        taggingReturnsOfficerService: TaggingReturnsOfficerService,
                                                        tagWidgetFactory: TagsWidgetFactory,
                                                        tagVoteDAO: HandTaggingDAO,
-                                                       mongoRepository: MongoRepository) extends ModelBuilder with ReasonableWaits {
+                                                       mongoRepository: MongoRepository,
+                                                       frontendResourceMapper: FrontendResourceMapper) extends ModelBuilder with ReasonableWaits {
+
+  val pattern = Pattern.compile("^/newsitem/(.*?)$")
 
   def isValid(request: HttpServletRequest): Boolean = {
-    request.getPathInfo.matches("^/.*?/\\d\\d\\d\\d/[a-z]{3}/\\d\\d?/.*?$")
+    pattern.matcher(request.getPathInfo).matches()
   }
 
   def populateContentModel(request: HttpServletRequest, loggedInUser: Option[User]): Future[Option[ModelAndView]] = {
-    contentRetrievalService.getNewsPage(request.getPathInfo).map { frontendResource =>
-      val mv = new ModelAndView
-      mv.addObject("item", frontendResource)
-      mv.addObject("heading", frontendResource.getName)
-      if (frontendResource.getPlace != null) {
-        mv.addObject("geocoded", List(frontendResource).asJava)
-      }
+    val matcher = pattern.matcher(request.getPathInfo)
+    if (matcher.matches()) {
+      val id = matcher.group(1)
+      mongoRepository.getResourceById(id).flatMap { maybeResouce =>
+        maybeResouce.map { resource =>
+          frontendResourceMapper.createFrontendResourceFrom(resource).map { frontendResource =>
+            val mv = new ModelAndView
+            mv.addObject("item", frontendResource)
+            //mv.addObject("heading", resource.getName)
+            //if (resource.getPlace != null) {
+            // mv.addObject("geocoded", List(resource).asJava)
+            //}
 
-      for {
-        maybeResource <- mongoRepository.getResourceById(frontendResource.getId)
-      } yield {
-        maybeResource.map { resource => // TODO abit strange that we have to load this database object just to pass it as an argument to someone else
-          //mv.addObject("votes", taggingReturnsOfficerService.compileTaggingVotes(resource).asJava)
-          //mv.addObject("geotag_votes", taggingReturnsOfficerService.getGeotagVotesForResource(resource).asJava)
-          //mv.addObject("tag_select", tagWidgetFactory.createMultipleTagSelect(tagVoteDAO.getHandpickedTagsForThisResourceByUser(loggedInUser, resource)))
-          mv
+            //for {
+            // maybeResource <- mongoRepository.getResourceById(resource.getId)
+            //} yield {
+            // maybeResource.map { resource => // TODO abit strange that we have to load this database object just to pass it as an argument to someone else
+            //mv.addObject("votes", taggingReturnsOfficerService.compileTaggingVotes(resource).asJava)
+            //mv.addObject("geotag_votes", taggingReturnsOfficerService.getGeotagVotesForResource(resource).asJava)
+            //mv.addObject("tag_select", tagWidgetFactory.createMultipleTagSelect(tagVoteDAO.getHandpickedTagsForThisResourceByUser(loggedInUser, resource)))
+            //   mv
+            // }
+            // }
+            Some(mv)
+          }
+        }.getOrElse {
+          Future.successful(None)
         }
       }
-    }.getOrElse {
+
+    } else {
       Future.successful(None)
     }
   }
