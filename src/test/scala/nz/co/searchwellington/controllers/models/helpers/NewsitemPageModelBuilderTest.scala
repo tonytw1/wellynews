@@ -3,7 +3,8 @@ package nz.co.searchwellington.controllers.models.helpers
 import nz.co.searchwellington.ReasonableWaits
 import nz.co.searchwellington.model.frontend.FrontendNewsitem
 import nz.co.searchwellington.model.mappers.FrontendResourceMapper
-import nz.co.searchwellington.model.taggingvotes.HandTagging
+import nz.co.searchwellington.model.taggingvotes.voters.PublishersTagsVoter
+import nz.co.searchwellington.model.taggingvotes.{GeotaggingVote, HandTagging}
 import nz.co.searchwellington.model.{Geocode, Newsitem, Tag, User}
 import nz.co.searchwellington.repositories.mongo.MongoRepository
 import nz.co.searchwellington.repositories.{ContentRetrievalService, HandTaggingDAO}
@@ -53,6 +54,7 @@ class NewsitemPageModelBuilderTest extends ReasonableWaits {
     when(mongoRepository.getResourceById(newsitem.id)).thenReturn(Future.successful(Some(newsitem)))
     when(frontendResourceMapper.createFrontendResourceFrom(newsitem)).thenReturn(Future.successful(frontendNewsitem))
     when(taggingReturnsOfficerService.getHandTaggingsForResource(newsitem)).thenReturn(Future.successful(Seq.empty))
+    when(taggingReturnsOfficerService.getGeotagVotesForResource(newsitem)).thenReturn(Future.successful(Seq.empty))
 
     val mv = Await.result(modelBuilder.populateContentModel(request), TenSeconds).get
 
@@ -70,19 +72,22 @@ class NewsitemPageModelBuilderTest extends ReasonableWaits {
     val place = Geocode(address = Some("Somewhere"))
     val frontendNewsitem = FrontendNewsitem(id = newsitem.id, place = Some(place))
 
-    val handTaggingsForNewsitem = Seq(
-      HandTagging(user = User(), tag = Tag())
-    )
+    val handTaggingsForNewsitem = Seq(HandTagging(user = User(), tag = Tag()))
+    val geotagVotesForNewsitem = Seq(new GeotaggingVote(geocode = place, weight = 1, voter = new PublishersTagsVoter))
 
     when(mongoRepository.getResourceById(newsitem.id)).thenReturn(Future.successful(Some(newsitem)))
     when(frontendResourceMapper.createFrontendResourceFrom(newsitem)).thenReturn(Future.successful(frontendNewsitem))
     when(taggingReturnsOfficerService.getHandTaggingsForResource(newsitem)).thenReturn(Future.successful(handTaggingsForNewsitem))
+    when(taggingReturnsOfficerService.getGeotagVotesForResource(newsitem)).thenReturn(Future.successful(geotagVotesForNewsitem))
 
     val mv = Await.result(modelBuilder.populateContentModel(request), TenSeconds).get
 
-    val handTaggings = mv.getModel.get("hand_taggings")
     import scala.collection.JavaConverters._
+    val handTaggings = mv.getModel.get("hand_taggings")
     assertEquals("Expect to be able to see all hand tagging for this newsitem", handTaggingsForNewsitem.asJava, handTaggings)
+
+    val geoTagVotes = mv.getModel.get("geotag_votes")
+    assertEquals("Expect to be see geotagging votes", geotagVotesForNewsitem.asJava, geoTagVotes)
   }
 
   /*

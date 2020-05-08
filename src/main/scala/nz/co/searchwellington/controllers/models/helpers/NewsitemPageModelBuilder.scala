@@ -39,9 +39,11 @@ import scala.concurrent.Future
         maybeResouce.map { resource =>
           val eventualFrontendResource = frontendResourceMapper.createFrontendResourceFrom(resource)
           val eventualHandTaggings = taggingReturnsOfficerService.getHandTaggingsForResource(resource)
+          val eventualGeotagVotes = taggingReturnsOfficerService.getGeotagVotesForResource(resource)
           for {
             frontendResource <- eventualFrontendResource
             handTaggings <- eventualHandTaggings
+            geotagVotes <- eventualGeotagVotes
           } yield {
             val mv = new ModelAndView
             mv.addObject("item", frontendResource)
@@ -49,6 +51,7 @@ import scala.concurrent.Future
 
             import scala.collection.JavaConverters._
             mv.addObject("hand_taggings", handTaggings.asJava)
+            mv.addObject("geotag_votes", geotagVotes.asJava)
 
             //if (resource.getPlace != null) {
             // mv.addObject("geocoded", List(resource).asJava)
