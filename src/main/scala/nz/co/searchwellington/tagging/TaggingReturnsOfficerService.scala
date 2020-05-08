@@ -25,6 +25,10 @@ import scala.concurrent.Future
     }
   }
 
+  def getHandTaggingsForResource(resource: Tagged): Future[Seq[taggingvotes.HandTagging]] = {
+    handTaggingDAO.getHandTaggingsForResource(resource)
+  }
+
   // TODO These are a different responsibility to tagging votes
   def getIndexTagsForResource(resource: Resource): Future[Seq[Tag]] = {
     compileTaggingVotes(resource).map { taggingVotes =>

@@ -36,7 +36,12 @@
 	#end
 			
 	<h2>Tagging</h2>
-	
+
+	<h3>Hand taggings</h3>
+	<p>
+	    $hand_taggings
+	</p>
+
 	#if($votes.size() > 0) 
 		<p>This item has had the following tags applied to it:</p>					
 		<ul>

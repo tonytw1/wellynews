@@ -37,10 +37,19 @@ import scala.concurrent.Future
       val id = matcher.group(1)
       mongoRepository.getResourceById(id).flatMap { maybeResouce =>
         maybeResouce.map { resource =>
-          frontendResourceMapper.createFrontendResourceFrom(resource).map { frontendResource =>
+          val eventualFrontendResource = frontendResourceMapper.createFrontendResourceFrom(resource)
+          val eventualHandTaggings = taggingReturnsOfficerService.getHandTaggingsForResource(resource)
+          for {
+            frontendResource <- eventualFrontendResource
+            handTaggings <- eventualHandTaggings
+          } yield {
             val mv = new ModelAndView
             mv.addObject("item", frontendResource)
-            //mv.addObject("heading", resource.getName)
+            mv.addObject("heading", resource.title.orNull)
+
+            import scala.collection.JavaConverters._
+            mv.addObject("hand_taggings", handTaggings.asJava)
+
             //if (resource.getPlace != null) {
             // mv.addObject("geocoded", List(resource).asJava)
             //}
@@ -57,6 +66,7 @@ import scala.concurrent.Future
             // }
             Some(mv)
           }
+
         }.getOrElse {
           Future.successful(None)
         }

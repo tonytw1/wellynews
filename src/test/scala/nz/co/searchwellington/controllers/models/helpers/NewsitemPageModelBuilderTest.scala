@@ -1,17 +1,15 @@
 package nz.co.searchwellington.controllers.models.helpers
 
-import java.util.UUID
-
 import nz.co.searchwellington.ReasonableWaits
 import nz.co.searchwellington.model.frontend.FrontendNewsitem
 import nz.co.searchwellington.model.mappers.FrontendResourceMapper
-import nz.co.searchwellington.model.taggingvotes.GeotaggingVote
-import nz.co.searchwellington.model.{Geocode, Newsitem, Resource}
+import nz.co.searchwellington.model.taggingvotes.HandTagging
+import nz.co.searchwellington.model.{Geocode, Newsitem, Tag, User}
 import nz.co.searchwellington.repositories.mongo.MongoRepository
 import nz.co.searchwellington.repositories.{ContentRetrievalService, HandTaggingDAO}
 import nz.co.searchwellington.tagging.TaggingReturnsOfficerService
 import nz.co.searchwellington.widgets.TagsWidgetFactory
-import org.junit.Assert.{assertEquals, assertNull, assertTrue}
+import org.junit.Assert.{assertEquals, assertTrue}
 import org.junit.Test
 import org.mockito.Mockito.{mock, when}
 import org.springframework.mock.web.MockHttpServletRequest
@@ -20,7 +18,6 @@ import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.{Await, Future}
 
 class NewsitemPageModelBuilderTest extends ReasonableWaits {
-
 
   private val contentRetrievalService = mock(classOf[ContentRetrievalService])
   private val taggingReturnsOfficerService = mock(classOf[TaggingReturnsOfficerService])
@@ -33,7 +30,7 @@ class NewsitemPageModelBuilderTest extends ReasonableWaits {
     tagWidgetFactory, handTaggingDAO, mongoRepository, frontendResourceMapper)
 
   @Test
-  def isValidForSingleNewsitemPath {
+  def isValidForSingleNewsitemPath() {
     val newsitem = Newsitem()
 
     val validPath = "/newsitem/" + newsitem.id
@@ -44,7 +41,7 @@ class NewsitemPageModelBuilderTest extends ReasonableWaits {
   }
 
   @Test
-  def shouldShowNewsitem {
+  def shouldShowNewsitem() {
     val newsitem = Newsitem()
     val validPath = "/newsitem/" + newsitem.id
     val request = new MockHttpServletRequest
@@ -55,11 +52,37 @@ class NewsitemPageModelBuilderTest extends ReasonableWaits {
 
     when(mongoRepository.getResourceById(newsitem.id)).thenReturn(Future.successful(Some(newsitem)))
     when(frontendResourceMapper.createFrontendResourceFrom(newsitem)).thenReturn(Future.successful(frontendNewsitem))
+    when(taggingReturnsOfficerService.getHandTaggingsForResource(newsitem)).thenReturn(Future.successful(Seq.empty))
 
     val mv = Await.result(modelBuilder.populateContentModel(request), TenSeconds).get
 
     val item = mv.getModel.get("item")
     assertEquals(frontendNewsitem, item)
+  }
+
+  @Test
+  def shouldShowHandTaggingsAppliedToThisNewsitem() {
+    val newsitem = Newsitem()
+    val validPath = "/newsitem/" + newsitem.id
+    val request = new MockHttpServletRequest
+    request.setPathInfo(validPath)
+
+    val place = Geocode(address = Some("Somewhere"))
+    val frontendNewsitem = FrontendNewsitem(id = newsitem.id, place = Some(place))
+
+    val handTaggingsForNewsitem = Seq(
+      HandTagging(user = User(), tag = Tag())
+    )
+
+    when(mongoRepository.getResourceById(newsitem.id)).thenReturn(Future.successful(Some(newsitem)))
+    when(frontendResourceMapper.createFrontendResourceFrom(newsitem)).thenReturn(Future.successful(frontendNewsitem))
+    when(taggingReturnsOfficerService.getHandTaggingsForResource(newsitem)).thenReturn(Future.successful(handTaggingsForNewsitem))
+
+    val mv = Await.result(modelBuilder.populateContentModel(request), TenSeconds).get
+
+    val handTaggings = mv.getModel.get("hand_taggings")
+    import scala.collection.JavaConverters._
+    assertEquals("Expect to be able to see all hand tagging for this newsitem", handTaggingsForNewsitem.asJava, handTaggings)
   }
 
   /*
