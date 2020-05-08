@@ -43,6 +43,9 @@
     <h3>Geotag votes</h3>
 	<p>$geotag_votes</p>
 
+	<h3>Index tags</h3>
+    <p>$index_tags</p>
+
 	#if($votes.size() > 0) 
 		<p>This item has had the following tags applied to it:</p>					
 		<ul>
