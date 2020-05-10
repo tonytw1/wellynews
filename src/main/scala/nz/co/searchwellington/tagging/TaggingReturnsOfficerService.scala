@@ -55,7 +55,7 @@ import scala.concurrent.Future
         val eventualAncestorTagVotes: Future[Seq[GeneratedTaggingVote]] = {
           getHandTagsForResource(resource).map { taggings =>
             taggings.map { rt =>
-              parentsOf(rt).map(parents => parents.map(fat => GeneratedTaggingVote(fat, new AncestorTagVoter())))
+              parentsOf(rt).map(parents => parents.map(fat => GeneratedTaggingVote(fat, "Ancestor tag of " + rt.name)))
             }
           }.flatMap(Future.sequence(_)).map(_.flatten)
         }
@@ -91,7 +91,7 @@ import scala.concurrent.Future
 
   def getGeotagVotesForResource(resource: Resource): Future[Seq[GeotaggingVote]] = {
     val resourceGeocodeVote: Option[GeotaggingVote] = resource.geocode.map { g =>
-      new GeotaggingVote(g, new PublishersTagsVoter, 1) // TODO resource owner as the voter
+      new GeotaggingVote(g, "Resources own geo tag", 1) // TODO resource owner as the voter
     }
 
     val eventualPublisherGeocodeVote: Future[Option[GeotaggingVote]] = {
@@ -102,7 +102,7 @@ import scala.concurrent.Future
               maybePublisher.flatMap { publisher =>
                 publisher.geocode.map { pg =>
                   log.debug("Adding publisher geotag: " + pg)
-                  new GeotaggingVote(pg, new PublishersTagsVoter, 1)
+                  new GeotaggingVote(pg, "Publisher geo tag", 1)
                 }
               }
             }
@@ -131,8 +131,8 @@ import scala.concurrent.Future
           for {
             parentTags <- parentsOf(publishersTagging.tag)
           } yield {
-            val publisherAncestorTagVotes = parentTags.map(pat => GeneratedTaggingVote(pat, new PublishersTagAncestorTagVoter))
-            publisherAncestorTagVotes :+ GeneratedTaggingVote(publishersTagging.tag, new PublishersTagsVoter)
+            val publisherAncestorTagVotes = parentTags.map(pat => GeneratedTaggingVote(pat, "Ancestor of of publisher tag " + pat.name))
+            publisherAncestorTagVotes :+ GeneratedTaggingVote(publishersTagging.tag, "Publisher tag")
           }
         }).map(_.flatten)
       }
@@ -148,8 +148,8 @@ import scala.concurrent.Future
           for {
             parentsOfFeedTag <- parentsOf(ft)
           } yield {
-            val feedAncestorTagVotes = parentsOfFeedTag.map(fat => GeneratedTaggingVote(fat, new FeedTagAncestorTagVoter))
-            feedAncestorTagVotes :+ GeneratedTaggingVote(ft, new FeedsTagsTagVoter)
+            val feedAncestorTagVotes = parentsOfFeedTag.map(fat => GeneratedTaggingVote(fat, "Ancestor of feed tag " + fat.name))
+            feedAncestorTagVotes :+ GeneratedTaggingVote(ft, "Feed tag")
           }
         }
       }

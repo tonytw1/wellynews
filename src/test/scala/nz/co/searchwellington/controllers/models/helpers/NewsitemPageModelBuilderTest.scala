@@ -3,7 +3,6 @@ package nz.co.searchwellington.controllers.models.helpers
 import nz.co.searchwellington.ReasonableWaits
 import nz.co.searchwellington.model.frontend.FrontendNewsitem
 import nz.co.searchwellington.model.mappers.FrontendResourceMapper
-import nz.co.searchwellington.model.taggingvotes.voters.PublishersTagsVoter
 import nz.co.searchwellington.model.taggingvotes.{GeotaggingVote, HandTagging}
 import nz.co.searchwellington.model.{Geocode, Newsitem, Tag, User}
 import nz.co.searchwellington.repositories.mongo.MongoRepository
@@ -74,7 +73,7 @@ class NewsitemPageModelBuilderTest extends ReasonableWaits {
     val frontendNewsitem = FrontendNewsitem(id = newsitem.id, place = Some(place))
 
     val handTaggingsForNewsitem = Seq(HandTagging(user = User(), tag = Tag()))
-    val geotagVotesForNewsitem = Seq(new GeotaggingVote(geocode = place, weight = 1, voter = new PublishersTagsVoter))
+    val geotagVotesForNewsitem = Seq(new GeotaggingVote(geocode = place, weight = 1, explanation = "Some tagging"))
     val indexTaggingsForNewsitem = Seq(HandTagging(tag = Tag(id = "123"), user = User()))
 
     when(mongoRepository.getResourceById(newsitem.id)).thenReturn(Future.successful(Some(newsitem)))
