@@ -12,3 +12,12 @@ Milage may vary.
 docker-compose -f docker/docker-compose.yml up
 
 mvn tomcat7:run
+
+
+
+
+
+### Hand tagging 
+
+Represents a tag applied directly by a user
+

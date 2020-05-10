@@ -52,7 +52,7 @@
     <p>These taggings where considered when deciding the location for this item.<p>
     <ul>
         #foreach ($vote in $geotag_votes)
-            <li>$vote.geocode from $vote.voter</li>
+            <li>$vote.geocode from $vote.voterName</li>
         #end
     </ul>
 
@@ -60,7 +60,7 @@
 	<p>Theses tags have been used to index this item.<p>
 	<ul>
         #foreach ($tagging in $index_taggings)
-            <li>$tagging.name</li>
+            <li>$tagging.tag.name by $tagging.voter.voterName</li>
         #end
 	</ul>
 

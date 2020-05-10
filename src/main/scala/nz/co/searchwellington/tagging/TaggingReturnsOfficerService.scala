@@ -36,6 +36,10 @@ import scala.concurrent.Future
     }
   }
 
+  def getIndexTaggingsForResource(resource: Resource): Future[Seq[TaggingVote]] = {
+    compileTaggingVotes(resource)
+  }
+
   // TODO These are a different responsibility to tagging votes
   def getIndexGeocodeForResource(resource: Resource): Future[Option[Geocode]] = {
     getGeotagVotesForResource(resource).map { i =>
