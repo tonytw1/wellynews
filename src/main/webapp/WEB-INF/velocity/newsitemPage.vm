@@ -38,13 +38,28 @@
 	<h2>Tagging</h2>
 
 	<h3>Hand taggings</h3>
-	<p>$hand_taggings</p>
+	<p>These tags have been manually added to this item.</p>
+    <ul>
+        #foreach ($tagging in $hand_taggings)
+            <li>$tagging</li>
+        #end
+	</ul>
 
     <h3>Geotag votes</h3>
-	<p>$geotag_votes</p>
+    <p>These taggings where considered when deciding the location for this item.<p>
+    <ul>
+        #foreach ($vote in $geotag_votes)
+            <li>$vote</li>
+        #end
+    </ul>
 
 	<h3>Index tags</h3>
-    <p>$index_tags</p>
+	<p>Theses tags have been used to index this item.<p>
+	<ul>
+        #foreach ($tagging in $index_taggings)
+            <li>$tagging</li>
+        #end
+	</ul>
 
 	#if($votes.size() > 0) 
 		<p>This item has had the following tags applied to it:</p>					

@@ -55,7 +55,7 @@ import scala.concurrent.Future
             import scala.collection.JavaConverters._
             mv.addObject("hand_taggings", handTaggings.asJava)
             mv.addObject("geotag_votes", geotagVotes.asJava)
-            mv.addObject("index_tags", indexTags.asJava)
+            mv.addObject("index_taggings", indexTags.asJava)
 
             //if (resource.getPlace != null) {
             // mv.addObject("geocoded", List(resource).asJava)

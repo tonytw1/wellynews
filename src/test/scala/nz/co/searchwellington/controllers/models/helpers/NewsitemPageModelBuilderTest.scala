@@ -64,7 +64,7 @@ class NewsitemPageModelBuilderTest extends ReasonableWaits {
   }
 
   @Test
-  def shouldShowHandTaggingsAppliedToThisNewsitem() {
+  def shouldShowTaggingsAppliedToThisNewsitem() {
     val newsitem = Newsitem()
     val validPath = "/newsitem/" + newsitem.id
     val request = new MockHttpServletRequest
@@ -75,12 +75,13 @@ class NewsitemPageModelBuilderTest extends ReasonableWaits {
 
     val handTaggingsForNewsitem = Seq(HandTagging(user = User(), tag = Tag()))
     val geotagVotesForNewsitem = Seq(new GeotaggingVote(geocode = place, weight = 1, voter = new PublishersTagsVoter))
+    val indexTaggingsForNewsitem = Seq(Tag(id = "123"))
 
     when(mongoRepository.getResourceById(newsitem.id)).thenReturn(Future.successful(Some(newsitem)))
     when(frontendResourceMapper.createFrontendResourceFrom(newsitem)).thenReturn(Future.successful(frontendNewsitem))
     when(taggingReturnsOfficerService.getHandTaggingsForResource(newsitem)).thenReturn(Future.successful(handTaggingsForNewsitem))
     when(taggingReturnsOfficerService.getGeotagVotesForResource(newsitem)).thenReturn(Future.successful(geotagVotesForNewsitem))
-    when(taggingReturnsOfficerService.getIndexTagsForResource(newsitem)).thenReturn(Future.successful(Seq.empty))
+    when(taggingReturnsOfficerService.getIndexTagsForResource(newsitem)).thenReturn(Future.successful(indexTaggingsForNewsitem))
 
     val mv = Await.result(modelBuilder.populateContentModel(request), TenSeconds).get
 
@@ -90,6 +91,9 @@ class NewsitemPageModelBuilderTest extends ReasonableWaits {
 
     val geoTagVotes = mv.getModel.get("geotag_votes")
     assertEquals("Expect to be see geotagging votes", geotagVotesForNewsitem.asJava, geoTagVotes)
+
+    val indexTaggings = mv.getModel.get("index_taggings")
+    assertEquals("Expect to be see index taggings", indexTaggingsForNewsitem.asJava, indexTaggings)
   }
 
   /*
