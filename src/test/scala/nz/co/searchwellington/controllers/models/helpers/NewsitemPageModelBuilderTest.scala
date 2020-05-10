@@ -119,7 +119,6 @@ class NewsitemPageModelBuilderTest extends ReasonableWaits {
   @Test
   def shouldNotPopulateGeotaggedItemsIfNewsitemIsNotGeotagged {
     val validPath = "/newsitem/" + Newsitem().id
-    println(validPath)
     val request = new MockHttpServletRequest
     request.setPathInfo(validPath)
 
