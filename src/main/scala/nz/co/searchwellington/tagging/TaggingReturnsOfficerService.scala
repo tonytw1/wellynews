@@ -2,7 +2,6 @@ package nz.co.searchwellington.tagging
 
 import nz.co.searchwellington.ReasonableWaits
 import nz.co.searchwellington.model._
-import nz.co.searchwellington.model.taggingvotes.voters._
 import nz.co.searchwellington.model.taggingvotes.{GeneratedTaggingVote, GeotaggingVote, TaggingVote}
 import nz.co.searchwellington.repositories.HandTaggingDAO
 import nz.co.searchwellington.repositories.mongo.MongoRepository
@@ -131,7 +130,7 @@ import scala.concurrent.Future
           for {
             parentTags <- parentsOf(publishersTagging.tag)
           } yield {
-            val publisherAncestorTagVotes = parentTags.map(pat => GeneratedTaggingVote(pat, "Ancestor of of publisher tag " + pat.name))
+            val publisherAncestorTagVotes = parentTags.map(pat => GeneratedTaggingVote(pat, "Ancestor of publisher tag " + publishersTagging.tag.name))
             publisherAncestorTagVotes :+ GeneratedTaggingVote(publishersTagging.tag, "Publisher tag")
           }
         }).map(_.flatten)
@@ -148,7 +147,7 @@ import scala.concurrent.Future
           for {
             parentsOfFeedTag <- parentsOf(ft)
           } yield {
-            val feedAncestorTagVotes = parentsOfFeedTag.map(fat => GeneratedTaggingVote(fat, "Ancestor of feed tag " + fat.name))
+            val feedAncestorTagVotes = parentsOfFeedTag.map(fat => GeneratedTaggingVote(fat, "Ancestor of feed tag " + ft.name))
             feedAncestorTagVotes :+ GeneratedTaggingVote(ft, "Feed tag")
           }
         }
