@@ -42,7 +42,7 @@
     <ul>
         #foreach ($tagging in $hand_taggings)
             <li>
-                $tagging.tag.name by $tagging.user.profileName
+                $tagging.tag.name by $tagging.voter
 
             </li>
         #end
@@ -63,6 +63,8 @@
             <li>$tagging.name</li>
         #end
 	</ul>
+
+	<hr/>
 
 	#if($votes.size() > 0) 
 		<p>This item has had the following tags applied to it:</p>					
