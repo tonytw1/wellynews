@@ -52,9 +52,7 @@ import scala.concurrent.Future
       mv.addObject(MAIN_CONTENT, contentWithCount._1.asJava)
 
       val contentCount = contentWithCount._2
-      mv.addObject("main_content_total", contentCount)  // TODO duplication of pagination?
-
-      def paginationLinks(page: Int): String = urlBuilder.getSearchUrlFor(keywords, Some(page))
+      def paginationLinks(page: Int) = urlBuilder.getSearchUrlFor(keywords, Some(page))
       populatePagination(mv, startIndex, contentCount, MAX_NEWSITEMS, paginationLinks)
 
       mv.addObject("publisher", maybeFrontendPublisher.orNull)
