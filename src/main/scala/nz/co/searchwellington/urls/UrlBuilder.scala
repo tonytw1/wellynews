@@ -195,8 +195,9 @@ class UrlBuilder @Autowired()(siteInformation: SiteInformation, urlWordsGenerato
     }
   }
 
-  def getSearchUrlFor(keywords: String): String = {
-    siteInformation.getUrl + "/search?keywords=" + UrlParameterEncoder.encode(keywords)
+  def getSearchUrlFor(keywords: String, page: Option[Int] = None): String = {
+    siteInformation.getUrl + "/search?keywords=" + UrlParameterEncoder.encode(keywords) +
+      page.map("&page=" + _).getOrElse("")
   }
 
   def getTagSearchUrlFor(keywords: String, tag: Tag): String = {
