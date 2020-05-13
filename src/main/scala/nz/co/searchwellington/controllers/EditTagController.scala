@@ -4,7 +4,7 @@ import javax.validation.Valid
 import nz.co.searchwellington.ReasonableWaits
 import nz.co.searchwellington.forms.EditTag
 import nz.co.searchwellington.geocoding.osm.CachingNominatimResolveOsmIdService
-import nz.co.searchwellington.model.{Geocode, OsmId, Tag, UrlWordsGenerator}
+import nz.co.searchwellington.model.{Tag, UrlWordsGenerator}
 import nz.co.searchwellington.modification.{ContentUpdateService, TagModificationService}
 import nz.co.searchwellington.repositories.TagDAO
 import nz.co.searchwellington.repositories.elasticsearch.ElasticSearchIndexRebuildService
@@ -31,8 +31,8 @@ class EditTagController @Autowired()(contentUpdateService: ContentUpdateService,
                                      loggedInUserFilter: LoggedInUserFilter,
                                      tagModificationService: TagModificationService,
                                      elasticSearchIndexRebuildService: ElasticSearchIndexRebuildService,
-                                     cachingNominatimResolveOsmIdService: CachingNominatimResolveOsmIdService)
-  extends ReasonableWaits with Errors with InputParsing {
+                                     val cachingNominatimResolveOsmIdService: CachingNominatimResolveOsmIdService)
+  extends ReasonableWaits with Errors with InputParsing with GeotagParsing {
 
   private val log = Logger.getLogger(classOf[EditTagController])
 
@@ -87,26 +87,9 @@ class EditTagController @Autowired()(contentUpdateService: ContentUpdateService,
           maybeTag
         }
 
-        // TODO Big duplication
         val geocode = Option(editTag.getGeocode).flatMap { address =>
           Option(editTag.getSelectedGeocode).flatMap { osmId =>
-            if (osmId.nonEmpty) {
-              val id = osmId.split("/")(0).toLong // TODO push to OSM object
-              val `type` = osmId.split("/")(1)
-              val osm = OsmId(id = id, `type` = `type`)
-
-              val commonOsm = new uk.co.eelpieconsulting.common.geo.model.OsmId(
-                osm.id, uk.co.eelpieconsulting.common.geo.model.OsmType.valueOf(osm.`type`)
-              )
-              val resolvedPlace = cachingNominatimResolveOsmIdService.callService(commonOsm)
-              val resolvedLatLong = resolvedPlace.getLatLong
-              Some(Geocode(address = Some(address), osmId = Some(osm),
-                latitude = Some(resolvedLatLong.getLatitude),
-                longitude = Some(resolvedLatLong.getLongitude)
-              ))
-            } else {
-              None
-            }
+            parseGeotag(address, osmId)
           }
         }
 

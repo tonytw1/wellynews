@@ -25,9 +25,10 @@ import scala.concurrent.ExecutionContext.Implicits.global
 class EditWebsiteController @Autowired()(contentUpdateService: ContentUpdateService,
                                          mongoRepository: MongoRepository,
                                          urlBuilder: UrlBuilder,
-                                         loggedInUserFilter: LoggedInUserFilter, tagDAO: TagDAO,
-                                         cachingNominatimResolveOsmIdService: CachingNominatimResolveOsmIdService
-                                        ) extends ReasonableWaits with AcceptancePolicyOptions with Errors {
+                                         loggedInUserFilter: LoggedInUserFilter,
+                                         tagDAO: TagDAO,
+                                         val cachingNominatimResolveOsmIdService: CachingNominatimResolveOsmIdService
+                                        ) extends ReasonableWaits with AcceptancePolicyOptions with Errors with GeotagParsing {
 
   private val log = Logger.getLogger(classOf[EditWebsiteController])
 
@@ -78,23 +79,7 @@ class EditWebsiteController @Autowired()(contentUpdateService: ContentUpdateServ
 
           val geocode = Option(editWebsite.getGeocode).flatMap { address =>
             Option(editWebsite.getSelectedGeocode).flatMap { osmId =>
-              if (osmId.nonEmpty) {
-                val id = osmId.split("/")(0).toLong // TODO push to OSM object
-                val `type` = osmId.split("/")(1)
-                val osm = OsmId(id = id, `type` = `type`)
-
-                val commonOsm = new uk.co.eelpieconsulting.common.geo.model.OsmId(
-                  osm.id, uk.co.eelpieconsulting.common.geo.model.OsmType.valueOf(osm.`type`)
-                )
-                val resolvedPlace = cachingNominatimResolveOsmIdService.callService(commonOsm)
-                val resolvedLatLong = resolvedPlace.getLatLong
-                Some(Geocode(address = Some(address), osmId = Some(osm),
-                  latitude = Some(resolvedLatLong.getLatitude),
-                  longitude = Some(resolvedLatLong.getLongitude)
-                ))
-              } else {
-                None
-              }
+              parseGeotag(address, osmId)
             }
           }
 
