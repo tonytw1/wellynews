@@ -23,7 +23,7 @@ import scala.concurrent.{ExecutionContext, Future}
 
   def getWhakaokoSubscriptionByUrl(url: String)(implicit ec: ExecutionContext): Future[Option[Subscription]] = {
     client.getChannelSubscriptions(url = Some(url)).map { channelSubscriptions =>
-      channelSubscriptions.find(s => s.url == url) // TODO API should allow us to pass the url rather than scanning the entire collection
+      channelSubscriptions.headOption
     }
   }
 
