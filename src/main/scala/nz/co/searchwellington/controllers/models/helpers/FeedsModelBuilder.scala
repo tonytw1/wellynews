@@ -45,7 +45,7 @@ import scala.concurrent.Future
     val eventualSuggestedFeednewsitems = Future.successful(Seq.empty) // TODO suggestedFeeditemsService.getSuggestionFeednewsitems(6)
     val eventualDiscoveredFeeds = contentRetrievalService.getDiscoveredFeeds
     val eventualCurrentFeeds = contentRetrievalService.getAllFeedsOrderedByLatestItemDate(loggedInUser)
-    val eventualSuggestOnlyFeeds = contentRetrievalService.getFeeds(acceptancePolicy = Some(FeedAcceptancePolicy.SUGGEST), loggedInUser)
+    val eventualSuggestOnlyFeeds = contentRetrievalService.getSuggestOnlyFeeds(loggedInUser)
 
     for {
       suggestedFeednewsitems <- eventualSuggestedFeednewsitems
