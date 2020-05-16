@@ -22,7 +22,6 @@ import scala.concurrent.{Await, ExecutionContext, Future}
 
   @Scheduled(cron = "0 */10 * * * *")
   def readFeeds {
-
     def readAllFeeds(feeds: Seq[Feed]): Future[Boolean] = {
       getFeedReaderUser.map { maybyFeedUser =>
         maybyFeedUser.map { feedReaderUser =>
@@ -30,8 +29,6 @@ import scala.concurrent.{Await, ExecutionContext, Future}
           feeds.foreach { feed =>
             Await.result(feedReader.processFeed(feed, feedReaderUser), TenSeconds)
           }
-
-          log.info("Finished reading feeds")
           true
 
         }.getOrElse {
