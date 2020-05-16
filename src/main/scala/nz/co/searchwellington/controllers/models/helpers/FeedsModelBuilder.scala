@@ -45,16 +45,19 @@ import scala.concurrent.Future
     val eventualSuggestedFeednewsitems = Future.successful(Seq.empty) // TODO suggestedFeeditemsService.getSuggestionFeednewsitems(6)
     val eventualDiscoveredFeeds = contentRetrievalService.getDiscoveredFeeds
     val eventualCurrentFeeds = contentRetrievalService.getAllFeedsOrderedByLatestItemDate(loggedInUser)
+    val eventualSuggestOnlyFeeds = contentRetrievalService.getFeeds(acceptancePolicy = Some(FeedAcceptancePolicy.SUGGEST), loggedInUser)
 
     for {
       suggestedFeednewsitems <- eventualSuggestedFeednewsitems
       discoveredFeeds <- eventualDiscoveredFeeds
       currentFeeds <- eventualCurrentFeeds
+      suggestOnlyFeeds <- eventualSuggestOnlyFeeds
 
     } yield {
       import scala.collection.JavaConverters._
       mv.addObject("suggestions", suggestedFeednewsitems.asJava)
       mv.addObject("discovered_feeds", discoveredFeeds.asJava)
+      mv.addObject("suggest_feeds", suggestOnlyFeeds.asJava)
       commonAttributesModelBuilder.withSecondaryFeeds(mv, currentFeeds)
     }
   }
