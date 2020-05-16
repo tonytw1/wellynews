@@ -22,8 +22,8 @@ import scala.concurrent.{ExecutionContext, Future}
   def getSubscriptions()(implicit ec: ExecutionContext): Future[Seq[Subscription]] = client.getChannelSubscriptions()
 
   def getWhakaokoSubscriptionByUrl(url: String)(implicit ec: ExecutionContext): Future[Option[Subscription]] = {
-    client.getChannelSubscriptions(url = Some(url)).map { channelSubscriptions =>
-      channelSubscriptions.headOption
+    client.getChannelSubscriptions(url = Some(url)).map { subscriptionsByUrl =>
+      subscriptionsByUrl.headOption
     }
   }
 
