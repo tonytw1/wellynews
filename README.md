@@ -17,7 +17,30 @@ mvn tomcat7:run
 
 
 
-### Hand tagging 
+## Index tags
+
+Index tags determine which tags give resources appear under.
+Some slightly interesting things happen to automatically calculate the index tags
+
+### Tagging votes
+
+#### Hand tagging
 
 Represents a tag applied directly by a user
+
+#### Publisher tags
+
+News items inherit the tags their publisher have
+
+#### Feed tags
+
+News items accepted from a feed inherit the hand taggings applied to the feed.
+
+#### Ancestor
+
+Includes the ancestors of applied tags.
+ie. Trains implies Transport.
+
+
+## Autotagger
 

@@ -3,15 +3,9 @@
 <div class="page">
 #parse("includes/topbar.vm")
 
-
-
 <div class="left">
 #parse("includes/tag_tree.vm")
 </div>
-
-
-
-
 
 <div class="main">
 
@@ -23,7 +17,6 @@
 draws in notices and newsitems published by local organisations. The resulting 
 content isn't going to be what you'll find in a newspaper but we think that's 
 half the attraction.</p>
-
 
 <p>The Newslog appears daily on the front page of Search $site_information.areaname and is also available
 as an <a href="rssfeeds">RSS feed</a>.</p>
@@ -41,9 +34,7 @@ Organisations can indiciate in their robots.txt that Search Wellington should no
 	Disallow: *</code></li>
 </ul>
 
-
-<o>You can also <a href="#contact">contact us directly</a> to request exclusion.</p>
-
+<p>You can also <a href="#contact">contact us directly</a> to request exclusion.</p>
 
 
 <a name="contact"></a>
@@ -57,25 +48,18 @@ London by an <a href="http://wah.wellington.gen.nz">expatriate Wellingtonian</a>
 
 <p>Any enquires should be directed to <code>enquires (at) wellington.gen.nz</code></p>
 
-
-
-
-
 <a name="nikau"></a>
 <h3>Nikau Palms</h3>
 
-<img src="$urlBuilder.getStaticUrl('civic8.jpg')" align="right"
-alt="Nikau Palm in the Civic Square" />
+<img src="$urlBuilder.getStaticUrl('civic8.jpg')" align="right" alt="Nikau Palm in the Civic Square" />
 
 <p><i>Right</i> - One of the copper clad Nikau palm trees which dot the Civic Square and line the exterior of the Central Library building.</p>
 
-<p>
-Valued at $25,000 NZ each, these
+<p>Valued at $25,000 NZ each, these
 additions to the Square 
 were suggested by the architect Ian Athfield as a way of making the area 
 more inviting. The Nikaus have become somewhat of an icon for Wellington 
-City.
-</p>
+City.</p>
 
 <p>The Nikau, is a distinctive New Zealand native tree. Reassembling a 
 feather duster, it grows to approximately 20ft.</p>
@@ -124,10 +108,9 @@ makes the following possible:</p>
 	</p>
 </ul>
 
-
 <h3>Source code</h3>
-<p>The aggregation system is a Java application which makes use of Mysql and Apache solr. 
-The source code is available for review on <a href="http://www.github.com/tonytw1/wellynews">Github</a>.
+<p>A Java application which uses and MondoDB and Elastic search.
+The source code is available for review on <a href="http://www.github.com/tonytw1/wellynews">Github</a>.</p>
 </div>
 
 <div class="right">
