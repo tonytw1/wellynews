@@ -53,6 +53,7 @@ class MongoRepository @Autowired()(@Value("#{config['mongo.uri']}") mongoUri: St
   val discoveredFeedCollection: BSONCollection = db.collection("discovered_feed")
 
   {
+    import scala.concurrent.ExecutionContext.Implicits.global
     log.info("Got database connection: " + db)
 
     log.info("Ensuring mongo indexes")
