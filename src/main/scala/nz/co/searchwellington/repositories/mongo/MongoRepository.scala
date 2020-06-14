@@ -38,19 +38,6 @@ class MongoRepository @Autowired()(@Value("#{config['mongo.uri']}") mongoUri: St
     }.flatten
 
     val db: DB = Await.result(eventualDatabase, OneMinute)
-    log.info("Got database connection: " + db)
-
-    log.info("Ensuring mongo indexes")
-    log.info("resource type/url_words index result: " +
-      Await.result(resourceCollection.indexesManager.ensure(
-        Index(Seq("type" -> IndexType.Ascending, "url_words" -> IndexType.Ascending), name = Some("type_with_url_words"),
-          unique = false)), OneMinute))
-
-    log.info("resource page index result: " +
-      Await.result(resourceCollection.indexesManager.ensure(
-        Index(Seq("page" -> IndexType.Ascending), name = Some("page"), unique = true),
-      ), OneMinute))
-
     db
   }
 
@@ -65,7 +52,20 @@ class MongoRepository @Autowired()(@Value("#{config['mongo.uri']}") mongoUri: St
   val userCollection: BSONCollection = db.collection("user")
   val discoveredFeedCollection: BSONCollection = db.collection("discovered_feed")
 
+  {
+    log.info("Got database connection: " + db)
 
+    log.info("Ensuring mongo indexes")
+    log.info("resource type/url_words index result: " +
+      Await.result(resourceCollection.indexesManager.ensure(
+        Index(Seq("type" -> IndexType.Ascending, "url_words" -> IndexType.Ascending), name = Some("type_with_url_words"),
+          unique = false)), OneMinute))
+
+    log.info("resource page index result: " +
+      Await.result(resourceCollection.indexesManager.ensure(
+        Index(Seq("page" -> IndexType.Ascending), name = Some("page"), unique = true),
+      ), OneMinute))
+  }
 
   implicit object feedAcceptanceReader extends BSONReader[BSONValue, FeedAcceptancePolicy] {
     override def read(bson: BSONValue): FeedAcceptancePolicy = bson match {
