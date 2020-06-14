@@ -64,7 +64,7 @@ class MongoRepository @Autowired()(@Value("#{config['mongo.uri']}") mongoUri: St
 
     log.info("resource page index result: " +
       Await.result(resourceCollection.indexesManager.ensure(
-        Index(Seq("page" -> IndexType.Ascending), name = Some("page"), unique = true),
+        Index(Seq("page" -> IndexType.Ascending), name = Some("page"), unique = false), // TODO Null is the problem here
       ), OneMinute))
   }
 
