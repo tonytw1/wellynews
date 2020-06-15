@@ -56,6 +56,12 @@ class MongoRepository @Autowired()(@Value("#{config['mongo.uri']}") mongoUri: St
     import scala.concurrent.ExecutionContext.Implicits.global
     log.info("Got database connection: " + db)
 
+    resourceCollection.create(failsIfExists = false)
+    suppressionCollection.create(failsIfExists = false)
+    tagCollection.create(failsIfExists = false)
+    userCollection.create(failsIfExists = false)
+    discoveredFeedCollection.create(failsIfExists = false)
+
     log.info("Ensuring mongo indexes")
     val resourceByTypeAndUrlWords = Index(Seq("type" -> IndexType.Ascending, "url_words" -> IndexType.Ascending), name = Some("type_with_url_words"), unique = false)
     val resourceByUrl = Index(Seq("page" -> IndexType.Ascending), name = Some("page"), unique = false) // TODO Resources with null urls are the problem here
@@ -68,9 +74,9 @@ class MongoRepository @Autowired()(@Value("#{config['mongo.uri']}") mongoUri: St
       log.info("Ensured index result for " + requiredIndex.name + ": " + result)
     }
 
-    //val suppressedUrls = Index(Seq("url" -> IndexType.Ascending), name = Some("url"), unique = false)
-    //val result = Await.result(suppressionCollection.indexesManager.ensure(suppressedUrls), OneMinute)
-    //log.info("Ensured index result for " + suppressedUrls.name + ": " + result)
+    val suppressedUrls = Index(Seq("url" -> IndexType.Ascending), name = Some("url"), unique = false)
+    val result = Await.result(suppressionCollection.indexesManager.ensure(suppressedUrls), OneMinute)
+    log.info("Ensured index result for " + suppressedUrls.name + ": " + result)
   }
 
   implicit object feedAcceptanceReader extends BSONReader[BSONValue, FeedAcceptancePolicy] {
