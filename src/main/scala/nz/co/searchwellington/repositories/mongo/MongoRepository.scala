@@ -47,7 +47,7 @@ class MongoRepository @Autowired()(@Value("#{config['mongo.uri']}") mongoUri: St
   }
 
   val resourceCollection: BSONCollection = db.collection("resource")
-  val supressionCollection: BSONCollection = db.collection("supression")
+  val suppressionCollection: BSONCollection = db.collection("supression") // TODO spelling
   val tagCollection: BSONCollection = db.collection("tag")
   val userCollection: BSONCollection = db.collection("user")
   val discoveredFeedCollection: BSONCollection = db.collection("discovered_feed")
@@ -57,20 +57,15 @@ class MongoRepository @Autowired()(@Value("#{config['mongo.uri']}") mongoUri: St
     log.info("Got database connection: " + db)
 
     log.info("Ensuring mongo indexes")
-    log.info("resource type/url_words index result: " +
-      Await.result(resourceCollection.indexesManager.ensure(
-        Index(Seq("type" -> IndexType.Ascending, "url_words" -> IndexType.Ascending), name = Some("type_with_url_words"),
-          unique = false)), OneMinute))
+    val resourceByTypeAndUrlWords = Index(Seq("type" -> IndexType.Ascending, "url_words" -> IndexType.Ascending), name = Some("type_with_url_words"), unique = false)
+    val resourceByUrl = Index(Seq("page" -> IndexType.Ascending), name = Some("page"), unique = false) // TODO Resources with null urls are the problem here
+  val suppressedUrls = Index(Seq("supression" -> IndexType.Ascending), name = Some("url"), unique = false)
 
-    log.info("resource page index result: " +
-      Await.result(resourceCollection.indexesManager.ensure(
-        Index(Seq("page" -> IndexType.Ascending), name = Some("page"), unique = false), // TODO Null is the problem here
-      ), OneMinute))
-
-    log.info("resource supression index result: " +
-      Await.result(resourceCollection.indexesManager.ensure(
-        Index(Seq("supression" -> IndexType.Ascending), name = Some("url"), unique = false), // TODO Spelling
-      ), OneMinute))
+    val requiredIndexes = Seq(resourceByTypeAndUrlWords, resourceByUrl, suppressedUrls)
+    requiredIndexes.foreach { requiredIndex =>
+      val result = Await.result(resourceCollection.indexesManager.ensure(resourceByTypeAndUrlWords), OneMinute)
+      log.info("Ensured index result for " + requiredIndex.name + ": " + result)
+    }
 
   }
 
@@ -174,12 +169,12 @@ class MongoRepository @Autowired()(@Value("#{config['mongo.uri']}") mongoUri: St
 
   def saveSupression(suppression: Supression)(implicit ec: ExecutionContext): Future[UpdateWriteResult] = {
     val id = BSONDocument("_id" -> suppression._id)
-    supressionCollection.update(id, suppression, upsert = true)
+    suppressionCollection.update(id, suppression, upsert = true)
   }
 
   def removeSupressionFor(url: String)(implicit ec: ExecutionContext): Future[WriteResult] = {
     val byUrl = BSONDocument("url" -> url)
-    supressionCollection.remove(byUrl)
+    suppressionCollection.remove(byUrl)
   }
 
   def removeResource(resource: Resource)(implicit ec: ExecutionContext): Future[WriteResult] = {
@@ -199,7 +194,7 @@ class MongoRepository @Autowired()(@Value("#{config['mongo.uri']}") mongoUri: St
 
   def getSupressionByUrl(url: String)(implicit ec: ExecutionContext): Future[Option[Supression]] = {
     val byUrl = BSONDocument("url" -> url)
-    supressionCollection.find(byUrl).one[Supression]
+    suppressionCollection.find(byUrl).one[Supression]
   }
 
   def getResourceByUrl(url: String)(implicit ec: ExecutionContext): Future[Option[Resource]] = {
