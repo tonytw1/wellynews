@@ -28,7 +28,7 @@ import scala.concurrent.{Await, ExecutionContext, Future}
   def scanResource(checkResourceId: String)(implicit ec: ExecutionContext) {
     log.info("Scanning resource: " + checkResourceId)
 
-    mongoRepository.getResourceByObjectId(BSONObjectID(checkResourceId.getBytes())).flatMap { maybeResource =>
+    mongoRepository.getResourceByObjectId(BSONObjectID.parse(checkResourceId).get).flatMap { maybeResource =>
       val mayToCheck = maybeResource.flatMap { resource =>
         resource.page.flatMap { page =>
           if (page.nonEmpty) {
