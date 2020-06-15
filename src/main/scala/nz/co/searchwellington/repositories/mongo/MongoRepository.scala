@@ -59,14 +59,18 @@ class MongoRepository @Autowired()(@Value("#{config['mongo.uri']}") mongoUri: St
     log.info("Ensuring mongo indexes")
     val resourceByTypeAndUrlWords = Index(Seq("type" -> IndexType.Ascending, "url_words" -> IndexType.Ascending), name = Some("type_with_url_words"), unique = false)
     val resourceByUrl = Index(Seq("page" -> IndexType.Ascending), name = Some("page"), unique = false) // TODO Resources with null urls are the problem here
-  val suppressedUrls = Index(Seq("supression" -> IndexType.Ascending), name = Some("url"), unique = false)
+    val resourceById = Index(Seq("id" -> IndexType.Ascending), name = Some("id"), unique = true)
 
-    val requiredIndexes = Seq(resourceByTypeAndUrlWords, resourceByUrl, suppressedUrls)
-    requiredIndexes.foreach { requiredIndex =>
-      val result = Await.result(resourceCollection.indexesManager.ensure(resourceByTypeAndUrlWords), OneMinute)
+    val requiredResourceIndexes = Seq(resourceByTypeAndUrlWords, resourceByUrl, resourceById)
+
+    requiredResourceIndexes.foreach { requiredIndex =>
+      val result = Await.result(resourceCollection.indexesManager.ensure(requiredIndex), OneMinute)
       log.info("Ensured index result for " + requiredIndex.name + ": " + result)
     }
 
+    //val suppressedUrls = Index(Seq("url" -> IndexType.Ascending), name = Some("url"), unique = false)
+    //val result = Await.result(suppressionCollection.indexesManager.ensure(suppressedUrls), OneMinute)
+    //log.info("Ensured index result for " + suppressedUrls.name + ": " + result)
   }
 
   implicit object feedAcceptanceReader extends BSONReader[BSONValue, FeedAcceptancePolicy] {
