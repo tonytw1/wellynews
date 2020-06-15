@@ -188,7 +188,7 @@ class ElasticSearchIndexer @Autowired()(val showBrokenDecisionService: ShowBroke
     val request = order(search(Index / Resources) query composeQueryFor(query, loggedInUser)) start query.startIndex limit query.maxItems
     client.execute(request).map { r =>
       val hits = r.result.hits.hits
-      val ids = hits.map(h => BSONObjectID(h.id))
+      val ids = hits.map(h => BSONObjectID(h.id.getBytes()))
       val total = r.result.totalHits
       (ids, total)
     }

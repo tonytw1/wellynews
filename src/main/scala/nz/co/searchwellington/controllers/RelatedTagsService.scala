@@ -115,7 +115,7 @@ import scala.concurrent.{Await, Future}
   }
 
   private def toPublisherContentCount(facet: (String, Long)): Future[Option[PublisherContentCount]] = {
-    val eventualMaybePublisher = mongoRepository.getResourceByObjectId(BSONObjectID(facet._1))
+    val eventualMaybePublisher = mongoRepository.getResourceByObjectId(BSONObjectID(facet._1.getBytes()))
     eventualMaybePublisher.map { maybePublisher =>
       maybePublisher.flatMap { resource =>
         resource match {
@@ -129,7 +129,7 @@ import scala.concurrent.{Await, Future}
   }
 
   private def toTagContentCount(facet: (String, Long)): Future[Option[TagContentCount]] = {
-    mongoRepository.getTagByObjectId(BSONObjectID(facet._1)).map { to =>
+    mongoRepository.getTagByObjectId(BSONObjectID(facet._1.getBytes())).map { to =>
       to.map { tag =>
         TagContentCount(tag, facet._2)
       }

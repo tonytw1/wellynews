@@ -46,7 +46,7 @@ import scala.concurrent.{Await, Future}
     getAllPublisherIds(loggedInUser).flatMap { ids =>
       log.info("Got " + ids.size + " publisher ids")
       Future.sequence(ids.map { id =>
-        mongoRepository.getResourceByObjectId(BSONObjectID(id._1)).map(ro => ro.map(_.asInstanceOf[Website]))
+        mongoRepository.getResourceByObjectId(BSONObjectID(id._1.getBytes())).map(ro => ro.map(_.asInstanceOf[Website]))
       }).map(_.flatten)
     }
   }
