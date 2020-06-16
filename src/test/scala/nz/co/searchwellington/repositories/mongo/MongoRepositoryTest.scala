@@ -39,7 +39,7 @@ class MongoRepositoryTest extends ReasonableWaits {
 
   @Test
   def canPersistUsers = {
-    val user = User(name = Some("Test " + UUID.randomUUID().toString), twitterid = Some(123L))
+    val user = User(name = Some("Test " + UUID.randomUUID().toString), twitterid = Some(123))
 
     Await.result(mongoRepository.saveUser(user), TenSeconds)
 

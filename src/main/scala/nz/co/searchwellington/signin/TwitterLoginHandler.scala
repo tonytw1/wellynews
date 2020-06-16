@@ -103,7 +103,7 @@ import scala.concurrent.ExecutionContext.Implicits.global
     if (user.twitterid.isEmpty) {
       externalIdentifier match {
         case twitterUser: twitter4j.User =>
-          user.copy(twitterid = Some(twitterUser.getId))
+          user.copy(twitterid = Some(twitterUser.getId.toInt)) // TODO persistance should be Long
         // val twitterScreenName: String = twitterUser.getScreenName()
         //if (userDAO.getUserByProfileName(twitterScreenName) == null) {
         // user.setProfilename(twitterScreenName) TODO
