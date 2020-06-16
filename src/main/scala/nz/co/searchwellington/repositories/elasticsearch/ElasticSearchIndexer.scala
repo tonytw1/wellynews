@@ -186,12 +186,21 @@ class ElasticSearchIndexer @Autowired()(val showBrokenDecisionService: ShowBroke
 
   private def executeResourceQuery(query: ResourceQuery, order: SearchRequest => SearchRequest, loggedInUser: Option[User]): Future[(Seq[BSONObjectID], Long)] = {
     val request = order(search(Index / Resources) query composeQueryFor(query, loggedInUser)) start query.startIndex limit query.maxItems
-    client.execute(request).map { r =>
+
+    val start = DateTime.now()
+    val eventualTuple: Future[(Seq[BSONObjectID], Long)] = client.execute(request).map { r =>
       val hits = r.result.hits.hits
       val ids = hits.map(h => BSONObjectID.parse(h.id).get)
       val total = r.result.totalHits
       (ids, total)
     }
+
+    val x: Future[(Seq[BSONObjectID], Long)] = eventualTuple.map { r =>
+      val duration = new org.joda.time.Duration(start, DateTime.now)
+      log.info("Elastic query " + query + " took: " + duration.getMillis + " ms")
+      r
+    }
+    x
   }
 
   private def composeQueryFor(query: ResourceQuery, loggedInUser: Option[User]): Query = {
