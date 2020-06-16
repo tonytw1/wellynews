@@ -11,7 +11,7 @@ case class User(_id: BSONObjectID = BSONObjectID.generate,
                 profilename: Option[String] = None,
                 bio: Option[String] = None,
                 openid: Option[String] = None,
-                twitterid: Option[Long] = None,
+                twitterid: Option[Int] = None,
                 url: Option[String] = None,
                 apikey: Option[String] = None,
                 admin: Boolean = false) extends TaggingVoter {
@@ -20,7 +20,7 @@ case class User(_id: BSONObjectID = BSONObjectID.generate,
 
   def getOpenId: String = openid.orNull
 
-  def getTwitterId: Long = twitterid.getOrElse(0)
+  def getTwitterId: Int = twitterid.getOrElse(0)
 
   def isUnlinkedAccount: Boolean = openid == null && twitterid == null
 

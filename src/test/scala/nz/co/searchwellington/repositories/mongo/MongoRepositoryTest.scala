@@ -38,6 +38,17 @@ class MongoRepositoryTest extends ReasonableWaits {
   }
 
   @Test
+  def canPersistUsers = {
+    val user = User(name = Some("Test " + UUID.randomUUID().toString), twitterid = Some(123L))
+
+    Await.result(mongoRepository.saveUser(user), TenSeconds)
+
+    val reloaded = Await.result(mongoRepository.getUserByObjectId(user._id), TenSeconds)
+    assertTrue(reloaded.nonEmpty)
+    assertEquals(user.name, reloaded.get.name)
+  }
+
+  @Test
   def canListAllFeeds {
     val feed = Feed()
     Await.result(mongoRepository.saveResource(feed), TenSeconds)
@@ -218,17 +229,6 @@ class MongoRepositoryTest extends ReasonableWaits {
     assertTrue(resourceIds.contains(publisher._id))
     assertTrue(resourceIds.contains(newsitem._id))
     assertTrue(resourceIds.contains(feed._id))
-  }
-
-  @Test
-  def canPersistUsers = {
-    val user = User(name = Some("Test " + UUID.randomUUID().toString))
-
-    Await.result(mongoRepository.saveUser(user), TenSeconds)
-
-    val reloaded = Await.result(mongoRepository.getUserByObjectId(user._id), TenSeconds)
-    assertTrue(reloaded.nonEmpty)
-    assertEquals(user.name, reloaded.get.name)
   }
 
   @Test
