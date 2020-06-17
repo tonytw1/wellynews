@@ -185,7 +185,7 @@ import scala.concurrent.ExecutionContext.Implicits.global
     val editResource = Website(id = UUID.randomUUID().toString)
     modelAndView.addObject("resource", editResource)
     populateSubmitCommonElements(request, modelAndView)
-    return modelAndView
+    modelAndView
   }
 
   @RequestMapping(Array("/delete")) def delete(request: HttpServletRequest, response: HttpServletResponse): ModelAndView = {

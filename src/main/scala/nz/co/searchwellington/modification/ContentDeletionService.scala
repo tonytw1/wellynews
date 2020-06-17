@@ -25,24 +25,22 @@ import scala.concurrent.ExecutionContext.Implicits.global
   def performDelete(resource: Resource): Unit = {
     try {
       handTaggingDAO.clearTags(resource) // TODO does nothing
-      if (resource.`type` == "W") {
-        removePublisherFromPublishersContent(resource)
-      }
-      if (resource.`type` == "F") {
-        Await.result(removeFeedFromFeedNewsitems(resource.asInstanceOf[Feed]), OneMinute)
-      }
-      if (resource.`type` == "N") {
-        log.info("Deleted item is a newsitem; checking if it's in an accepted feed.")
-        val deletedNewsitem = resource.asInstanceOf[Newsitem]
 
-        deletedNewsitem.page.map { p =>
-          if (Await.result(rssfeedNewsitemService.isUrlInAcceptedFeeds(p), TenSeconds)) {
-            log.info("Supressing deleted newsitem url as it still visible in an automatically accepted feed: " + p)
-            suppressUrl(p)
-          } else {
-            log.info("Not found in live feeds; not supressing")
+      resource match {
+        case website: Website =>
+          removePublisherFromPublishersContent(website)
+        case feed: Feed =>
+          Await.result(removeFeedFromFeedNewsitems(feed), OneMinute)
+        case newsitem: Newsitem =>
+          log.info("Deleted item is a newsitem; checking if it's in an accepted feed.")
+          newsitem.page.map { p =>
+            if (Await.result(rssfeedNewsitemService.isUrlInAcceptedFeeds(p), TenSeconds)) {
+              log.info("Supressing deleted newsitem url as it still visible in an automatically accepted feed: " + p)
+              suppressUrl(p)
+            } else {
+              log.info("Not found in live feeds; not supressing")
+            }
           }
-        }
       }
 
       Await.result(elasticSearchIndexer.deleteResource(resource._id).flatMap { dr =>
@@ -61,7 +59,7 @@ import scala.concurrent.ExecutionContext.Implicits.global
     suppressionService.addSuppression(p)
   }
 
-  private def removePublisherFromPublishersContent(editResource: Resource) {
+  private def removePublisherFromPublishersContent(website: Website) {  // TODO reimplement
     throw new UnsupportedOperationException
     /*
     val publisher = editResource.asInstanceOf[Website]
