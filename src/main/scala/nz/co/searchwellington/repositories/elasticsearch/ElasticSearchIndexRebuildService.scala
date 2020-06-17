@@ -16,7 +16,7 @@ import scala.concurrent.{ExecutionContext, Future}
 
   private val log = Logger.getLogger(classOf[ElasticSearchIndexRebuildService])
 
-  private val BATCH_COMMIT_SIZE = 1000
+  private val BATCH_COMMIT_SIZE = 100
 
   def index(resource: Resource)(implicit ec: ExecutionContext): Future[Boolean] = {
     withTags(resource).map { toIndex =>
@@ -29,7 +29,7 @@ import scala.concurrent.{ExecutionContext, Future}
   def reindexResources(resourcesToIndex: Seq[BSONObjectID], i: Int = 0)(implicit ec: ExecutionContext): Future[Int] = {
 
     def indexBatch(batch: Seq[BSONObjectID], i: Int): Future[Int] = {
-      log.debug("Processing batch: " + batch.size + " - " + i + " / " + resourcesToIndex.size)
+      log.info("Processing batch: " + batch.size + " - " + i + " / " + resourcesToIndex.size)
 
       val eventualResources = Future.sequence(batch.map(i => mongoRepository.getResourceByObjectId(i))).map(_.flatten)
       val eventualWithIndexTags = eventualResources.flatMap { rs =>
@@ -44,7 +44,7 @@ import scala.concurrent.{ExecutionContext, Future}
       }
     }
 
-    log.debug("Reindexing: " + resourcesToIndex.size + " in batches of " + BATCH_COMMIT_SIZE)
+    log.info("Reindexing: " + resourcesToIndex.size + " in batches of " + BATCH_COMMIT_SIZE)
     val batches = resourcesToIndex.grouped(BATCH_COMMIT_SIZE).toSeq
 
     batches.headOption.map { batch =>
