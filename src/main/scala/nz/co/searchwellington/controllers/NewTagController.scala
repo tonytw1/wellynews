@@ -28,7 +28,7 @@ class NewTagController @Autowired()(mongoRepository: MongoRepository,
 
   @RequestMapping(value = Array("/new-tag"), method = Array(RequestMethod.GET))
   def prompt(): ModelAndView = {
-    def showAddTagPrompt(): ModelAndView ={
+    def showAddTagPrompt(): ModelAndView = {
       renderForm(new NewTag())
     }
 
