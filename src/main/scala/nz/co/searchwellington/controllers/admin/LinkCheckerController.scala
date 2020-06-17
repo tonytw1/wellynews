@@ -3,7 +3,7 @@ package nz.co.searchwellington.controllers.admin
 import javax.servlet.http.HttpServletRequest
 import nz.co.searchwellington.controllers.{LoggedInUserFilter, RequiringLoggedInUser, UrlStack}
 import nz.co.searchwellington.filters.AdminRequestFilter
-import nz.co.searchwellington.model.Resource
+import nz.co.searchwellington.model.{Resource, User}
 import nz.co.searchwellington.queues.LinkCheckerQueue
 import org.apache.log4j.Logger
 import org.springframework.beans.factory.annotation.Autowired
@@ -21,7 +21,7 @@ import scala.concurrent.ExecutionContext.Implicits.global
 
   @RequestMapping(Array("/admin/linkchecker/add"))
   def addToQueue(request: HttpServletRequest): ModelAndView = {
-    def add(): ModelAndView = {
+    def add(loggedInUser: User): ModelAndView = {
       requestFilter.loadAttributesOntoRequest(request)
       if (request.getAttribute("resource") != null) {
         val resource = request.getAttribute("resource").asInstanceOf[Resource]

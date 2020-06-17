@@ -4,7 +4,7 @@ import javax.servlet.http.{HttpServletRequest, HttpServletResponse}
 import nz.co.searchwellington.ReasonableWaits
 import nz.co.searchwellington.controllers.{CommonModelObjectsService, LoggedInUserFilter, RequiringLoggedInUser}
 import nz.co.searchwellington.filters.AdminRequestFilter
-import nz.co.searchwellington.model.{Newsitem, Resource, Website}
+import nz.co.searchwellington.model.{Newsitem, Resource, User, Website}
 import nz.co.searchwellington.modification.ContentUpdateService
 import nz.co.searchwellington.repositories.{ContentRetrievalService, HibernateResourceDAO}
 import nz.co.searchwellington.repositories.mongo.MongoRepository
@@ -30,7 +30,7 @@ import scala.concurrent.ExecutionContext.Implicits.global
   private val log = Logger.getLogger(classOf[PublisherAutoGatherController])
 
   @RequestMapping(Array("/admin/gather/prompt")) def prompt(request: HttpServletRequest): ModelAndView = {
-    def prompt(): ModelAndView = {
+    def prompt(loggedInUser: User): ModelAndView = {
       val mv = new ModelAndView("autoGatherPrompt").
         addObject("heading", "Auto Gathering")
 
@@ -51,7 +51,7 @@ import scala.concurrent.ExecutionContext.Implicits.global
   }
 
   @RequestMapping(value = Array("/admin/gather/apply"), method = Array(RequestMethod.POST)) def apply(request: HttpServletRequest, response: HttpServletResponse): ModelAndView = {
-    def apply(): ModelAndView = {
+    def apply(loggedInUser: User): ModelAndView = {
       val mv = new ModelAndView("autoGatherApply").
         addObject("heading", "Auto Gathering")
 

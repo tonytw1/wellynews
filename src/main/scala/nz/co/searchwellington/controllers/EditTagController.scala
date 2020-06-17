@@ -4,7 +4,7 @@ import javax.validation.Valid
 import nz.co.searchwellington.ReasonableWaits
 import nz.co.searchwellington.forms.EditTag
 import nz.co.searchwellington.geocoding.osm.CachingNominatimResolveOsmIdService
-import nz.co.searchwellington.model.{Tag, UrlWordsGenerator}
+import nz.co.searchwellington.model.{Tag, UrlWordsGenerator, User}
 import nz.co.searchwellington.modification.{ContentUpdateService, TagModificationService}
 import nz.co.searchwellington.repositories.TagDAO
 import nz.co.searchwellington.repositories.elasticsearch.ElasticSearchIndexRebuildService
@@ -39,7 +39,7 @@ class EditTagController @Autowired()(contentUpdateService: ContentUpdateService,
   @RequestMapping(value = Array("/edit-tag/{id}"), method = Array(RequestMethod.GET))
   def prompt(@PathVariable id: String): ModelAndView = {
 
-    def promptForEditTag(): ModelAndView = {
+    def promptForEditTag(loggedInUser: User): ModelAndView = {
       Await.result(mongoRepository.getTagById(id), TenSeconds).map { tag =>
         val editTag = new EditTag(tag.display_name,
           tag.description.getOrElse(""),
@@ -68,7 +68,7 @@ class EditTagController @Autowired()(contentUpdateService: ContentUpdateService,
   @RequestMapping(value = Array("/edit-tag/{id}"), method = Array(RequestMethod.POST))
   def submit(@PathVariable id: String, @Valid @ModelAttribute("editTag") editTag: EditTag, result: BindingResult): ModelAndView = {
 
-    def submitEditTag(): ModelAndView = {
+    def submitEditTag(loggedInUser: User): ModelAndView = {
       Await.result(mongoRepository.getTagById(id), TenSeconds).map { tag =>
         if (result.hasErrors) {
           log.warn("Edit tag submission has errors: " + result)

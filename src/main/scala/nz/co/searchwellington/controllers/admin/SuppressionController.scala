@@ -2,6 +2,7 @@ package nz.co.searchwellington.controllers.admin
 
 import javax.servlet.http.HttpServletRequest
 import nz.co.searchwellington.controllers.{LoggedInUserFilter, RequiringLoggedInUser, UrlStack}
+import nz.co.searchwellington.model.User
 import nz.co.searchwellington.repositories.SuppressionDAO
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Controller
@@ -13,7 +14,7 @@ import org.springframework.web.servlet.view.RedirectView
                                                      val loggedInUserFilter: LoggedInUserFilter) extends RequiringLoggedInUser {
   @RequestMapping(Array("/suppress/suppress"))
   def suppress(request: HttpServletRequest): ModelAndView = {
-    def suppress(): ModelAndView = {
+    def suppress(loggedInUser: User): ModelAndView = {
       Option(request.getParameter("url")).map { url =>
         suppressionDAO.addSuppression(url)
       }
@@ -25,7 +26,7 @@ import org.springframework.web.servlet.view.RedirectView
 
   @RequestMapping(Array("/suppress/unsuppress"))
   def unsuppress(request: HttpServletRequest): ModelAndView = {
-    def unsuppress(): ModelAndView = {
+    def unsuppress(loggedInUser: User): ModelAndView = {
       if (request.getParameter("url") != null) {
         suppressionDAO.removeSupressionForUrl(request.getParameter("url"))
       }

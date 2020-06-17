@@ -31,75 +31,69 @@ import scala.concurrent.{Await, Future}
   private val log = Logger.getLogger(classOf[AutoTagController])
 
   @RequestMapping(Array("/*/autotag")) def prompt(request: HttpServletRequest, response: HttpServletResponse): ModelAndView = {
-    def prompt(): ModelAndView = {
-      loggedInUserFilter.getLoggedInUser.map { loggedInUser => // TODO requires wrapper should provide the logged in user
-        Option(request.getAttribute("tag").asInstanceOf[Tag]).fold {
-          response.setStatus(HttpServletResponse.SC_NOT_FOUND)
-          null: ModelAndView
+    def prompt(loggedInUser: User): ModelAndView = {
+      Option(request.getAttribute("tag").asInstanceOf[Tag]).fold {
+        response.setStatus(HttpServletResponse.SC_NOT_FOUND)
+        null: ModelAndView
 
-        } { tag =>
-          Await.result((for {
-            suggestions <- getPossibleAutotagResources(loggedInUser, tag)
-          } yield {
-            import scala.collection.JavaConverters._
-            new ModelAndView("autoTagPrompt").
-              addObject("heading", "Autotagging").
-              addObject("tag", tag).
-              addObject("resources_to_tag", suggestions.asJava)
-          }).flatMap(withCommonLocal), TenSeconds)
-        }
+      } { tag =>
+        Await.result((for {
+          suggestions <- getPossibleAutotagResources(loggedInUser, tag)
+        } yield {
+          import scala.collection.JavaConverters._
+          new ModelAndView("autoTagPrompt").
+            addObject("heading", "Autotagging").
+            addObject("tag", tag).
+            addObject("resources_to_tag", suggestions.asJava)
+        }).flatMap(withCommonLocal), TenSeconds)
       }
-    }.getOrElse {
-      null
     }
 
     requiringAdminUser(prompt)
   }
 
   @RequestMapping(value = Array("/*/autotag/apply"), method = Array(RequestMethod.POST)) def apply(request: HttpServletRequest, response: HttpServletResponse): ModelAndView = {
-    def apply(): ModelAndView = {
-      loggedInUserFilter.getLoggedInUser.map { loggedInUser =>
-        requestFilter.loadAttributesOntoRequest(request)
-        val tag = request.getAttribute("tag").asInstanceOf[Tag]
-        if (tag == null) {
-          response.setStatus(HttpServletResponse.SC_NOT_FOUND)
-          null
+    def apply(loggedInUser: User): ModelAndView = {
+      requestFilter.loadAttributesOntoRequest(request)
+      val tag = request.getAttribute("tag").asInstanceOf[Tag]
+      if (tag == null) {
+        response.setStatus(HttpServletResponse.SC_NOT_FOUND)  // TODO deduplicate 404 response
+        null
 
-        } else {
-          val autotaggedResourceIds = request.getParameterValues("autotag")
+      } else {
+        val autotaggedResourceIds = request.getParameterValues("autotag")
 
-          def applyTagTo(resource: Resource, tag: Tag): Future[Resource] = {
-            autoTagService.alreadyHasTag(resource, tag).flatMap { alreadyHasTag =>
-              if (!alreadyHasTag) {
-                log.info("Applying tag " + tag.getName + " to:" + resource.title)
-                val withTags = handTaggingService.addTag(loggedInUser, tag, resource)
-                contentUpdateService.update(withTags).map { u =>
-                  withTags
-                }
-              } else {
-                Future.successful(resource)
+        def applyTagTo(resource: Resource, tag: Tag): Future[Resource] = {
+          autoTagService.alreadyHasTag(resource, tag).flatMap { alreadyHasTag =>
+            if (!alreadyHasTag) {
+              log.info("Applying tag " + tag.getName + " to:" + resource.title)
+              val withTags = handTaggingService.addTag(loggedInUser, tag, resource)
+              contentUpdateService.update(withTags).map { u =>
+                withTags
               }
+            } else {
+              Future.successful(resource)
             }
           }
-
-          val eventuallyAutoTaggedResources = Future.sequence {
-            autotaggedResourceIds.toSeq.map(mongoRepository.getResourceById).map { ero =>
-              ero.flatMap { ro =>
-                ro.map(applyTagTo(_, tag).map(Some(_))).
-                  getOrElse(Future.successful(None))
-              }
-            }
-          }
-
-          import scala.collection.JavaConverters._
-          val mv = new ModelAndView("autoTagApply").
-            addObject("heading", "Autotagging").
-            addObject("tag", tag).
-            addObject("resources_to_tag", Await.result(eventuallyAutoTaggedResources, ThirtySeconds).flatten.asJava)
-
-          Await.result(withCommonLocal(mv), TenSeconds)
         }
-      }.getOrElse(null)
+
+        val eventuallyAutoTaggedResources = Future.sequence {
+          autotaggedResourceIds.toSeq.map(mongoRepository.getResourceById).map { ero =>
+            ero.flatMap { ro =>
+              ro.map(applyTagTo(_, tag).map(Some(_))).
+                getOrElse(Future.successful(None))
+            }
+          }
+        }
+
+        import scala.collection.JavaConverters._
+        val mv = new ModelAndView("autoTagApply").
+          addObject("heading", "Autotagging").
+          addObject("tag", tag).
+          addObject("resources_to_tag", Await.result(eventuallyAutoTaggedResources, ThirtySeconds).flatten.asJava)
+
+        Await.result(withCommonLocal(mv), TenSeconds)
+      }
     }
 
     requiringAdminUser(apply)

@@ -3,7 +3,7 @@ package nz.co.searchwellington.controllers
 import javax.validation.Valid
 import nz.co.searchwellington.ReasonableWaits
 import nz.co.searchwellington.forms.NewTag
-import nz.co.searchwellington.model.{Tag, UrlWordsGenerator}
+import nz.co.searchwellington.model.{Tag, UrlWordsGenerator, User}
 import nz.co.searchwellington.repositories.mongo.MongoRepository
 import nz.co.searchwellington.urls.UrlBuilder
 import org.apache.log4j.Logger
@@ -28,7 +28,7 @@ class NewTagController @Autowired()(mongoRepository: MongoRepository,
 
   @RequestMapping(value = Array("/new-tag"), method = Array(RequestMethod.GET))
   def prompt(): ModelAndView = {
-    def showAddTagPrompt(): ModelAndView = {
+    def showAddTagPrompt(loggedInUser: User): ModelAndView = {
       renderForm(new NewTag())
     }
 
@@ -38,7 +38,7 @@ class NewTagController @Autowired()(mongoRepository: MongoRepository,
   @RequestMapping(value = Array("/new-tag"), method = Array(RequestMethod.POST))
   def submit(@Valid @ModelAttribute("newTag") newTag: NewTag, result: BindingResult): ModelAndView = {
 
-    def submitNewTag(): ModelAndView = {
+    def submitNewTag(loggedInUser: User): ModelAndView = {
       if (!result.hasErrors) {
         log.info("Got valid new tag submission: " + newTag)
 

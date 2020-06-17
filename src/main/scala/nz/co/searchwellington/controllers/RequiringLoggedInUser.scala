@@ -1,5 +1,6 @@
 package nz.co.searchwellington.controllers
 
+import nz.co.searchwellington.model.User
 import org.apache.log4j.Logger
 import org.springframework.web.servlet.ModelAndView
 
@@ -9,7 +10,7 @@ trait RequiringLoggedInUser {
 
   def loggedInUserFilter: LoggedInUserFilter
 
-  def requiringAdminUser(action: () => ModelAndView): ModelAndView = {
+  def requiringAdminUser(action: User => ModelAndView): ModelAndView = {
     loggedInUserFilter.getLoggedInUser.fold {
       log.warn("No logged in user found")
       val notLoggedIn: ModelAndView = null
@@ -17,7 +18,7 @@ trait RequiringLoggedInUser {
 
     } { loggedInUser =>
       if (loggedInUser.isAdmin) {
-        action()
+        action(loggedInUser)
       } else {
         log.warn("User is not an admin")
         val notAnAdmin: ModelAndView = null
