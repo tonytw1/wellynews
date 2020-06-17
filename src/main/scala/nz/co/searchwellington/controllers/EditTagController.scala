@@ -38,87 +38,96 @@ class EditTagController @Autowired()(contentUpdateService: ContentUpdateService,
 
   @RequestMapping(value = Array("/edit-tag/{id}"), method = Array(RequestMethod.GET))
   def prompt(@PathVariable id: String): ModelAndView = {
-    Await.result(mongoRepository.getTagById(id), TenSeconds).map { tag =>
 
-      val editTag = new EditTag(tag.display_name,
-        tag.description.getOrElse(""),
-        tag.parent.map(_.stringify).orNull,
-        tag.getAutotagHints.orNull,
-        tag.isFeatured,
-      )
-      tag.geocode.map { g =>
-        editTag.setGeocode(g.getAddress)
-        val osmId = g.osmId.map { i =>
-          i.id + i.`type`
+    def promptForEditTag(): ModelAndView = {
+      Await.result(mongoRepository.getTagById(id), TenSeconds).map { tag =>
+        val editTag = new EditTag(tag.display_name,
+          tag.description.getOrElse(""),
+          tag.parent.map(_.stringify).orNull,
+          tag.getAutotagHints.orNull,
+          tag.isFeatured,
+        )
+        tag.geocode.map { g =>
+          editTag.setGeocode(g.getAddress)
+          val osmId = g.osmId.map { i =>
+            i.id + i.`type`
+          }
+          editTag.setSelectedGeocode(osmId.getOrElse(""))
         }
-        editTag.setSelectedGeocode(osmId.getOrElse(""))
+
+        renderEditForm(tag, editTag)
+
+      }.getOrElse {
+        NotFound
       }
-
-      renderEditForm(tag, editTag)
-
-    }.getOrElse {
-      NotFound
     }
+
+    requiringAdminUser(promptForEditTag)
   }
 
   @RequestMapping(value = Array("/edit-tag/{id}"), method = Array(RequestMethod.POST))
   def submit(@PathVariable id: String, @Valid @ModelAttribute("editTag") editTag: EditTag, result: BindingResult): ModelAndView = {
-    Await.result(mongoRepository.getTagById(id), TenSeconds).map { tag =>
-      if (result.hasErrors) {
-        log.warn("Edit tag submission has errors: " + result)
-        renderEditForm(tag, editTag)
 
-      } else {
+    def submitEditTag(): ModelAndView = {
+      Await.result(mongoRepository.getTagById(id), TenSeconds).map { tag =>
+        if (result.hasErrors) {
+          log.warn("Edit tag submission has errors: " + result)
+          renderEditForm(tag, editTag)
 
-        def optionalBsonObjectId(i: String): Option[BSONObjectID] = {
-          optionalInputString(i).flatMap { bid =>
-            val maybeParsed = BSONObjectID.parse(bid)
-            if (maybeParsed.isSuccess) {
-              Some(maybeParsed.get)
-            } else {
-              None // TODO push error up
+        } else {
+
+          def optionalBsonObjectId(i: String): Option[BSONObjectID] = {
+            optionalInputString(i).flatMap { bid =>
+              val maybeParsed = BSONObjectID.parse(bid)
+              if (maybeParsed.isSuccess) {
+                Some(maybeParsed.get)
+              } else {
+                None // TODO push error up
+              }
             }
           }
-        }
 
-        val parentTag = optionalBsonObjectId(editTag.getParent).flatMap { p =>
-          val maybeTag = Await.result(tagDAO.loadTagByObjectId(p), TenSeconds)
-          log.info("Found parent for tag id " + p.stringify + ": " + maybeTag)
-          maybeTag
-        }
-
-        val geocode = Option(editTag.getGeocode).flatMap { address =>
-          Option(editTag.getSelectedGeocode).flatMap { osmId =>
-            parseGeotag(address, osmId)
+          val parentTag = optionalBsonObjectId(editTag.getParent).flatMap { p =>
+            val maybeTag = Await.result(tagDAO.loadTagByObjectId(p), TenSeconds)
+            log.info("Found parent for tag id " + p.stringify + ": " + maybeTag)
+            maybeTag
           }
-        }
 
-        val updatedTag = tag.copy(
-          display_name = editTag.getDisplayName,
-          description = Option(editTag.getDescription),
-          parent = parentTag.map(_._id),
-          autotag_hints = Some(editTag.getAutotagHints),
-          featured = editTag.getFeatured,
-          geocode = geocode,
-        )
-
-        Await.result(mongoRepository.saveTag(updatedTag), TenSeconds)
-        log.info("Updated feed: " + updatedTag)
-
-        val parentHasChanged = tag.parent != updatedTag.parent
-        if (parentHasChanged) {
-          mongoRepository.getResourceIdsByTag(tag).flatMap { taggedResourceIds =>
-            elasticSearchIndexRebuildService.reindexResources(taggedResourceIds)
-          }.map { i =>
-            log.info("Reindexed resource after tag parent change: " + i)
+          val geocode = Option(editTag.getGeocode).flatMap { address =>
+            Option(editTag.getSelectedGeocode).flatMap { osmId =>
+              parseGeotag(address, osmId)
+            }
           }
-        }
 
-        new ModelAndView(new RedirectView(urlBuilder.getTagUrl(tag)))
+          val updatedTag = tag.copy(
+            display_name = editTag.getDisplayName,
+            description = Option(editTag.getDescription),
+            parent = parentTag.map(_._id),
+            autotag_hints = Some(editTag.getAutotagHints),
+            featured = editTag.getFeatured,
+            geocode = geocode,
+          )
+
+          Await.result(mongoRepository.saveTag(updatedTag), TenSeconds)
+          log.info("Updated feed: " + updatedTag)
+
+          val parentHasChanged = tag.parent != updatedTag.parent
+          if (parentHasChanged) {
+            mongoRepository.getResourceIdsByTag(tag).flatMap { taggedResourceIds =>
+              elasticSearchIndexRebuildService.reindexResources(taggedResourceIds)
+            }.map { i =>
+              log.info("Reindexed resource after tag parent change: " + i)
+            }
+          }
+
+          new ModelAndView(new RedirectView(urlBuilder.getTagUrl(tag)))
+        }
+      }.getOrElse {
+        NotFound
       }
-    }.getOrElse {
-      NotFound
     }
+
+    requiringAdminUser(submitEditTag)
   }
 
   private def renderEditForm(tag: Tag, editTag: EditTag): ModelAndView = {
@@ -128,6 +137,23 @@ class EditTagController @Autowired()(contentUpdateService: ContentUpdateService,
       addObject("tag", tag).
       addObject("parents", possibleParents.asJava).
       addObject("editTag", editTag)
+  }
+
+  private def requiringAdminUser(action: () => ModelAndView): ModelAndView = {
+    loggedInUserFilter.getLoggedInUser.fold {
+      log.warn("No logged in user found")
+      val notLoggedIn: ModelAndView = null
+      notLoggedIn
+
+    } { loggedInUser =>
+      if (loggedInUser.isAdmin) {
+        action()
+      } else {
+        log.warn("User is not an admin")
+        val notAnAdmin: ModelAndView = null
+        notAnAdmin
+      }
+    }
   }
 
 }
