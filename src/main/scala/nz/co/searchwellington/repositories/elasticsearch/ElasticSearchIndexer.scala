@@ -213,7 +213,7 @@ class ElasticSearchIndexer @Autowired()(val showBrokenDecisionService: ShowBroke
         }
       },
       query.tags.map { tags =>
-        should { // TODO AND or OR
+        must {
           tags.map { t =>
             matchQuery(Tags, t._id.stringify)
           }
