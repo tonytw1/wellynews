@@ -23,31 +23,37 @@ import scala.concurrent.ExecutionContext.Implicits.global
   private val log = Logger.getLogger(classOf[ContentDeletionService])
 
   def performDelete(resource: Resource): Unit = {
-    handTaggingDAO.clearTags(resource)  // TODO does nothing
-    if (resource.`type` == "W") {
-      removePublisherFromPublishersContent(resource)
-    }
-    if (resource.`type` == "F") {
-      Await.result(removeFeedFromFeedNewsitems(resource.asInstanceOf[Feed]), OneMinute)
-    }
-    if (resource.`type` == "N") {
-      log.info("Deleted item is a newsitem; checking if it's in an accepted feed.")
-      val deletedNewsitem = resource.asInstanceOf[Newsitem]
+    try {
+      handTaggingDAO.clearTags(resource) // TODO does nothing
+      if (resource.`type` == "W") {
+        removePublisherFromPublishersContent(resource)
+      }
+      if (resource.`type` == "F") {
+        Await.result(removeFeedFromFeedNewsitems(resource.asInstanceOf[Feed]), OneMinute)
+      }
+      if (resource.`type` == "N") {
+        log.info("Deleted item is a newsitem; checking if it's in an accepted feed.")
+        val deletedNewsitem = resource.asInstanceOf[Newsitem]
 
-      deletedNewsitem.page.map { p =>
-        if (Await.result(rssfeedNewsitemService.isUrlInAcceptedFeeds(p), TenSeconds)) {
-          log.info("Supressing deleted newsitem url as it still visible in an automatically accepted feed: " + p)
-          suppressUrl(p)
-        } else {
-          log.info("Not found in live feeds; not supressing")
+        deletedNewsitem.page.map { p =>
+          if (Await.result(rssfeedNewsitemService.isUrlInAcceptedFeeds(p), TenSeconds)) {
+            log.info("Supressing deleted newsitem url as it still visible in an automatically accepted feed: " + p)
+            suppressUrl(p)
+          } else {
+            log.info("Not found in live feeds; not supressing")
+          }
         }
       }
-    }
 
-    Await.result(elasticSearchIndexer.deleteResource(resource._id).flatMap { dr =>
-      log.info("Elastic delete result: " + dr)
-      mongoRepository.removeResource(resource)
-    }, TenSeconds)
+      Await.result(elasticSearchIndexer.deleteResource(resource._id).flatMap { dr =>
+        log.info("Elastic delete result: " + dr)
+        mongoRepository.removeResource(resource)
+      }, TenSeconds)
+
+    } catch {
+      case e: Exception =>
+        log.error("Delete error: " + e.getMessage, e)
+    }
   }
 
   private def suppressUrl(p: String) {
