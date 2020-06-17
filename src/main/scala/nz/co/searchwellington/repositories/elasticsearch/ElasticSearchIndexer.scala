@@ -64,11 +64,11 @@ class ElasticSearchIndexer @Autowired()(val showBrokenDecisionService: ShowBroke
       try {
         val eventualCreateIndexResult = client.execute {
           createIndex(Index) mappings mapping(Resources).fields(
-            field(Title) typed TextType analyzer StandardAnalyzer,
+            textField(Title) analyzer StandardAnalyzer,
             keywordField(TitleSort),
             keywordField(Type),
             dateField(Date),
-            field(Description) typed TextType analyzer StandardAnalyzer,
+            textField(Description) analyzer StandardAnalyzer,
             keywordField(Tags),
             keywordField(TaggingUsers),
             keywordField(Publisher),
@@ -104,8 +104,8 @@ class ElasticSearchIndexer @Autowired()(val showBrokenDecisionService: ShowBroke
       }
 
       val eventualGeotagVotes = taggingReturnsOfficerService.getGeotagVotesForResource(r._1)
-      val geotagVotes = Await.result(eventualGeotagVotes, TenSeconds)   // TODO await
-      val indexedGeocode = geotagVotes.headOption.map(_.geocode)
+      val geotagVotes = Await.result(eventualGeotagVotes, TenSeconds) // TODO await
+    val indexedGeocode = geotagVotes.headOption.map(_.geocode)
       val latLong = indexedGeocode.flatMap { gc =>
         gc.latitude.flatMap { lat =>
           gc.longitude.map { lon =>
