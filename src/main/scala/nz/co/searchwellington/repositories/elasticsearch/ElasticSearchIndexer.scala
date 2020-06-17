@@ -6,7 +6,7 @@ import com.sksamuel.elastic4s.http.ElasticDsl._
 import com.sksamuel.elastic4s.http.bulk.BulkResponse
 import com.sksamuel.elastic4s.http.delete.DeleteResponse
 import com.sksamuel.elastic4s.http.{bulk => _, delete => _, search => _, _}
-import com.sksamuel.elastic4s.mappings.FieldType._
+import com.sksamuel.elastic4s.indexes.IndexRequest
 import com.sksamuel.elastic4s.searches.queries.Query
 import com.sksamuel.elastic4s.searches.{DateHistogramInterval, SearchRequest}
 import nz.co.searchwellington.ReasonableWaits
@@ -98,56 +98,59 @@ class ElasticSearchIndexer @Autowired()(val showBrokenDecisionService: ShowBroke
   def updateMultipleContentItems(resources: Seq[(Resource, Seq[String])]): Future[Response[BulkResponse]] = {
     log.debug("Index batch of size: " + resources.size)
 
-    val indexDefinitions = resources.map { r =>
+    val eventualIndexDefinitions: Seq[Future[IndexRequest]] = resources.map { r =>
       val publisher = r._1 match {
         case p: PublishedResource => p.getPublisher
         case _ => None
       }
 
       val eventualGeotagVotes = taggingReturnsOfficerService.getGeotagVotesForResource(r._1)
-      val geotagVotes = Await.result(eventualGeotagVotes, TenSeconds) // TODO await
-    val indexedGeocode = geotagVotes.headOption.map(_.geocode)
-      val latLong = indexedGeocode.flatMap { gc =>
-        gc.latitude.flatMap { lat =>
-          gc.longitude.map { lon =>
-            new uk.co.eelpieconsulting.common.geo.model.LatLong(lat, lon)
+      eventualGeotagVotes.map { geotagVotes =>
+        val indexedGeocode = geotagVotes.headOption.map(_.geocode)
+        val latLong = indexedGeocode.flatMap { gc =>
+          gc.latitude.flatMap { lat =>
+            gc.longitude.map { lon =>
+              new uk.co.eelpieconsulting.common.geo.model.LatLong(lat, lon)
+            }
           }
         }
+
+        val feedAcceptancePolicy = r._1 match {
+          case f: Feed => Some(f.acceptance)
+          case _ => None
+        }
+        val feedLatestItemDate = r._1 match {
+          case f: Feed => f.latestItemDate
+          case _ => None
+        }
+
+
+        // TODO This is silly; just pass in the whole domain object as JSON
+        val fields = Seq(
+          Some(Type -> r._1.`type`),
+          r._1.title.map(t => Title -> t),
+          r._1.title.map(t => TitleSort -> t),
+          Some(HttpStatus -> r._1.http_status.toString),
+          r._1.description.map(d => Description -> d),
+          r._1.date.map(d => Date -> new DateTime(d)),
+          Some(Tags, r._2),
+          publisher.map(p => Publisher -> p.stringify),
+          Some(Held -> r._1.held),
+          r._1.owner.map(o => Owner -> o.stringify),
+          latLong.map(ll => LatLong -> Map("lat" -> ll.getLatitude, "lon" -> ll.getLongitude)),
+          Some(TaggingUsers, r._1.resource_tags.map(_.user_id.stringify)),
+          feedAcceptancePolicy.map(ap => FeedAcceptancePolicy -> ap.toString),
+          feedLatestItemDate.map(fid => FeedLatestItemDate -> new DateTime(fid)),
+          r._1.last_changed.map(lc => LastChanged -> new DateTime(lc))
+        )
+
+        indexInto(Index / Resources).fields(fields.flatten) id r._1._id.stringify
       }
-
-      val feedAcceptancePolicy = r._1 match {
-        case f: Feed => Some(f.acceptance)
-        case _ => None
-      }
-      val feedLatestItemDate = r._1 match {
-        case f: Feed => f.latestItemDate
-        case _ => None
-      }
-
-
-      // TODO This is silly; just pass in the whole domain object as JSON
-      val fields = Seq(
-        Some(Type -> r._1.`type`),
-        r._1.title.map(t => Title -> t),
-        r._1.title.map(t => TitleSort -> t),
-        Some(HttpStatus -> r._1.http_status.toString),
-        r._1.description.map(d => Description -> d),
-        r._1.date.map(d => Date -> new DateTime(d)),
-        Some(Tags, r._2),
-        publisher.map(p => Publisher -> p.stringify),
-        Some(Held -> r._1.held),
-        r._1.owner.map(o => Owner -> o.stringify),
-        latLong.map(ll => LatLong -> Map("lat" -> ll.getLatitude, "lon" -> ll.getLongitude)),
-        Some(TaggingUsers, r._1.resource_tags.map(_.user_id.stringify)),
-        feedAcceptancePolicy.map(ap => FeedAcceptancePolicy -> ap.toString),
-        feedLatestItemDate.map(fid => FeedLatestItemDate -> new DateTime(fid)),
-        r._1.last_changed.map(lc => LastChanged -> new DateTime(lc))
-      )
-
-      indexInto(Index / Resources).fields(fields.flatten) id r._1._id.stringify
     }
 
-    client.execute(bulk(indexDefinitions))
+    Future.sequence(eventualIndexDefinitions).flatMap { indexDefinitions =>
+      client.execute(bulk(indexDefinitions))
+    }
   }
 
   def deleteResource(id: BSONObjectID): Future[Response[DeleteResponse]] = {
