@@ -21,50 +21,58 @@ import scala.concurrent.ExecutionContext.Implicits.global
 class NewTagController @Autowired()(mongoRepository: MongoRepository,
                                     urlWordsGenerator: UrlWordsGenerator,
                                     urlBuilder: UrlBuilder,
-                                    loggedInUserFilter: LoggedInUserFilter) extends ReasonableWaits
-  with AcceptancePolicyOptions with InputParsing {
+                                    val loggedInUserFilter: LoggedInUserFilter) extends ReasonableWaits
+  with AcceptancePolicyOptions with InputParsing with RequiringLoggedInUser {
 
   private val log = Logger.getLogger(classOf[NewTagController])
 
   @RequestMapping(value = Array("/new-tag"), method = Array(RequestMethod.GET))
   def prompt(): ModelAndView = {
-    renderForm(new NewTag())
+    def showAddTagPrompt(): ModelAndView ={
+      renderForm(new NewTag())
+    }
+
+    requiringAdminUser(showAddTagPrompt)
   }
 
   @RequestMapping(value = Array("/new-tag"), method = Array(RequestMethod.POST))
   def submit(@Valid @ModelAttribute("newTag") newTag: NewTag, result: BindingResult): ModelAndView = {
 
-    if (!result.hasErrors) {
-      log.info("Got valid new tag submission: " + newTag)
-
-      val urlWordsFromDisplayName = urlWordsGenerator.makeUrlWordsFromName(newTag.getDisplayName)
-
-      val existingTagWithSameUrlWords = Await.result(mongoRepository.getTagByUrlWords(urlWordsFromDisplayName), TenSeconds)
-      if (existingTagWithSameUrlWords.nonEmpty) {
-        result.addError(new ObjectError("displayName", "Found existing feed with same URL words"))
-      }
-
+    def submitNewTag(): ModelAndView = {
       if (!result.hasErrors) {
-        val tag = Tag(
-          name = urlWordsFromDisplayName,
-          display_name = newTag.getDisplayName,
-          description = optionalInputString(newTag.getDescription)
-        )
+        log.info("Got valid new tag submission: " + newTag)
 
-        Await.result(mongoRepository.saveTag(tag), TenSeconds)
-        log.info("Created tag: " + tag)
+        val urlWordsFromDisplayName = urlWordsGenerator.makeUrlWordsFromName(newTag.getDisplayName)
 
-        new ModelAndView(new RedirectView(urlBuilder.getTagUrl(tag)))
+        val existingTagWithSameUrlWords = Await.result(mongoRepository.getTagByUrlWords(urlWordsFromDisplayName), TenSeconds)
+        if (existingTagWithSameUrlWords.nonEmpty) {
+          result.addError(new ObjectError("displayName", "Found existing feed with same URL words"))
+        }
+
+        if (!result.hasErrors) {
+          val tag = Tag(
+            name = urlWordsFromDisplayName,
+            display_name = newTag.getDisplayName,
+            description = optionalInputString(newTag.getDescription)
+          )
+
+          Await.result(mongoRepository.saveTag(tag), TenSeconds)
+          log.info("Created tag: " + tag)
+
+          new ModelAndView(new RedirectView(urlBuilder.getTagUrl(tag)))
+
+        } else {
+          log.warn("New tag submission has errors: " + result)
+          renderForm(newTag)
+        }
 
       } else {
         log.warn("New tag submission has errors: " + result)
         renderForm(newTag)
       }
-
-    } else {
-      log.warn("New tag submission has errors: " + result)
-      renderForm(newTag)
     }
+
+    requiringAdminUser(submitNewTag)
   }
 
   private def renderForm(newTag: NewTag): ModelAndView = {

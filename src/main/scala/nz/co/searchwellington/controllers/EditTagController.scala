@@ -28,11 +28,11 @@ class EditTagController @Autowired()(contentUpdateService: ContentUpdateService,
                                      mongoRepository: MongoRepository, tagDAO: TagDAO,
                                      urlWordsGenerator: UrlWordsGenerator,
                                      urlBuilder: UrlBuilder,
-                                     loggedInUserFilter: LoggedInUserFilter,
+                                     val loggedInUserFilter: LoggedInUserFilter,
                                      tagModificationService: TagModificationService,
                                      elasticSearchIndexRebuildService: ElasticSearchIndexRebuildService,
                                      val cachingNominatimResolveOsmIdService: CachingNominatimResolveOsmIdService)
-  extends ReasonableWaits with Errors with InputParsing with GeotagParsing {
+  extends ReasonableWaits with Errors with InputParsing with GeotagParsing with RequiringLoggedInUser {
 
   private val log = Logger.getLogger(classOf[EditTagController])
 
@@ -137,23 +137,6 @@ class EditTagController @Autowired()(contentUpdateService: ContentUpdateService,
       addObject("tag", tag).
       addObject("parents", possibleParents.asJava).
       addObject("editTag", editTag)
-  }
-
-  private def requiringAdminUser(action: () => ModelAndView): ModelAndView = {
-    loggedInUserFilter.getLoggedInUser.fold {
-      log.warn("No logged in user found")
-      val notLoggedIn: ModelAndView = null
-      notLoggedIn
-
-    } { loggedInUser =>
-      if (loggedInUser.isAdmin) {
-        action()
-      } else {
-        log.warn("User is not an admin")
-        val notAnAdmin: ModelAndView = null
-        notAnAdmin
-      }
-    }
   }
 
 }
