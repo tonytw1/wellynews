@@ -2,7 +2,7 @@ package nz.co.searchwellington.controllers.admin
 
 import javax.servlet.http.{HttpServletRequest, HttpServletResponse}
 import nz.co.searchwellington.ReasonableWaits
-import nz.co.searchwellington.controllers.AcceptFeedItemController
+import nz.co.searchwellington.controllers.{AcceptFeedItemController, LoggedInUserFilter, RequiringLoggedInUser}
 import nz.co.searchwellington.repositories.elasticsearch.ElasticSearchIndexRebuildService
 import nz.co.searchwellington.repositories.mongo.MongoRepository
 import org.apache.log4j.Logger
@@ -17,21 +17,28 @@ import scala.concurrent.ExecutionContext.Implicits.global
 
 @Order(2)
 @Controller class RebuildIndexController @Autowired()(mongoRepository: MongoRepository,
-                                                      elasticSearchIndexRebuildService: ElasticSearchIndexRebuildService) extends ReasonableWaits {
+                                                      elasticSearchIndexRebuildService: ElasticSearchIndexRebuildService,
+                                                      val loggedInUserFilter: LoggedInUserFilter) extends ReasonableWaits
+  with RequiringLoggedInUser {
 
   private val log = Logger.getLogger(classOf[AcceptFeedItemController])
 
   @RequestMapping(value = Array("/admin/rebuild-index"), method = Array(RequestMethod.GET)) def prompt(request: HttpServletRequest, response: HttpServletResponse): ModelAndView = {
-    val eventualInt = mongoRepository.getAllResourceIds().flatMap { resourceIds =>
-      elasticSearchIndexRebuildService.reindexResources(resourceIds)
-    }.map { i =>
-      log.info("Reindexed " + i + " resources.")
-      i
+    def rebuild(): ModelAndView = {
+      val eventualInt = mongoRepository.getAllResourceIds().flatMap { resourceIds =>
+        elasticSearchIndexRebuildService.reindexResources(resourceIds)
+      }.map { i =>
+        log.info("Reindexed " + i + " resources.")
+        i
+      }
+
+      Await.result(eventualInt, FiveMinutes)
+
+      new ModelAndView("TODO")
     }
 
-    Await.result(eventualInt, FiveMinutes)
-
-    new ModelAndView("TODO")
+    requiringAdminUser(rebuild)
   }
 
 }
+

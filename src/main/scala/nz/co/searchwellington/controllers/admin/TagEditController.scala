@@ -34,7 +34,8 @@ import scala.concurrent.ExecutionContext.Implicits.global
 
   private val pattern = Pattern.compile("^/edit/tag/(.*)$")
 
-  @RequestMapping(Array("/edit/tag/delete")) def delete(request: HttpServletRequest, response: HttpServletResponse): ModelAndView = {
+  //@RequestMapping(Array("/edit/tag/delete"))
+  def delete(request: HttpServletRequest, response: HttpServletResponse): ModelAndView = {
     val loggedInUser = loggedInUserFilter.getLoggedInUser
     if (!editPermissionService.canDeleteTags(loggedInUser)) {
       response.setStatus(HttpServletResponse.SC_FORBIDDEN)
@@ -56,7 +57,8 @@ import scala.concurrent.ExecutionContext.Implicits.global
     Await.result(withCommonLocal(mv), TenSeconds)
   }
 
-  @RequestMapping(value = Array("/edit/tag/save"), method = Array(RequestMethod.POST)) def save(request: HttpServletRequest, response: HttpServletResponse): ModelAndView = {
+  //@RequestMapping(value = Array("/edit/tag/save"), method = Array(RequestMethod.POST))
+  def save(request: HttpServletRequest, response: HttpServletResponse): ModelAndView = {
     val mv = new ModelAndView("savedTag").
       addObject("heading", "Tag Saved")
 

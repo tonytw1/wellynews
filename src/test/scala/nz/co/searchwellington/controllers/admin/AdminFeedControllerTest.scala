@@ -27,7 +27,7 @@ class AdminFeedControllerTest {
   @Mock val loggedInUserFilter: LoggedInUserFilter = null
   private var request: MockHttpServletRequest = null
   private var response: MockHttpServletResponse = null
-  private val loggedInUser = User(id ="273")
+  private val adminUser = User(id ="273", admin = true)
   private val feed = Feed(id = FEED_ID, title = Some("A feed"))
 
   @Before def setup(): Unit = {
@@ -38,7 +38,7 @@ class AdminFeedControllerTest {
 
   @Test
   def manualFeedReaderRunsShouldBeAttributedToTheUserWhoKicksThemOffAndShouldAcceptAllEvenIfNoDateIsGivenOfNotCurrent(): Unit = {
-    Mockito.when(loggedInUserFilter.getLoggedInUser).thenReturn(Some(loggedInUser))
+    Mockito.when(loggedInUserFilter.getLoggedInUser).thenReturn(Some(adminUser))
     Mockito.when(permissionService.canAcceptAllFrom(feed)).thenReturn(true)
 
     val controller = new AdminFeedController(requestFilter, feedReader, urlBuilder, permissionService, loggedInUserFilter)
@@ -46,7 +46,7 @@ class AdminFeedControllerTest {
 
     controller.acceptAllFrom(request, response)
 
-    Mockito.verify(feedReader).processFeed(feed, loggedInUser, FeedAcceptancePolicy.ACCEPT_EVEN_WITHOUT_DATES)
+    Mockito.verify(feedReader).processFeed(feed, adminUser, FeedAcceptancePolicy.ACCEPT_EVEN_WITHOUT_DATES)
   }
 
 }
