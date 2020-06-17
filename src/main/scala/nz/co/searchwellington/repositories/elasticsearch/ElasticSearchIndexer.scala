@@ -28,6 +28,7 @@ import scala.concurrent.{Await, Future}
 class ElasticSearchIndexer @Autowired()(val showBrokenDecisionService: ShowBrokenDecisionService,
                                         @Value("#{config['elasticsearch.host']}") elasticsearchHost: String,
                                         @Value("#{config['elasticsearch.port']}") elasticsearchPort: Int,
+                                        @Value("#{config['elasticsearch.index']}") elasticsearchIndex: String,
                                         taggingReturnsOfficerService: TaggingReturnsOfficerService)
   extends ElasticFields with ModeratedQueries with ReasonableWaits {
 
@@ -41,7 +42,7 @@ class ElasticSearchIndexer @Autowired()(val showBrokenDecisionService: ShowBroke
 
   private val log = Logger.getLogger(classOf[ElasticSearchIndexer])
 
-  private val Index = "searchwellington"
+  private val Index = elasticsearchIndex
   private val Resources = "resources"
 
   private val client = {
