@@ -57,9 +57,7 @@ import scala.concurrent.Future
               addObject("link", urlBuilder.getTagCombinerUrl(firstTag, secondTag)).
               addObject(MAIN_CONTENT, taggedNewsitemsAndCount._1.asJava)
 
-            def paginationLinks(page: Int): String = {
-              urlBuilder.getTagCombinerUrl(firstTag, secondTag) + "?page=" + page  // TODO push to URL builder
-            }
+            def paginationLinks(page: Int): String = urlBuilder.getTagCombinerUrl(firstTag, secondTag, page)
             populatePagination(mv, startIndex, totalNewsitemCount, MAX_NEWSITEMS, paginationLinks)
             commonAttributesModelBuilder.setRss(mv, rssUrlBuilder.getRssTitleForTagCombiner(firstTag, secondTag), rssUrlBuilder.getRssUrlForTagCombiner(firstTag, secondTag))
             Some(mv)

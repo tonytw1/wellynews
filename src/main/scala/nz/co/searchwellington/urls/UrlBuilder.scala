@@ -73,6 +73,10 @@ class UrlBuilder @Autowired()(siteInformation: SiteInformation, urlWordsGenerato
     siteInformation.getUrl + "/" + firstTag.getName + "+" + secondTag.getName
   }
 
+  def getTagCombinerUrl(firstTag: Tag, secondTag: Tag, page: Int): String = {
+    getTagCombinerUrl(firstTag, secondTag) + "?page=" + page
+  }
+
   def getTagSearchUrl(tag: Tag, keywords: String): String = {
     getTagUrl(tag) + "?keywords=" + UrlParameterEncoder.encode(keywords)
   }
