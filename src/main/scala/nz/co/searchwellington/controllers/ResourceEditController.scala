@@ -1,6 +1,5 @@
 package nz.co.searchwellington.controllers
 
-import java.io.UnsupportedEncodingException
 import java.util.UUID
 
 import com.google.common.base.Strings
@@ -30,14 +29,14 @@ import scala.concurrent.ExecutionContext.Implicits.global
 
 @Controller class ResourceEditController @Autowired()(rssfeedNewsitemService: RssfeedNewsitemService, adminRequestFilter: AdminRequestFilter,
                                                       tagWidgetFactory: TagsWidgetFactory, autoTagger: AutoTaggingService, acceptanceWidgetFactory: AcceptanceWidgetFactory,
-                                                      loggedInUserFilter: LoggedInUserFilter, editPermissionService: EditPermissionService, urlStack: UrlStack,
+                                                      val loggedInUserFilter: LoggedInUserFilter, editPermissionService: EditPermissionService, urlStack: UrlStack,
                                                       submissionProcessingService: SubmissionProcessingService, contentUpdateService: ContentUpdateService,
                                                       contentDeletionService: ContentDeletionService, snapBodyExtractor: SnapshotBodyExtractor, anonUserService: AnonUserService,
                                                       tagVoteDAO: HandTaggingDAO, feedItemAcceptor: FeedItemAcceptor,
                                                       feednewsItemToNewsitemService: FeeditemToNewsitemService, urlWordsGenerator: UrlWordsGenerator,
                                                       whakaokoService: WhakaokoService, frontendResourceMapper: FrontendResourceMapper,
                                                       spamFilter: SpamFilter, linkCheckerQueue: LinkCheckerQueue,
-                                                      val contentRetrievalService: ContentRetrievalService) extends CommonModelObjectsService {
+                                                      val contentRetrievalService: ContentRetrievalService) extends CommonModelObjectsService with RequiringLoggedInUser {
 
   private val log = Logger.getLogger(classOf[ResourceEditController])
   private val ACCEPTANCE = "acceptance"
@@ -189,21 +188,25 @@ import scala.concurrent.ExecutionContext.Implicits.global
   }
 
   @RequestMapping(Array("/delete")) def delete(request: HttpServletRequest, response: HttpServletResponse): ModelAndView = {
-    val mv = new ModelAndView("deletedResource").addObject("heading", "Resource Deleted")
+    def delete(loggedInUser: User): ModelAndView = {
+      val mv = new ModelAndView("deletedResource").addObject("heading", "Resource Deleted")
 
-    adminRequestFilter.loadAttributesOntoRequest(request)
-    var editResource = request.getAttribute("resource").asInstanceOf[Resource]
-    log.info("Resource to delete is: " + editResource)
-    if (editResource != null && editPermissionService.canDelete(editResource)) {
-      mv.addObject("resource", editResource)
-      editResource = request.getAttribute("resource").asInstanceOf[Resource]
-      contentDeletionService.performDelete(editResource)
-      if (editResource.`type` == "F") {
-        urlStack.setUrlStack(request, "")
+      adminRequestFilter.loadAttributesOntoRequest(request)
+      var editResource = request.getAttribute("resource").asInstanceOf[Resource]
+      log.info("Resource to delete is: " + editResource)
+      if (editResource != null && editPermissionService.canDelete(editResource)) {
+        mv.addObject("resource", editResource)
+        editResource = request.getAttribute("resource").asInstanceOf[Resource]
+        contentDeletionService.performDelete(editResource)
+        if (editResource.`type` == "F") {
+          urlStack.setUrlStack(request, "")
+        }
       }
+
+      Await.result(withCommonLocal(mv), TenSeconds)
     }
 
-    Await.result(withCommonLocal(mv), TenSeconds)
+    requiringAdminUser(delete)
   }
 
   @RequestMapping(value = Array("/save"), method = Array(RequestMethod.POST))
