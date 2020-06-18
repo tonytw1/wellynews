@@ -189,7 +189,6 @@ import scala.concurrent.ExecutionContext.Implicits.global
 
   @RequestMapping(Array("/delete")) def delete(request: HttpServletRequest, response: HttpServletResponse): ModelAndView = {
     def delete(loggedInUser: User): ModelAndView = {
-      urlStack.setUrlStack(request)
 
       adminRequestFilter.loadAttributesOntoRequest(request)
       val editResource = request.getAttribute("resource").asInstanceOf[Resource]
