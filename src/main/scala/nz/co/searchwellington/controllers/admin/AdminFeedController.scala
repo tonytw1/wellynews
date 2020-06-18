@@ -22,7 +22,7 @@ import scala.concurrent.ExecutionContext.Implicits.global
 
   private val log = Logger.getLogger(classOf[AdminFeedController])
 
-  @RequestMapping(Array("/admin/feed/acceptall"))
+  @RequestMapping(Array("/admin/feed/accept-all"))
   def acceptAllFrom(request: HttpServletRequest, response: HttpServletResponse): ModelAndView = {
     def accept(loggedInUser: User): ModelAndView = {
       requestFilter.loadAttributesOntoRequest(request)
