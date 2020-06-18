@@ -18,6 +18,7 @@ import scala.concurrent.{Await, ExecutionContext, Future}
 class MongoRepository @Autowired()(@Value("#{config['mongo.uri']}") mongoUri: String) extends ReasonableWaits {
 
   private val log = Logger.getLogger(classOf[MongoRepository])
+
   private val AllDocuments: Int = Integer.MAX_VALUE
 
   def connect()(implicit ec: ExecutionContext): DB = {
@@ -320,20 +321,25 @@ class MongoRepository @Autowired()(@Value("#{config['mongo.uri']}") mongoUri: St
     val selector = BSONDocument(
       "resource_tags.tag_id" -> tag._id
     )
+    allResourceIdsFor(selector)
+  }
 
-    resourceCollection.find(selector).
-      cursor[BSONDocument]().
-      collect[List](maxDocs = AllDocuments, err = Cursor.FailOnError[List[BSONDocument]]()).map { d =>
-      d.flatMap { i =>
-        i.getAs[BSONObjectID]("_id")
-      }
-    }
+
+  def getNewsitemIdsForPublisher(publisher: Website)(implicit ec: ExecutionContext): Future[Seq[BSONObjectID]] = {
+    val selector = BSONDocument(
+      "publisher" -> publisher._id
+    )
+    allResourceIdsFor(selector)
   }
 
   def getResourceIdsByTaggingUser(user: User)(implicit ec: ExecutionContext): Future[Seq[BSONObjectID]] = {
     val selector = BSONDocument(
       "resource_tags.user_id" -> user._id
     )
+    allResourceIdsFor(selector)
+  }
+
+  private def allResourceIdsFor(selector: BSONDocument)(implicit ec: ExecutionContext): Future[Seq[BSONObjectID]]  = {
     resourceCollection.find(selector).
       cursor[BSONDocument]().
       collect[List](maxDocs = AllDocuments, err = Cursor.FailOnError[List[BSONDocument]]()).map { d =>

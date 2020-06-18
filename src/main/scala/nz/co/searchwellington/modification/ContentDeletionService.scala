@@ -9,15 +9,15 @@ import nz.co.searchwellington.repositories.{HandTaggingDAO, SuppressionDAO, TagD
 import org.apache.log4j.Logger
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
-import reactivemongo.api.commands.UpdateWriteResult
 
-import scala.concurrent.{Await, Future}
 import scala.concurrent.ExecutionContext.Implicits.global
+import scala.concurrent.{Await, Future}
 
 @Component class ContentDeletionService @Autowired()(suppressionService: SuppressionDAO,
                                                      rssfeedNewsitemService: RssfeedNewsitemService,
                                                      mongoRepository: MongoRepository, handTaggingDAO: HandTaggingDAO,
-                                                     tagDAO: TagDAO, elasticSearchIndexer: ElasticSearchIndexer)
+                                                     tagDAO: TagDAO, elasticSearchIndexer: ElasticSearchIndexer,
+                                                     contentUpdateService: ContentUpdateService)
   extends ReasonableWaits {
 
   private val log = Logger.getLogger(classOf[ContentDeletionService])
@@ -38,7 +38,7 @@ import scala.concurrent.ExecutionContext.Implicits.global
               log.info("Supressing deleted newsitem url as it still visible in an automatically accepted feed: " + p)
               suppressUrl(p)
             } else {
-              log.info("Not found in live feeds; not supressing")
+              log.info("Not found in live feeds; not suppressing")
             }
           }
       }
@@ -59,31 +59,28 @@ import scala.concurrent.ExecutionContext.Implicits.global
     suppressionService.addSuppression(p)
   }
 
-  private def removePublisherFromPublishersContent(website: Website) {  // TODO reimplement
-    throw new UnsupportedOperationException
-    /*
-    val publisher = editResource.asInstanceOf[Website]
-    resourceDAO.getNewsitemsForPublishers(publisher).map { published =>
-      // published.setPublisher(null)
-      resourceDAO.saveResource(publisher)
+  private def removePublisherFromPublishersContent(publisher: Website) {
+    mongoRepository.getNewsitemIdsForPublisher(publisher).map { published =>
+      published.foreach { publishedResource =>
+        mongoRepository.getResourceByObjectId(publishedResource).map { resource =>
+          resource match {
+            case published: PublishedResource =>
+              log.info("Clearing publisher from: " + published.title)
+              published.setPublisher(null)
+              contentUpdateService.update(published)
+          }
+        }
+      }
     }
-    for (feed <- publisher.getFeeds) {
-      // feed.setPublisher(null)
-      resourceDAO.saveResource(feed)
-    }
-    for (watchlist <- publisher.getWatchlist) {
-      // watchlist.setPublisher(null)
-      resourceDAO.saveResource(watchlist)
-    }
-    */
   }
 
-  private def removeFeedFromFeedNewsitems(feed: Feed): Future[Seq[UpdateWriteResult]] = {
+  private def removeFeedFromFeedNewsitems(feed: Feed): Future[Seq[Boolean]] = {
     mongoRepository.getAllNewsitemsForFeed(feed).flatMap { ns =>
       Future.sequence {
         ns.map { n =>
           log.info("Removing feed from newsitem: " + n.title)
-          mongoRepository.saveResource(n.copy(feed = None))
+          val withoutFeed = n.copy(feed = None)
+          contentUpdateService.update(withoutFeed)
         }
       }
     }
