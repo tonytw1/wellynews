@@ -13,7 +13,6 @@ import org.springframework.stereotype.Controller
 import org.springframework.web.bind.annotation.{RequestMapping, RequestMethod}
 import org.springframework.web.servlet.ModelAndView
 
-import scala.concurrent.Await
 import scala.concurrent.ExecutionContext.Implicits.global
 
 @Order(2)
@@ -24,17 +23,22 @@ import scala.concurrent.ExecutionContext.Implicits.global
 
   private val log = Logger.getLogger(classOf[AcceptFeedItemController])
 
-  @RequestMapping(value = Array("/admin/rebuild-index"), method = Array(RequestMethod.GET)) def prompt(request: HttpServletRequest, response: HttpServletResponse): ModelAndView = {
+  @RequestMapping(value = Array("/admin/rebuild-index"), method = Array(RequestMethod.GET))
+  def prompt(request: HttpServletRequest, response: HttpServletResponse): ModelAndView = {
     def rebuild(loggedInUser: User): ModelAndView = {
-      val eventualInt = mongoRepository.getAllResourceIds().flatMap { resourceIds =>
+      val eventualResult = mongoRepository.getAllResourceIds().flatMap { resourceIds =>
         elasticSearchIndexRebuildService.reindexResources(resourceIds)
       }.map { i =>
         log.info("Reindexed " + i + " resources.")
         i
       }
 
-      Await.result(eventualInt, FiveMinutes)
-      new ModelAndView("TODO")
+      eventualResult.map { i =>
+        log.info("Completed reindex: " + i)
+      }
+
+      response.setStatus(HttpServletResponse.SC_ACCEPTED);
+      new ModelAndView("TODO");
     }
 
     requiringAdminUser(rebuild)
