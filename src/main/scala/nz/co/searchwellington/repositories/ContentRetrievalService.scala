@@ -144,8 +144,8 @@ import scala.concurrent.{Await, Future}
     }
   }
 
-  def getLatestWebsites(maxItems: Int, page: Int = 1, loggedInUser: Option[User]): Future[(Seq[FrontendResource], Long)] = {
-    val latestWebsites = ResourceQuery(`type` = websites, maxItems = maxItems, startIndex = maxItems * (page - 1))
+  def getLatestWebsites(maxItems: Int, page: Int = 1, loggedInUser: Option[User], held: Option[Boolean] = None): Future[(Seq[FrontendResource], Long)] = {
+    val latestWebsites = ResourceQuery(`type` = websites, maxItems = maxItems, startIndex = maxItems * (page - 1), held = held)
     elasticSearchIndexer.getResources(latestWebsites, loggedInUser = loggedInUser).flatMap(buildFrontendResourcesFor)
   }
 

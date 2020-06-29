@@ -16,7 +16,8 @@ case class ResourceQuery(`type`: Option[Set[String]] = None,
                          circle: Option[Circle] = None,
                          geocoded: Option[Boolean] = None,
                          taggingUser: Option[BSONObjectID] = None,
-                         feedAcceptancePolicy: Option[FeedAcceptancePolicy] = None
+                         feedAcceptancePolicy: Option[FeedAcceptancePolicy] = None,
+                         held: Option[Boolean] = None
                         )
 
 case class Circle(centre: LatLong, radius: Double)

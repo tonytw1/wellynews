@@ -25,8 +25,13 @@ import scala.concurrent.Future
 
   def populateContentModel(request: HttpServletRequest, loggedInUser: Option[User]): Future[Option[ModelAndView]] = {
     val page = getPage(request)
+
+    val held: Option[Boolean] = Option(request.getParameter("held")).map { h =>
+      java.lang.Boolean.parseBoolean(h)
+    }
+
     for {
-      websites <- contentRetrievalService.getLatestWebsites(MAX_NEWSITEMS, loggedInUser = loggedInUser, page = page)
+      websites <- contentRetrievalService.getLatestWebsites(MAX_NEWSITEMS, loggedInUser = loggedInUser, page = page, held = held)
     } yield {
       import scala.collection.JavaConverters._
       val mv = new ModelAndView().

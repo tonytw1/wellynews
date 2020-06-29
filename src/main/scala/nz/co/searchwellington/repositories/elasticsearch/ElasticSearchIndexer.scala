@@ -252,6 +252,9 @@ class ElasticSearchIndexer @Autowired()(val showBrokenDecisionService: ShowBroke
       },
       query.feedAcceptancePolicy.map { ap =>
         matchQuery(FeedAcceptancePolicy, ap.toString)
+      },
+      query.held.map { h =>
+        matchQuery(Held, h)
       }
     ).flatten
 
