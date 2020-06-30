@@ -46,10 +46,6 @@
 
 <div class="right">
 
-#if($publisher && $publisher.name == 'Wellington SPCA') 
-	#parse("widgets/spca_widget.vm")
-#end
-
 <div class="box">
 #parse("includes/latest_newsitems.vm")
 </div>

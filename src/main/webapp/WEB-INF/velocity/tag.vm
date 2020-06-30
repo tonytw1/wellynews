@@ -89,10 +89,6 @@
 
 
 	<div class="right">
-		#if($tag.name == 'animals' || $tag.name == 'dogs') 
-			#parse("widgets/spca_widget.vm")
-		#end
-				
 		#if($tag.name == 'elections2010' || $tag.name == 'election-candidates-2010') 
 			#parse("widgets/wcc_watch_poll.vm")
 			#parse("widgets/scoop_election_videos_widget.vm")
