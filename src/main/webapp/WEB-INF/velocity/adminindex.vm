@@ -11,7 +11,7 @@
 
 <h2>$heading</h2>
 
-	<p><a href="/admin/indexbuilder">Rebuild elastic search index</a></p>
+	<p><a href="/admin/rebuild-index">Rebuild elastic search index</a></p>
 
 </div>
 
