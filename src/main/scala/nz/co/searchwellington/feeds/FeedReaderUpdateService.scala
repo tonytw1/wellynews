@@ -6,11 +6,12 @@ import nz.co.searchwellington.modification.ContentUpdateService
 import nz.co.searchwellington.queues.LinkCheckerQueue
 import nz.co.searchwellington.tagging.AutoTaggingService
 import org.apache.log4j.Logger
+import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
 
 import scala.concurrent.{ExecutionContext, Future}
 
-@Component class FeedReaderUpdateService(contentUpdateService: ContentUpdateService, autoTagger: AutoTaggingService,
+@Component class FeedReaderUpdateService @Autowired()(contentUpdateService: ContentUpdateService, autoTagger: AutoTaggingService,
                                          feedItemAcceptor: FeedItemAcceptor, linkCheckerQueue: LinkCheckerQueue) {
 
   private val log = Logger.getLogger(classOf[FeedReaderUpdateService])

@@ -29,9 +29,6 @@ public class RequestFilter {
   private RequestAttributeFilter[] filters;
   private List<AttributeSetter> attributeSetters;
 
-  public RequestFilter() {
-  }
-
   @Autowired
   public RequestFilter(CombinerPageAttributeSetter combinerPageAttributeSetter,
                        PublisherPageAttributeSetter publisherPageAttributeSetter,

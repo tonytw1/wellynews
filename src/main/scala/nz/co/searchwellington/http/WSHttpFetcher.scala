@@ -4,6 +4,7 @@ import akka.actor.ActorSystem
 import akka.stream.ActorMaterializer
 import nz.co.searchwellington.ReasonableWaits
 import org.apache.log4j.Logger
+import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.core.task.TaskExecutor
 import org.springframework.stereotype.Component
 import play.api.libs.ws.ahc._
@@ -11,7 +12,7 @@ import play.api.libs.ws.ahc._
 import scala.concurrent.{ExecutionContext, Future}
 
 @Component
-class WSHttpFetcher(feedReaderTaskExecutor: TaskExecutor) extends HttpFetcher with ReasonableWaits { // TODO seperate executor
+class WSHttpFetcher @Autowired()(feedReaderTaskExecutor: TaskExecutor) extends HttpFetcher with ReasonableWaits { // TODO seperate executor
 
   private val log = Logger.getLogger(classOf[WSHttpFetcher])
 
