@@ -1,6 +1,6 @@
 package nz.co.searchwellington.filters.attributesetters
 
-import java.util.regex.{Matcher, Pattern}
+import java.util.regex.Pattern
 
 import javax.servlet.http.HttpServletRequest
 import nz.co.searchwellington.ReasonableWaits

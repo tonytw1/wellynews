@@ -19,7 +19,7 @@ public class NominatimResolveOsmIdCachingServiceWrapper implements CachableServi
 	private NominatimGeocodingService nominatimGeocodingService;
     
     @Autowired
-	public NominatimResolveOsmIdCachingServiceWrapper(@Value("#{config['nominatim.url']}") String nominatimUrl) {
+	public NominatimResolveOsmIdCachingServiceWrapper(@Value("${nominatim.url}") String nominatimUrl) {
 		this.nominatimGeocodingService = new NominatimGeocodingService("tony@eelpieconsulting.co.uk", nominatimUrl);
 	}
 

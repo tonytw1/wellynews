@@ -14,10 +14,10 @@ import com.google.common.base.Strings;
 @Component
 public class TwitterApiFactory {
 
-  @Value("#{config['consumer.key']}")
+  @Value("${consumer.key}")
   private String consumerKey;
 
-  @Value("#{config['consumer.secret']}")
+  @Value("${consumer.secret}")
   private String consumerSecret;
 
   public Twitter getOauthedTwitterApiForAccessToken(String token, String secret) {

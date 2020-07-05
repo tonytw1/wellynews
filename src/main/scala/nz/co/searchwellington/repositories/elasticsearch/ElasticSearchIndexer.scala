@@ -26,9 +26,9 @@ import scala.concurrent.{Await, Future}
 
 @Component
 class ElasticSearchIndexer @Autowired()(val showBrokenDecisionService: ShowBrokenDecisionService,
-                                        @Value("#{config['elasticsearch.host']}") elasticsearchHost: String,
-                                        @Value("#{config['elasticsearch.port']}") elasticsearchPort: Int,
-                                        @Value("#{config['elasticsearch.index']}") elasticsearchIndex: String,
+                                        @Value("${elasticsearch.host}") elasticsearchHost: String,
+                                        @Value("${elasticsearch.port}") elasticsearchPort: Int,
+                                        @Value("${elasticsearch.index}") elasticsearchIndex: String,
                                         taggingReturnsOfficerService: TaggingReturnsOfficerService)
   extends ElasticFields with ModeratedQueries with ReasonableWaits {
 
