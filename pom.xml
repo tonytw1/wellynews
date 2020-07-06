@@ -1,12 +1,12 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
     <modelVersion>4.0.0</modelVersion>
-    <groupId>nz.co.searchwellington</groupId>
-    <artifactId>searchwellington</artifactId>
+    <groupId>nz.gen.wellington</groupId>
+    <artifactId>wellynews</artifactId>
     <packaging>jar</packaging>
-    <name>Search Wellington</name>
+    <name>Wellynews</name>
     <version>0.0.1-SNAPSHOT</version>
-    <description>Search Wellington application.</description>
+    <description>Wellynews website</description>
 
     <properties>
         <elastic4s.version>6.3.8</elastic4s.version>
