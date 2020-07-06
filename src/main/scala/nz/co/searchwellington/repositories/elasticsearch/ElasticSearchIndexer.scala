@@ -26,8 +26,7 @@ import scala.concurrent.{Await, Future}
 
 @Component
 class ElasticSearchIndexer @Autowired()(val showBrokenDecisionService: ShowBrokenDecisionService,
-                                        @Value("${elasticsearch.host}") elasticsearchHost: String,
-                                        @Value("${elasticsearch.port}") elasticsearchPort: Int,
+                                        @Value("${elasticsearch.url}") elasticsearchUrl: String,
                                         @Value("${elasticsearch.index}") elasticsearchIndex: String,
                                         taggingReturnsOfficerService: TaggingReturnsOfficerService)
   extends ElasticFields with ModeratedQueries with ReasonableWaits {
@@ -90,7 +89,7 @@ class ElasticSearchIndexer @Autowired()(val showBrokenDecisionService: ShowBroke
       }
     }
 
-    val client = ElasticClient(ElasticProperties("http://" + elasticsearchHost + ":" + elasticsearchPort))
+    val client = ElasticClient(ElasticProperties(elasticsearchUrl))
     ensureIndexes(client)
     client
   }
