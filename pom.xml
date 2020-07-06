@@ -3,7 +3,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>nz.co.searchwellington</groupId>
     <artifactId>searchwellington</artifactId>
-    <packaging>war</packaging>
+    <packaging>jar</packaging>
     <name>Search Wellington</name>
     <version>0.0.1-SNAPSHOT</version>
     <description>Search Wellington application.</description>
@@ -78,6 +78,10 @@
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-web</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-context-support</artifactId>
         </dependency>
 
         <dependency>

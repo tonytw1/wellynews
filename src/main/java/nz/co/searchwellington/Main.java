@@ -1,11 +1,22 @@
 package nz.co.searchwellington;
 
+import com.google.common.collect.Maps;
 import nz.co.searchwellington.commentfeeds.detectors.CommentFeedDetector;
 import nz.co.searchwellington.commentfeeds.detectors.GenericCommentFeedDetector;
+import nz.co.searchwellington.controllers.RssUrlBuilder;
+import nz.co.searchwellington.controllers.admin.AdminUrlBuilder;
+import nz.co.searchwellington.model.SiteInformation;
+import nz.co.searchwellington.urls.UrlBuilder;
+import nz.co.searchwellington.utils.ColumnSplitter;
+import nz.co.searchwellington.views.ContentDedupingService;
+import nz.co.searchwellington.views.GoogleMapsDisplayCleaner;
 import org.apache.log4j.Logger;
+import org.apache.velocity.app.Velocity;
+import org.apache.velocity.runtime.RuntimeConstants;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
@@ -13,14 +24,19 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.core.task.TaskExecutor;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
+import org.springframework.web.servlet.view.velocity.VelocityConfigurer;
+import org.springframework.web.servlet.view.velocity.VelocityViewResolver;
 import uk.co.eelpieconsulting.common.caching.MemcachedCache;
+import uk.co.eelpieconsulting.common.dates.DateFormatter;
 
 import java.io.IOException;
+import java.util.Map;
 
+@SpringBootApplication
 @EnableScheduling
-@EnableAutoConfiguration
 @ComponentScan("nz.co.searchwellington,uk.co.eelpieconsulting.common")
 @Configuration
+@EnableAutoConfiguration
 public class Main {
 
     private final static Logger log = Logger.getLogger(Main.class);
@@ -50,6 +66,53 @@ public class Main {
     @Bean
     public MemcachedCache memcachedCache(@Value("${memcached.urls}") String memcacheUrl) throws IOException {
         return new MemcachedCache(memcacheUrl);
+    }
+
+    @Bean
+    public DateFormatter dateFormatter() {
+        return new uk.co.eelpieconsulting.common.dates.DateFormatter("Europe/London");
+    }
+
+    @Bean
+    public VelocityViewResolver velocityViewResolver(
+            AdminUrlBuilder adminUrlBuilder,
+            ColumnSplitter columnSplitter,
+            ContentDedupingService contentDedupingService,
+            DateFormatter dateFormatter,
+            GoogleMapsDisplayCleaner googleMapsDisplayCleaner,
+            RssUrlBuilder rssUrlBuilder,
+            SiteInformation siteInformation,
+            UrlBuilder urlBuilder) {
+        final VelocityViewResolver viewResolver = new VelocityViewResolver();
+        viewResolver.setCache(true);
+        viewResolver.setPrefix("");
+        viewResolver.setSuffix(".vm");
+        viewResolver.setContentType("text/html;charset=UTF-8");
+
+        final Map<String, Object> attributes = Maps.newHashMap();
+        attributes.put("adminUrlBuilder", adminUrlBuilder);
+        attributes.put("columnSplitter", columnSplitter);
+        attributes.put("contentDeduper", contentDedupingService);
+        attributes.put("dateFormatter", dateFormatter);
+        attributes.put("googleMapCleaner", googleMapsDisplayCleaner);
+        attributes.put("rssUrlBuilder", rssUrlBuilder);
+        attributes.put("site_information", siteInformation);    // TODO camel case
+        attributes.put("urlBuilder", urlBuilder);
+        viewResolver.setAttributesMap(attributes);
+
+        return viewResolver;
+    }
+
+    @Bean
+    public VelocityConfigurer velocityConfigurer() {
+        final VelocityConfigurer vc = new VelocityConfigurer();
+        final Map<String, Object> velocityPropertiesMap = Maps.newHashMap();
+        velocityPropertiesMap.put(Velocity.OUTPUT_ENCODING, "UTF-8");
+        velocityPropertiesMap.put(Velocity.INPUT_ENCODING, "UTF-8");
+        velocityPropertiesMap.put(RuntimeConstants.RESOURCE_LOADER, "classpath");
+        velocityPropertiesMap.put("eventhandler.referenceinsertion.class", "org.apache.velocity.app.event.implement.EscapeHtmlReference");
+        vc.setVelocityPropertiesMap(velocityPropertiesMap);
+        return vc;
     }
 
 }

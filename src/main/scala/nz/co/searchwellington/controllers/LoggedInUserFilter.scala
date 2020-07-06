@@ -3,13 +3,12 @@ package nz.co.searchwellington.controllers
 import javax.servlet.http.HttpServletRequest
 import nz.co.searchwellington.model.User
 import org.apache.log4j.Logger
-import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.context.annotation.{Scope, ScopedProxyMode}
 import org.springframework.stereotype.Component
 
 @Component("loggedInUserFilter")
 @Scope(value = "request", proxyMode = ScopedProxyMode.TARGET_CLASS)
-class LoggedInUserFilter @Autowired()() {
+class LoggedInUserFilter {
 
   private val log = Logger.getLogger(classOf[LoggedInUserFilter])
 
