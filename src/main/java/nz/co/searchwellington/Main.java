@@ -8,6 +8,7 @@ import nz.co.searchwellington.controllers.admin.AdminUrlBuilder;
 import nz.co.searchwellington.model.SiteInformation;
 import nz.co.searchwellington.urls.UrlBuilder;
 import nz.co.searchwellington.utils.ColumnSplitter;
+import nz.co.searchwellington.utils.EscapeTools;
 import nz.co.searchwellington.views.ContentDedupingService;
 import nz.co.searchwellington.views.GoogleMapsDisplayCleaner;
 import org.apache.log4j.Logger;
@@ -96,6 +97,7 @@ public class Main {
         attributes.put("columnSplitter", columnSplitter);
         attributes.put("contentDeduper", contentDedupingService);
         attributes.put("dateFormatter", dateFormatter);
+        attributes.put("escape", new EscapeTools());
         attributes.put("googleMapCleaner", googleMapsDisplayCleaner);
         attributes.put("rssUrlBuilder", rssUrlBuilder);
         attributes.put("site_information", siteInformation);    // TODO camel case
@@ -113,6 +115,7 @@ public class Main {
         velocityPropertiesMap.put(RuntimeConstants.RESOURCE_LOADER, "classpath");
         velocityPropertiesMap.put("eventhandler.referenceinsertion.class", "org.apache.velocity.app.event.implement.EscapeHtmlReference");
         vc.setVelocityPropertiesMap(velocityPropertiesMap);
+
         return vc;
     }
 
