@@ -15,7 +15,10 @@ import org.apache.velocity.app.Velocity;
 import org.apache.velocity.runtime.RuntimeConstants;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.SpringApplication;
+import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
+import org.springframework.boot.autoconfigure.velocity.VelocityAutoConfiguration;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
@@ -32,6 +35,7 @@ import java.io.IOException;
 import java.util.Map;
 
 @SpringBootApplication
+@EnableAutoConfiguration(exclude = { DataSourceAutoConfiguration.class, VelocityAutoConfiguration.class })
 @EnableScheduling
 @ComponentScan("nz.co.searchwellington,uk.co.eelpieconsulting.common")
 @Configuration
@@ -97,7 +101,6 @@ public class Main {
         attributes.put("site_information", siteInformation);    // TODO camel case
         attributes.put("urlBuilder", urlBuilder);
         viewResolver.setAttributesMap(attributes);
-
         return viewResolver;
     }
 
