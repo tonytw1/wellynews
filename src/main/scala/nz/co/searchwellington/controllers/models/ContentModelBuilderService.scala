@@ -3,6 +3,7 @@ package nz.co.searchwellington.controllers.models
 import javax.servlet.http.HttpServletRequest
 import nz.co.searchwellington.controllers.CommonModelObjectsService
 import nz.co.searchwellington.controllers.models.helpers.ContentFields
+import nz.co.searchwellington.filters.RequestPath
 import nz.co.searchwellington.model.User
 import nz.co.searchwellington.repositories.ContentRetrievalService
 import org.apache.log4j.Logger
@@ -19,16 +20,16 @@ class ContentModelBuilderService(viewFactory: ViewFactory,
   private val logger = Logger.getLogger(classOf[ContentModelBuilderService])
 
   def populateContentModel(request: HttpServletRequest, loggedInUser: Option[User] = None): Future[Option[ModelAndView]] = {
-    logger.info("Serving path: " + request.getPathInfo)
+    logger.info("Serving path: " + RequestPath.getPathFrom(request))
     modelBuilders.find(mb => {
       val r = mb.isValid(request)
-      logger.info(mb.getClass.getCanonicalName + " / " + request.getPathInfo + ": " + r)
+      logger.info(mb.getClass.getCanonicalName + " / " + RequestPath.getPathFrom(request) + ": " + r)
       r
     }).map { mb =>
-      logger.info("Using " + mb.getClass.getName + " to serve path: " + request.getPathInfo)
+      logger.info("Using " + mb.getClass.getName + " to serve path: " + RequestPath.getPathFrom(request))
       mb.populateContentModel(request, loggedInUser).flatMap { eventualMaybeModelAndView =>
         eventualMaybeModelAndView.map { mv =>
-          val path = request.getPathInfo
+          val path = RequestPath.getPathFrom(request)
           val eventualWithViewAndExtraContent = if (path.endsWith("/rss")) {
             logger.debug("Selecting rss view for path: " + path)
             mv.setView(viewFactory.getRssView(mv.getModel.get("heading").asInstanceOf[String], mv.getModel.get("link").asInstanceOf[String], mv.getModel.get("description").asInstanceOf[String]))
@@ -57,7 +58,7 @@ class ContentModelBuilderService(viewFactory: ViewFactory,
       }
 
     }.getOrElse {
-      logger.warn("No matching model builder found for path: " + request.getPathInfo)
+      logger.warn("No matching model builder found for path: " + RequestPath.getPathFrom(request))
       Future.successful(None)
     }
   }

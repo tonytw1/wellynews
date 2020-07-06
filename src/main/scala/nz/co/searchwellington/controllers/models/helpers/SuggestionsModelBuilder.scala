@@ -4,6 +4,7 @@ import javax.servlet.http.HttpServletRequest
 import nz.co.searchwellington.ReasonableWaits
 import nz.co.searchwellington.controllers.RssUrlBuilder
 import nz.co.searchwellington.controllers.models.ModelBuilder
+import nz.co.searchwellington.filters.RequestPath
 import nz.co.searchwellington.model.User
 import nz.co.searchwellington.repositories.{ContentRetrievalService, SuggestedFeeditemsService}
 import nz.co.searchwellington.urls.UrlBuilder
@@ -24,7 +25,7 @@ import scala.concurrent.Future
   private val MAX_SUGGESTIONS = 50
 
   def isValid(request: HttpServletRequest): Boolean = {
-    request.getPathInfo.matches("^/feeds/inbox(/(rss|json))?$")
+    RequestPath.getPathFrom(request).matches("^/feeds/inbox(/(rss|json))?$")
   }
 
   def populateContentModel(request: HttpServletRequest, loggedInUser: Option[User]): Future[Option[ModelAndView]] = {

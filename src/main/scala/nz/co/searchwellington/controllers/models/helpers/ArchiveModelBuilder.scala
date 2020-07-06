@@ -3,6 +3,7 @@ package nz.co.searchwellington.controllers.models.helpers
 import javax.servlet.http.HttpServletRequest
 import nz.co.searchwellington.ReasonableWaits
 import nz.co.searchwellington.controllers.models.ModelBuilder
+import nz.co.searchwellington.filters.RequestPath
 import nz.co.searchwellington.model.helpers.ArchiveLinksService
 import nz.co.searchwellington.model.{ArchiveLink, PublisherArchiveLink, User}
 import nz.co.searchwellington.repositories.ContentRetrievalService
@@ -23,11 +24,11 @@ import scala.concurrent.Future
   private val archiveMonthPath = "^/archive/.*?$"
 
   def isValid(request: HttpServletRequest): Boolean = {
-    request.getPathInfo.matches(archiveMonthPath)
+    RequestPath.getPathFrom(request).matches(archiveMonthPath)
   }
 
   def populateContentModel(request: HttpServletRequest, loggedInUser: Option[User]): Future[Option[ModelAndView]] = {
-    getArchiveMonthFromPath(request.getPathInfo).map { month =>
+    getArchiveMonthFromPath(RequestPath.getPathFrom(request)).map { month =>
       for {
         newsitemsForMonth <- contentRetrievalService.getNewsitemsForInterval(month, loggedInUser)
       } yield {
@@ -45,7 +46,7 @@ import scala.concurrent.Future
 
   def populateExtraModelContent(request: HttpServletRequest, mv: ModelAndView, loggedInUser: Option[User]): Future[ModelAndView] = {
     withLatestNewsitems(mv, loggedInUser).flatMap { mv =>
-      getArchiveMonthFromPath(request.getPathInfo).map { month =>
+      getArchiveMonthFromPath(RequestPath.getPathFrom(request)).map { month =>
         val eventualArchiveLinks = contentRetrievalService.getArchiveMonths(loggedInUser)
         val eventualArchiveCounts = contentRetrievalService.getArchiveCounts(loggedInUser)
         val eventualMonthPublishers = contentRetrievalService.getPublishersForInterval(month, loggedInUser)

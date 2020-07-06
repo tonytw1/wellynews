@@ -5,6 +5,7 @@ import java.util.regex.Pattern
 import javax.servlet.http.HttpServletRequest
 import nz.co.searchwellington.ReasonableWaits
 import nz.co.searchwellington.controllers.models.ModelBuilder
+import nz.co.searchwellington.filters.RequestPath
 import nz.co.searchwellington.model.User
 import nz.co.searchwellington.model.mappers.FrontendResourceMapper
 import nz.co.searchwellington.repositories.mongo.MongoRepository
@@ -28,11 +29,11 @@ import scala.concurrent.Future
   val pattern = Pattern.compile("^/newsitem/(.*?)$")
 
   def isValid(request: HttpServletRequest): Boolean = {
-    pattern.matcher(request.getPathInfo).matches()
+    pattern.matcher(RequestPath.getPathFrom(request)).matches()
   }
 
   def populateContentModel(request: HttpServletRequest, loggedInUser: Option[User]): Future[Option[ModelAndView]] = {
-    val matcher = pattern.matcher(request.getPathInfo)
+    val matcher = pattern.matcher(RequestPath.getPathFrom(request))
     if (matcher.matches()) {
       val id = matcher.group(1)
       mongoRepository.getResourceById(id).flatMap { maybeResouce =>

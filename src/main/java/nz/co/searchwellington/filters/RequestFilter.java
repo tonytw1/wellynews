@@ -45,7 +45,7 @@ public class RequestFilter {
       filter.filter(request);
     }
 
-    if (isReservedPath(request.getPathInfo())) {
+    if (isReservedPath(RequestPath.getPathFrom(request))) {
       return;
     }
 

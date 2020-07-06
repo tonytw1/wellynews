@@ -4,6 +4,7 @@ import javax.servlet.http.HttpServletRequest
 import nz.co.searchwellington.ReasonableWaits
 import nz.co.searchwellington.controllers.RssUrlBuilder
 import nz.co.searchwellington.controllers.models.ModelBuilder
+import nz.co.searchwellington.filters.RequestPath
 import nz.co.searchwellington.model.User
 import nz.co.searchwellington.model.frontend.FrontendResource
 import nz.co.searchwellington.model.helpers.ArchiveLinksService
@@ -28,9 +29,10 @@ import scala.concurrent.Future
   private val MAX_OWNED_TO_SHOW_IN_RHS = 4
 
   def isValid(request: HttpServletRequest): Boolean = {
-    request.getPathInfo.matches("^/$") ||
-      request.getPathInfo.matches("^/json$") ||
-      request.getPathInfo.matches("^/rss$")
+    val path = RequestPath.getPathFrom(request)
+    path.matches("^/$") ||
+      path.matches("^/json$") ||
+      path.matches("^/rss$")
   }
 
   def getViewName(mv: ModelAndView): String = "index"

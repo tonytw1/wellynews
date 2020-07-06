@@ -4,7 +4,7 @@ import javax.servlet.http.HttpServletRequest
 import nz.co.searchwellington.ReasonableWaits
 import nz.co.searchwellington.controllers.models.ModelBuilder
 import nz.co.searchwellington.controllers.{RelatedTagsService, RssUrlBuilder}
-import nz.co.searchwellington.filters.LocationParameterFilter
+import nz.co.searchwellington.filters.{LocationParameterFilter, RequestPath}
 import nz.co.searchwellington.model.User
 import nz.co.searchwellington.repositories.ContentRetrievalService
 import nz.co.searchwellington.urls.UrlBuilder
@@ -30,7 +30,7 @@ import scala.concurrent.Future
   private val HOW_FAR_IS_CLOSE_IN_KILOMETERS = 1.0
 
   def isValid(request: HttpServletRequest): Boolean = {
-    request.getPathInfo.matches("^/geotagged(/(rss|json))?$")
+    RequestPath.getPathFrom(request).matches("^/geotagged(/(rss|json))?$")
   }
 
   def populateContentModel(request: HttpServletRequest, loggedInUser: Option[User]): Future[Option[ModelAndView]] = {

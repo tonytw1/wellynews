@@ -4,6 +4,7 @@ import java.util.regex.Pattern
 
 import javax.servlet.http.HttpServletRequest
 import nz.co.searchwellington.ReasonableWaits
+import nz.co.searchwellington.filters.RequestPath
 import nz.co.searchwellington.repositories.mongo.MongoRepository
 import org.apache.log4j.Logger
 import org.springframework.beans.factory.annotation.Autowired
@@ -19,7 +20,7 @@ import scala.concurrent.ExecutionContext.Implicits.global
   private val publisherPagePathPattern = Pattern.compile("^/(.*?)(/(comment|geotagged|.*?-.*?))?(/(edit|save|rss|json))?$")
 
   def setAttributes(request: HttpServletRequest): Boolean = {
-    val contentMatcher = publisherPagePathPattern.matcher(request.getPathInfo)
+    val contentMatcher = publisherPagePathPattern.matcher(RequestPath.getPathFrom(request))
     if (contentMatcher.matches) {
       val publisherUrlWords = contentMatcher.group(1)
       if (publisherUrlWords.trim.nonEmpty) {

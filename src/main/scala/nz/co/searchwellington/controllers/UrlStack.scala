@@ -1,7 +1,7 @@
 package nz.co.searchwellington.controllers
 
 import javax.servlet.http.HttpServletRequest
-
+import nz.co.searchwellington.filters.RequestPath
 import nz.co.searchwellington.urls.UrlBuilder
 import org.apache.log4j.Logger
 import org.springframework.beans.factory.annotation.Autowired
@@ -22,7 +22,7 @@ import org.springframework.stereotype.Component
   }
 
   def setUrlStack(request: HttpServletRequest) {
-    var url = request.getPathInfo
+    var url = RequestPath.getPathFrom(request)
     if (request.getQueryString != null) {
       url = url + "?" + request.getQueryString
     }

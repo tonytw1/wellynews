@@ -2,6 +2,7 @@ package nz.co.searchwellington.controllers
 
 import javax.servlet.http.{HttpServletRequest, HttpServletResponse}
 import nz.co.searchwellington.ReasonableWaits
+import nz.co.searchwellington.filters.RequestPath
 import nz.co.searchwellington.model.User
 import nz.co.searchwellington.repositories.ContentRetrievalService
 import nz.co.searchwellington.repositories.mongo.MongoRepository
@@ -54,7 +55,7 @@ class ProfileController @Autowired()(mongoRepository: MongoRepository, loggedInU
       }
     }
 
-    val path = request.getPathInfo
+    val path = RequestPath.getPathFrom(request)
     userByPath(path).map { user =>
       val eventualOwnedBy = contentRetrievalService.getOwnedBy(user, loggedInUser)
       val eventualTaggedBy = contentRetrievalService.getTaggedBy(user, loggedInUser)
