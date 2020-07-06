@@ -27,19 +27,19 @@ class FeedAttributeSetterTest {
   }
 
   @Test def shouldSetFeedAttributeForFeedPagePath(): Unit = {
-    request.setPathInfo("/feed/wcc-news")
+    request.setRequestURI("/feed/wcc-news")
     feedAttributeSetter.setAttributes(request)
     assertEquals(feed, request.getAttribute("feedAttribute"))
   }
 
   @Test def shouldSetFeedAttributeForFeedEditPagePath(): Unit = {
-    request.setPathInfo("/feed/wcc-news/edit")
+    request.setRequestURI("/feed/wcc-news/edit")
     feedAttributeSetter.setAttributes(request)
     assertEquals(feed, request.getAttribute("feedAttribute"))
   }
 
   @Test def shouldSetFeedAttributeForFeedSavePath(): Unit = {
-    request.setPathInfo("/feed/wcc-news/save")
+    request.setRequestURI("/feed/wcc-news/save")
     feedAttributeSetter.setAttributes(request)
     assertEquals(feed, request.getAttribute("feedAttribute"))
   }

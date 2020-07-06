@@ -27,7 +27,7 @@ class PublisherPageAttributeSetterTest {
   }
 
   @Test def shouldSetPublisherAttributeForPublisherPath(): Unit = {
-    request.setPathInfo("/wellington-city-council")
+    request.setRequestURI("/wellington-city-council")
 
     pageAttributeSetter.setAttributes(request)
 
@@ -36,7 +36,7 @@ class PublisherPageAttributeSetterTest {
 
 
   @Test def shouldSetPublisherAttributeForPublisherArchivePath(): Unit = {
-    request.setPathInfo("/wellington-city-council/2020-mar")
+    request.setRequestURI("/wellington-city-council/2020-mar")
 
     pageAttributeSetter.setAttributes(request)
 
@@ -44,7 +44,7 @@ class PublisherPageAttributeSetterTest {
   }
 
   @Test def shouldSetPublisherAttributeForPublisherEditPath(): Unit = {
-    request.setPathInfo("/wellington-city-council/edit")
+    request.setRequestURI("/wellington-city-council/edit")
 
     pageAttributeSetter.setAttributes(request)
 
@@ -52,7 +52,7 @@ class PublisherPageAttributeSetterTest {
   }
 
   @Test def shouldSetPublisherAttributeForPublisherRssPath(): Unit = {
-    request.setPathInfo("/wellington-city-council/rss")
+    request.setRequestURI("/wellington-city-council/rss")
 
     pageAttributeSetter.setAttributes(request)
 

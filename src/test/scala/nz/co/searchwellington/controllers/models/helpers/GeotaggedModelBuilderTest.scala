@@ -38,25 +38,25 @@ class GeotaggedModelBuilderTest extends ReasonableWaits with ContentFields {
 
   @Test
   def shouldBeValidForGeotaggedPath {
-    request.setPathInfo("/geotagged")
+    request.setRequestURI("/geotagged")
     assertTrue(modelBuilder.isValid(request))
   }
 
   @Test
   def shouldBeValidForGeotaggedRssPath {
-    request.setPathInfo("/geotagged/rss")
+    request.setRequestURI("/geotagged/rss")
     assertTrue(modelBuilder.isValid(request))
   }
 
   @Test
   def shouldBeValidForGeotaggedJSONPath {
-    request.setPathInfo("/geotagged/json")
+    request.setRequestURI("/geotagged/json")
     assertTrue(modelBuilder.isValid(request))
   }
 
   @Test
   def geotaggedNewsitemsPageShouldHavePaginationInformation {
-    request.setPathInfo("/geotagged")
+    request.setRequestURI("/geotagged")
     when(contentRetrievalService.getGeocodedNewitemsCount(loggedInUser)).thenReturn(Future.successful(TOTAL_GEOTAGGED_COUNT))
     when(contentRetrievalService.getGeocodedNewsitems(0, 30, loggedInUser)).thenReturn(Future.successful(Seq.empty))
 
@@ -74,7 +74,7 @@ class GeotaggedModelBuilderTest extends ReasonableWaits with ContentFields {
       thenReturn(Future.successful(newsitemsNearPetoneStationFirstPage.size.toLong))
     when(relatedTagsService.getRelatedTagsForLocation(any(), any(), any())).thenReturn(Future.successful(Seq()))
     when(relatedTagsService.getRelatedPublishersForLocation(any(), any(), any())).thenReturn(Future.successful(Seq()))
-    request.setPathInfo("/geotagged")
+    request.setRequestURI("/geotagged")
     request.setAttribute(LocationParameterFilter.LOCATION, validLocation)
 
     val modelAndView = Await.result(modelBuilder.populateContentModel(request), TenSeconds).get
@@ -91,7 +91,7 @@ class GeotaggedModelBuilderTest extends ReasonableWaits with ContentFields {
       thenReturn(Future.successful(newsitemsNearPetoneStationFirstPage.size.toLong))
     when(relatedTagsService.getRelatedTagsForLocation(any(), any(), any())).thenReturn(Future.successful(Seq()))
     when(relatedTagsService.getRelatedPublishersForLocation(any(), any(), any())).thenReturn(Future.successful(Seq()))
-    request.setPathInfo("/geotagged")
+    request.setRequestURI("/geotagged")
     request.setAttribute(LocationParameterFilter.LOCATION, validLocation)
     request.setAttribute(LocationParameterFilter.RADIUS, 3.0)
 
@@ -103,7 +103,7 @@ class GeotaggedModelBuilderTest extends ReasonableWaits with ContentFields {
 
   @Test
   def locationSearchesShouldHavePagination {
-    request.setPathInfo("/geotagged")
+    request.setRequestURI("/geotagged")
     when(contentRetrievalService.getNewsitemsNear(new LatLong(1.1, 2.2), 1.0, 0, 30, loggedInUser)).
       thenReturn(Future.successful(Seq.empty))
     when(contentRetrievalService.getNewsitemsNearCount(new LatLong(1.1, 2.2), 1.0, loggedInUser)).
@@ -120,7 +120,7 @@ class GeotaggedModelBuilderTest extends ReasonableWaits with ContentFields {
 
   @Test
   def locationSearchesShouldHaveCorrectContentOnSecondPaginationPage {
-    request.setPathInfo("/geotagged")
+    request.setRequestURI("/geotagged")
     when(contentRetrievalService.getNewsitemsNearCount(new LatLong(1.1, 2.2), 1.0, loggedInUser)).
       thenReturn(Future.successful(LOCATION_RESULTS_COUNT))
     when(contentRetrievalService.getNewsitemsNear(new LatLong(1.1, 2.2), 1.0, 30, 30, loggedInUser)).
@@ -138,7 +138,7 @@ class GeotaggedModelBuilderTest extends ReasonableWaits with ContentFields {
 
   @Test
   def locationSearchShouldNotSetLocationWasInvalid {
-    request.setPathInfo("/geotagged")
+    request.setRequestURI("/geotagged")
     request.setAttribute(LocationParameterFilter.LOCATION, invalidLocation)
     when(contentRetrievalService.getGeocodedNewsitems(0, 30, loggedInUser)).thenReturn(Future.successful(Seq.empty))
     when(contentRetrievalService.getGeocodedNewitemsCount(loggedInUser)).thenReturn(Future.successful(0L))

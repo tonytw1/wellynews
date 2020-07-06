@@ -31,7 +31,7 @@ class FeedsModelBuilderTest extends ReasonableWaits with ContentFields {
 
   @Before
   def setUp {
-    request.setPathInfo("/feeds")
+    request.setRequestURI("/feeds")
   }
 
   @Test

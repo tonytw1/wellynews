@@ -42,7 +42,7 @@ class PublisherMonthModelBuilderTest extends ReasonableWaits with ContentFields 
   def isValidForPublisherAndMonthPath(): Unit = {
     val request = new MockHttpServletRequest()
     request.setAttribute("publisher", publisher)
-    request.setPathInfo("/a-publisher/2020-feb")
+    request.setRequestURI("/a-publisher/2020-feb")
 
     assertTrue(modelBuilder.isValid(request))
   }
@@ -50,7 +50,7 @@ class PublisherMonthModelBuilderTest extends ReasonableWaits with ContentFields 
   @Test
   def isNotValidForPublisherAndMonthPath(): Unit = {
     val archiveMonthRequest = new MockHttpServletRequest
-    archiveMonthRequest.setPathInfo("/2020-may")
+    archiveMonthRequest.setRequestURI("/2020-may")
 
     assertFalse(modelBuilder.isValid(archiveMonthRequest))
   }
@@ -59,7 +59,7 @@ class PublisherMonthModelBuilderTest extends ReasonableWaits with ContentFields 
   def isValidForPublisherNonDate(): Unit = {
     val request = new MockHttpServletRequest()
     request.setAttribute("publisher", publisher)
-    request.setPathInfo("/a-publisher/something")
+    request.setRequestURI("/a-publisher/something")
 
     assertFalse(modelBuilder.isValid(request))
   }
@@ -68,7 +68,7 @@ class PublisherMonthModelBuilderTest extends ReasonableWaits with ContentFields 
   def mainContentIsPublishersNewsitemsForMonth(): Unit = {
     val request = new MockHttpServletRequest
     request.setAttribute("publisher", publisher)
-    request.setPathInfo("/a-publisher/2020-jul")
+    request.setRequestURI("/a-publisher/2020-jul")
 
     val july = new DateTime(2020, 7, 1, 0, 0)
     when(contentRetrievalService.getNewsitemsForPublisherInterval(publisher, new Interval(july, july.plusMonths(1)), None)).thenReturn(Future.successful(monthNewsitems))

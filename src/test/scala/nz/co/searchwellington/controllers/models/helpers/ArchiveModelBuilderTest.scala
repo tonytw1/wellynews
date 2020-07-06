@@ -29,7 +29,7 @@ class ArchiveModelBuilderTest extends ReasonableWaits with ContentFields {
 
   @Before
   def setup {
-    request.setPathInfo("/archive/2020-jul")
+    request.setRequestURI("/archive/2020-jul")
   }
 
   @Test

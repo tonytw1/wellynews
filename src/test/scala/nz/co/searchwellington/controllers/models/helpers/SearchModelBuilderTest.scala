@@ -43,7 +43,7 @@ class SearchModelBuilderTest extends ReasonableWaits with ContentFields {
 
   @Test
   def keywordShouldBeSetToIndicateASearch() {
-    request.setPathInfo("")
+    request.setRequestURI("")
     assertFalse(modelBuilder.isValid(request))
 
     request.setParameter("keywords", "widgets")

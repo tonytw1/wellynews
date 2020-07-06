@@ -33,7 +33,7 @@ class IndexModelBuilderTest extends ReasonableWaits with ContentFields {
 
   @Before
   def setup {
-    request.setPathInfo("/")
+    request.setRequestURI("/")
   }
 
   @Test
@@ -43,13 +43,13 @@ class IndexModelBuilderTest extends ReasonableWaits with ContentFields {
 
   @Test
   def isValidForMainRssUrl {
-    request.setPathInfo("/rss")
+    request.setRequestURI("/rss")
     assertTrue(modelBuilder.isValid(request))
   }
 
   @Test
   def isValidForMainJsonUrl {
-    request.setPathInfo("/json")
+    request.setRequestURI("/json")
     assertTrue(modelBuilder.isValid(request))
   }
 

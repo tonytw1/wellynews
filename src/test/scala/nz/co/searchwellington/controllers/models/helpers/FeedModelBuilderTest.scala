@@ -71,7 +71,7 @@ class FeedModelBuilderTest extends ReasonableWaits with ContentFields {
 
     request = new MockHttpServletRequest
     request.setAttribute("feedAttribute", feed)
-    request.setPathInfo("/feed/someonesfeed")
+    request.setRequestURI("/feed/someonesfeed")
   }
 
   @Test
