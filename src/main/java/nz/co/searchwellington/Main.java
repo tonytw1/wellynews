@@ -15,7 +15,6 @@ import org.apache.velocity.app.Velocity;
 import org.apache.velocity.runtime.RuntimeConstants;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.SpringApplication;
-import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
@@ -36,7 +35,6 @@ import java.util.Map;
 @EnableScheduling
 @ComponentScan("nz.co.searchwellington,uk.co.eelpieconsulting.common")
 @Configuration
-@EnableAutoConfiguration
 public class Main {
 
     private final static Logger log = Logger.getLogger(Main.class);
