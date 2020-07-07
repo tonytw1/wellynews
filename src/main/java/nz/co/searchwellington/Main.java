@@ -3,10 +3,12 @@ package nz.co.searchwellington;
 import com.google.common.collect.Maps;
 import nz.co.searchwellington.commentfeeds.detectors.CommentFeedDetector;
 import nz.co.searchwellington.commentfeeds.detectors.GenericCommentFeedDetector;
+import nz.co.searchwellington.controllers.LoggedInUserFilter;
 import nz.co.searchwellington.controllers.RssUrlBuilder;
 import nz.co.searchwellington.controllers.admin.AdminUrlBuilder;
 import nz.co.searchwellington.filters.RequestObjectLoadingFilter;
 import nz.co.searchwellington.model.SiteInformation;
+import nz.co.searchwellington.permissions.EditPermissionService;
 import nz.co.searchwellington.urls.UrlBuilder;
 import nz.co.searchwellington.utils.ColumnSplitter;
 import nz.co.searchwellington.utils.EscapeTools;
@@ -39,7 +41,7 @@ import java.io.IOException;
 import java.util.Map;
 
 @SpringBootApplication
-@EnableAutoConfiguration(exclude = { DataSourceAutoConfiguration.class, VelocityAutoConfiguration.class })
+@EnableAutoConfiguration(exclude = {DataSourceAutoConfiguration.class, VelocityAutoConfiguration.class})
 @EnableScheduling
 @ComponentScan("nz.co.searchwellington,uk.co.eelpieconsulting.common")
 @Configuration
@@ -99,7 +101,9 @@ public class Main {
             ColumnSplitter columnSplitter,
             ContentDedupingService contentDedupingService,
             DateFormatter dateFormatter,
+            EditPermissionService editPermissionService,
             GoogleMapsDisplayCleaner googleMapsDisplayCleaner,
+            LoggedInUserFilter loggedInUserFilter,
             RssUrlBuilder rssUrlBuilder,
             SiteInformation siteInformation,
             UrlBuilder urlBuilder) {
@@ -114,8 +118,10 @@ public class Main {
         attributes.put("columnSplitter", columnSplitter);
         attributes.put("contentDeduper", contentDedupingService);
         attributes.put("dateFormatter", dateFormatter);
+        attributes.put("editPermissionService", editPermissionService);
         attributes.put("escape", new EscapeTools());
         attributes.put("googleMapCleaner", googleMapsDisplayCleaner);
+        attributes.put("loggedInUserFilter", loggedInUserFilter);   // TODO not very functional
         attributes.put("rssUrlBuilder", rssUrlBuilder);
         attributes.put("site_information", siteInformation);    // TODO camel case
         attributes.put("urlBuilder", urlBuilder);
