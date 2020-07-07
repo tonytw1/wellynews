@@ -11,8 +11,6 @@
 
 <h2>$heading</h2>
 
-<p><i>$site_information.sitename</i> is ${site_information.areaname}'s own regional web directory.</p>
-  
 <p>The <i><a href="index#newslog">${site_information.areaname} Newslog</a></i>
 draws in notices and newsitems published by local organisations. The resulting 
 content isn't going to be what you'll find in a newspaper but we think that's 
