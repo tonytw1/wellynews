@@ -57,7 +57,7 @@
     </ul>
 
 	<h3>Index tags</h3>
-	<p>Theses tags have been used to index this item.<p>
+	<p>These tags have been used to index this item.<p>
 	<ul>
         #foreach ($tagging in $index_taggings)
             <li>$tagging.tag.name - $tagging.explanation</li>
