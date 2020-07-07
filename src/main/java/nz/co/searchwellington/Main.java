@@ -5,6 +5,7 @@ import nz.co.searchwellington.commentfeeds.detectors.CommentFeedDetector;
 import nz.co.searchwellington.commentfeeds.detectors.GenericCommentFeedDetector;
 import nz.co.searchwellington.controllers.RssUrlBuilder;
 import nz.co.searchwellington.controllers.admin.AdminUrlBuilder;
+import nz.co.searchwellington.filters.RequestObjectLoadingFilter;
 import nz.co.searchwellington.model.SiteInformation;
 import nz.co.searchwellington.urls.UrlBuilder;
 import nz.co.searchwellington.utils.ColumnSplitter;
@@ -14,12 +15,14 @@ import nz.co.searchwellington.views.GoogleMapsDisplayCleaner;
 import org.apache.log4j.Logger;
 import org.apache.velocity.app.Velocity;
 import org.apache.velocity.runtime.RuntimeConstants;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
 import org.springframework.boot.autoconfigure.velocity.VelocityAutoConfiguration;
+import org.springframework.boot.context.embedded.FilterRegistrationBean;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
@@ -48,6 +51,20 @@ public class Main {
 
     public static void main(String[] args) {
         ctx = SpringApplication.run(Main.class, args);
+    }
+
+
+    @Autowired
+    private RequestObjectLoadingFilter requestObjectLoadingFilter;
+
+    @Bean
+    public FilterRegistrationBean filterRegistration() {
+        FilterRegistrationBean registration = new FilterRegistrationBean();
+        registration.setFilter(requestObjectLoadingFilter);
+        registration.addUrlPatterns("/*");
+        registration.setName("requestObjectLoadingFilter");
+        registration.setOrder(1);
+        return registration;
     }
 
     @Bean

@@ -1,23 +1,16 @@
 package nz.co.searchwellington.filters;
 
-import java.io.IOException;
-
-import javax.servlet.Filter;
-import javax.servlet.FilterChain;
-import javax.servlet.FilterConfig;
-import javax.servlet.ServletException;
-import javax.servlet.ServletRequest;
-import javax.servlet.ServletResponse;
-import javax.servlet.http.HttpServletRequest;
-
 import nz.co.searchwellington.controllers.LoggedInUserFilter;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import javax.servlet.*;
+import javax.servlet.http.HttpServletRequest;
+import java.io.IOException;
+
 @Component("requestObjectLoadingFilter")
 public class RequestObjectLoadingFilter implements Filter {
-	
+
 	private RequestFilter requestFilter;
 	private LoggedInUserFilter loggedInUserFilter;
 	
