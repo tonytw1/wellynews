@@ -89,6 +89,7 @@ class ElasticSearchIndexer @Autowired()(val showBrokenDecisionService: ShowBroke
       }
     }
 
+    log.info("Connecting to Elasticsearch url: " + elasticsearchUrl)
     val client = ElasticClient(ElasticProperties(elasticsearchUrl))
     ensureIndexes(client)
     client
