@@ -22,15 +22,15 @@ import scala.concurrent.ExecutionContext.Implicits.global
 @Controller
 class EditFeedController @Autowired()(contentUpdateService: ContentUpdateService,
                                       mongoRepository: MongoRepository,
-                                      urlWordsGenerator: UrlWordsGenerator, urlBuilder: UrlBuilder,
-                                      loggedInUserFilter: LoggedInUserFilter) extends ReasonableWaits with AcceptancePolicyOptions with Errors {
+                                      urlWordsGenerator: UrlWordsGenerator,
+                                      urlBuilder: UrlBuilder,
+                                      val loggedInUserFilter: LoggedInUserFilter) extends ReasonableWaits with AcceptancePolicyOptions with Errors with RequiringLoggedInUser {
 
   private val log = Logger.getLogger(classOf[EditFeedController])
 
   @RequestMapping(value = Array("/edit-feed/{id}"), method = Array(RequestMethod.GET))
   def prompt(@PathVariable id: String): ModelAndView = {
-    Option(loggedInUserFilter.getLoggedInUser).map { loggedInUser =>
-
+    def showForm(loggedInUser: User): ModelAndView = {
       getFeedById(id).map { f =>
         val publisher = f.publisher.flatMap(pid => Await.result(mongoRepository.getResourceByObjectId(pid), TenSeconds))
 
@@ -44,14 +44,14 @@ class EditFeedController @Autowired()(contentUpdateService: ContentUpdateService
       }.getOrElse {
         NotFound
       }
-    }.getOrElse {
-      NotFound
     }
+
+    requiringAdminUser(showForm)
   }
 
   @RequestMapping(value = Array("/edit-feed/{id}"), method = Array(RequestMethod.POST))
   def submit(@PathVariable id: String, @Valid @ModelAttribute("editFeed") editFeed: EditFeed, result: BindingResult): ModelAndView = {
-    loggedInUserFilter.getLoggedInUser.map { loggedInUser =>
+    def handleSubmission(loggedInUser: User): ModelAndView = {
       getFeedById(id).map { f =>
         if (result.hasErrors) {
           log.warn("Edit feed submission has errors: " + result)
@@ -87,7 +87,9 @@ class EditFeedController @Autowired()(contentUpdateService: ContentUpdateService
           new ModelAndView(new RedirectView(urlBuilder.getFeedUrl(updatedFeed)))
         }
       }.getOrElse(NotFound)
-    }.getOrElse(NotFound)
+    }
+
+    requiringAdminUser(handleSubmission)
   }
 
   private def getFeedById(id: String): Option[Feed] = {
