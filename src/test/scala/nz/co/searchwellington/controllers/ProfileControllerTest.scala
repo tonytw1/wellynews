@@ -60,7 +60,7 @@ class ProfileControllerTest extends ReasonableWaits {
 
   @Test
   def usersPostsAndTaggingHistoryShouldBeFetchedFromTheContentRetrievalService {
-    request.setPathInfo("/profiles/" + VALID_PROFILE_NAME)
+    request.setRequestURI("/profiles/" + VALID_PROFILE_NAME)
     when(loggedInUserFilter.getLoggedInUser).thenReturn(None)
     when(mongoRepository.getUserByProfilename(VALID_PROFILE_NAME)).thenReturn(Future.successful(Some(existingUser)))
     when(contentRetrievalService.getOwnedBy(existingUser, loggedInUser)).thenReturn(Future.successful(existingUsersSubmittedItems))

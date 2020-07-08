@@ -39,7 +39,7 @@ class RequestFilterTest {
   @Test
   def shouldPopulateTagForAutotagUrl(): Unit = {
     val request = new MockHttpServletRequest
-    request.setPathInfo("/transport/autotag")
+    request.setRequestURI("/transport/autotag")
     filter.loadAttributesOntoRequest(request)
     verify(mongoRepository).getTagByUrlWords("transport") // TODO don't verify your stubs
   }
@@ -47,7 +47,7 @@ class RequestFilterTest {
   @Test
   def shouldParsePageAttribute(): Unit = {
     val request = new MockHttpServletRequest
-    request.setPathInfo("/transport")
+    request.setRequestURI("/transport")
     request.setParameter("page", "3")
 
     filter.loadAttributesOntoRequest(request)
@@ -59,7 +59,7 @@ class RequestFilterTest {
   @Test
   def shouldNotAttemptToResolveTagForReservedUrlWordComment(): Unit = {
     val request = new MockHttpServletRequest
-    request.setPathInfo("/comment")
+    request.setRequestURI("/comment")
     filter.loadAttributesOntoRequest(request)
     verifyNoMoreInteractions(mongoRepository)
   }
@@ -67,7 +67,7 @@ class RequestFilterTest {
   @Test
   def shouldNotAttemptToResolveTagForReservedUrlWordGeotagged(): Unit = {
     val request = new MockHttpServletRequest
-    request.setPathInfo("/geotagged/rss")
+    request.setRequestURI("/geotagged/rss")
     filter.loadAttributesOntoRequest(request)
     verifyNoMoreInteractions(mongoRepository)
   }
@@ -75,7 +75,7 @@ class RequestFilterTest {
   @Test
   def shouldPopulateTagForSingleTagCommentRequest(): Unit = {
     val request = new MockHttpServletRequest
-    request.setPathInfo("/transport/comment")
+    request.setRequestURI("/transport/comment")
     filter.loadAttributesOntoRequest(request)
     verify(mongoRepository).getTagByUrlWords("transport") // TODO don't verify stubs
     assertEquals(transportTag, request.getAttribute("tag"))
@@ -84,7 +84,7 @@ class RequestFilterTest {
   @Test
   def shouldPopulateTagForSingleTagCommentRssRequest(): Unit = {
     val request = new MockHttpServletRequest
-    request.setPathInfo("/transport/comment/rss")
+    request.setRequestURI("/transport/comment/rss")
     filter.loadAttributesOntoRequest(request)
     verify(mongoRepository).getTagByUrlWords("transport")
   }
@@ -92,7 +92,7 @@ class RequestFilterTest {
   @Test
   def shouldPopulatePublisherForPublisherRequest(): Unit = {
     val request = new MockHttpServletRequest
-    request.setPathInfo("/capital-times")
+    request.setRequestURI("/capital-times")
     when(mongoRepository.getTagByUrlWords("capital-times")).thenReturn(Future.successful(None))
 
     filter.loadAttributesOntoRequest(request)
@@ -104,7 +104,7 @@ class RequestFilterTest {
   @Test
   def shouldPopulateTagForSingleTagGeotagRequest(): Unit = {
     val request = new MockHttpServletRequest
-    request.setPathInfo("/transport/geotagged")
+    request.setRequestURI("/transport/geotagged")
     filter.loadAttributesOntoRequest(request)
     verify(mongoRepository).getTagByUrlWords("transport")
     assertEquals(transportTag, request.getAttribute("tag"))
@@ -113,7 +113,7 @@ class RequestFilterTest {
   @Test
   def shouldPopulateTagForSingleTagRequest(): Unit = {
     val request = new MockHttpServletRequest
-    request.setPathInfo("/transport")
+    request.setRequestURI("/transport")
     filter.loadAttributesOntoRequest(request)
     verify(mongoRepository).getTagByUrlWords("transport")
     assertEquals(transportTag, request.getAttribute("tag"))
@@ -123,7 +123,7 @@ class RequestFilterTest {
   @throws[Exception]
   def shouldPopulateTagForSingleTagRssRequest(): Unit = {
     val request = new MockHttpServletRequest
-    request.setPathInfo("/transport/rss")
+    request.setRequestURI("/transport/rss")
 
     filter.loadAttributesOntoRequest(request)
 
@@ -134,7 +134,7 @@ class RequestFilterTest {
   @Test
   def shouldPopulateAttributesForPublisherTagCombinerRequest(): Unit = {
     val request = new MockHttpServletRequest
-    request.setPathInfo("/capital-times+soccer")
+    request.setRequestURI("/capital-times+soccer")
     when(mongoRepository.getTagByUrlWords("capital-times+soccer")).thenReturn(Future.successful(None)) // TODO tag combiner pattern should have been blocked before here
     when(mongoRepository.getWebsiteByUrlwords("capital-times+soccer")).thenReturn(Future.successful(None))
 
@@ -150,7 +150,7 @@ class RequestFilterTest {
   @throws[Exception]
   def shouldPopulateAttributesForPublisherTagCombinerRssRequest(): Unit = {
     val request = new MockHttpServletRequest
-    request.setPathInfo("/capital-times+soccer/rss")
+    request.setRequestURI("/capital-times+soccer/rss")
     when(mongoRepository.getTagByUrlWords("capital-times+soccer")).thenReturn(Future.successful(None)) // TODO tag combiner pattern should have been blocked before here
     when(mongoRepository.getWebsiteByUrlwords("capital-times+soccer")).thenReturn(Future.successful(None))
 
@@ -165,7 +165,7 @@ class RequestFilterTest {
   @Test
   def shouldPopulateTagsForTagCombinerRequest(): Unit = {
     val request = new MockHttpServletRequest
-    request.setPathInfo("/transport+soccer")
+    request.setRequestURI("/transport+soccer")
     when(mongoRepository.getTagByUrlWords("transport+soccer")).thenReturn(Future.successful(None)) // TODO tag combiner pattern should have been blocked before here
     when(mongoRepository.getWebsiteByUrlwords("transport+soccer")).thenReturn(Future.successful(None))
 
@@ -184,7 +184,7 @@ class RequestFilterTest {
   @Test
   def shouldPopulateTagsForTagCombinerJSONRequest(): Unit = {
     val request = new MockHttpServletRequest
-    request.setPathInfo("/transport+soccer/json")
+    request.setRequestURI("/transport+soccer/json")
     when(mongoRepository.getTagByUrlWords("transport+soccer")).thenReturn(Future.successful(None)) // TODO tag combiner pattern should have been blocked before here
     when(mongoRepository.getWebsiteByUrlwords("transport+soccer")).thenReturn(Future.successful(None))
     when(mongoRepository.getWebsiteByUrlwords("transport")).thenReturn(Future.successful(None))
@@ -200,7 +200,7 @@ class RequestFilterTest {
   // TODO implement
   def testShouldPopulateWebsiteResourceByUrlStub(): Unit = {
     val request = new MockHttpServletRequest
-    request.setPathInfo("/edit/edit")
+    request.setRequestURI("/edit/edit")
     request.setParameter("resource", "a-publisher")
     when(mongoRepository.getWebsiteByUrlwords("a-publisher")).thenReturn(Future.successful(Some(capitalTimesPublisher)))
     filter.loadAttributesOntoRequest(request)

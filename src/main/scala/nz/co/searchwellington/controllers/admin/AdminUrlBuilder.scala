@@ -10,8 +10,8 @@ import org.springframework.stereotype.Component
 @Component
 class AdminUrlBuilder @Autowired()(siteInformation: SiteInformation,
                                    urlBuilder: UrlBuilder,
-                                   @Value("#{config['whakaoko.url']}") whakaokoUrl: String,
-                                   @Value("#{config['whakaoko.username']}") whakaokoUsername: String) {
+                                   @Value("${whakaoko.url}") whakaokoUrl: String,
+                                   @Value("${whakaoko.username}") whakaokoUsername: String) {
 
   def getResourceEditUrl(resource: FrontendResource): String = {
     resource match {

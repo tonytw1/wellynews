@@ -29,7 +29,7 @@ class ContentModelBuilderServiceTest extends ReasonableWaits {
 
   @Before def setup {
     request = new MockHttpServletRequest
-    request.setPathInfo("/something")
+    request.setRequestURI("/something")
   }
 
   @Test
@@ -76,7 +76,7 @@ class ContentModelBuilderServiceTest extends ReasonableWaits {
 
     val rssView = mock(classOf[RssView])
     when(viewFactory.getRssView(anyString, anyString, anyString)).thenReturn(rssView)
-    request.setPathInfo("/something/rss")
+    request.setRequestURI("/something/rss")
     assertEquals(rssView, Await.result(contentModelBuilderService.populateContentModel(request), TenSeconds).get.getView)
   }
 
@@ -94,7 +94,7 @@ class ContentModelBuilderServiceTest extends ReasonableWaits {
 
     val jsonView = mock(classOf[JsonView])
     when(viewFactory.getJsonView).thenReturn(jsonView)
-    request.setPathInfo("/something/json")
+    request.setRequestURI("/something/json")
     assertEquals(jsonView, Await.result(contentModelBuilderService.populateContentModel(request), TenSeconds).get.getView)
   }
 

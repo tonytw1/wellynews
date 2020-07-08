@@ -41,6 +41,7 @@ import scala.concurrent.Future
       import scala.collection.JavaConverters._
       val mv = new ModelAndView().
         addObject("publisher", frontendPublisher).
+        addObject("tag", tag).
         addObject("heading", publisher.title.getOrElse("") + " and " + tag.getDisplayName).
         addObject("description", "").
         addObject("link", urlBuilder.getPublisherCombinerUrl(publisher, tag)).

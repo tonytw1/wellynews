@@ -15,7 +15,7 @@ import reactivemongo.bson.{BSONDateTime, BSONDocument, BSONDocumentReader, BSOND
 import scala.concurrent.{Await, ExecutionContext, Future}
 
 @Component
-class MongoRepository @Autowired()(@Value("#{config['mongo.uri']}") mongoUri: String) extends ReasonableWaits {
+class MongoRepository @Autowired()(@Value("${mongo.uri}") mongoUri: String) extends ReasonableWaits {
 
   private val log = Logger.getLogger(classOf[MongoRepository])
 

@@ -4,17 +4,16 @@ Source code for http://wellington.gen.nz/
 
 Aggregates content from my hometown and attempts to automagically tag it.
 
-A long running code base where new ideas are tried out.
-Milage may vary.
+A long running code base where new ideas are tried out. Milage may vary.
+
+Currently Scala controllers behind Spring framework built with Maven :grimace:
+
 
 ## Local dev
 
 docker-compose -f docker/docker-compose.yml up
 
-mvn tomcat7:run
-
-
-
+mvn spring-boot:run
 
 
 ## Index tags

@@ -14,9 +14,9 @@ import play.api.libs.ws.ahc.StandaloneAhcWSClient
 import scala.concurrent.{ExecutionContext, Future}
 
 @Component
-class WhakaokoClient @Autowired()(@Value("#{config['whakaoko.url']}") whakaokoUrl: String,
-                                  @Value("#{config['whakaoko.username']}") whakaokoUsername: String,
-                                  @Value("#{config['whakaoko.channel']}") whakaokoChannel: String) extends JodaReads {
+class WhakaokoClient @Autowired()(@Value("${whakaoko.url}") whakaokoUrl: String,
+                                  @Value("${whakaoko.username}") whakaokoUsername: String,
+                                  @Value("${whakaoko.channel}") whakaokoChannel: String) extends JodaReads {
 
   private val log = Logger.getLogger(classOf[WhakaokoClient])
 

@@ -4,6 +4,7 @@ import java.util.regex.Pattern
 
 import javax.servlet.http.HttpServletRequest
 import nz.co.searchwellington.ReasonableWaits
+import nz.co.searchwellington.filters.RequestPath
 import nz.co.searchwellington.repositories.TagDAO
 import nz.co.searchwellington.repositories.mongo.MongoRepository
 import org.apache.log4j.Logger
@@ -21,7 +22,7 @@ import scala.concurrent.ExecutionContext.Implicits.global
 
   override def setAttributes(request: HttpServletRequest): Boolean = {
     log.debug("Looking for single tag path")
-    val contentMatcher = tagPagePathPattern.matcher(request.getPathInfo)
+    val contentMatcher = tagPagePathPattern.matcher(RequestPath.getPathFrom(request))
     if (contentMatcher.matches) {
       val tagUrlWords = contentMatcher.group(1)
       if (!(isReservedUrlWord(tagUrlWords))) {

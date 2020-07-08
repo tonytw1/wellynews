@@ -3,6 +3,7 @@ package nz.co.searchwellington.controllers.models.helpers
 import javax.servlet.http.HttpServletRequest
 import nz.co.searchwellington.ReasonableWaits
 import nz.co.searchwellington.controllers.models.ModelBuilder
+import nz.co.searchwellington.filters.RequestPath
 import nz.co.searchwellington.model.{FeedAcceptancePolicy, User}
 import nz.co.searchwellington.repositories.{ContentRetrievalService, SuggestedFeeditemsService}
 import nz.co.searchwellington.urls.UrlBuilder
@@ -22,7 +23,7 @@ import scala.concurrent.Future
   private val log = Logger.getLogger(classOf[FeedsModelBuilder])
 
   def isValid(request: HttpServletRequest): Boolean = {
-    request.getPathInfo.matches("^/feeds(/(rss|json))?$")
+    RequestPath.getPathFrom(request).matches("^/feeds(/(rss|json))?$")
   }
 
   def populateContentModel(request: HttpServletRequest, loggedInUser: Option[User]): Future[Option[ModelAndView]] = {

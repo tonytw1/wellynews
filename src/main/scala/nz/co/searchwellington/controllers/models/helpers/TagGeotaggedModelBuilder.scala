@@ -6,6 +6,7 @@ import javax.servlet.http.HttpServletRequest
 import nz.co.searchwellington.ReasonableWaits
 import nz.co.searchwellington.controllers.RssUrlBuilder
 import nz.co.searchwellington.controllers.models.ModelBuilder
+import nz.co.searchwellington.filters.RequestPath
 import nz.co.searchwellington.model.{Tag, User}
 import nz.co.searchwellington.repositories.ContentRetrievalService
 import nz.co.searchwellington.urls.UrlBuilder
@@ -27,7 +28,7 @@ import scala.concurrent.Future
   def isValid(request: HttpServletRequest): Boolean = {
     val tags = request.getAttribute("tags").asInstanceOf[List[Tag]]
     val isSingleTagPage = tags != null && tags.size == 1
-    val hasCommentPath = request.getPathInfo.matches("^(.*?)/geotagged(/(rss|json))?$")
+    val hasCommentPath = RequestPath.getPathFrom(request).matches("^(.*?)/geotagged(/(rss|json))?$")
     isSingleTagPage && hasCommentPath
   }
 

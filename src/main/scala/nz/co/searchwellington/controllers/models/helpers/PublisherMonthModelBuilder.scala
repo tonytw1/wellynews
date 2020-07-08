@@ -2,6 +2,7 @@ package nz.co.searchwellington.controllers.models.helpers
 
 import javax.servlet.http.HttpServletRequest
 import nz.co.searchwellington.controllers.models.ModelBuilder
+import nz.co.searchwellington.filters.RequestPath
 import nz.co.searchwellington.model.frontend.FrontendResource
 import nz.co.searchwellington.model.mappers.FrontendResourceMapper
 import nz.co.searchwellington.model.{PublisherArchiveLink, User, Website}
@@ -25,13 +26,13 @@ import scala.concurrent.Future
 
   override def isValid(request: HttpServletRequest): Boolean = {
     Option(request.getAttribute("publisher").asInstanceOf[Website]).flatMap { publisher =>
-      parseMonth(publisher, request.getPathInfo)
+      parseMonth(publisher, RequestPath.getPathFrom(request))
     }.nonEmpty
   }
 
   override def populateContentModel(request: HttpServletRequest, loggedInUser: Option[User]): Future[Option[ModelAndView]] = {
     Option(request.getAttribute("publisher").asInstanceOf[Website]).map { publisher =>
-      parseMonth(publisher, request.getPathInfo).map { month =>
+      parseMonth(publisher, RequestPath.getPathFrom(request)).map { month =>
         for {
           eventualFrontendWebsite <- frontendResourceMapper.createFrontendResourceFrom(publisher)
           newsitemsForMonth <- contentRetrievalService.getNewsitemsForPublisherInterval(publisher, month, loggedInUser)

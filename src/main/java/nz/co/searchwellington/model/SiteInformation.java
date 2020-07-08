@@ -6,22 +6,19 @@ import org.springframework.stereotype.Component;
 @Component
 public class SiteInformation {
 	
-    @Value("#{config['areaname']}")
+    @Value("${areaname}")
 	private String areaname;
 
-    @Value("#{config['installed']}")
+    @Value("${installed}")
 	private String url;
     
-    @Value("#{config['twitter.username']}")
+    @Value("${twitter.username}")
     private String twitterUsername;
-    
-    @Value("#{config['googlemaps.apikey']}")
-    private String googleMapsApiKey;
-    
-    @Value("#{config['imageroot']}")  
+
+    @Value("${imageroot}")
     private String imageRoot;
     
-    @Value("#{config['staticroot']}")
+    @Value("${staticroot}")
     private String staticRoot;
     
     public SiteInformation() {
@@ -46,11 +43,7 @@ public class SiteInformation {
     public String getTwitterUsername() {
         return twitterUsername;
     }
-    
-    public String getGoogleMapsApiKey() {
-        return googleMapsApiKey;
-    }
-    
+
 	public String getStaticRoot() {
 		return staticRoot;
 	}

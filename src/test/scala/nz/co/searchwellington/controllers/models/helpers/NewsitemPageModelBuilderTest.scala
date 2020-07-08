@@ -35,7 +35,7 @@ class NewsitemPageModelBuilderTest extends ReasonableWaits {
 
     val validPath = "/newsitem/" + newsitem.id
     val request = new MockHttpServletRequest
-    request.setPathInfo(validPath)
+    request.setRequestURI(validPath)
 
     assertTrue(modelBuilder.isValid(request))
   }
@@ -45,7 +45,7 @@ class NewsitemPageModelBuilderTest extends ReasonableWaits {
     val newsitem = Newsitem()
     val validPath = "/newsitem/" + newsitem.id
     val request = new MockHttpServletRequest
-    request.setPathInfo(validPath)
+    request.setRequestURI(validPath)
 
     val place = Geocode(address = Some("Somewhere"))
     val frontendNewsitem = FrontendNewsitem(id = newsitem.id, place = Some(place))
@@ -67,7 +67,7 @@ class NewsitemPageModelBuilderTest extends ReasonableWaits {
     val newsitem = Newsitem()
     val validPath = "/newsitem/" + newsitem.id
     val request = new MockHttpServletRequest
-    request.setPathInfo(validPath)
+    request.setRequestURI(validPath)
 
     val place = Geocode(address = Some("Somewhere"))
     val frontendNewsitem = FrontendNewsitem(id = newsitem.id, place = Some(place))
@@ -101,7 +101,7 @@ class NewsitemPageModelBuilderTest extends ReasonableWaits {
     val newsitem = Newsitem()
     val validPath = "/newsitem/" + newsitem.id
     val request = new MockHttpServletRequest
-    request.setPathInfo(validPath)
+    request.setRequestURI(validPath)
 
     val id = UUID.randomUUID()
     val place = Geocode(address = Some("Somewhere"))
@@ -120,7 +120,7 @@ class NewsitemPageModelBuilderTest extends ReasonableWaits {
   def shouldNotPopulateGeotaggedItemsIfNewsitemIsNotGeotagged {
     val validPath = "/newsitem/" + Newsitem().id
     val request = new MockHttpServletRequest
-    request.setPathInfo(validPath)
+    request.setRequestURI(validPath)
 
     val id = UUID.randomUUID()
     val frontendNewsitem = FrontendNewsitem(id = id.toString)

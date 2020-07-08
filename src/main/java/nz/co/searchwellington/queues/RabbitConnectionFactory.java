@@ -16,8 +16,8 @@ public class RabbitConnectionFactory {
 	
 	@Autowired
 	public RabbitConnectionFactory(
-			@Value("#{config['rabbit.hostname']}") String rabbitHost,
-			@Value("#{config['rabbit.port']}") Integer rabbitPort
+			@Value("${rabbit.hostname}") String rabbitHost,
+			@Value("${rabbit.port}") Integer rabbitPort
 	) {
 		this.factory = new ConnectionFactory();
 		factory.setHost(rabbitHost);

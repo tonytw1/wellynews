@@ -34,7 +34,7 @@ class AdminRequestFilterTest {
 
   @Test
   def shouldPopulateParentTagAttribute {
-    request.setPathInfo("/edit/tag/save")
+    request.setRequestURI("/edit/tag/save")
     request.setParameter("parent", "transport")
 
     filter.loadAttributesOntoRequest(request)
@@ -44,7 +44,7 @@ class AdminRequestFilterTest {
 
   @Test
   def shouldParseDateParameterIntoDateAttribute {
-    request.setPathInfo("/edit/save")
+    request.setRequestURI("/edit/save")
     request.setParameter("date", "23 Apr 2009")
 
     filter.loadAttributesOntoRequest(request)
@@ -56,7 +56,7 @@ class AdminRequestFilterTest {
 
   @Test
   def shouldPopulateResourceFromParameter {
-    request.setPathInfo("/edit/edit")
+    request.setRequestURI("/edit/edit")
     request.setParameter("resource", "567")
 
     filter.loadAttributesOntoRequest(request)
@@ -68,7 +68,7 @@ class AdminRequestFilterTest {
 
   @Test
   def shouldPopulateTagFromParameterAsWell {
-    request.setPathInfo("/edit/tag/save")
+    request.setRequestURI("/edit/tag/save")
     request.setParameter("tag", "transport")
 
     filter.loadAttributesOntoRequest(request)
@@ -81,7 +81,7 @@ class AdminRequestFilterTest {
 
   @Test
   def shouldPopulateFeedAttributeFromParameter {
-    request.setPathInfo("/edit/tag/save")
+    request.setRequestURI("/edit/tag/save")
     request.setParameter("feed", "a-feed")
     when(mongoRepository.getFeedByUrlwords("a-feed")).thenReturn(Future.successful(Some(feed)))
 

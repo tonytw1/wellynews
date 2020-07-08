@@ -29,9 +29,6 @@ public class RequestFilter {
   private RequestAttributeFilter[] filters;
   private List<AttributeSetter> attributeSetters;
 
-  public RequestFilter() {
-  }
-
   @Autowired
   public RequestFilter(CombinerPageAttributeSetter combinerPageAttributeSetter,
                        PublisherPageAttributeSetter publisherPageAttributeSetter,
@@ -48,7 +45,7 @@ public class RequestFilter {
       filter.filter(request);
     }
 
-    if (isReservedPath(request.getPathInfo())) {
+    if (isReservedPath(RequestPath.getPathFrom(request))) {
       return;
     }
 

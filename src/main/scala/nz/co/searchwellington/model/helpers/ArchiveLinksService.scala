@@ -1,12 +1,11 @@
 package nz.co.searchwellington.model.helpers
 
 import nz.co.searchwellington.model.ArchiveLink
-import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
 import org.springframework.web.servlet.ModelAndView
 
 @Component
-class ArchiveLinksService @Autowired()() {
+class ArchiveLinksService {
 
   private val MaxBackIssues = 6
 

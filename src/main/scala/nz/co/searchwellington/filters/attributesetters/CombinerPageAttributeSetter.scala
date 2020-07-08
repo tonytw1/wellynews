@@ -4,6 +4,7 @@ import java.util.regex.Pattern
 
 import javax.servlet.http.HttpServletRequest
 import nz.co.searchwellington.ReasonableWaits
+import nz.co.searchwellington.filters.RequestPath
 import nz.co.searchwellington.repositories.TagDAO
 import nz.co.searchwellington.repositories.mongo.MongoRepository
 import org.apache.log4j.Logger
@@ -20,7 +21,7 @@ import scala.concurrent.ExecutionContext.Implicits.global
   private val combinerPattern = Pattern.compile("^/(.*)\\+(.*?)(/rss|/json)?$")
 
   override def setAttributes(request: HttpServletRequest): Boolean = {
-    val matcher = combinerPattern.matcher(request.getPathInfo)
+    val matcher = combinerPattern.matcher(RequestPath.getPathFrom(request))
     if (matcher.matches) {
       val left = matcher.group(1)
       val right = matcher.group(2)

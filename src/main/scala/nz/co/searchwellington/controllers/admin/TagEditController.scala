@@ -6,7 +6,7 @@ import java.util.regex.Pattern
 import javax.servlet.http.{HttpServletRequest, HttpServletResponse}
 import nz.co.searchwellington.ReasonableWaits
 import nz.co.searchwellington.controllers.{CommonModelObjectsService, LoggedInUserFilter, SubmissionProcessingService, UrlStack}
-import nz.co.searchwellington.filters.AdminRequestFilter
+import nz.co.searchwellington.filters.{AdminRequestFilter, RequestPath}
 import nz.co.searchwellington.model.{Feed, Tag, UrlWordsGenerator, User}
 import nz.co.searchwellington.modification.TagModificationService
 import nz.co.searchwellington.permissions.EditPermissionService
@@ -147,7 +147,7 @@ import scala.concurrent.ExecutionContext.Implicits.global
   }
 
   private def tagFromPage(request: HttpServletRequest): Option[Tag] = {
-    val matcher = pattern.matcher(request.getPathInfo)
+    val matcher = pattern.matcher(RequestPath.getPathFrom(request))
     if (matcher.matches) {
       val urlWords = matcher.group(1)
       Await.result(mongoRepository.getTagByUrlWords(urlWords), TenSeconds)
