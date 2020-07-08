@@ -1,6 +1,7 @@
 package nz.co.searchwellington.queues;
 
 import java.io.IOException;
+import java.util.concurrent.TimeoutException;
 
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,7 +19,7 @@ public class LinkCheckerQueue {
     private final Channel channel;
 
     @Autowired
-    public LinkCheckerQueue(RabbitConnectionFactory rabbitConnectionFactory) throws IOException {
+    public LinkCheckerQueue(RabbitConnectionFactory rabbitConnectionFactory) throws IOException, TimeoutException {
         channel = rabbitConnectionFactory.connect().createChannel();
         channel.queueDeclare(QUEUE_NAME, false, false, false, null);
     }

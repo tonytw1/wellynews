@@ -1,6 +1,7 @@
 package nz.co.searchwellington.queues;
 
 import java.io.IOException;
+import java.util.concurrent.TimeoutException;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -24,7 +25,7 @@ public class RabbitConnectionFactory {
 		factory.setPort(rabbitPort);
 	}
 	
-	public Connection connect() throws IOException {
+	public Connection connect() throws IOException, TimeoutException {
 		return factory.newConnection();
 	}
 	
