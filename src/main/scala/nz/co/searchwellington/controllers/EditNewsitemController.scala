@@ -25,31 +25,29 @@ import scala.concurrent.ExecutionContext.Implicits.global
 class EditNewsitemController @Autowired()(contentUpdateService: ContentUpdateService,
                                           mongoRepository: MongoRepository,
                                           urlBuilder: UrlBuilder,
-                                          loggedInUserFilter: LoggedInUserFilter,
+                                          val loggedInUserFilter: LoggedInUserFilter,
                                           tagDAO: TagDAO,
                                           val cachingNominatimResolveOsmIdService: CachingNominatimResolveOsmIdService
-                                        ) extends ReasonableWaits with AcceptancePolicyOptions with Errors with GeotagParsing {
+                                         ) extends ReasonableWaits with AcceptancePolicyOptions with Errors with GeotagParsing with RequiringLoggedInUser {
 
   private val log = Logger.getLogger(classOf[EditNewsitemController])
 
-  @RequestMapping(value = Array("/edit-website/{id}"), method = Array(RequestMethod.GET))
+  @RequestMapping(value = Array("/edit-newsitem/{id}"), method = Array(RequestMethod.GET))
   def prompt(@PathVariable id: String): ModelAndView = {
-    loggedInUserFilter.getLoggedInUser.map { loggedInUser =>
+    def showForm(loggedInUser: User): ModelAndView = {
       getNewsitemById(id).map { newsitem =>
         renderEditForm(newsitem, mapToForm(newsitem, loggedInUser))
-
       }.getOrElse {
         NotFound
       }
-
-    }.getOrElse {
-      NotFound // TODO logged in user
     }
+
+    requiringAdminUser(showForm)
   }
 
   @RequestMapping(value = Array("/edit-website/{id}"), method = Array(RequestMethod.POST))
   def submit(@PathVariable id: String, @Valid @ModelAttribute("editNewsitem") formObject: EditNewsitem, result: BindingResult): ModelAndView = {
-    loggedInUserFilter.getLoggedInUser.map { loggedInUser =>
+    def handleSubmission(loggedInUser: User): ModelAndView = {
       getNewsitemById(id).map { w =>
         if (result.hasErrors) {
           log.warn("Edit newsitem submission has errors: " + result)
@@ -85,9 +83,9 @@ class EditNewsitemController @Autowired()(contentUpdateService: ContentUpdateSer
 
       }.getOrElse(NotFound)
 
-    }.getOrElse {
-      NotFound // TODO logged in user
     }
+
+    requiringAdminUser(handleSubmission)
   }
 
   private def getNewsitemById(id: String): Option[Newsitem] = {
