@@ -25,16 +25,16 @@ import scala.concurrent.ExecutionContext.Implicits.global
 class EditWebsiteController @Autowired()(contentUpdateService: ContentUpdateService,
                                          mongoRepository: MongoRepository,
                                          urlBuilder: UrlBuilder,
-                                         loggedInUserFilter: LoggedInUserFilter,
+                                         val loggedInUserFilter: LoggedInUserFilter,
                                          tagDAO: TagDAO,
                                          val cachingNominatimResolveOsmIdService: CachingNominatimResolveOsmIdService
-                                        ) extends ReasonableWaits with AcceptancePolicyOptions with Errors with GeotagParsing {
+                                        ) extends ReasonableWaits with AcceptancePolicyOptions with Errors with GeotagParsing with RequiringLoggedInUser {
 
   private val log = Logger.getLogger(classOf[EditWebsiteController])
 
   @RequestMapping(value = Array("/edit-website/{id}"), method = Array(RequestMethod.GET))
   def prompt(@PathVariable id: String): ModelAndView = {
-    loggedInUserFilter.getLoggedInUser.map { loggedInUser =>
+    def showForm(loggedInUser: User): ModelAndView = {
       getWebsiteById(id).map { w =>
         val editWebsite = new EditWebsite()
         editWebsite.setTitle(w.title.getOrElse(""))
@@ -56,19 +56,17 @@ class EditWebsiteController @Autowired()(contentUpdateService: ContentUpdateServ
 
         renderEditForm(w, editWebsite)
 
-
       }.getOrElse {
         NotFound
       }
-
-    }.getOrElse {
-      NotFound // TODO logged in user
     }
+
+    requiringAdminUser(showForm)
   }
 
   @RequestMapping(value = Array("/edit-website/{id}"), method = Array(RequestMethod.POST))
   def submit(@PathVariable id: String, @Valid @ModelAttribute("editWebsite") editWebsite: EditWebsite, result: BindingResult): ModelAndView = {
-    loggedInUserFilter.getLoggedInUser.map { loggedInUser =>
+    def handleSubmission(loggedInUser: User): ModelAndView = {
       getWebsiteById(id).map { w =>
         if (result.hasErrors) {
           log.warn("Edit website submission has errors: " + result)
@@ -104,10 +102,9 @@ class EditWebsiteController @Autowired()(contentUpdateService: ContentUpdateServ
         }
 
       }.getOrElse(NotFound)
-
-    }.getOrElse {
-      NotFound // TODO logged in user
     }
+
+    requiringAdminUser(handleSubmission)
   }
 
   private def getWebsiteById(id: String): Option[Website] = {
