@@ -1,5 +1,6 @@
 package nz.co.searchwellington.forms;
 
+import com.google.common.collect.Lists;
 import org.hibernate.validator.constraints.NotBlank;
 
 import java.util.List;
@@ -13,7 +14,7 @@ public class EditWebsite {
 
     private String geocode, selectedGeocode;
 
-    private List<String> tags;
+    private List<String> tags = Lists.newArrayList();
 
     public String getTitle() {
         return title;
