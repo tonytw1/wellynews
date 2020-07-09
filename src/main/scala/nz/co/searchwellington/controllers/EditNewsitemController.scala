@@ -27,8 +27,8 @@ class EditNewsitemController @Autowired()(contentUpdateService: ContentUpdateSer
                                           urlBuilder: UrlBuilder,
                                           val loggedInUserFilter: LoggedInUserFilter,
                                           tagDAO: TagDAO,
-                                          val cachingNominatimResolveOsmIdService: CachingNominatimResolveOsmIdService
-                                         ) extends ReasonableWaits with AcceptancePolicyOptions with Errors with GeotagParsing with RequiringLoggedInUser {
+                                          val cachingNominatimResolveOsmIdService: CachingNominatimResolveOsmIdService)
+  extends ReasonableWaits with AcceptancePolicyOptions with Errors with GeotagParsing with RequiringLoggedInUser {
 
   private val log = Logger.getLogger(classOf[EditNewsitemController])
 
@@ -49,10 +49,10 @@ class EditNewsitemController @Autowired()(contentUpdateService: ContentUpdateSer
   @RequestMapping(value = Array("/edit-newsitem/{id}"), method = Array(RequestMethod.POST))
   def submit(@PathVariable id: String, @Valid @ModelAttribute("formObject") formObject: EditNewsitem, result: BindingResult): ModelAndView = {
     def handleSubmission(loggedInUser: User): ModelAndView = {
-      getNewsitemById(id).map { w =>
+      getNewsitemById(id).map { newsitem =>
         if (result.hasErrors) {
           log.warn("Edit newsitem submission has errors: " + result)
-          renderEditForm(w, formObject)
+          renderEditForm(newsitem, formObject)
 
         } else {
           log.info("Got valid edit newsitem submission: " + formObject)
@@ -68,7 +68,7 @@ class EditNewsitemController @Autowired()(contentUpdateService: ContentUpdateSer
             Tagging(tag_id = tag._id, user_id = loggedInUser._id)
           }
 
-          val updated = w.copy(
+          val updated = newsitem.copy(
             title = Some(formObject.getTitle),
             page = Some(formObject.getUrl),
             description = Some(formObject.getDescription),
@@ -79,11 +79,10 @@ class EditNewsitemController @Autowired()(contentUpdateService: ContentUpdateSer
 
           contentUpdateService.update(updated)
 
-          new ModelAndView(new RedirectView("TODO"))
+          new ModelAndView(new RedirectView("/newsitem/" + newsitem.id)) // TODO Url builder
         }
 
       }.getOrElse(NotFound)
-
     }
 
     requiringAdminUser(handleSubmission)
