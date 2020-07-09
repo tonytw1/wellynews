@@ -38,6 +38,7 @@ class EditNewsitemController @Autowired()(contentUpdateService: ContentUpdateSer
       getNewsitemById(id).map { newsitem =>
         renderEditForm(newsitem, mapToForm(newsitem, loggedInUser))
       }.getOrElse {
+        log.info("No newsitem found for id: " + id)
         NotFound
       }
     }
