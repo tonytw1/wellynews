@@ -45,7 +45,7 @@ class EditNewsitemController @Autowired()(contentUpdateService: ContentUpdateSer
     requiringAdminUser(showForm)
   }
 
-  @RequestMapping(value = Array("/edit-website/{id}"), method = Array(RequestMethod.POST))
+  @RequestMapping(value = Array("/edit-newsitem/{id}"), method = Array(RequestMethod.POST))
   def submit(@PathVariable id: String, @Valid @ModelAttribute("editNewsitem") formObject: EditNewsitem, result: BindingResult): ModelAndView = {
     def handleSubmission(loggedInUser: User): ModelAndView = {
       getNewsitemById(id).map { w =>
