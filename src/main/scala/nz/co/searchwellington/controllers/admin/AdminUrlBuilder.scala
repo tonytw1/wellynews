@@ -17,6 +17,8 @@ class AdminUrlBuilder @Autowired()(siteInformation: SiteInformation,
     resource match {
       case f: FrontendFeed =>
         "/edit-feed/" + f.id
+      case n: FrontendNewsitem =>
+        "/edit-newsitem/" + n.id
       case w: FrontendWebsite =>
         "/edit-website/" + w.id
       case _ =>
@@ -73,7 +75,7 @@ class AdminUrlBuilder @Autowired()(siteInformation: SiteInformation,
   }
 
   def getPublisherAutoGatherUrl(resource: FrontendWebsite): String = {
-    Option(urlBuilder.getResourceUrl(resource)).map ( _ + "/gather").orNull
+    Option(urlBuilder.getResourceUrl(resource)).map(_ + "/gather").orNull
   }
 
   def getAddTagUrl: String = siteInformation.getUrl + "/new-tag"
