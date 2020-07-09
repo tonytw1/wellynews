@@ -3,6 +3,7 @@ package nz.co.searchwellington.feeds.reading.whakaoko
 import akka.actor.ActorSystem
 import akka.stream.ActorMaterializer
 import nz.co.searchwellington.feeds.reading.whakaoko.model.{FeedItem, LatLong, Place, Subscription}
+import org.apache.http.HttpStatus
 import org.apache.log4j.Logger
 import org.joda.time.{DateTime, Duration}
 import org.springframework.beans.factory.annotation.{Autowired, Value}
@@ -41,7 +42,7 @@ class WhakaokoClient @Autowired()(@Value("${whakaoko.url}") whakaokoUrl: String,
 
     wsClient.url(createFeedSubscriptionUrl).post(params).map { r =>
       log.debug("New feed result: " + r.status + " / " + r.body)
-      if (r.status == 200) {
+      if (r.status == HttpStatus.SC_OK) {
         Some(Json.parse(r.body).as[Subscription])
       } else {
         None
@@ -55,7 +56,7 @@ class WhakaokoClient @Autowired()(@Value("${whakaoko.url}") whakaokoUrl: String,
     val start = DateTime.now()
     wsClient.url(channelItemsUrl).addQueryStringParameters("page" -> page.toString).get.map { r =>
       log.info("Channel channel items returned after: " + new Duration(start, DateTime.now).getMillis)
-      if (r.status == 200) {
+      if (r.status == HttpStatus.SC_OK) {
         Json.parse(r.body).as[Seq[FeedItem]]
       } else {
         Seq.empty
@@ -73,7 +74,7 @@ class WhakaokoClient @Autowired()(@Value("${whakaoko.url}") whakaokoUrl: String,
     val start = DateTime.now()
     withUrl.get.map { r =>
       log.info("Channel subscriptions returned after: " + new Duration(start, DateTime.now).getMillis)
-      if (r.status == 200) {
+      if (r.status == HttpStatus.SC_OK) {
         Json.parse(r.body).as[Seq[Subscription]]
       } else {
         log.warn("Get channel subscriptions failed (" + (whakaokoUrl + "/" + whakaokoUsername + "/channels/" + whakaokoChannel + "/subscriptions") + "): " + r.status + " / " + r.body)
@@ -85,7 +86,7 @@ class WhakaokoClient @Autowired()(@Value("${whakaoko.url}") whakaokoUrl: String,
   def getSubscriptionFeedItems(subscriptionId: String)(implicit ec: ExecutionContext): Future[Seq[FeedItem]] = {
     val subscriptionItemsUrl = whakaokoUrl + "/" + whakaokoUsername + "/subscriptions/" + subscriptionId + "/items"
     wsClient.url(subscriptionItemsUrl).get.map { r =>
-      if (r.status == 200) {
+      if (r.status == HttpStatus.SC_OK) {
         Json.parse(r.body).as[Seq[FeedItem]]
       } else {
         Seq.empty
