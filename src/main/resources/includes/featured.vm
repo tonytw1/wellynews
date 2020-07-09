@@ -1,6 +1,6 @@
 #if ($featured && $featured.size() > 0)
 	<div class="box">
-		<h2>$site_information.areaname Links</h2>
+		<h2>$siteInformation.areaname Links</h2>
 
 		<p>We use and recommend the following.</p>
 

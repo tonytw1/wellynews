@@ -11,12 +11,12 @@
 
 <h2>$heading</h2>
 
-<p>The <i><a href="index#newslog">${site_information.areaname} Newslog</a></i>
+<p>The <i><a href="index#newslog">${siteInformation.areaname} Newslog</a></i>
 draws in notices and newsitems published by local organisations. The resulting 
 content isn't going to be what you'll find in a newspaper but we think that's 
 half the attraction.</p>
 
-<p>The Newslog appears daily on the front page of Search $site_information.areaname and is also available
+<p>The Newslog appears daily on the front page of Search $siteInformation.areaname and is also available
 as an <a href="rssfeeds">RSS feed</a>.</p>
 
 
@@ -39,7 +39,7 @@ Organisations can indiciate in their robots.txt that Search Wellington should no
 <h3>Contact</h3>
 
 <p>
-Search $site_information.areaname is edited from the frozen waste lands of Twickenham, 
+Search $siteInformation.areaname is edited from the frozen waste lands of Twickenham,
 London by an <a href="http://wah.wellington.gen.nz">expatriate Wellingtonian</a>. New site 
 <a href="index#submit">submissions</a> are always welcomed.
 </p>

@@ -10,7 +10,7 @@
 
 <p>Relevent newsitems are now geotagged with location information.</p>
 
-<p><a href="$site_information.url/geotagged">More...</a></p>
+<p><a href="$siteInformation.url/geotagged">More...</a></p>
 #end
 </div>
 #end

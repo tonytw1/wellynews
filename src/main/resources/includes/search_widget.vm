@@ -1,4 +1,4 @@
-<form action="$site_information.url/search">
+<form action="$siteInformation.url/search">
     <fieldset>
         <input name="keywords" #if ($search_keywords) value="$search_keywords" #end />
         <input type="submit" value="Search" />

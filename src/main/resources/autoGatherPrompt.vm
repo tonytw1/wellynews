@@ -13,7 +13,7 @@
 	
 		<p>The following newsitems might belong to this publisher:</p>
 	
-		<form method="POST" action="$site_information.url/admin/gather/apply">
+		<form method="POST" action="$siteInformation.url/admin/gather/apply">
 			<ul class="flat_list">
 				#foreach($item in $resources_to_tag)
 					<li>#parse("includes/content_element.vm")
@@ -28,7 +28,7 @@
 			<input type="submit" value="Apply" />	
 		</form>
 	
-		<form action="$site_information.url/cancel" method="POST">
+		<form action="$siteInformation.url/cancel" method="POST">
 			<input type="submit" value="cancel" />
 		</form>
 	</div>

@@ -1,5 +1,5 @@
 #if($parent)
-    <h2><a href="$site_information.url/$parent.name">$parent.displayName</a> / $tag.displayName</h2>
+    <h2><a href="$siteInformation.url/$parent.name">$parent.displayName</a> / $tag.displayName</h2>
 #else
     <h2>$tag.displayName</h2>
 #end

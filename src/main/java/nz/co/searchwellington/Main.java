@@ -123,7 +123,7 @@ public class Main {
         attributes.put("googleMapCleaner", googleMapsDisplayCleaner);
         attributes.put("loggedInUserFilter", loggedInUserFilter);   // TODO not very functional
         attributes.put("rssUrlBuilder", rssUrlBuilder);
-        attributes.put("site_information", siteInformation);    // TODO camel case
+        attributes.put("siteInformation", siteInformation);
         attributes.put("urlBuilder", urlBuilder);
         viewResolver.setAttributesMap(attributes);
         return viewResolver;

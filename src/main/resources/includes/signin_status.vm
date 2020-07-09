@@ -8,9 +8,9 @@
                 <a href="$urlBuilder.getProfileUrl()">new user with no profile name</a>
             #end
 		</li>
-		<li><a href="$site_information.url/logout">Sign out</a></li>
+		<li><a href="$siteInformation.url/logout">Sign out</a></li>
 	#else
-		<li><a href="$site_information.url/signin">Sign in</a></li>        		
+		<li><a href="$siteInformation.url/signin">Sign in</a></li>
 	#end
 	</ul>
 </div>

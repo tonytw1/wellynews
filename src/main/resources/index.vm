@@ -1,4 +1,4 @@
-#set ($heading = $site_information.tagline)
+#set ($heading = $siteInformation.tagline)
 #parse("includes/header.vm")
 
 <div class="page">
@@ -9,8 +9,8 @@
 	</div>
 
 	<div class="main">
-		<p>Search $site_information.areaname is ${site_information.areaname}'s own regional web directory;
-		it's $site_information.areaname in a box.</p>
+		<p>Search $siteInformation.areaname is ${siteInformation.areaname}'s own regional web directory;
+		it's $siteInformation.areaname in a box.</p>
 
 		#parse("includes/nearme.vm")
 
@@ -24,9 +24,9 @@
 			</div>
 
 			<h2>Meanwhile...</h2>
-			<p>The $site_information.areaname Newslog is an informal roundup of the $site_information.areaname webspace.
+			<p>The $siteInformation.areaname Newslog is an informal roundup of the $siteInformation.areaname webspace.
 				The Newslog is also available as an <a href="rssfeeds">RSS feed</a>
-				#if ($site_information.isTwitterEnabled()) or via <a href="https://twitter.com/wellynews">Twitter</a>#end.
+				#if ($siteInformation.isTwitterEnabled()) or via <a href="https://twitter.com/wellynews">Twitter</a>#end.
 			</p>
 
 			#parse("includes/main_content.vm")
@@ -40,7 +40,7 @@
 	<div class="right">
 		
 		<div class="box">
-			<a href="$site_information.url/about#nikau"><img src="$urlBuilder.getStaticUrl('palm.jpg')" width="255" border="0"></a>
+			<a href="$siteInformation.url/about#nikau"><img src="$urlBuilder.getStaticUrl('palm.jpg')" width="255" border="0"></a>
 		</div>
 		
 		#parse("includes/your_listing.vm")
@@ -53,7 +53,7 @@
 			<a name="submit"></a>
 			<h2>Submit</h2>
 			<p>Enquiring minds want to know!</p>
-			<p>Submit your $site_information.areaname related listings.</p>
+			<p>Submit your $siteInformation.areaname related listings.</p>
 			<ul>
 				<li><a href="$urlBuilder.getSubmitWebsiteUrl()">Submit Website</a></li>
 				<li><a href="$urlBuilder.getSubmitNewsitemUrl()">Submit Newsitem</a></li>

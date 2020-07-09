@@ -2,12 +2,12 @@
 	<ul>
 		<li><b><a href="${urlBuilder.homeUrl}">Wellynews</a></b></li>
 		<li><a href="${urlBuilder.homeUrl}#submit">Submit</a></li>
-		<li><a href="$site_information.url/feeds">Feeds</a></li>
-		<li><a href="$site_information.url/tags">Tags</a></li>
-		<li><a href="$site_information.url/publishers">Publishers</a></li>
-		<li><a href="$site_information.url/watchlist">Watchlist</a></li>
-		<li><a href="$site_information.url/about">About</a></li>
-		<li><a href="$site_information.url/about#contact">Contact</a></li>
+		<li><a href="$siteInformation.url/feeds">Feeds</a></li>
+		<li><a href="$siteInformation.url/tags">Tags</a></li>
+		<li><a href="$siteInformation.url/publishers">Publishers</a></li>
+		<li><a href="$siteInformation.url/watchlist">Watchlist</a></li>
+		<li><a href="$siteInformation.url/about">About</a></li>
+		<li><a href="$siteInformation.url/about#contact">Contact</a></li>
 	</ul>
 	<br/>
 	#if ($featuredTags)

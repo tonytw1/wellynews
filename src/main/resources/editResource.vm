@@ -64,7 +64,7 @@
 		not have permission to edit this particular listing.</p>
 	#end
 
-	<form action="$site_information.url/cancel" method="POST">
+	<form action="$siteInformation.url/cancel" method="POST">
 		<input type="submit" value="cancel" />
 	</form>
 

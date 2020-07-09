@@ -1,11 +1,11 @@
 <!--
 <p>Sign in using your OpenID or your 
-	<a href="$site_information.url/openid/login?openid_claimed_identity=https://google.com/accounts/o8/id">Google</a>, 
-	<a href="$site_information.url/openid/login?openid_claimed_identity=https://flickr.com">Flickr</a>		
-	or <a href="$site_information.url/openid/login?openid_claimed_identity=https://me.yahoo.com/">Yahoo</a> 
+	<a href="$siteInformation.url/openid/login?openid_claimed_identity=https://google.com/accounts/o8/id">Google</a>,
+	<a href="$siteInformation.url/openid/login?openid_claimed_identity=https://flickr.com">Flickr</a>
+	or <a href="$siteInformation.url/openid/login?openid_claimed_identity=https://me.yahoo.com/">Yahoo</a>
 	account (all of whom support OpenID):</p>
 	
-<form action="$site_information.url/openid/login" method="POST"> 
+<form action="$siteInformation.url/openid/login" method="POST">
 	<fieldset>	  			
 		<input 	name="openid_claimed_identity" style="background: #fff url('$urlBuilder.getImageUrl('openid_logo.png')') no-repeat left; padding-left: 18px">
 		<input type="submit" class="password" value="Sign in">
@@ -14,4 +14,4 @@
 -->
 	
 <p>Sign in using your Twitter account:</p>
-<p><a href="$site_information.url/twitter/login"><img src="$urlBuilder.getImageUrl('sign-in-with-twitter-gray-1-png-img-fullhd-medium.png.img.fullhd.medium.png')" border="0" alt="Sign in with Twitter"></a></p>
+<p><a href="$siteInformation.url/twitter/login"><img src="$urlBuilder.getImageUrl('sign-in-with-twitter-gray-1-png-img-fullhd-medium.png.img.fullhd.medium.png')" border="0" alt="Sign in with Twitter"></a></p>

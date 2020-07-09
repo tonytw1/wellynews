@@ -11,7 +11,7 @@
 	<div class="main">
 		<h2>Submitting a Newsitem</h2>
 		
-		<form id="editForm" action="$site_information.url/save" method="POST">
+		<form id="editForm" action="$siteInformation.url/save" method="POST">
 			<fieldset>
 									
 				#parse("includes/form_resource_title_and_url.vm")				
@@ -37,7 +37,7 @@
 		</fieldset>
 	</form>
 	
-	<form action="$site_information.url/cancel" method="POST">
+	<form action="$siteInformation.url/cancel" method="POST">
 		<input type="submit" value="cancel" />
 	</form>
 

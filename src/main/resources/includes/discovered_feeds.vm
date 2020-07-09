@@ -22,7 +22,7 @@
 
 
 #if ($discovered_feeds_moreurl) 
-		<li class="more"><a href="$site_information.url/$discovered_feeds_moreurl">More...</a></li>
+		<li class="more"><a href="$siteInformation.url/$discovered_feeds_moreurl">More...</a></li>
 #end
 
 </ul>

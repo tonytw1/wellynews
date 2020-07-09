@@ -26,7 +26,7 @@
 #parse("includes/content_element.vm")
 </ul>
 
-<form action="$site_information.url/cancel" method="POST">
+<form action="$siteInformation.url/cancel" method="POST">
 	<input type="submit" value="ok" />
 </form>
 

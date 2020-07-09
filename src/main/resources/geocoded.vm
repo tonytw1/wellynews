@@ -23,7 +23,7 @@
 
 #parse("includes/nearme.vm")
 			
-<form action="$site_information.url/geotagged">
+<form action="$siteInformation.url/geotagged">
 	<fieldset>				
 		<input name="location" #if ($locationQuery) value="$locationQuery" #end />
 		<input type="submit" value="Search by location" />

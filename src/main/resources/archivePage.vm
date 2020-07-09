@@ -14,7 +14,7 @@
             #parse("includes/rss_widget_for_publisher.vm")
         </div>
 
-        <h2><a href="$site_information.url/archive">Archive</a> / $heading</h2>
+        <h2><a href="$siteInformation.url/archive">Archive</a> / $heading</h2>
         #parse("includes/search_widget.vm")
 
         #if ($previous_page || $next_page)

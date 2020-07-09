@@ -31,10 +31,10 @@
 
 		<p>The Wellynews API lets you do something simular with the local newsitems indexed by Search Wellington.</p>
 
-		<p>For example, the API can provide a feed of local newsitems related to <a href="$site_information.url/consultation/rss">consultation</a>; 
-		or maybe <a href="$site_information.url/zebras/rss">zebras</a>. It can also handle potentially interesting combinations,
-		such as <a href="$site_information.url/wellington-city-council+indoorsportscentre/rss">what Wellington City Council has said about the Indoor Sports Centre</a> or
-		<a href="$site_information.url/sculpture+waterfront/rss">sculpture on the waterfront</a>.
+		<p>For example, the API can provide a feed of local newsitems related to <a href="$siteInformation.url/consultation/rss">consultation</a>;
+		or maybe <a href="$siteInformation.url/zebras/rss">zebras</a>. It can also handle potentially interesting combinations,
+		such as <a href="$siteInformation.url/wellington-city-council+indoorsportscentre/rss">what Wellington City Council has said about the Indoor Sports Centre</a> or
+		<a href="$siteInformation.url/sculpture+waterfront/rss">sculpture on the waterfront</a>.
 		</p>
 
 	
@@ -52,13 +52,13 @@
 		<p>ie. Transport newsitems in RSS format:</p>
 
 		<ul>
-			<li><code><a href="$site_information.url/transport/rss">$site_information.url/transport/rss</a></code></li>
+			<li><code><a href="$siteInformation.url/transport/rss">$siteInformation.url/transport/rss</a></code></li>
 		</ul>
 
 		<p>or the same newsitems in JSON format:</p>
 		
 		<ul>
-			<li><code><a href="$site_information.url/transport/json">$site_information.url/transport/json</a></code></li>
+			<li><code><a href="$siteInformation.url/transport/json">$siteInformation.url/transport/json</a></code></li>
 		</ul>
 
 
@@ -82,13 +82,13 @@
 		<p>Returns newsitems tagged with a given tag.</p>
 	
 		<ul>
-			<li><code>$site_information.url/[tag url snippet]/[rss|json]</code>
+			<li><code>$siteInformation.url/[tag url snippet]/[rss|json]</code>
 		</ul>
 
 		<p>ie. All newsitems tagged with soccer, in RSS format.</p>
 
 		<ul>
-			<li><code><a href="$site_information.url/soccer/rss">$site_information.url/soccer/rss</a></code></li>
+			<li><code><a href="$siteInformation.url/soccer/rss">$siteInformation.url/soccer/rss</a></code></li>
 		</ul>
 
 
@@ -97,13 +97,13 @@
 		<p>Returns newsitems published by a specific publisher.</p>
 
 		<ul>
-			<li><code>$site_information.url/[publisher url snippet]/[rss|json]</code>
+			<li><code>$siteInformation.url/[publisher url snippet]/[rss|json]</code>
 		</ul>
 
 		<p>ie. newsitems published by the Capital Times, in JSON format.</p>
 
 		<ul>
-			<li><code><a href="$site_information.url/capital-times/json">$site_information.url/capital-times/json</a></code></li>
+			<li><code><a href="$siteInformation.url/capital-times/json">$siteInformation.url/capital-times/json</a></code></li>
 		</ul>
 
 
@@ -114,14 +114,14 @@
 		<p> The tags are seperated with a plus character. For combinations involving a publisher, the publisher must always appear on the left hand side of the plus.</p> 
 
 		<ul>
-			<li><code>$site_information.url/[tag|publisher]+[tag]/[rss|json]</code>
+			<li><code>$siteInformation.url/[tag|publisher]+[tag]/[rss|json]</code>
 		</ul>
 
 		<p>ie. newsitems tagged with transport and consultation and Wellington City Council media releases tagged with indoor sports centre</a>.</p>
 
 		<ul>
-			<li><code><a href="$site_information.url/transport+consultation/rss">$site_information.url/transport+consultation/rss</a></code></li>
-			<li><code><a href="$site_information.url/wellington-city-council+indoorsportscentre/rss">$site_information.url/wellington-city-council+indoorsportscentre/rss</a></code></li>
+			<li><code><a href="$siteInformation.url/transport+consultation/rss">$siteInformation.url/transport+consultation/rss</a></code></li>
+			<li><code><a href="$siteInformation.url/wellington-city-council+indoorsportscentre/rss">$siteInformation.url/wellington-city-council+indoorsportscentre/rss</a></code></li>
 		</ul>
 
 		<p>Credit: The combination url scheme was inspired by the Guardian newspapers' tag combiners.</p>
@@ -132,13 +132,13 @@
 		
 		<p>Returns newsitems which have been commented on.</p>
 		<ul>
-			<li><code>$site_information.url/comment/[rss/json]</code></li>
+			<li><code>$siteInformation.url/comment/[rss/json]</code></li>
 		</ul>
 
 		<p>ie. Commented newsitesm in JSON format.</p>
 
 		<ul>
-			<li><code><a href="$site_information.url/comment/json">$site_information.url/waterfront/comment/json</a></code></li>
+			<li><code><a href="$siteInformation.url/comment/json">$siteInformation.url/waterfront/comment/json</a></code></li>
 		</ul>
 
 		<p>Commented newsitems also specifiy the newsitems'comment feed url on the <code>commentFeed</code> field on the JSON results.</p>
@@ -150,12 +150,12 @@
 
 		<p>Returns commented newsitems for a given tag.</p>	
 		<ul>
-			<li><code>$site_information.url/[tag url snippet]/comment/[rss|json]</code>
+			<li><code>$siteInformation.url/[tag url snippet]/comment/[rss|json]</code>
 		</ul>
 
 		<p>ie. Commented newsitems tagged with waterfront in JSON format.</p>
 		<ul>
-			<li><code><a href="$site_information.url/waterfront/comment/json">$site_information.url/waterfront/comment/json</a></code></li>
+			<li><code><a href="$siteInformation.url/waterfront/comment/json">$siteInformation.url/waterfront/comment/json</a></code></li>
 		</ul>
 
 
@@ -164,12 +164,12 @@
 		
 		<p>Returns newsitems which have been geotagged.</p>
 		<ul>
-			<li><code>$site_information.url/geotagged/[rss|json]</code></li>
+			<li><code>$siteInformation.url/geotagged/[rss|json]</code></li>
 		</ul>
 
 		<p>ie. Geotagged newsitems in RSS format.</p>
 		<ul>
-			<li><code><a href="$site_information.url/geotagged/rss">$site_information.url/geotagged/rss</a></code></li>
+			<li><code><a href="$siteInformation.url/geotagged/rss">$siteInformation.url/geotagged/rss</a></code></li>
 		</ul>
 
 
@@ -182,7 +182,7 @@
 		<p>ie. page 6 of the Victoria University newsitems:</p>
 
 		<ul>
-			<li><code><a href="$site_information.url/victoria-university-of-wellington/json?page=6">$site_information.url/victoria-university-of-wellington/json?page=6</a></code></li>
+			<li><code><a href="$siteInformation.url/victoria-university-of-wellington/json?page=6">$siteInformation.url/victoria-university-of-wellington/json?page=6</a></code></li>
 		</ul>
 
 		<p>You can see the total number of available results in the <code>totalItems</code> field of the JSON results. The <code>showingFrom</code>
@@ -208,7 +208,7 @@
 
 		<p>ie.</p>
 		<ul>
-			<li><code><a href="$site_information.url/zebras/json?callback=mycallbackfunction">$site_information.url/zebras/json?callback=mycallbackfunction</a></code></li>
+			<li><code><a href="$siteInformation.url/zebras/json?callback=mycallbackfunction">$siteInformation.url/zebras/json?callback=mycallbackfunction</a></code></li>
 		</ul>
 
 		<p>Your callback function name may contain letters, numbers and underscores only.</p>
@@ -233,14 +233,14 @@
 		<p>Provides JSON copies of local RSS feeds. This makes it easier to integrate feeds into sites using Javascript.</p>
 
 		<ul>
-			<li><code>$site_information.url/feed/[feed url snippet]/json</code><br/>
+			<li><code>$siteInformation.url/feed/[feed url snippet]/json</code><br/>
 			Where the feed url snippet matches one of the feeds listed below.</li>
 		</ul>
 
 		<p>ie. Wellington City Councils' latest news feed as a JSON list:</p>
 
 		<ul>
-			<li><code><a href="$site_information.url/feed/wellington-city-council-latest-news/json">$site_information.url/feed/wellington-city-council-latest-news/json</a></code></li>
+			<li><code><a href="$siteInformation.url/feed/wellington-city-council-latest-news/json">$siteInformation.url/feed/wellington-city-council-latest-news/json</a></code></li>
 		</ul>
 	
 		<p>A complete list of feed url snippets is provided <a href="#feedurlsnippets">below</a>.</p>

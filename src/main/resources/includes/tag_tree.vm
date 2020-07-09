@@ -19,10 +19,10 @@
 		#if ($tag.id == $tagToRender.id) 
 			<b>$tagToRender.displayName</b>
 		#else
-			<a href="${site_information.url}/$tagToRender.name">$tagToRender.displayName</a>
+			<a href="${siteInformation.url}/$tagToRender.name">$tagToRender.displayName</a>
 		#end		
 	#else
-		<a href="${site_information.url}/$tagToRender.name">$tagToRender.displayName</a>
+		<a href="${siteInformation.url}/$tagToRender.name">$tagToRender.displayName</a>
 	#end
 	</li>
 #end
@@ -34,5 +34,5 @@
 	#end
 #end
 
-<li><a href="${site_information.url}/tags">All Tags...</a></li>
+<li><a href="${siteInformation.url}/tags">All Tags...</a></li>
 </ul>

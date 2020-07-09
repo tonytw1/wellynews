@@ -8,7 +8,7 @@
 
     <div class="main">
         #if($tag)
-            <h2><a href="$site_information.url/$tag.name">$tag.displayName</a> / &ldquo;$query&rdquo;</h2>
+            <h2><a href="$siteInformation.url/$tag.name">$tag.displayName</a> / &ldquo;$query&rdquo;</h2>
         #else
             <h2>Search Results / &ldquo;$query&rdquo;</h2>
         #end
