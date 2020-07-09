@@ -47,7 +47,7 @@ class EditNewsitemController @Autowired()(contentUpdateService: ContentUpdateSer
   }
 
   @RequestMapping(value = Array("/edit-newsitem/{id}"), method = Array(RequestMethod.POST))
-  def submit(@PathVariable id: String, @Valid @ModelAttribute("editNewsitem") formObject: EditNewsitem, result: BindingResult): ModelAndView = {
+  def submit(@PathVariable id: String, @Valid @ModelAttribute("formObject") formObject: EditNewsitem, result: BindingResult): ModelAndView = {
     def handleSubmission(loggedInUser: User): ModelAndView = {
       getNewsitemById(id).map { w =>
         if (result.hasErrors) {
@@ -129,7 +129,7 @@ class EditNewsitemController @Autowired()(contentUpdateService: ContentUpdateSer
     new ModelAndView("editNewsitem").
       addObject("title", "Editing a newsitem").
       addObject("newsitem", n).
-      addObject("editNewitem", formObject).
+      addObject("formObject", formObject).
       addObject("tags", Await.result(tagDAO.getAllTags, TenSeconds).asJava)
   }
 

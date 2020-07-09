@@ -1,0 +1,60 @@
+#parse("includes/header.vm")
+
+<div class="page">
+	#parse("includes/topbar.vm")
+
+	<div class="left">
+		#parse("includes/tag_tree.vm")
+	</div>
+
+	<div class="main">
+		<h2>Editing a Website</h2>
+		
+		<form id="editForm" action="$adminUrlBuilder.getResourceEditUrl($newsitem)" method="POST">
+            <fieldset>
+                #springBind("formObject.title")
+                <label for="${status.expression}">Title:</label>
+                <input name="${status.expression}" class="title" value="$!{status.value}" />
+                <br />
+
+                #springBind("formObject.url")
+                <label for="${status.expression}">URL:</label>
+                <input name="${status.expression}" class="title" value="$!{status.value}" />
+                <br />
+
+                #springBind("formObject.description")
+                <label for="${status.expression}">Description:</label>
+                <input name="${status.expression}" class="title" value="$!{status.value}" />
+                <br />
+
+                #springBind("formObject.geocode")
+                <label for="${status.expression}">Geocode:</label>
+                <input id="geocode" name="${status.expression}" class="title" value="$!{status.value}" />
+                <br />
+                #springBind("formObject.selectedGeocode")
+                <label for="${status.expression}">Selected geocode:</label>
+                <input id="selectedGeocode" name="${status.expression}" class="title" value="$!{status.value}" />
+                <br />
+
+                #springBind("formObject.tags")
+                <label for="${status.expression}">Tags:</label>
+                <select name="${status.expression}" multiple >
+                    #foreach($tag in $tags)
+                        <option value="$tag.id" #if($status.actualValue.contains($tag.getBSONId())) SELECTED #end>$tag.name
+                    #end
+                </select>
+                <br />
+
+				<input type="submit" value="Submit" />
+			</fieldset>
+		</form>
+	
+		<form action="/cancel" method="POST">
+			<input type="submit" value="Cancel" />
+		</form>
+
+	</div>
+
+</div>
+
+#parse("includes/footer.vm")
