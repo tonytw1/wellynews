@@ -297,16 +297,11 @@
 					
 			<h5>Source code</h5>
 			
-			<p>The Javascript source code for the above example is available below.</p>
+			<p><a href="https://github.com/tonytw1/wellynews/blob/master/src/main/resources/widget.vm">Source code</a>.</p>
 			
-			<iframe src="http://im.wellington.gen.nz/static/example.txt" width="250" height="280" frameborder="0"></iframe>
-						
-			
-			<p>This example was implemented using the <a href="http://jquery.com/">JQuery Javascript library</a>. Any other JSON library could be used. 
-			
-			<p>Following, is a line by line breakdown of what the example is doing:</p>
-				
-			<p>Lines 1-2: HTML for the Transport heading and an emptry div tag which JQuery will write the newsitems into.</p>
+			<p>This example was implemented using the <a href="http://jquery.com/">JQuery Javascript library</a>.
+
+			<p>Lines 1-2: HTML for the Transport heading and an empty div tag which JQuery will write the newsitems into.</p>
 			<p>Line 4: Sourcing in the JQuery library file; you would normally do the in the head tag.</p>
 			<p>Lines 6-8: JQuery. Once the page has finished loading and is ready, fetch JSON data from the API and pass it to the function renderNewsitems.</p>
 			<p>Lines 10-16: JQuery. The renderNewsitems function is using JQuery to write out the first 4 items from the JSON data as HTML into the empty newsitems div.</p>
