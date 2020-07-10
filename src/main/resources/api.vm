@@ -184,7 +184,7 @@
 		</ul>
 
 		<p>You can see the total number of available results in the <code>totalItems</code> field of the JSON results. The <code>showingFrom</code>
-		 and <code>showingTo</code> fields tell you which resuls you are currently viewing:</p>
+		 and <code>showingTo</code> fields tell you which results you are currently viewing:</p>
 
 <pre>
 <code>
