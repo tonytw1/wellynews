@@ -119,6 +119,7 @@ public class Main {
         attributes.put("contentDeduper", contentDedupingService);
         attributes.put("dateFormatter", dateFormatter);
         attributes.put("editPermissionService", editPermissionService);
+        attributes.put("escape", new EscapeTools());
         attributes.put("googleMapCleaner", googleMapsDisplayCleaner);
         attributes.put("loggedInUserFilter", loggedInUserFilter);   // TODO not very functional
         attributes.put("rssUrlBuilder", rssUrlBuilder);
