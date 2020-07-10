@@ -119,7 +119,6 @@ public class Main {
         attributes.put("contentDeduper", contentDedupingService);
         attributes.put("dateFormatter", dateFormatter);
         attributes.put("editPermissionService", editPermissionService);
-        attributes.put("escape", new EscapeTools());
         attributes.put("googleMapCleaner", googleMapsDisplayCleaner);
         attributes.put("loggedInUserFilter", loggedInUserFilter);   // TODO not very functional
         attributes.put("rssUrlBuilder", rssUrlBuilder);
@@ -136,7 +135,7 @@ public class Main {
         velocityPropertiesMap.put(Velocity.OUTPUT_ENCODING, "UTF-8");
         velocityPropertiesMap.put(Velocity.INPUT_ENCODING, "UTF-8");
         velocityPropertiesMap.put(RuntimeConstants.RESOURCE_LOADER, "classpath");
-        //velocityPropertiesMap.put("eventhandler.referenceinsertion.class", "org.apache.velocity.app.event.implement.EscapeHtmlReference");
+        velocityPropertiesMap.put("eventhandler.referenceinsertion.class", "org.apache.velocity.app.event.implement.EscapeHtmlReference");
         vc.setVelocityPropertiesMap(velocityPropertiesMap);
         return vc;
     }

@@ -7,10 +7,8 @@
 		#parse("includes/tag_tree.vm")
 	</div>
 
-
 	<div class="main">
 		<h2>$heading</h2>
-				
 		<ul>
 			<li class="tagged"><a href="#gettingstarted">Getting started</a> | </li>
 			<li class="tagged"><a href="#newsitemqueries">Newsitem queries</a> | </li>
@@ -43,8 +41,8 @@
 	
 		<h5>Supported Formats</h5>
 
-		<p>The API allows newsitems to be extracted in RSS or JSON (Javascript) formats. RSS is widely supported by feed readers, 
-		web browsers and server side libraries. JSON is typically used for passing data into browser based Javascript applications and mashups.</p>
+		<p>The API allows newsitems to be extracted in RSS or JSON (JavaScript) formats. RSS is widely supported by feed readers,
+		web browsers and server side libraries. JSON is typically used for passing data into browser based JavaScript applications and mashups.</p>
 
 		<p>The desired format is specified by appending ethier <code>rss</code> or <code>json</code>
 		to the end of the query url.</p>
@@ -186,7 +184,7 @@
 		</ul>
 
 		<p>You can see the total number of available results in the <code>totalItems</code> field of the JSON results. The <code>showingFrom</code>
-		 and <code>showingTo</code> fields tell you which resuls you are currently viewing:</p>
+		 and <code>showingTo</code> fields tell you which results you are currently viewing:</p>
 
 <pre>
 <code>
@@ -198,21 +196,6 @@
 }
 </code>
 </pre>
-
-
-
-		<h5><b>JSONP callbacks</b></h5>
-
-		<p>You can specify that JSON results should be wrapped in a JSONP style callback, using the optional <code>callback</code>
-		parameter. This is approch is required when making cross domain JSON calls from a web brower.</p>
-
-		<p>ie.</p>
-		<ul>
-			<li><code><a href="$siteInformation.url/zebras/json?callback=mycallbackfunction">$siteInformation.url/zebras/json?callback=mycallbackfunction</a></code></li>
-		</ul>
-
-		<p>Your callback function name may contain letters, numbers and underscores only.</p>
-
 
 		<a name="geotagging">
 		<h2>Geotagging</h2>
@@ -230,7 +213,7 @@
 		<a name="rsstojson"></a>	
 		<h2>RSS to JSON feed mirroring</h2>
 
-		<p>Provides JSON copies of local RSS feeds. This makes it easier to integrate feeds into sites using Javascript.</p>
+		<p>Provides JSON copies of local RSS feeds. This makes it easier to integrate feeds into sites using JavaScript.</p>
 
 		<ul>
 			<li><code>$siteInformation.url/feed/[feed url snippet]/json</code><br/>
@@ -281,46 +264,32 @@
 				<td><code>$item.urlWords</code></td></tr>
 			#end
 		</table>
-
-
 	</div>
 
 	<div class="right">
-		
 		<div class="box">
-			<h2>Usage Example</h2>
-			<p>Example: Using JSON and Javascript to pull the latest transport newsitems into a page.</p>			
-		
+			<h2>Example</h2>
+			<p>Using JSON and JavaScript to show the latest transport newsitems on a page.</p>
 			<div class="apiexample">
 				#include("widget.vm")
 			</div>
-					
+
 			<h5>Source code</h5>
-			
-			<p>The Javascript source code for the above example is available below.</p>
-			
-			<iframe src="http://im.wellington.gen.nz/static/example.txt" width="250" height="280" frameborder="0"></iframe>
-						
-			
-			<p>This example was implemented using the <a href="http://jquery.com/">JQuery Javascript library</a>. Any other JSON library could be used. 
-			
-			<p>Following, is a line by line breakdown of what the example is doing:</p>
-				
-			<p>Lines 1-2: HTML for the Transport heading and an emptry div tag which JQuery will write the newsitems into.</p>
-			<p>Line 4: Sourcing in the JQuery library file; you would normally do the in the head tag.</p>
-			<p>Lines 6-8: JQuery. Once the page has finished loading and is ready, fetch JSON data from the API and pass it to the function renderNewsitems.</p>
-			<p>Lines 10-16: JQuery. The renderNewsitems function is using JQuery to write out the first 4 items from the JSON data as HTML into the empty newsitems div.</p>
+			<p><a href="https://github.com/tonytw1/wellynews/blob/master/src/main/resources/widget.vm">Source code</a>.</p>
+			<p>This example was implemented using the <a href="http://jquery.com/">jQuery JavaScript library</a>.
+
+			<p>Lines 1-2: HTML for the Transport heading and an empty div tag which jQuery will write the newsitems into.</p>
+			<p>Line 4: Sourcing in the jQuery library file; you would normally do the in the head tag.</p>
+			<p>Lines 6-8: jQuery. Once the page has finished loading and is ready, fetch JSON data from the API and pass it to the function renderNewsitems.</p>
+			<p>Lines 10-16: jQuery. The renderNewsitems function is using jQuery to write out the first 4 items from the JSON data as HTML into the empty newsitems div.</p>
 		</div>
-		
-		
+
 		<a name="contact"></a>
 		<div class="box">
 			<h2>Contact</h2>
 			<p>Doing something interesting with this?</p><p>Contact <code>enquires (at) wellington.gen.nz</code> and let us know.</p>
 			
 		</div>
-		
-		
 	</div>
 
 </div>
