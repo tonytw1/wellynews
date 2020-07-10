@@ -70,10 +70,10 @@
 		<p>This item has had the following tags applied to it:</p>					
 		<ul>
 		#foreach($vote in $votes)
-			<li><a href="$urlBuilder.getTagUrl($vote.tag)">$escape.html($vote.tag.displayName.toLowerCase())</a> 
+			<li><a href="$urlBuilder.getTagUrl($vote.tag)">$vote.tag.displayName.toLowerCase()</a>
 				
 			#if($vote.voter.profilename) 
-				by <a href="$urlBuilder.getProfileUrl($vote.voter)">$escape.html($vote.voter.voterName)</a>
+				by <a href="$urlBuilder.getProfileUrl($vote.voter)">$vote.voter.voterName</a>
 			#else 
 				(automatically derived from $vote.voter.voterName.toLowerCase())		
 			#end
@@ -100,7 +100,7 @@
 			#end
 												
 			#if($vote.voter.profilename) 
-				by <a href="$urlBuilder.getProfileUrl($vote.voter)">$escape.html($vote.voter.voterName)</a>
+				by <a href="$urlBuilder.getProfileUrl($vote.voter)">$vote.voter.voterName</a>
 			#else 
 				(automatically derived from $vote.voter.voterName.toLowerCase())		
 			#end

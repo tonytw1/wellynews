@@ -1,5 +1,5 @@
 	<label for="title">Title:</label>
-	<input name="title" class="title" value="$escape.html($resource.getName())" />
+	<input name="title" class="title" value="$resource.getName()" />
 	<br />
 		
 	<label for="url">Url:</label>

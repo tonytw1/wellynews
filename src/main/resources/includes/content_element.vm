@@ -6,7 +6,7 @@
             #set($itemUrl = $urlBuilder.getFeedUrl($item))
 		#end
 		
-		<h5><a href="$itemUrl">$escape.html($item.name)</a></h5>
+		<h5><a href="$itemUrl">$item.name</a></h5>
 							
 		<ul>
 			#if ($item.date && ($item.type == "N" || $item.type == "FNI" || $item.type == "S") && $dateFormatter)
@@ -25,12 +25,12 @@
 			#end
 				
 			#if ($item.description) 
-				<li>$escape.html($item.description)</li>
+				<li>$item.description</li>
 			#end
 						
 			#if ($item.bodytext) 			
 				#foreach($snippet in $item.bodytext)
-					<li class="bodytext">$escape.html($snippet)</li>
+					<li class="bodytext">$snippet</li>
 				#end
 			#end
 
