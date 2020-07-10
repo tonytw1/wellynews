@@ -7,10 +7,8 @@
 		#parse("includes/tag_tree.vm")
 	</div>
 
-
 	<div class="main">
 		<h2>$heading</h2>
-				
 		<ul>
 			<li class="tagged"><a href="#gettingstarted">Getting started</a> | </li>
 			<li class="tagged"><a href="#newsitemqueries">Newsitem queries</a> | </li>
@@ -199,8 +197,6 @@
 </code>
 </pre>
 
-
-
 		<h5><b>JSONP callbacks</b></h5>
 
 		<p>You can specify that JSON results should be wrapped in a JSONP style callback, using the optional <code>callback</code>
@@ -281,12 +277,9 @@
 				<td><code>$item.urlWords</code></td></tr>
 			#end
 		</table>
-
-
 	</div>
 
 	<div class="right">
-		
 		<div class="box">
 			<h2>Example</h2>
 			<p>Using JSON and JavaScript to show the latest transport newsitems on a page.</p>
@@ -303,16 +296,13 @@
 			<p>Lines 6-8: jQuery. Once the page has finished loading and is ready, fetch JSON data from the API and pass it to the function renderNewsitems.</p>
 			<p>Lines 10-16: jQuery. The renderNewsitems function is using jQuery to write out the first 4 items from the JSON data as HTML into the empty newsitems div.</p>
 		</div>
-		
-		
+
 		<a name="contact"></a>
 		<div class="box">
 			<h2>Contact</h2>
 			<p>Doing something interesting with this?</p><p>Contact <code>enquires (at) wellington.gen.nz</code> and let us know.</p>
 			
 		</div>
-		
-		
 	</div>
 
 </div>
