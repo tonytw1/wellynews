@@ -197,19 +197,6 @@
 </code>
 </pre>
 
-		<h5><b>JSONP callbacks</b></h5>
-
-		<p>You can specify that JSON results should be wrapped in a JSONP style callback, using the optional <code>callback</code>
-		parameter. This is approch is required when making cross domain JSON calls from a web brower.</p>
-
-		<p>ie.</p>
-		<ul>
-			<li><code><a href="$siteInformation.url/zebras/json?callback=mycallbackfunction">$siteInformation.url/zebras/json?callback=mycallbackfunction</a></code></li>
-		</ul>
-
-		<p>Your callback function name may contain letters, numbers and underscores only.</p>
-
-
 		<a name="geotagging">
 		<h2>Geotagging</h2>
 		
