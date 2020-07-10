@@ -6,4 +6,4 @@ RUN /usr/bin/keytool -import -alias gdig2 -keystore /usr/lib/jvm/java-10-openjdk
 COPY certs/Thawte_RSA_CA_2018.crt Thawte_RSA_CA_2018.crt
 RUN /usr/bin/keytool -import -alias Thawte_RSA_CA_2018 -keystore /usr/lib/jvm/java-10-openjdk-amd64/lib/security/cacerts -file Thawte_RSA_CA_2018.crt -noprompt -storepass changeit
 
-CMD ["java", "-XshowSettings:vm", "-XX:+PrintCommandLineFlags", "-XX:MaxRAMPercentage=90","-jar","/opt/wellynews/wellynews-0.0.1-SNAPSHOT.jar", "--spring.config.location=/opt/wellynews/conf/wellynews.properties"]
+CMD ["java", "-XshowSettings:vm", "-XX:+PrintCommandLineFlags", "-XX:MaxRAMPercentage=75","-jar","/opt/wellynews/wellynews-0.0.1-SNAPSHOT.jar", "--spring.config.location=/opt/wellynews/conf/wellynews.properties"]
