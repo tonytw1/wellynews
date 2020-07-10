@@ -288,17 +288,14 @@
 	<div class="right">
 		
 		<div class="box">
-			<h2>Usage Example</h2>
-			<p>Example: Using JSON and Javascript to pull the latest transport newsitems into a page.</p>			
-		
+			<h2>Example</h2>
+			<p>Using JSON and Javascript to show the latest transport newsitems on a page.</p>
 			<div class="apiexample">
 				#include("widget.vm")
 			</div>
-					
+
 			<h5>Source code</h5>
-			
 			<p><a href="https://github.com/tonytw1/wellynews/blob/master/src/main/resources/widget.vm">Source code</a>.</p>
-			
 			<p>This example was implemented using the <a href="http://jquery.com/">JQuery Javascript library</a>.
 
 			<p>Lines 1-2: HTML for the Transport heading and an empty div tag which JQuery will write the newsitems into.</p>
