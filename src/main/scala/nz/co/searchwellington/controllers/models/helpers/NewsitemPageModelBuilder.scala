@@ -58,9 +58,9 @@ import scala.concurrent.Future
             mv.addObject("geotag_votes", geotagVotes.asJava)
             mv.addObject("index_taggings", indexTaggings.asJava)
 
-            //if (resource.getPlace != null) {
-            // mv.addObject("geocoded", List(resource).asJava)
-            //}
+            if (frontendResource.getPlace != null) {
+              mv.addObject("geocoded", List(frontendResource).asJava)
+            }
 
             //for {
             // maybeResource <- mongoRepository.getResourceById(resource.getId)

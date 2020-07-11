@@ -1,5 +1,7 @@
 package nz.co.searchwellington.controllers.models.helpers
 
+import java.util.UUID
+
 import nz.co.searchwellington.ReasonableWaits
 import nz.co.searchwellington.model.frontend.FrontendNewsitem
 import nz.co.searchwellington.model.mappers.FrontendResourceMapper
@@ -9,7 +11,7 @@ import nz.co.searchwellington.repositories.mongo.MongoRepository
 import nz.co.searchwellington.repositories.{ContentRetrievalService, HandTaggingDAO}
 import nz.co.searchwellington.tagging.TaggingReturnsOfficerService
 import nz.co.searchwellington.widgets.TagsWidgetFactory
-import org.junit.Assert.{assertEquals, assertTrue}
+import org.junit.Assert.{assertEquals, assertTrue, assertNotNull}
 import org.junit.Test
 import org.mockito.Mockito.{mock, when}
 import org.springframework.mock.web.MockHttpServletRequest
@@ -95,26 +97,35 @@ class NewsitemPageModelBuilderTest extends ReasonableWaits {
     assertEquals("Expect to be see index taggings", indexTaggingsForNewsitem.asJava, indexTaggings)
   }
 
-  /*
   @Test
   def shouldShowNewsitemOnMapIfItIsGeotagged {
-    val newsitem = Newsitem()
-    val validPath = "/newsitem/" + newsitem.id
+    val id = UUID.randomUUID()
+    val geotaggedNewsitem = Newsitem(id = id.toString)
+
+    val validPath = "/newsitem/" + id.toString
     val request = new MockHttpServletRequest
     request.setRequestURI(validPath)
 
-    val id = UUID.randomUUID()
     val place = Geocode(address = Some("Somewhere"))
-    val geotaggedNewsitem = FrontendNewsitem(id = id.toString, place = Some(place))
-    when(mongoRepository.getResourceById(newsitem.id)).thenReturn(Future.successful(Some(Newsitem()))) // TODO properly exercise mapped option branch
+    val geotaggedFrontendNewsitem = FrontendNewsitem(id = id.toString, place = Some(place))
+
+    when(mongoRepository.getResourceById(id.toString)).thenReturn(Future.successful(Some(geotaggedNewsitem))) // TODO properly exercise mapped option branch
+    when(frontendResourceMapper.createFrontendResourceFrom(geotaggedNewsitem)).thenReturn(Future.successful(geotaggedFrontendNewsitem))
+
+    when(taggingReturnsOfficerService.getHandTaggingsForResource(geotaggedNewsitem)).thenReturn(Future.successful(Seq.empty))
+    when(taggingReturnsOfficerService.getIndexTaggingsForResource(geotaggedNewsitem)).thenReturn(Future.successful(Seq.empty))
+
+    val geotaggingVote = new GeotaggingVote(place, "Publisher geotagged", 1)
+    when(taggingReturnsOfficerService.getGeotagVotesForResource(geotaggedNewsitem)).thenReturn(Future.successful(Seq(geotaggingVote)))
 
     val mv = Await.result(modelBuilder.populateContentModel(request), TenSeconds).get
 
-    val geotagged = mv.getModel.get("geocoded").asInstanceOf[java.util.List[Resource]]
+    val geotagged = mv.getModel.get("geocoded").asInstanceOf[java.util.List[FrontendNewsitem]]
+    assertNotNull(geotagged)
     assertEquals(1, geotagged.size)
-    assertEquals(geotaggedNewsitem, geotagged.get(0))
+    assertEquals(geotaggedFrontendNewsitem, geotagged.get(0))
   }
-  */
+
   /*
   @Test
   def shouldNotPopulateGeotaggedItemsIfNewsitemIsNotGeotagged {

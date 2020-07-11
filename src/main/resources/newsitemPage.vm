@@ -52,7 +52,7 @@
     <p>These taggings where considered when deciding the location for this item.<p>
     <ul>
         #foreach ($vote in $geotag_votes)
-            <li>#parse("includes/geotag_icon.vm") $geocode.address - $tagging.explanation</li>
+            <li>#parse("includes/geotag_icon.vm") $vote.geocode.address - $vote.explanation</li>
         #end
     </ul>
 
