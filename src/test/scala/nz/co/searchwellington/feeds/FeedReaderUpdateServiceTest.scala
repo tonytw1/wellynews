@@ -36,7 +36,7 @@ class FeedReaderUpdateServiceTest extends ReasonableWaits {
     val anotherTag = Tag(id = "anothertag")
 
     val acceptedNewsitem = Newsitem()
-    val autoTaggings = Seq(
+    val autoTaggings = Set(
       HandTagging(tag = atag, user = autoTagUser),
       HandTagging(tag = anotherTag, user = autoTagUser)
     )
