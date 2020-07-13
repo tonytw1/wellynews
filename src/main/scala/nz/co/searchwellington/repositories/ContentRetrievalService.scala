@@ -61,12 +61,12 @@ import scala.concurrent.{Await, Future}
 
   def getNewsitemsMatchingKeywordsNotTaggedByUser(keywords: Set[String], user: User, tag: Tag): Future[Seq[FrontendResource]] = {
 
-    def getNewsitemsMatchingKeywords(keywords: Set[String], user: User): Future[(Seq[BSONObjectID], Long)] = {
+    def getNewsitemIDsMatchingKeywords(keywords: Set[String], user: User): Future[(Seq[BSONObjectID], Long)] = {
       val query = ResourceQuery(`type` = newsitems, q = Some(keywords.mkString(" ")))
       elasticSearchIndexer.getResources(query, loggedInUser = Some(user))
     }
 
-    getNewsitemsMatchingKeywords(keywords, user).flatMap(i => fetchResourcesByIds(i._1)).map { resources =>
+    getNewsitemIDsMatchingKeywords(keywords, user).flatMap(i => fetchResourcesByIds(i._1)).map { resources =>
       resources.filter { r =>
         val hasExistingTagging = r.resource_tags.exists{ tagging =>
           tagging.user_id == user._id && tagging.tag_id == tag._id
@@ -317,7 +317,7 @@ import scala.concurrent.{Await, Future}
     }.map(_.flatten)
   }
 
-  private def archiveLinksFromIntervals(intervals: Seq[(Interval, Long)]) = {
+  private def archiveLinksFromIntervals(intervals: Seq[(Interval, Long)]): Seq[ArchiveLink] = {
     intervals.map { i =>
       ArchiveLink(i._1, i._2)
     }
