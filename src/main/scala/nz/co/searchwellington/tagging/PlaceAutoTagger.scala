@@ -13,7 +13,7 @@ import scala.concurrent.{ExecutionContext, Future}
 
   private final val PLACES_TAG_NAME = "places"
 
-  def suggestTags(resource: Resource)(implicit ec: ExecutionContext): Future[Seq[Tag]] = {
+  def suggestTags(resource: Resource)(implicit ec: ExecutionContext): Future[Set[Tag]] = {
 
     def getAllPlaces: Future[Seq[Tag]] = {
       mongoRepository.getTagByUrlWords(PLACES_TAG_NAME).flatMap { maybePlacesTag =>
@@ -32,7 +32,7 @@ import scala.concurrent.{ExecutionContext, Future}
     }
 
     getAllPlaces.map { places =>
-      places.filter(p => checkForMatchingTag(resource, p))
+      places.filter(p => checkForMatchingTag(resource, p)).toSet
     }
   }
 
