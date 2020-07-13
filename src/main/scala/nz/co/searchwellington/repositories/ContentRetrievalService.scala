@@ -59,15 +59,23 @@ import scala.concurrent.{Await, Future}
 
   def getTopLevelTags: Future[Seq[Tag]] = tagDAO.getTopLevelTags
 
-  def getResourcesMatchingKeywordsNotTaggedByUser(keywords: Set[String], user: User, tag: Tag): Future[Seq[FrontendResource]] = {
+  def getNewsitemsMatchingKeywordsNotTaggedByUser(keywords: Set[String], user: User, tag: Tag): Future[Seq[FrontendResource]] = {
 
-    def getResourcesMatchingKeywordsNotTaggedByUser(keywords: Set[String], user: User, tag: Tag): Future[(Seq[BSONObjectID], Long)] = {
-      // TODO exclude tagged by user
+    def getNewsitemsMatchingKeywords(keywords: Set[String], user: User): Future[(Seq[BSONObjectID], Long)] = {
       val query = ResourceQuery(`type` = newsitems, q = Some(keywords.mkString(" ")))
       elasticSearchIndexer.getResources(query, loggedInUser = Some(user))
     }
 
-    getResourcesMatchingKeywordsNotTaggedByUser(keywords, user, tag).flatMap(i => fetchByIds(i._1))
+    getNewsitemsMatchingKeywords(keywords, user).flatMap(i => fetchResourcesByIds(i._1)).map { resources =>
+      resources.filter { r =>
+        val hasExistingTagging = r.resource_tags.exists{ tagging =>
+          tagging.user_id == user._id && tagging.tag_id == tag._id
+        }
+        !hasExistingTagging
+      }
+    }.flatMap{ rs =>
+      Future.sequence(rs.map{frontendResourceMapper.createFrontendResourceFrom})
+    }
   }
 
   def getNewsitemsMatchingKeywords(keywords: String, startIndex: Int, maxNewsitems: Int, loggedInUser: Option[User], tag: Option[Tag] = None, publisher: Option[Website] = None): Future[(Seq[FrontendResource], Long)] = {
@@ -296,15 +304,17 @@ import scala.concurrent.{Await, Future}
   }
 
   private def fetchByIds(ids: Seq[BSONObjectID]): Future[Seq[FrontendResource]] = {
-    val eventualResources = Future.sequence {
+    fetchResourcesByIds(ids).flatMap { rs =>
+      Future.sequence(rs.map(r => frontendResourceMapper.createFrontendResourceFrom(r)))
+    }
+  }
+
+  private def fetchResourcesByIds(ids: Seq[BSONObjectID]): Future[Seq[Resource]] = {
+    Future.sequence {
       ids.map { id =>
         mongoRepository.getResourceByObjectId(id)
       }
     }.map(_.flatten)
-
-    eventualResources.flatMap { rs =>
-      Future.sequence(rs.map(r => frontendResourceMapper.createFrontendResourceFrom(r)))
-    }
   }
 
   private def archiveLinksFromIntervals(intervals: Seq[(Interval, Long)]) = {
