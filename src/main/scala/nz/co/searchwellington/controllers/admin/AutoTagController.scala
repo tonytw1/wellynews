@@ -101,7 +101,7 @@ import scala.concurrent.{Await, Future}
 
   private def getPossibleAutotagResources(user: User, tag: Tag): Future[Seq[FrontendResource]] = {
     val keywords = Set(tag.autotag_hints, Some(tag.display_name)).flatten
-    contentRetrievalService.getResourcesMatchingKeywordsNotTaggedByUser(keywords, user, tag)
+    contentRetrievalService.getNewsitemsMatchingKeywordsNotTaggedByUser(keywords, user, tag)
   }
 
 }

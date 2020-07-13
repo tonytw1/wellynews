@@ -13,6 +13,7 @@ class ImpliedTagService @Autowired()(taggingReturnsOfficerService: TaggingReturn
                                      mongoRepository: MongoRepository) extends ReasonableWaits {
 
   def alreadyHasTag(resource: Tagged, tag: Tag)(implicit ec: ExecutionContext): Future[Boolean] = {
+    // TODO This should just delegate to the tagging returns officer?
     val eventualIsNewsitemWhosPublisherAlreadyHasThisTag = resource match {
       case n: Newsitem =>
         n.publisher.map { publisherId =>
