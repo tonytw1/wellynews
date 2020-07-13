@@ -12,7 +12,7 @@ import scala.concurrent.{ExecutionContext, Future}
 @Component
 class TagHintAutoTagger @Autowired() (tagDAO: TagDAO) {
 
-  private val commaSplitter: Splitter = Splitter.on(",")
+  private val commaSplitter = Splitter.on(",")
 
   def suggestTags(resource: Resource)(implicit ec: ExecutionContext): Future[Set[Tag]] = {
 
@@ -23,7 +23,7 @@ class TagHintAutoTagger @Autowired() (tagDAO: TagDAO) {
         commaSplitter.split(autotagHints).map(_.trim).toSeq
       }.getOrElse(Seq.empty)
 
-      val keywordsForTags = (autotagHints:+ tag.name.trim).filter(!Strings.isNullOrEmpty(_))
+      val keywordsForTags = autotagHints.filter(!Strings.isNullOrEmpty(_))
 
       keywordsForTags.exists(keyword => resourceContent.contains(keyword.toLowerCase))
     }
