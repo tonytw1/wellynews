@@ -1,5 +1,6 @@
 package nz.co.searchwellington.controllers.admin
 
+import com.google.common.base.Splitter
 import javax.servlet.http.{HttpServletRequest, HttpServletResponse}
 import nz.co.searchwellington.ReasonableWaits
 import nz.co.searchwellington.controllers.{CommonModelObjectsService, LoggedInUserFilter, RequiringLoggedInUser}
@@ -29,6 +30,8 @@ import scala.concurrent.{Await, Future}
   extends ReasonableWaits with CommonModelObjectsService with RequiringLoggedInUser {
 
   private val log = Logger.getLogger(classOf[AutoTagController])
+
+  private val commaSplitter = Splitter.on(",")
 
   @RequestMapping(Array("/*/autotag")) def prompt(request: HttpServletRequest, response: HttpServletResponse): ModelAndView = {
     def prompt(loggedInUser: User): ModelAndView = {
@@ -100,8 +103,9 @@ import scala.concurrent.{Await, Future}
   }
 
   private def getPossibleAutotagResources(user: User, tag: Tag): Future[Seq[FrontendResource]] = {
-    val keywords = Set(tag.autotag_hints, Some(tag.display_name)).flatten
-    contentRetrievalService.getNewsitemsMatchingKeywordsNotTaggedByUser(keywords, user, tag)
+    import scala.collection.JavaConversions._
+    val autotag_hints = tag.autotag_hints.map(hints => commaSplitter.split(hints).toSet).getOrElse(Set.empty)
+    contentRetrievalService.getNewsitemsMatchingKeywordsNotTaggedByUser(autotag_hints + tag.display_name, user, tag)
   }
 
 }
