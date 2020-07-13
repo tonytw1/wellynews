@@ -69,7 +69,9 @@ import scala.concurrent.{Await, Future}
     getNewsitemIDsMatchingKeywords(keywords, user).flatMap(i => fetchResourcesByIds(i._1)).map { resources =>
       resources.filter { r =>
         val hasExistingTagging = r.resource_tags.exists{ tagging =>
-          tagging.user_id == user._id && tagging.tag_id == tag._id
+          val bool = tagging.user_id == user._id && tagging.tag_id == tag._id
+          log.info("Existing tagging: " + tagging.tag_id + " / " + tag._id  + ": " + bool)
+          bool
         }
         !hasExistingTagging
       }
