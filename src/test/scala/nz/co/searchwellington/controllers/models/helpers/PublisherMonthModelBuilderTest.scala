@@ -72,7 +72,7 @@ class PublisherMonthModelBuilderTest extends ReasonableWaits with ContentFields 
 
     val july = new DateTime(2020, 7, 1, 0, 0)
     when(contentRetrievalService.getNewsitemsForPublisherInterval(publisher, new Interval(july, july.plusMonths(1)), None)).thenReturn(Future.successful(monthNewsitems))
-    when(frontendResourceMapper.createFrontendResourceFrom(publisher)).thenReturn(Future.successful(FrontendWebsite(id = "123")))
+    when(frontendResourceMapper.createFrontendResourceFrom(publisher, None)).thenReturn(Future.successful(FrontendWebsite(id = "123")))
 
     val mv = Await.result(modelBuilder.populateContentModel(request), TenSeconds).get
 
