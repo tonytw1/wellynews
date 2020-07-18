@@ -17,7 +17,7 @@ import scala.concurrent.{ExecutionContext, Future}
 
   private val log = Logger.getLogger(classOf[FrontendResourceMapper])
 
-  def createFrontendResourceFrom(contentItem: Resource)(implicit ec: ExecutionContext): Future[FrontendResource] = {
+  def createFrontendResourceFrom(contentItem: Resource, loggedInUser: Option[User])(implicit ec: ExecutionContext): Future[FrontendResource] = {
     val eventualPlace = taggingReturnsOfficerService.getIndexGeocodeForResource(contentItem)
 
     contentItem match {
