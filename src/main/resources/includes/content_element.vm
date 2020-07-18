@@ -140,8 +140,11 @@
 
 			#parse("includes/content_element_admin_links.vm")
 
-			<p>$item.actions</p>
-			
-		</ul>				
+            <ul>
+            #foreach($action in $item.actions)
+                <li class="admin"><a href="$action.link">$action.label</a></li>
+            #end
+            </ul>
+		</ul>
 	</li>
 	<br clear="all">

@@ -1,6 +1,7 @@
 package nz.co.searchwellington.model.mappers
 
 import nz.co.searchwellington.ReasonableWaits
+import nz.co.searchwellington.controllers.admin.AdminUrlBuilder
 import nz.co.searchwellington.model._
 import nz.co.searchwellington.model.frontend._
 import nz.co.searchwellington.repositories.mongo.MongoRepository
@@ -13,7 +14,8 @@ import scala.concurrent.{ExecutionContext, Future}
 
 @Component class FrontendResourceMapper @Autowired()(taggingReturnsOfficerService: TaggingReturnsOfficerService,
                                                      urlWordsGenerator: UrlWordsGenerator,
-                                                     mongoRepository: MongoRepository) extends ReasonableWaits {
+                                                     mongoRepository: MongoRepository,
+                                                     adminUrlBuilder: AdminUrlBuilder) extends ReasonableWaits {
 
   private val log = Logger.getLogger(classOf[FrontendResourceMapper])
 
@@ -147,9 +149,11 @@ import scala.concurrent.{ExecutionContext, Future}
 
     eventualFrontendResource.map { r =>
       loggedInUser.map { l =>
-        val adminActions: Seq[Action] = Seq(Action())
+        // TODO admin user check
+        val checkResourceAction = Action(label = "Check", link = adminUrlBuilder.getResourceCheckUrl(r))
+        val adminActions = Seq(checkResourceAction)
 
-        contentItem match {
+        r match {
           case n: FrontendNewsitem =>
             n.copy(actions = adminActions)
           case w: FrontendWebsite =>
