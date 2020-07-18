@@ -26,16 +26,11 @@ class ContentModelBuilderService(viewFactory: ViewFactory,
       mb.populateContentModel(request, loggedInUser).flatMap { eventualMaybeModelAndView =>
         eventualMaybeModelAndView.map { mv =>
           val path = RequestPath.getPathFrom(request)
-          val eventualWithViewAndExtraContent = if (path.endsWith("/rss")) {
-            logger.debug("Selecting rss view for path: " + path)
+          if (path.endsWith("/rss")) {
             Future.successful(Some(rssViewOf(mv)))
 
           } else if (path.endsWith("/json")) {
-            logger.debug("Selecting json view for path: " + path)
-            val jsonView = viewFactory.getJsonView
-            jsonView.setDataField(MAIN_CONTENT) // TODO push to a parameter of getJsonView
-            mv.setView(jsonView)
-            Future.successful(Some(mv))
+            Future.successful(Some(jsonViewOf(mv)))
 
           } else {
             mb.populateExtraModelContent(request, mv, loggedInUser).flatMap { mv =>
@@ -45,7 +40,6 @@ class ContentModelBuilderService(viewFactory: ViewFactory,
               }
             }
           }
-          eventualWithViewAndExtraContent
 
         }.getOrElse {
           Future.successful(None)
@@ -56,6 +50,12 @@ class ContentModelBuilderService(viewFactory: ViewFactory,
       logger.warn("No matching model builder found for path: " + RequestPath.getPathFrom(request))
       Future.successful(None)
     }
+  }
+
+  private def jsonViewOf(mv: ModelAndView): ModelAndView = {
+    val jsonView = viewFactory.getJsonView
+    jsonView.setDataField(MAIN_CONTENT) // TODO push to a parameter of getJsonView
+    new ModelAndView(jsonView).addObject(MAIN_CONTENT, mv.getModel.get(MAIN_CONTENT))
   }
 
   private def rssViewOf(mv: ModelAndView): ModelAndView = {
