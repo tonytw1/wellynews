@@ -20,7 +20,7 @@ import scala.concurrent.{ExecutionContext, Future}
   def createFrontendResourceFrom(contentItem: Resource, loggedInUser: Option[User] = None)(implicit ec: ExecutionContext): Future[FrontendResource] = {
     val eventualPlace = taggingReturnsOfficerService.getIndexGeocodeForResource(contentItem)
 
-    contentItem match {
+    val eventualFrontendResource = contentItem match {
       case n: Newsitem =>
         val eventualPublisher = n.publisher.map { pid =>
           mongoRepository.getResourceByObjectId(pid)
@@ -144,6 +144,24 @@ import scala.concurrent.{ExecutionContext, Future}
       case _ =>
         throw new RuntimeException("Unknown type")
     }
+
+    eventualFrontendResource.map { r =>
+      loggedInUser.map { l =>
+        val adminActions: Seq[Action] = Seq(Action())
+
+        contentItem match {
+          case n: FrontendNewsitem =>
+            n.copy(actions = adminActions)
+          case w: FrontendWebsite =>
+            w.copy(actions = adminActions)
+          case f: FrontendFeed =>
+            f.copy(actions = adminActions)
+          case l: FrontendWatchlist =>
+            l.copy(actions = adminActions)
+        }
+      }.getOrElse(r)
+    }
+
   }
 
   /*
