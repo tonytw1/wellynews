@@ -149,19 +149,24 @@ import scala.concurrent.{ExecutionContext, Future}
 
     eventualFrontendResource.map { r =>
       loggedInUser.map { l =>
-        // TODO admin user check
-        val checkResourceAction = Action(label = "Check", link = adminUrlBuilder.getResourceCheckUrl(r))
-        val adminActions = Seq(checkResourceAction)
+        val availableActions = if (l.admin) {
+          val editResourceAction = Action(label = "Edit", link = adminUrlBuilder.getResourceEditUrl(r))
+          val checkResourceAction = Action(label = "Check", link = adminUrlBuilder.getResourceCheckUrl(r))
+          val deleteResourceAction = Action(label = "Delete", link = adminUrlBuilder.getResourceDeleteUrl(r))
+          Seq(editResourceAction, checkResourceAction, deleteResourceAction)
+        } else {
+          Seq.empty
+        }
 
         r match {
           case n: FrontendNewsitem =>
-            n.copy(actions = adminActions)
+            n.copy(actions = availableActions)
           case w: FrontendWebsite =>
-            w.copy(actions = adminActions)
+            w.copy(actions = availableActions)
           case f: FrontendFeed =>
-            f.copy(actions = adminActions)
+            f.copy(actions = availableActions)
           case l: FrontendWatchlist =>
-            l.copy(actions = adminActions)
+            l.copy(actions = availableActions)
         }
       }.getOrElse(r)
     }

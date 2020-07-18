@@ -8,17 +8,6 @@
 			#if ($editPermissionService.canEdit($item) && $item.commentFeed)
 				<li>Comment feed: <a href="$item.commentFeed.url">$item.commentFeed.url</li>
 			#end
-				
-			#if ($editPermissionService.canEdit($item) && ($item.type != "FNI"))
-				<li class="admin"><a href="$adminUrlBuilder.getResourceEditUrl($item)">edit</a></li>
-			#end
-			#if ($editPermissionService.canDelete($item) && ($item.type != "FNI"))
-				<li class="admin"><a href="$adminUrlBuilder.getResourceDeleteUrl($item)">delete</a></li>
-			#end
-			#if ($editPermissionService.canCheck($item) && ($item.type != "FNI"))				
-				<li class="admin"><a href="$adminUrlBuilder.getViewSnapshotUrl($item)">view snapshot</a></li>
-			#end
-				
 			#if($item.type == "N" && $editPermissionService.canSeeLocalPage($item))
 				<li class="admin"><a href="$urlBuilder.getLocalPageUrl($item)">view local page</a></li>
 			#end
