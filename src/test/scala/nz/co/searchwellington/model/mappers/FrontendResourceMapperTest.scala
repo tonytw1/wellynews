@@ -3,6 +3,7 @@ package nz.co.searchwellington.model.mappers
 import java.util.UUID
 
 import nz.co.searchwellington.ReasonableWaits
+import nz.co.searchwellington.controllers.admin.AdminUrlBuilder
 import nz.co.searchwellington.model.{Newsitem, Tag, UrlWordsGenerator}
 import nz.co.searchwellington.repositories.mongo.MongoRepository
 import nz.co.searchwellington.tagging.TaggingReturnsOfficerService
@@ -18,8 +19,9 @@ class FrontendResourceMapperTest extends ReasonableWaits {
   private val taggingReturnsOfficerService = mock(classOf[TaggingReturnsOfficerService])
   private val urlWordsGenerator = mock(classOf[UrlWordsGenerator])
   private val mongoRepository = mock(classOf[MongoRepository])
+  private val adminUrlBuilder = mock(classOf[AdminUrlBuilder])
 
-  val mapper = new FrontendResourceMapper(taggingReturnsOfficerService, urlWordsGenerator, mongoRepository)
+  val mapper = new FrontendResourceMapper(taggingReturnsOfficerService, urlWordsGenerator, mongoRepository, adminUrlBuilder)
 
   @Test
   def canMapNewsitemsToFrontendNewsitems(): Unit = {
