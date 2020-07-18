@@ -81,7 +81,7 @@ class FeedModelBuilderTest extends ReasonableWaits with ContentFields {
 
   @Test
   def shouldPopulateFrontendFeedFromRequestAttribute {
-    when(frontendResourceMapper.createFrontendResourceFrom(feed)).thenReturn(Future.successful(frontendFeed))
+    when(frontendResourceMapper.createFrontendResourceFrom(feed, None)).thenReturn(Future.successful(frontendFeed))
     when(geotaggedNewsitemExtractor.extractGeotaggedItems(Seq(frontendNewsitem, anotherFrontendNewsitem))).thenReturn(Seq.empty)
     when(whakaokoService.getWhakaokoSubscriptionByUrl(Matchers.any())(Matchers.any())).thenReturn(Future.successful(None))
 
@@ -92,7 +92,7 @@ class FeedModelBuilderTest extends ReasonableWaits with ContentFields {
 
   @Test
   def shouldPopulateMainContentWithFeedItemsDecoratedWithLocalCopySuppressionInformation {
-    when(frontendResourceMapper.createFrontendResourceFrom(feed)).thenReturn(Future.successful(frontendFeed))
+    when(frontendResourceMapper.createFrontendResourceFrom(feed, None)).thenReturn(Future.successful(frontendFeed))
     when(rssfeedNewsitemService.getFeedItemsAndDetailsFor(feed)).thenReturn(Future.successful(Right((feeditems, subscription))))
     when(geotaggedNewsitemExtractor.extractGeotaggedItems(Seq(frontendNewsitem, anotherFrontendNewsitem))).thenReturn(Seq.empty)
     when(whakaokoService.getWhakaokoSubscriptionByUrl(Matchers.any())(Matchers.any())).thenReturn(Future.successful(None))
@@ -107,7 +107,7 @@ class FeedModelBuilderTest extends ReasonableWaits with ContentFields {
   def shouldPushGeotaggedFeeditemsOntoTheModeAsFrontendNewsitemsSeperately {
     val whakaokoSubscription = Subscription(id = "a-subscription", name = None, channelId = "", url = "http://somewhere/rss", lastRead = None, latestItemDate = None)
 
-    when(frontendResourceMapper.createFrontendResourceFrom(feed)).thenReturn(Future.successful(frontendFeed))
+    when(frontendResourceMapper.createFrontendResourceFrom(feed, None)).thenReturn(Future.successful(frontendFeed))
     when(geotaggedNewsitemExtractor.extractGeotaggedItems(Seq(frontendNewsitem, anotherFrontendNewsitem))).thenReturn(Seq(anotherFrontendNewsitem))
     when(contentRetrievalService.getAllFeedsOrderedByLatestItemDate(loggedInUser)).thenReturn(Future.successful(Seq()))
     when(whakaokoService.getWhakaokoSubscriptionByUrl(Matchers.any())(Matchers.any())).thenReturn(Future.successful(Some(whakaokoSubscription)))

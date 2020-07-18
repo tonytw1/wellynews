@@ -53,7 +53,7 @@ class NewsitemPageModelBuilderTest extends ReasonableWaits {
     val frontendNewsitem = FrontendNewsitem(id = newsitem.id, place = Some(place))
 
     when(mongoRepository.getResourceById(newsitem.id)).thenReturn(Future.successful(Some(newsitem)))
-    when(frontendResourceMapper.createFrontendResourceFrom(newsitem)).thenReturn(Future.successful(frontendNewsitem))
+    when(frontendResourceMapper.createFrontendResourceFrom(newsitem, None)).thenReturn(Future.successful(frontendNewsitem))
     when(taggingReturnsOfficerService.getHandTaggingsForResource(newsitem)).thenReturn(Future.successful(Seq.empty))
     when(taggingReturnsOfficerService.getGeotagVotesForResource(newsitem)).thenReturn(Future.successful(Seq.empty))
     when(taggingReturnsOfficerService.getIndexTaggingsForResource(newsitem)).thenReturn(Future.successful(Seq.empty))
@@ -79,7 +79,7 @@ class NewsitemPageModelBuilderTest extends ReasonableWaits {
     val indexTaggingsForNewsitem = Seq(HandTagging(tag = Tag(id = "123"), user = User()))
 
     when(mongoRepository.getResourceById(newsitem.id)).thenReturn(Future.successful(Some(newsitem)))
-    when(frontendResourceMapper.createFrontendResourceFrom(newsitem)).thenReturn(Future.successful(frontendNewsitem))
+    when(frontendResourceMapper.createFrontendResourceFrom(newsitem, None)).thenReturn(Future.successful(frontendNewsitem))
     when(taggingReturnsOfficerService.getHandTaggingsForResource(newsitem)).thenReturn(Future.successful(handTaggingsForNewsitem))
     when(taggingReturnsOfficerService.getGeotagVotesForResource(newsitem)).thenReturn(Future.successful(geotagVotesForNewsitem))
     when(taggingReturnsOfficerService.getIndexTaggingsForResource(newsitem)).thenReturn(Future.successful(indexTaggingsForNewsitem))
@@ -110,7 +110,7 @@ class NewsitemPageModelBuilderTest extends ReasonableWaits {
     val geotaggedFrontendNewsitem = FrontendNewsitem(id = id.toString, place = Some(place))
 
     when(mongoRepository.getResourceById(id.toString)).thenReturn(Future.successful(Some(geotaggedNewsitem))) // TODO properly exercise mapped option branch
-    when(frontendResourceMapper.createFrontendResourceFrom(geotaggedNewsitem)).thenReturn(Future.successful(geotaggedFrontendNewsitem))
+    when(frontendResourceMapper.createFrontendResourceFrom(geotaggedNewsitem, None)).thenReturn(Future.successful(geotaggedFrontendNewsitem))
 
     when(taggingReturnsOfficerService.getHandTaggingsForResource(geotaggedNewsitem)).thenReturn(Future.successful(Seq.empty))
     when(taggingReturnsOfficerService.getIndexTaggingsForResource(geotaggedNewsitem)).thenReturn(Future.successful(Seq.empty))
