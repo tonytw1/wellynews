@@ -26,9 +26,7 @@ import scala.concurrent.Future
 
   def isValid(request: HttpServletRequest): Boolean = {
     val tags = request.getAttribute("tags").asInstanceOf[Seq[Tag]]
-    logger.info("Is valid tags: " + tags)
     val isTagCombinerPage = tags != null && tags.size == 2
-    logger.info("Is valid: " + isTagCombinerPage)
     isTagCombinerPage
   }
 
