@@ -20,5 +20,6 @@ case class FrontendWebsite(id: String,
                            place: Option[Geocode] = None,
                            held: Boolean = false,
                            lastScanned: Option[Date] = None,
-                           lastChanged: Option[Date] = None) extends FrontendResource
+                           lastChanged: Option[Date] = None,
+                           actions: Seq[Action] = Seq.empty) extends FrontendResource
 

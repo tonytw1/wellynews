@@ -23,7 +23,8 @@ case class FrontendFeed(id: String,
                         lastRead: Option[Date] = None,
                         publisher: Option[FrontendWebsite] = None,
                         lastScanned: Option[Date] = None,
-                        lastChanged: Option[Date] = None
+                        lastChanged: Option[Date] = None,
+                        actions: Seq[Action] = Seq.empty
                        ) extends FrontendResource {
 
   def getLatestItemDate: Date = {

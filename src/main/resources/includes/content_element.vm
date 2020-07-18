@@ -139,6 +139,8 @@
 			#end
 
 			#parse("includes/content_element_admin_links.vm")
+
+			<p>$item.actions</p>
 			
 		</ul>				
 	</li>

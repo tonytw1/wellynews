@@ -23,6 +23,7 @@ trait FrontendResource extends RssFeedable with Serializable {
   val held: Boolean
   val lastChanged: Option[Date]
   val lastScanned: Option[Date]
+  val actions: Seq[Action]
 
   def getId: String = id
 
@@ -80,5 +81,10 @@ trait FrontendResource extends RssFeedable with Serializable {
   def getLastScanned: Date = lastScanned.orNull
 
   def getLastChanged: Date = lastChanged.orNull
+
+  def getActions: List[Action] = {
+    import scala.collection.JavaConverters._
+    actions.asJava
+  }
 
 }

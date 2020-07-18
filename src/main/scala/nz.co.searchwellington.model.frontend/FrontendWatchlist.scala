@@ -19,4 +19,5 @@ case class FrontendWatchlist(id: String,
                              place: Option[Geocode] = None,
                              held: Boolean = false,
                              lastScanned: Option[Date],
-                             lastChanged: Option[Date]) extends FrontendResource
+                             lastChanged: Option[Date],
+                             actions: Seq[Action] = Seq.empty) extends FrontendResource
