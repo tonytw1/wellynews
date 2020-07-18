@@ -21,11 +21,7 @@ class ContentModelBuilderService(viewFactory: ViewFactory,
 
   def populateContentModel(request: HttpServletRequest, loggedInUser: Option[User] = None): Future[Option[ModelAndView]] = {
     logger.info("Serving path: " + RequestPath.getPathFrom(request))
-    modelBuilders.find(mb => {
-      val r = mb.isValid(request)
-      logger.info(mb.getClass.getCanonicalName + " / " + RequestPath.getPathFrom(request) + ": " + r)
-      r
-    }).map { mb =>
+    modelBuilders.find(mb => mb.isValid(request)).map { mb =>
       logger.info("Using " + mb.getClass.getName + " to serve path: " + RequestPath.getPathFrom(request))
       mb.populateContentModel(request, loggedInUser).flatMap { eventualMaybeModelAndView =>
         eventualMaybeModelAndView.map { mv =>
