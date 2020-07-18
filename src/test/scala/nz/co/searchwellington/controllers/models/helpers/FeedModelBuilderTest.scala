@@ -67,7 +67,7 @@ class FeedModelBuilderTest extends ReasonableWaits with ContentFields {
 
     when(feeditemToNewsitemService.makeNewsitemFromFeedItem(feedItem, feed)).thenReturn(newsItem)
     when(feeditemToNewsitemService.makeNewsitemFromFeedItem(anotherFeedItem, feed)).thenReturn(anotherNewsitem)
-    when(feedItemLocalCopyDecorator.addSupressionAndLocalCopyInformation(feedNewsitems)).thenReturn(Future.successful(feedNewsitemsDecoratedWithLocalCopyAndSuppressionInformation))
+    when(feedItemLocalCopyDecorator.addSupressionAndLocalCopyInformation(feedNewsitems, None)).thenReturn(Future.successful(feedNewsitemsDecoratedWithLocalCopyAndSuppressionInformation))
 
     request = new MockHttpServletRequest
     request.setAttribute("feedAttribute", feed)

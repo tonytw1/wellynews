@@ -53,7 +53,7 @@ class FeedsModelBuilderTest extends ReasonableWaits with ContentFields {
   @Test
   def shouldPopulateSecondaryContent = {
     val suggestedFeeditems = Seq(FrontendNewsitem(id = UUID.randomUUID().toString))
-    when(suggestedFeeditemsService.getSuggestionFeednewsitems(6)).thenReturn(Future.successful(suggestedFeeditems))
+    when(suggestedFeeditemsService.getSuggestionFeednewsitems(6, None)).thenReturn(Future.successful(suggestedFeeditems))
     val discoveredFeeditems = Seq(DiscoveredFeed(url = "http://something", referencedFrom = "http://somewhere", seen = DateTime.now.toDate))
     when(contentRetrievalService.getDiscoveredFeeds).thenReturn(Future.successful(discoveredFeeditems))
     when(contentRetrievalService.getAllFeedsOrderedByLatestItemDate(loggedInUser)).thenReturn(Future.successful(Seq.empty))

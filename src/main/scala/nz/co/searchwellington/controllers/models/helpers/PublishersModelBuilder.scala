@@ -36,7 +36,7 @@ import scala.concurrent.Future
       frontendPublishers <- Future.sequence {
         publishers.
           sortBy(_.title).
-          map(frontendResourceMapper.createFrontendResourceFrom)
+          map(r => frontendResourceMapper.createFrontendResourceFrom(r, loggedInUser))
       }
     } yield {
       import scala.collection.JavaConverters._

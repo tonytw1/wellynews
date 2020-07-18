@@ -30,7 +30,7 @@ import scala.concurrent.Future
 
   def populateContentModel(request: HttpServletRequest, loggedInUser: Option[User]): Future[Option[ModelAndView]] = {
     for {
-      suggestions <- suggestedFeeditemsService.getSuggestionFeednewsitems(MAX_SUGGESTIONS)
+      suggestions <- suggestedFeeditemsService.getSuggestionFeednewsitems(MAX_SUGGESTIONS, loggedInUser)
     } yield {
       import scala.collection.JavaConverters._
       val mv = new ModelAndView().

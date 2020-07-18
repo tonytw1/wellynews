@@ -17,25 +17,11 @@ import scala.concurrent.{ExecutionContext, Future}
 
   private val log = Logger.getLogger(classOf[FrontendResourceMapper])
 
-  def createFrontendResourceFrom(contentItem: Resource, loggedInUser: Option[User])(implicit ec: ExecutionContext): Future[FrontendResource] = {
+  def createFrontendResourceFrom(contentItem: Resource, loggedInUser: Option[User] = None)(implicit ec: ExecutionContext): Future[FrontendResource] = {
     val eventualPlace = taggingReturnsOfficerService.getIndexGeocodeForResource(contentItem)
 
     contentItem match {
       case n: Newsitem =>
-        val eventualFeed = n.feed.map { fid =>
-          mongoRepository.getResourceByObjectId(fid).flatMap { fo =>
-            fo.map { f =>
-              createFrontendResourceFrom(f).map { r =>
-                Some(r.asInstanceOf[FrontendFeed])
-              }
-            }.getOrElse {
-              Future.successful(None)
-            }
-          }
-        }.getOrElse {
-          Future.successful(None)
-        }
-
         val eventualPublisher = n.publisher.map { pid =>
           mongoRepository.getResourceByObjectId(pid)
         }.getOrElse {
@@ -44,6 +30,20 @@ import scala.concurrent.{ExecutionContext, Future}
 
         val eventualAcceptedByUser = n.acceptedBy.map { uid =>
           mongoRepository.getUserByObjectId(uid)
+        }.getOrElse {
+          Future.successful(None)
+        }
+
+        val eventualFeed = n.feed.map { fid =>
+          mongoRepository.getResourceByObjectId(fid).flatMap { fo =>
+            fo.map { f =>
+              createFrontendResourceFrom(f, None).map { r =>
+                Some(r.asInstanceOf[FrontendFeed])
+              }
+            }.getOrElse {
+              Future.successful(None)
+            }
+          }
         }.getOrElse {
           Future.successful(None)
         }
@@ -70,7 +70,7 @@ import scala.concurrent.{ExecutionContext, Future}
             accepted = n.accepted.orNull,
             image = null, // TODO
             urlWords = urlWordsGenerator.makeUrlForNewsitem(n).getOrElse(""),
-            publisher = publisher.map(_.asInstanceOf[Website]),
+            publisher = publisher.map(_.asInstanceOf[Website]), // TODO should be frontend resource or string?
             tags = tags,
             handTags = handTags,
             httpStatus = n.http_status,
@@ -83,7 +83,7 @@ import scala.concurrent.{ExecutionContext, Future}
         val eventualFrontendPublisher = f.publisher.map { pid =>
           mongoRepository.getResourceByObjectId(pid).flatMap { po =>
             po.map { p =>
-              createFrontendResourceFrom(p).map(i => Some(i.asInstanceOf[FrontendWebsite]))
+              createFrontendResourceFrom(p, None).map(i => Some(i.asInstanceOf[FrontendWebsite]))
             }.getOrElse {
               Future.successful(None)
             }

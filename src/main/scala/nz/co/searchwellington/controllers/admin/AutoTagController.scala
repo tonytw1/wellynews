@@ -41,7 +41,7 @@ import scala.concurrent.{Await, Future}
 
       } { tag =>
         Await.result((for {
-          suggestions <- getPossibleAutotagResources(loggedInUser, tag)
+          suggestions <- getPossibleAutotagResources(loggedInUser, tag, Some(loggedInUser)) // TODO double pass
         } yield {
           import scala.collection.JavaConverters._
           new ModelAndView("autoTagPrompt").
@@ -102,10 +102,10 @@ import scala.concurrent.{Await, Future}
     requiringAdminUser(apply)
   }
 
-  private def getPossibleAutotagResources(user: User, tag: Tag): Future[Seq[FrontendResource]] = {
+  private def getPossibleAutotagResources(user: User, tag: Tag, loggedInUser: Option[User]): Future[Seq[FrontendResource]] = {
     import scala.collection.JavaConverters._
     val autotag_hints = tag.autotag_hints.map(hints => commaSplitter.split(hints).asScala).getOrElse(Seq.empty).toSet
-    contentRetrievalService.getNewsitemsMatchingKeywordsNotTaggedByUser(autotag_hints + tag.display_name, user, tag)
+    contentRetrievalService.getNewsitemsMatchingKeywordsNotTaggedByUser(autotag_hints + tag.display_name, user, tag, loggedInUser)
   }
 
 }

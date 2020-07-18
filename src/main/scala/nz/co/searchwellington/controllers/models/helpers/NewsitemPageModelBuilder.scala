@@ -38,7 +38,7 @@ import scala.concurrent.Future
       val id = matcher.group(1)
       mongoRepository.getResourceById(id).flatMap { maybeResouce =>
         maybeResouce.map { resource =>
-          val eventualFrontendResource = frontendResourceMapper.createFrontendResourceFrom(resource)
+          val eventualFrontendResource = frontendResourceMapper.createFrontendResourceFrom(resource, loggedInUser)
           val eventualHandTaggings = taggingReturnsOfficerService.getHandTaggingsForResource(resource)
           val eventualGeotagVotes = taggingReturnsOfficerService.getGeotagVotesForResource(resource)
           val eventualIndexTaggings = taggingReturnsOfficerService.getIndexTaggingsForResource(resource)

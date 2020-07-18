@@ -305,7 +305,7 @@ import scala.concurrent.ExecutionContext.Implicits.global
         else {
           log.info("Could not save resource. Spam question not answered?")
         }
-        mv.addObject("item", frontendResourceMapper.createFrontendResourceFrom(editResource))
+        mv.addObject("item", frontendResourceMapper.createFrontendResourceFrom(editResource, Some(loggedInUser)))
       }
       else {
         log.warn("No edit resource could be setup.")

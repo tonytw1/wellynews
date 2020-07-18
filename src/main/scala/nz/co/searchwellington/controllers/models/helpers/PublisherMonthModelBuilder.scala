@@ -34,7 +34,7 @@ import scala.concurrent.Future
     Option(request.getAttribute("publisher").asInstanceOf[Website]).map { publisher =>
       parseMonth(publisher, RequestPath.getPathFrom(request)).map { month =>
         for {
-          eventualFrontendWebsite <- frontendResourceMapper.createFrontendResourceFrom(publisher)
+          eventualFrontendWebsite <- frontendResourceMapper.createFrontendResourceFrom(publisher, loggedInUser)
           newsitemsForMonth <- contentRetrievalService.getNewsitemsForPublisherInterval(publisher, month, loggedInUser)
         } yield {
           import scala.collection.JavaConverters._

@@ -38,7 +38,7 @@ import scala.concurrent.Future
     mv.addObject("page", page)
 
     val eventualMaybePublisher = maybePublisher.map { publisher =>
-      val eventualResource = frontendResourceMapper.createFrontendResourceFrom(publisher)
+      val eventualResource = frontendResourceMapper.createFrontendResourceFrom(publisher, loggedInUser)
       eventualResource.map(Some(_))
     }.getOrElse{
       Future.successful(None)
