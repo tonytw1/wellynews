@@ -16,12 +16,10 @@
 		#parse("includes/page_content_tags.vm")
 		
 		<ul>
-			#if ($editPermissionService.canEdit($feed))
-				<li class="admin"><a href="$adminUrlBuilder.getResourceEditUrl($feed)">Edit</a></li>
-				<li class="admin"><a href="$adminUrlBuilder.getResourceDeleteUrl($feed)">Delete</a></li>
-                $feed.acceptancePolicy
-			#end
-
+            #foreach($action in $feed.actions)
+                <li class="admin"><a href="$action.link">$action.label</a></li>
+            #end
+            $feed.acceptancePolicy
             #if ($editPermissionService.canEdit($feed))
                 <p><a href="$adminUrlBuilder.getWhakaokoPreviewUrl($subscription)">$subscription</a></p>
             #end
