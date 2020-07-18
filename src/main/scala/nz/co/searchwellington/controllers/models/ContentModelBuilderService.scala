@@ -10,8 +10,8 @@ import org.apache.log4j.Logger
 import org.springframework.web.servlet.ModelAndView
 import uk.co.eelpieconsulting.common.views.ViewFactory
 
-import scala.concurrent.Future
 import scala.concurrent.ExecutionContext.Implicits.global
+import scala.concurrent.Future
 
 class ContentModelBuilderService(viewFactory: ViewFactory,
                                  val contentRetrievalService: ContentRetrievalService,
@@ -28,9 +28,7 @@ class ContentModelBuilderService(viewFactory: ViewFactory,
           val path = RequestPath.getPathFrom(request)
           val eventualWithViewAndExtraContent = if (path.endsWith("/rss")) {
             logger.debug("Selecting rss view for path: " + path)
-            mv.setView(viewFactory.getRssView(mv.getModel.get("heading").asInstanceOf[String], mv.getModel.get("link").asInstanceOf[String], mv.getModel.get("description").asInstanceOf[String]))
-            mv.addObject("data", mv.getModel.get(MAIN_CONTENT))
-            Future.successful(Some(mv))
+            Future.successful(Some(rssViewOf(mv)))
 
           } else if (path.endsWith("/json")) {
             logger.debug("Selecting json view for path: " + path)
@@ -48,6 +46,7 @@ class ContentModelBuilderService(viewFactory: ViewFactory,
             }
           }
           eventualWithViewAndExtraContent
+
         }.getOrElse {
           Future.successful(None)
         }
@@ -57,6 +56,11 @@ class ContentModelBuilderService(viewFactory: ViewFactory,
       logger.warn("No matching model builder found for path: " + RequestPath.getPathFrom(request))
       Future.successful(None)
     }
+  }
+
+  private def rssViewOf(mv: ModelAndView): ModelAndView = {
+    val rssView = viewFactory.getRssView(mv.getModel.get("heading").asInstanceOf[String], mv.getModel.get("link").asInstanceOf[String], mv.getModel.get("description").asInstanceOf[String])
+    new ModelAndView(rssView).addObject("data", mv.getModel.get(MAIN_CONTENT))
   }
 
 }
