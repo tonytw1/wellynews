@@ -88,7 +88,8 @@ class UrlBuilder @Autowired()(siteInformation: SiteInformation, urlWordsGenerato
       case f: FrontendFeed =>
         "/feed/" + f.getUrlWords
       case _ =>
-        siteInformation.getUrl + "/" + resource.getUrlWords
+        //siteInformation.getUrl + "/" + resource.getUrlWords
+        ""
     }
   }
 

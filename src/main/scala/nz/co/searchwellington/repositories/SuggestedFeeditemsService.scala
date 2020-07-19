@@ -3,7 +3,7 @@ package nz.co.searchwellington.repositories
 import nz.co.searchwellington.ReasonableWaits
 import nz.co.searchwellington.feeds.reading.whakaoko.model.FeedItem
 import nz.co.searchwellington.feeds.{FeedItemLocalCopyDecorator, FeeditemToNewsitemService, RssfeedNewsitemService}
-import nz.co.searchwellington.model.frontend.{FeedNewsitemForAcceptance, FrontendNewsitem}
+import nz.co.searchwellington.model.frontend.{FeedNewsitemForAcceptance, FrontendNewsitem, FrontendResource}
 import nz.co.searchwellington.model.{Feed, FeedAcceptancePolicy, User}
 import org.apache.log4j.Logger
 import org.springframework.beans.factory.annotation.Autowired
@@ -18,13 +18,13 @@ import scala.concurrent.{ExecutionContext, Future}
 
   private val log = Logger.getLogger(classOf[SuggestedFeeditemsService])
 
-  def getSuggestionFeednewsitems(maxItems: Int, loggedInUser: Option[User])(implicit ec: ExecutionContext): Future[Seq[FrontendNewsitem]] = {
+  def getSuggestionFeednewsitems(maxItems: Int, loggedInUser: Option[User])(implicit ec: ExecutionContext): Future[Seq[FrontendResource]] = {
 
     def isNotIgnored(feedItem: FeedItem, feed: Feed): Boolean = feed.acceptance != FeedAcceptancePolicy.IGNORE
 
-    def havingNoLocalCopy(feedItem: FeedNewsitemForAcceptance): Boolean = feedItem.localCopy.isEmpty
+    def havingNoLocalCopy(feedItem: FrontendResource): Boolean = false // TODO feedItem.localCopy.isEmpty
 
-    def filteredPage(page: Int, output: Seq[FrontendNewsitem]): Future[Seq[FrontendNewsitem]] = {
+    def filteredPage(page: Int, output: Seq[FrontendResource]): Future[Seq[FrontendResource]] = {
       log.info("Fetching filter page: " + page + "/" + output.size)
       rssfeedNewsitemService.getChannelFeedItems(page).flatMap { channelFeedItems =>
         log.info("Found " + channelFeedItems.size + " channel newsitems on page " + page)
@@ -35,10 +35,10 @@ import scala.concurrent.{ExecutionContext, Future}
         val channelNewsitems = notIgnoredFeedItems.map(i => feeditemToNewsitemService.makeNewsitemFromFeedItem(i._1, i._2))
 
         feedItemLocalCopyDecorator.addSupressionAndLocalCopyInformation(channelNewsitems, loggedInUser).flatMap { suggestions =>
-          val withLocalCopiesFilteredOut = suggestions.filter(havingNoLocalCopy)
+          val withLocalCopiesFilteredOut: Seq[FrontendResource] = suggestions.filter(havingNoLocalCopy)
           log.info("After filtering out those with local copies: " + withLocalCopiesFilteredOut.size)
 
-          val filteredNewsitems = withLocalCopiesFilteredOut.map(_.newsitem)
+          val filteredNewsitems = withLocalCopiesFilteredOut // .map(_.newsitem)
           log.info("Adding " + filteredNewsitems.size + " to " + output.size)
           val result = output ++ filteredNewsitems
           if (result.size >= maxItems || channelFeedItems.isEmpty || page == 5) {

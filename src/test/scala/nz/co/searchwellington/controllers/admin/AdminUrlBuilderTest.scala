@@ -64,6 +64,6 @@ class AdminUrlBuilderTest {
   @Test
   def canConstructViewSnapshotUrlForFrontendResource(): Unit = assertEquals("http://somesite.local/my-local-sports-team/viewsnapshot", adminUrlBuilder.getViewSnapshotUrl(frontendWebsite))
 
-  @Test
-  def canConstructAutoGatherUrlForPublisher(): Unit = assertEquals("http://somesite.local/my-local-sports-team/gather", adminUrlBuilder.getPublisherAutoGatherUrl(frontendWebsite))
+//  @Test
+//  def canConstructAutoGatherUrlForPublisher(): Unit = assertEquals("http://somesite.local/my-local-sports-team/gather", adminUrlBuilder.getPublisherAutoGatherUrl(frontendWebsite))
 }

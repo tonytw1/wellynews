@@ -5,7 +5,7 @@ import nz.co.searchwellington.ReasonableWaits
 import nz.co.searchwellington.controllers.models.{GeotaggedNewsitemExtractor, ModelBuilder}
 import nz.co.searchwellington.feeds.reading.WhakaokoService
 import nz.co.searchwellington.feeds.{FeedItemLocalCopyDecorator, FeeditemToNewsitemService, RssfeedNewsitemService}
-import nz.co.searchwellington.model.frontend.{FeedNewsitemForAcceptance, FrontendNewsitem}
+import nz.co.searchwellington.model.frontend.{FeedNewsitemForAcceptance, FrontendNewsitem, FrontendResource}
 import nz.co.searchwellington.model.mappers.FrontendResourceMapper
 import nz.co.searchwellington.model.{Feed, User}
 import nz.co.searchwellington.repositories.ContentRetrievalService
@@ -45,7 +45,7 @@ import scala.concurrent.Future
       }
     }
 
-    def feedItemsFor(feed: Feed): Future[Either[String, Seq[FeedNewsitemForAcceptance]]] = {
+    def feedItemsFor(feed: Feed): Future[Either[String, Seq[FrontendResource]]] = {
       rssfeedNewsitemService.getFeedItemsAndDetailsFor(feed).flatMap { feedItemsForFeed =>
         feedItemsForFeed.fold({ l =>
           Future.successful(Left(l))
@@ -62,7 +62,7 @@ import scala.concurrent.Future
       }
     }
 
-    def populateFeedItems(mv: ModelAndView, feedItems: Either[String, Seq[FeedNewsitemForAcceptance]]): ModelAndView = {
+    def populateFeedItems(mv: ModelAndView, feedItems: Either[String, Seq[FrontendResource]]): ModelAndView = {
       feedItems.fold({
         l =>
           mv.addObject("feed_error", l)
@@ -70,7 +70,7 @@ import scala.concurrent.Future
       }, { result =>
         import scala.collection.JavaConverters._
         mv.addObject(MAIN_CONTENT, result.asJava)
-        populateGeotaggedFeedItems(mv, result.map(_.newsitem))
+        //populateGeotaggedFeedItems(mv, result.map(_.newsitem))  TODO
         mv
       })
     }

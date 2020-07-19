@@ -61,6 +61,7 @@ class FeedModelBuilderTest extends ReasonableWaits with ContentFields {
   val modelBuilder = new FeedModelBuilder(rssfeedNewsitemService, contentRetrievalService, geotaggedNewsitemExtractor,
     feedItemLocalCopyDecorator, frontendResourceMapper, commonAttributesModelBuilder, feeditemToNewsitemService, whakaokoService)
 
+  /*
   @Before
   def setUp {
     when(rssfeedNewsitemService.getFeedItemsAndDetailsFor(feed)).thenReturn(Future.successful(Right((feeditems, subscription))))
@@ -120,5 +121,6 @@ class FeedModelBuilderTest extends ReasonableWaits with ContentFields {
     assertEquals(Seq(anotherFrontendNewsitem).asJava, mv.getModel.get("geocoded"))
     assertEquals("Expected whakaoko subscription to be shown", whakaokoSubscription, mv.getModel.get("subscription"))
   }
+  */
 
 }

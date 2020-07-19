@@ -61,21 +61,8 @@
 					#foreach($feeditem in $main_content)
                         <li class="content_item">
                             <ul class="main_content_item">
-                                #set($item = $feeditem.newsitem)
+                                #set($item = $feeditem)
                                 #parse("includes/content_element.vm")
-
-                                #if ($feeditem.localCopy)
-                                    <li class="admin"><a href="$adminUrlBuilder.getResourceEditUrl($feeditem.localCopy)">edit local copy</a></li>
-                                #else
-                                    <li class="admin"><a href="$adminUrlBuilder.getFeednewsItemAcceptUrl($feed, $feeditem.newsitem)">accept</a></li>
-                                #end
-
-                                #if ($feeditem.isSupressed())
-                                    <li class="admin"><a href="$adminUrlBuilder.getFeedNewsitemUnsuppressUrl($item)">unsuppress</a></li>
-                                #else
-                                    <li class="admin"><a href="$adminUrlBuilder.getFeedNewsitemSuppressUrl($item)">suppress</a></li>
-                                #end
-
                             </ul>
                         </li>
 					#end

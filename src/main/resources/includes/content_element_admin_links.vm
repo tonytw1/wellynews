@@ -8,10 +8,7 @@
 			#if ($editPermissionService.canEdit($item) && $item.commentFeed)
 				<li>Comment feed: <a href="$item.commentFeed.url">$item.commentFeed.url</li>
 			#end
-			#if($item.type == "N" && $editPermissionService.canSeeLocalPage($item))
-				<li class="admin"><a href="$urlBuilder.getLocalPageUrl($item)">view local page</a></li>
-			#end
-				
+
 			#if ($editPermissionService.canEdit($item) && ($item.type == "FNI"))
 				<li>Http Status: $item.httpStatus</li>
 			#end

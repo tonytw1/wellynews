@@ -1,8 +1,9 @@
 package nz.co.searchwellington.feeds
 
 import nz.co.searchwellington.ReasonableWaits
+import nz.co.searchwellington.controllers.admin.AdminUrlBuilder
 import nz.co.searchwellington.model.{Newsitem, User}
-import nz.co.searchwellington.model.frontend.{FeedNewsitemForAcceptance, FrontendNewsitem}
+import nz.co.searchwellington.model.frontend.{Action, FeedNewsitemForAcceptance, FrontendNewsitem, FrontendResource}
 import nz.co.searchwellington.model.mappers.FrontendResourceMapper
 import nz.co.searchwellington.repositories.SuppressionDAO
 import nz.co.searchwellington.repositories.mongo.MongoRepository
@@ -13,11 +14,12 @@ import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
 @Component class FeedItemLocalCopyDecorator @Autowired()(mongoRepository: MongoRepository, suppressionDAO: SuppressionDAO,
-                                                         frontendResourceMapper: FrontendResourceMapper) extends ReasonableWaits {
+                                                         frontendResourceMapper: FrontendResourceMapper,
+                                                         adminUrlBuilder: AdminUrlBuilder) extends ReasonableWaits {
 
-  def addSupressionAndLocalCopyInformation(feedNewsitems: Seq[Newsitem], loggedInUser: Option[User]): Future[Seq[FeedNewsitemForAcceptance]] = {
+  def addSupressionAndLocalCopyInformation(feedNewsitems: Seq[Newsitem], loggedInUser: Option[User]): Future[Seq[FrontendResource]] = {
 
-    def acceptanceStateOf(feedNewsitem: Newsitem): Future[FeedNewsitemForAcceptance] = {
+    def acceptanceStateOf(feedNewsitem: Newsitem): Future[FrontendResource] = {
       val eventuallyLocalCopy = feedNewsitem.page.map { u =>
         mongoRepository.getResourceByUrl(u)
       }.getOrElse {
@@ -28,8 +30,17 @@ import scala.concurrent.Future
       eventuallyLocalCopy.flatMap { localCopy =>
         eventuallyIsSuppressed.flatMap { isSuppressed =>
           frontendResourceMapper.createFrontendResourceFrom(feedNewsitem, loggedInUser).map { resource =>
-            FeedNewsitemForAcceptance(resource.asInstanceOf[FrontendNewsitem],
-              localCopy, isSuppressed)
+            //FeedNewsitemForAcceptance(resource.asInstanceOf[FrontendNewsitem], localCopy, isSuppressed)
+
+            resource match {
+              case n: FrontendNewsitem =>
+                val feedItemActions = Seq(Action("Accept", ""))
+                n.copy(actions = feedItemActions)
+
+              case _ =>
+                resource
+            }
+
           }
         }
       }
