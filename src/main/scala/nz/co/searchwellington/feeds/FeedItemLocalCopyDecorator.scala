@@ -34,10 +34,9 @@ import scala.concurrent.Future
 
             resource match {
               case n: FrontendNewsitem =>
-
                 loggedInUser.map { l =>
                   val acceptOrEditAction = localCopy.map { lc =>
-                    Action("Edit local copy", adminUrlBuilder.getResourceEditUrl(resource))
+                    Action("Edit local copy", adminUrlBuilder.getResourceEditUrl(lc))
                   }.getOrElse(
                     Action("Accept", "")
                   )
