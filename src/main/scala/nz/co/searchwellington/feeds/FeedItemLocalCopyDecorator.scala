@@ -37,7 +37,7 @@ import scala.concurrent.Future
 
                 loggedInUser.map { l =>
                   val acceptOrEditAction = localCopy.map { lc =>
-                    Action("Edit local copy", "")
+                    Action("Edit local copy", adminUrlBuilder.getResourceEditUrl(resource))
                   }.getOrElse(
                     Action("Accept", "")
                   )
