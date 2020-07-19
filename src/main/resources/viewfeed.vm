@@ -23,10 +23,6 @@
             #if ($editPermissionService.canEdit($feed))
                 <p><a href="$adminUrlBuilder.getWhakaokoPreviewUrl($subscription)">$subscription</a></p>
             #end
-
-			#if ($editPermissionService.canAcceptAllFrom($feed))			
-				<li class="admin"><a href="$adminUrlBuilder.getAcceptAllFromFeed($feed)">Accept all</a></li>
-			#end
 		</ul>
 
 		#if ($feed.lastRead)

@@ -164,7 +164,13 @@ import scala.concurrent.{ExecutionContext, Future}
           case w: FrontendWebsite =>
             w.copy(actions = availableActions)
           case f: FrontendFeed =>
-            f.copy(actions = availableActions)
+            val withFeedActions = if (l.admin) {
+              val acceptAllAction = Action("Accept all", adminUrlBuilder.getAcceptAllFromFeed(f))
+              availableActions :+ acceptAllAction
+            } else {
+                availableActions
+            }
+            f.copy(actions = withFeedActions)
           case l: FrontendWatchlist =>
             l.copy(actions = availableActions)
         }
