@@ -34,11 +34,25 @@ import scala.concurrent.Future
 
             resource match {
               case n: FrontendNewsitem =>
-                val feedItemActions = Seq(Action("Accept", ""))
-                n.copy(actions = feedItemActions)
+
+                loggedInUser.map { l =>
+                  val acceptOrEditAction = localCopy.map { lc =>
+                    Action("Edit local copy", "")
+                  }.getOrElse(
+                    Action("Accept", "")
+                  )
+
+                  val feedItemActions = Seq(acceptOrEditAction)
+                  n.copy(actions = feedItemActions)
+
+                }.getOrElse{
+                  resource
+                }
 
               case _ =>
                 resource
+
+
             }
 
           }
