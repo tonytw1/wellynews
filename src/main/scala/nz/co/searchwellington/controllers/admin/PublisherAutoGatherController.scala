@@ -78,10 +78,8 @@ import scala.concurrent.ExecutionContext.Implicits.global
   }
 
   private def getPossibleAutotagResources(publisher: Resource): Seq[Resource] = {
-    publisher.page.map { p =>
-      val publishersUrlStem = urlParser.extractHostnameFrom(p)
-      resourceDAO.getNewsitemsMatchingStem(publishersUrlStem)
-    }.getOrElse(Seq.empty)
+    val publishersUrlStem = urlParser.extractHostnameFrom(publisher.page)
+    resourceDAO.getNewsitemsMatchingStem(publishersUrlStem)
   }
 
   private def needsPublisher(resource: Newsitem, proposedPublisher: Website): Boolean = {

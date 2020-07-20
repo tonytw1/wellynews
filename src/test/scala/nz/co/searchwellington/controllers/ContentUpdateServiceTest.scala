@@ -22,7 +22,7 @@ class ContentUpdateServiceTest extends ReasonableWaits {
   private val linkCheckerQueue = mock(classOf[LinkCheckerQueue])
 
   private val resourceId = UUID.randomUUID().toString
-  private val updatedResource = Newsitem(id = resourceId, page = Some("http://test/123"))
+  private val updatedResource = Newsitem(id = resourceId, page = "http://test/123")
 
   private val service = new ContentUpdateService(mongoRepository, frontendContentUpdater, linkCheckerQueue)
   private val successfulUpdateResult = mock(classOf[UpdateWriteResult])

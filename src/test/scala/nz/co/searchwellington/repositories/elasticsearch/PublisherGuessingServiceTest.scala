@@ -23,9 +23,9 @@ class PublisherGuessingServiceTest {
 
   @Test
   def shouldMatchIfMultipleAvailable {
-    val golfCourseSite = Website(page = Some("http://www.wellington.govt.nz/services/berhgolf/index.html"))
-    val heritageInventory = Website(page = Some("http://www.wellington.govt.nz/services/heritage/inventory/index.html"))
-    val wccMainSite = Website(page = Some("http://www.wellington.govt.nz"))
+    val golfCourseSite = Website(page = "http://www.wellington.govt.nz/services/berhgolf/index.html")
+    val heritageInventory = Website(page = "http://www.wellington.govt.nz/services/heritage/inventory/index.html")
+    val wccMainSite = Website(page = "http://www.wellington.govt.nz")
 
     val possiblePublishers = Seq(golfCourseSite, heritageInventory, wccMainSite)
     when(resourceDAO.getAllPublishersMatchingStem("www.wellington.govt.nz", showBroken = true)).thenReturn(possiblePublishers)
@@ -35,7 +35,7 @@ class PublisherGuessingServiceTest {
 
   @Test
   def shouldMatchIfOnlyOnePossiblePublisher {
-    val wellingtonista = Website(title = Some("The Wellingtonista"), page =Some("http://www.wellingtonista.com"))
+    val wellingtonista = Website(title = Some("The Wellingtonista"), page = "http://www.wellingtonista.com")
     val possiblePublishers = Seq(wellingtonista)
     when(resourceDAO.getAllPublishersMatchingStem("www.wellingtonista.com", showBroken = true)).thenReturn(possiblePublishers)
 
@@ -44,8 +44,8 @@ class PublisherGuessingServiceTest {
 
   @Test
   def shouldNotMatchJustBecauseTheHostNameMatches {
-    val hostedOne = Website(page = Some("http://homepages.paradise.net.nz/~titahi/"))
-    val hostedTwo = Website(page = Some("http://homepages.ihug.co.nz/~waicoll/"))
+    val hostedOne = Website(page = "http://homepages.paradise.net.nz/~titahi/")
+    val hostedTwo = Website(page = "http://homepages.ihug.co.nz/~waicoll/")
 
     val possiblePublishers = Seq(hostedOne, hostedTwo)
     when(resourceDAO.getAllPublishersMatchingStem("homepages.ihug.co.nz", showBroken = true)).thenReturn(possiblePublishers)

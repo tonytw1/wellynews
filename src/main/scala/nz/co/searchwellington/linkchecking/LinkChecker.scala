@@ -30,12 +30,11 @@ import scala.concurrent.{Await, ExecutionContext, Future}
 
     mongoRepository.getResourceByObjectId(BSONObjectID.parse(checkResourceId).get).flatMap { maybeResource =>
       val mayToCheck = maybeResource.flatMap { resource =>
-        resource.page.flatMap { page =>
-          if (page.nonEmpty) {
-            Some(resource, page)
-          } else {
-            None
-          }
+        val page = resource.page
+        if (page.nonEmpty) {
+          Some(resource, page)
+        } else {
+          None
         }
       }
 

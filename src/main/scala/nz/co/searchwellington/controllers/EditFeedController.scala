@@ -36,7 +36,7 @@ class EditFeedController @Autowired()(contentUpdateService: ContentUpdateService
 
         val editFeed = new EditFeed()
         editFeed.setTitle(f.title.getOrElse(""))
-        editFeed.setUrl(f.page.getOrElse(""))
+        editFeed.setUrl(f.page)
         editFeed.setPublisher(publisher.flatMap(_.title).getOrElse(""))
         editFeed.setAcceptancePolicy(f.acceptance)
         renderEditForm(f, editFeed)
@@ -74,7 +74,7 @@ class EditFeedController @Autowired()(contentUpdateService: ContentUpdateService
 
           val updatedFeed = f.copy(
             title = Some(editFeed.getTitle),
-            page = Some(editFeed.getUrl),
+            page = editFeed.getUrl,
             url_words = Some(urlWordsGenerator.makeUrlWordsFromName(editFeed.getTitle)),
             publisher = publisher.map(_._id),
             acceptance = editFeed.getAcceptancePolicy,

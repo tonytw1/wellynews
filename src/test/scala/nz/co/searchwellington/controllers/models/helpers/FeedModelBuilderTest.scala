@@ -31,7 +31,7 @@ class FeedModelBuilderTest extends ReasonableWaits with ContentFields {
   private val commonAttributesModelBuilder = mock(classOf[CommonAttributesModelBuilder])
   private val whakaokoService = mock(classOf[WhakaokoService])
 
-  var feed = Feed(id = UUID.randomUUID().toString, page = Some("http://localhost/a-feed"))
+  var feed = Feed(id = UUID.randomUUID().toString, page = "http://localhost/a-feed")
 
   private val feedItem = mock(classOf[FeedItem])
   private val anotherFeedItem = mock(classOf[FeedItem])

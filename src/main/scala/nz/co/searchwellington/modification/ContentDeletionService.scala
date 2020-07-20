@@ -33,14 +33,13 @@ import scala.concurrent.{Await, Future}
           Await.result(removeFeedFromFeedNewsitems(feed), OneMinute)
         case newsitem: Newsitem =>
           log.info("Deleted item is a newsitem; checking if it's in an accepted feed.")
-          newsitem.page.map { p =>
-            if (Await.result(rssfeedNewsitemService.isUrlInAcceptedFeeds(p), TenSeconds)) {
-              log.info("Supressing deleted newsitem url as it still visible in an automatically accepted feed: " + p)
-              suppressUrl(p)
-            } else {
-              log.info("Not found in live feeds; not suppressing")
-            }
+          if (Await.result(rssfeedNewsitemService.isUrlInAcceptedFeeds(newsitem.page), TenSeconds)) {
+            log.info("Supressing deleted newsitem url as it still visible in an automatically accepted feed: " + newsitem.page)
+            suppressUrl(newsitem.page)
+          } else {
+            log.info("Not found in live feeds; not suppressing")
           }
+
       }
 
       Await.result(elasticSearchIndexer.deleteResource(resource._id).flatMap { dr =>
@@ -62,13 +61,11 @@ import scala.concurrent.{Await, Future}
   private def removePublisherFromPublishersContent(publisher: Website) {
     mongoRepository.getNewsitemIdsForPublisher(publisher).map { published =>
       published.foreach { publishedResource =>
-        mongoRepository.getResourceByObjectId(publishedResource).map { resource =>
-          resource match {
-            case published: PublishedResource =>
-              log.info("Clearing publisher from: " + published.title)
-              published.setPublisher(null)
-              contentUpdateService.update(published)
-          }
+        mongoRepository.getResourceByObjectId(publishedResource).map {
+          case published: PublishedResource =>
+            log.info("Clearing publisher from: " + published.title)
+            published.setPublisher(null)
+            contentUpdateService.update(published)
         }
       }
     }

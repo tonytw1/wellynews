@@ -281,12 +281,10 @@ import scala.concurrent.ExecutionContext.Implicits.global
           editResource.setHeld(true)
         }
         if (editResource.`type` == "F") {
-          editResource.page.map { p =>
-            if (!Strings.isNullOrEmpty(p)) {
-              //whakaoroService.createFeedSubscription(p).map { createdFeedSubscription =>
-              //  log.info("Created whakaoko subscription: " + createdFeedSubscription)
-              //}
-            }
+          if (!Strings.isNullOrEmpty(editResource.page)) {
+            //whakaoroService.createFeedSubscription(p).map { createdFeedSubscription =>
+            //  log.info("Created whakaoko subscription: " + createdFeedSubscription)
+            //}
           }
         }
 

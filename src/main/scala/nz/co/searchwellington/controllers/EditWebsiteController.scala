@@ -38,7 +38,7 @@ class EditWebsiteController @Autowired()(contentUpdateService: ContentUpdateServ
       getWebsiteById(id).map { w =>
         val editWebsite = new EditWebsite()
         editWebsite.setTitle(w.title.getOrElse(""))
-        editWebsite.setUrl(w.page.getOrElse(""))
+        editWebsite.setUrl(w.page)
         editWebsite.setDescription(w.description.getOrElse(""))
 
         w.geocode.map { g =>
@@ -88,7 +88,7 @@ class EditWebsiteController @Autowired()(contentUpdateService: ContentUpdateServ
 
           val updatedWebsite = w.copy(
             title = Some(editWebsite.getTitle),
-            page = Some(editWebsite.getUrl),
+            page = editWebsite.getUrl,
             description = Some(editWebsite.getDescription),
             geocode = geocode,
             held = submissionShouldBeHeld(loggedInUser)

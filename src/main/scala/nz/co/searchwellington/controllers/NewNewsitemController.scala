@@ -58,7 +58,7 @@ class NewNewsitemController @Autowired()(contentUpdateService: ContentUpdateServ
 
       val newsitem = Newsitem(
         title = Some(newNewsitem.getTitle),
-        page = Some(newNewsitem.getUrl),
+        page = newNewsitem.getUrl,
         owner = owner.map(_._id),
         date = Some(parsedDate.toDate),
         held = submissionShouldBeHeld(owner),

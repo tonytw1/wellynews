@@ -10,7 +10,7 @@ trait Resource extends Tagged {
   val `type`: String
   var title: Option[String]
   var description: Option[String]
-  val page: Option[String]
+  val page: String
   var http_status: Int
   var date: Option[Date]
   var last_scanned: Option[Date]

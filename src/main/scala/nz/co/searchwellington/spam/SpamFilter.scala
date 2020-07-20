@@ -5,7 +5,7 @@ import nz.co.searchwellington.model.Resource
 
 @Component class SpamFilter {
   def isSpam(editResource: Resource): Boolean = {
-    val urlIsSpam = editResource.page.map(p => p.contains("rfid")).getOrElse(false)
+    val urlIsSpam = editResource.page.contains("rfid")
     val descriptionsSpam = editResource.description.map(d => d.contains("rfid")).getOrElse(false)
     urlIsSpam || descriptionsSpam
   }

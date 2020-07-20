@@ -10,7 +10,7 @@ import org.springframework.stereotype.Component
 
 import scala.concurrent.{Await, ExecutionContext}
 
-@Component class WhakaokoFeedSyncService @Autowired() (mongoReposity: MongoRepository, whakaokoService: WhakaokoService) extends ReasonableWaits {
+@Component class WhakaokoFeedSyncService @Autowired()(mongoReposity: MongoRepository, whakaokoService: WhakaokoService) extends ReasonableWaits {
 
   private val log = Logger.getLogger(classOf[WhakaokoFeedSyncService])
 
@@ -22,15 +22,14 @@ import scala.concurrent.{Await, ExecutionContext}
   private def registerFeedsWithWhakaoko(feeds: Seq[Feed])(implicit ec: ExecutionContext) {
     log.info("Registering feeds with whakaoko")
     feeds.map { feed =>
-      feed.page.map { p =>
-        if (!Strings.isNullOrEmpty(p)) {
-          log.info("Registering feed with whakaoko: " + feed.title)
-          Await.result(whakaokoService.createFeedSubscription(p), TenSeconds).map { createdSubscriptionId =>
-            log.info("Created whakaoko feed: " + createdSubscriptionId)
-          }
+      if (!Strings.isNullOrEmpty(feed.page)) {
+        log.info("Registering feed with whakaoko: " + feed.title)
+        Await.result(whakaokoService.createFeedSubscription(feed.page), TenSeconds).map { createdSubscriptionId =>
+          log.info("Created whakaoko feed: " + createdSubscriptionId)
         }
       }
     }
+
     log.info("Finished registering feeds with whakaoro")
   }
 

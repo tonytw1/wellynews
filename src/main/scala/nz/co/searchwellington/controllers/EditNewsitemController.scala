@@ -70,7 +70,7 @@ class EditNewsitemController @Autowired()(contentUpdateService: ContentUpdateSer
 
           val updated = newsitem.copy(
             title = Some(formObject.getTitle),
-            page = Some(formObject.getUrl),
+            page = formObject.getUrl,
             description = Some(formObject.getDescription),
             geocode = geocode,
             held = submissionShouldBeHeld(loggedInUser)
@@ -104,7 +104,7 @@ class EditNewsitemController @Autowired()(contentUpdateService: ContentUpdateSer
   private def mapToForm(n: Newsitem, loggedInUser: User): EditNewsitem = {
     val formObject = new EditNewsitem()
     formObject.setTitle(n.title.getOrElse(""))
-    formObject.setUrl(n.page.getOrElse(""))
+    formObject.setUrl(n.page)
     formObject.setDescription(n.description.getOrElse(""))
 
     n.geocode.map { g =>

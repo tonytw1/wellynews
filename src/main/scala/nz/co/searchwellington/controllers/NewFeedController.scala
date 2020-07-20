@@ -79,21 +79,19 @@ class NewFeedController @Autowired()(contentUpdateService: ContentUpdateService,
         val owner = loggedInUserFilter.getLoggedInUser
 
         val feed = Feed(title = Some(newFeed.getTitle),
-          page = Some(newFeed.getUrl),
+          page = newFeed.getUrl,
           url_words = Some(urlWordsFromTitle),
           publisher = publisher.map(_._id),
           acceptance = newFeed.getAcceptancePolicy,
           owner = owner.map(_._id),
           date = Some(DateTime.now.toDate),
-          held = submissionShouldBeHeld(owner),
+          held = submissionShouldBeHeld(owner)
         )
 
         contentUpdateService.create(feed)
         log.info("Created feed: " + feed)
 
-        feed.page.map { feedUrl =>
-          whakaokoService.createFeedSubscription(feedUrl)
-        }
+        whakaokoService.createFeedSubscription(feed.page)
 
         new ModelAndView(new RedirectView(urlBuilder.getFeedUrl(feed)))
 

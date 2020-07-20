@@ -23,14 +23,13 @@ import scala.concurrent.{ExecutionContext, Future}
   // TODO cleaning and filtering?
   private def checkForChangeUsingSnapshots(checkResource: Resource, after: String) = {
     log.debug("Comparing content before and after snapshots from content change.")
-    checkResource.page.map { p =>
-      val snapshotBeforeHttpCheck = snapshotArchive.getLatestFor(p)
-      val pageContentBeforeHttpCheck = if (snapshotBeforeHttpCheck != null) snapshotBeforeHttpCheck.getBody else null
-      if (contentHasChanged(pageContentBeforeHttpCheck, after)) {
-        log.info("Change in content checksum detected. Setting last changed.")
-        checkResource.setLastChanged(new DateTime().toDate)
-      }
+    val snapshotBeforeHttpCheck = snapshotArchive.getLatestFor(checkResource.page)
+    val pageContentBeforeHttpCheck = if (snapshotBeforeHttpCheck != null) snapshotBeforeHttpCheck.getBody else null
+    if (contentHasChanged(pageContentBeforeHttpCheck, after)) {
+      log.info("Change in content checksum detected. Setting last changed.")
+      checkResource.setLastChanged(new DateTime().toDate)
     }
+
   }
 
   private def contentHasChanged(before: String, after: String): Boolean = { // TODO use options

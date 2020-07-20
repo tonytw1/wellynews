@@ -14,7 +14,7 @@ class FeeditemToNewsitemService @Autowired()(textTrimmer: TextTrimmer, placeToGe
   def makeNewsitemFromFeedItem(feedItem: FeedItem, feed: Feed): Newsitem = {
     val newsitem = Newsitem(
       title = feedItem.title,
-      page = Some(feedItem.url),
+      page = feedItem.url,
       description = Some(composeDescription(feedItem)),
       date = feedItem.date.map(_.toDate),
       feed = Some(feed._id),

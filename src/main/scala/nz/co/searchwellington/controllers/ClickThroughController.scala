@@ -19,20 +19,7 @@ import org.springframework.web.servlet.view.RedirectView
   def handleRequest(request: HttpServletRequest, response: HttpServletResponse): ModelAndView = {
     val resource = request.getAttribute("resource").asInstanceOf[Resource]
 
-    val resourceUrl = if (resource != null) {
-      resource.page
-    } else {
-      None
-    }
-
-    val redirectUrl = resourceUrl.getOrElse {
-      log.info("Could not find a resource on the request; redirecting to front.")
-      urlBuilder.getHomeUrl
-    }
-
-    val mv = new ModelAndView
-    mv.setView(new RedirectView(redirectUrl))
-    mv
+    new ModelAndView(new RedirectView(resource.page))
   }
 
 }

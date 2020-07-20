@@ -47,7 +47,7 @@ class NewWebsiteController @Autowired()(contentUpdateService: ContentUpdateServi
         val owner = loggedInUserFilter.getLoggedInUser
 
         val website = Website(title = Some(newWebsite.getTitle),
-          page = Some(newWebsite.getUrl),
+          page = newWebsite.getUrl,
           url_words = Some(proposedUrlWords),
           owner = owner.map(_._id),
           date = Some(DateTime.now.toDate),

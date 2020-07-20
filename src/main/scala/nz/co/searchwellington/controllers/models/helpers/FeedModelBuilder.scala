@@ -5,7 +5,7 @@ import nz.co.searchwellington.ReasonableWaits
 import nz.co.searchwellington.controllers.models.{GeotaggedNewsitemExtractor, ModelBuilder}
 import nz.co.searchwellington.feeds.reading.WhakaokoService
 import nz.co.searchwellington.feeds.{FeedItemLocalCopyDecorator, FeeditemToNewsitemService, RssfeedNewsitemService}
-import nz.co.searchwellington.model.frontend.{FeedNewsitemForAcceptance, FrontendNewsitem, FrontendResource}
+import nz.co.searchwellington.model.frontend.FrontendResource
 import nz.co.searchwellington.model.mappers.FrontendResourceMapper
 import nz.co.searchwellington.model.{Feed, User}
 import nz.co.searchwellington.repositories.ContentRetrievalService
@@ -92,17 +92,13 @@ import scala.concurrent.Future
       for {
         frontendFeed <- eventualFrontendFeed
         feedItems <- eventualFeedItems
-        maybeSubscription <- feed.page.map { p =>
-          whakaokoService.getWhakaokoSubscriptionByUrl(p)
-        }.getOrElse {
-          Future.successful(None)
-        }
+        maybeSubscription <- whakaokoService.getWhakaokoSubscriptionByUrl(feed.page)
       } yield {
         val mv = new ModelAndView().
           addObject("feed", frontendFeed).
           addObject("subscription", maybeSubscription.orNull)
 
-        commonAttributesModelBuilder.setRss(mv, feed.title.getOrElse(""), feed.page.orNull)
+        commonAttributesModelBuilder.setRss(mv, feed.title.getOrElse(""), feed.page)
         populateFeedItems(mv, feedItems) // TODO inline
         Some(mv)
       }

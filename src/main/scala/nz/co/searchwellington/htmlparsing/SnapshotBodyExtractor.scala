@@ -8,7 +8,6 @@ import org.htmlparser.util.ParserException
 import org.springframework.stereotype.Component
 import uk.co.eelpieconsulting.archiving.FilesystemSnapshotArchive
 
-
 @Component class SnapshotBodyExtractor() {
 
   private val log = Logger.getLogger(classOf[SnapshotBodyExtractor])
@@ -16,13 +15,11 @@ import uk.co.eelpieconsulting.archiving.FilesystemSnapshotArchive
   private val snapshotArchive = new FilesystemSnapshotArchive("/home/tony/snapshots")
 
   def extractLatestSnapshotBodyTextFor(resource: Resource): Option[String] = {
-    resource.page.map { p =>
-      val latestFor = snapshotArchive.getLatestFor(p)
-      val content = if (latestFor != null) latestFor.getBody
-      else null
-      if (content != null) return extractBodyText(content)
-      null
-    }
+    val latestFor = snapshotArchive.getLatestFor(resource.page)
+    val content = if (latestFor != null) latestFor.getBody
+    else null
+    if (content != null) return extractBodyText(content)
+    null
   }
 
   def extractBodyText(htmlPage: String): Option[String] = {

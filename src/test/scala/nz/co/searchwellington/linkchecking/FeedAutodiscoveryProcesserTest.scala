@@ -27,7 +27,7 @@ class FeedAutodiscoveryProcesserTest {
   private val commentFeedDetector = mock(classOf[CommentFeedDetectorService])
   private val commentFeedGuesser = mock(classOf[CommentFeedGuesserService])
 
-  private val resource = Newsitem(id = UUID.randomUUID().toString, page = Some("https://localhost/test"))
+  private val resource = Newsitem(id = UUID.randomUUID().toString, page = "https://localhost/test")
   private val pageContent = "Meh"
   private var feedAutodiscoveryProcesser = new FeedAutodiscoveryProcesser(mongoRepository, rssLinkExtractor, commentFeedDetector, commentFeedGuesser)
 

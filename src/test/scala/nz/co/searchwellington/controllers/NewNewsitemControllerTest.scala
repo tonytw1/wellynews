@@ -46,7 +46,7 @@ class NewNewsitemControllerTest {
 
     verify(contentUpdateService).create(createdNewsitem.capture)(Matchers.eq(ec))
     assertEquals(Some("A newsitem"), createdNewsitem.getValue.title)
-    assertEquals(Some("https://localhost/a-newsitem"), createdNewsitem.getValue.page)
+    assertEquals("https://localhost/a-newsitem", createdNewsitem.getValue.page)
     assertEquals(Some(new DateTime(2020, 1, 22, 0, 0).toDate), createdNewsitem.getValue.date)
     assertEquals(publisher._id, createdNewsitem.getValue.publisher.get)
     assertEquals(Some("Something interesting"), createdNewsitem.getValue.description)

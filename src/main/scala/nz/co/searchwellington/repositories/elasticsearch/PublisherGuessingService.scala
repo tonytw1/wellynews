@@ -26,7 +26,7 @@ import org.springframework.stereotype.Component
     } else if (possiblePublishers.size > 1) {
 
       val filtered = possiblePublishers.filter { p =>
-        val pageUrl = p.page.get  // TODO Naked get
+        val pageUrl = p.page
         url.startsWith(pageUrl)
       }
 
