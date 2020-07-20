@@ -34,7 +34,7 @@ import scala.concurrent.Future
 
   def populateContentModel(request: HttpServletRequest, loggedInUser: Option[User]): Future[Option[ModelAndView]] = {
 
-    def populateGeotaggedFeedItems(mv: ModelAndView, feedNewsitems: Seq[FrontendNewsitem]) {
+    def populateGeotaggedFeedItems(mv: ModelAndView, feedNewsitems: Seq[FrontendResource]) {
       val geotaggedItems = geotaggedNewsitemExtractor.extractGeotaggedItems(feedNewsitems)
       if (geotaggedItems.nonEmpty) {
         log.info("Adding " + geotaggedItems.size + " geotagged feed items")
@@ -79,7 +79,7 @@ import scala.concurrent.Future
       }, { result =>
         import scala.collection.JavaConverters._
         mv.addObject(MAIN_CONTENT, result.asJava)
-        //populateGeotaggedFeedItems(mv, result.map(_.newsitem))  TODO
+        populateGeotaggedFeedItems(mv, result)
         mv
       })
     }
