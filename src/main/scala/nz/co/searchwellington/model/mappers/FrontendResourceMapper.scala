@@ -148,35 +148,8 @@ import scala.concurrent.{ExecutionContext, Future}
     }
 
     eventualFrontendResource.map { r =>
-      loggedInUser.map { l =>
-        val availableActions = if (l.admin) {
-          val editResourceAction = Action(label = "Edit", link = adminUrlBuilder.getResourceEditUrl(r))
-          val checkResourceAction = Action(label = "Check", link = adminUrlBuilder.getResourceCheckUrl(r))
-          val deleteResourceAction = Action(label = "Delete", link = adminUrlBuilder.getResourceDeleteUrl(r))
-          Seq(editResourceAction, checkResourceAction, deleteResourceAction)
-        } else {
-          Seq.empty
-        }
-
-        r match {
-          case n: FrontendNewsitem =>
-            n.copy(actions = availableActions)
-          case w: FrontendWebsite =>
-            w.copy(actions = availableActions)
-          case f: FrontendFeed =>
-            val withFeedActions = if (l.admin) {
-              val acceptAllAction = Action("Accept all", adminUrlBuilder.getAcceptAllFromFeed(f))
-              availableActions :+ acceptAllAction
-            } else {
-                availableActions
-            }
-            f.copy(actions = withFeedActions)
-          case l: FrontendWatchlist =>
-            l.copy(actions = availableActions)
-        }
-      }.getOrElse(r)
+      applyResourceActions(r, loggedInUser)
     }
-
   }
 
   /*
@@ -213,6 +186,36 @@ import scala.concurrent.{ExecutionContext, Future}
     frontendContentItem
     */
   // }
+
+  private def applyResourceActions(r: FrontendResource, loggedInUser: Option[User]) = {
+    loggedInUser.map { l =>
+      val availableActions = if (l.admin) {
+        val editResourceAction = Action(label = "Edit", link = adminUrlBuilder.getResourceEditUrl(r))
+        val checkResourceAction = Action(label = "Check", link = adminUrlBuilder.getResourceCheckUrl(r))
+        val deleteResourceAction = Action(label = "Delete", link = adminUrlBuilder.getResourceDeleteUrl(r))
+        Seq(editResourceAction, checkResourceAction, deleteResourceAction)
+      } else {
+        Seq.empty
+      }
+
+      r match {
+        case n: FrontendNewsitem =>
+          n.copy(actions = availableActions)
+        case w: FrontendWebsite =>
+          w.copy(actions = availableActions)
+        case f: FrontendFeed =>
+          val withFeedActions = if (l.admin) {
+            val acceptAllAction = Action("Accept all", adminUrlBuilder.getAcceptAllFromFeed(f))
+            availableActions :+ acceptAllAction
+          } else {
+            availableActions
+          }
+          f.copy(actions = withFeedActions)
+        case l: FrontendWatchlist =>
+          l.copy(actions = availableActions)
+      }
+    }.getOrElse(r)
+  }
 
   def mapFrontendWebsite(website: Website)(implicit ec: ExecutionContext): Future[FrontendWebsite] = {
     val eventualTags = frontendTagsFor(website)
