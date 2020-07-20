@@ -53,7 +53,16 @@ import scala.concurrent.Future
           result =>
             val feedItems = result._1
             val feedNewsitems = feedItems.map(i => feeditemToNewsitemService.makeNewsitemFromFeedItem(i, feed))
-            val eventualWithSuppressionAndLocalCopyInformation = feedNewsItemLocalCopyDecorator.addSupressionAndLocalCopyInformation(feedNewsitems, loggedInUser)
+
+            val eventualFrontendFeedNewitems = Future.sequence {
+              feedNewsitems.map { r =>
+                frontendResourceMapper.createFrontendResourceFrom(r, loggedInUser)
+              }
+            }
+
+            val eventualWithSuppressionAndLocalCopyInformation = eventualFrontendFeedNewitems.flatMap { rs =>
+              feedNewsItemLocalCopyDecorator.withFeedItemSpecificActions(rs, loggedInUser)
+            }
 
             eventualWithSuppressionAndLocalCopyInformation.map { i =>
               Right(i)
