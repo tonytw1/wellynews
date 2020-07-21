@@ -87,4 +87,16 @@ trait FrontendResource extends RssFeedable with Serializable {
     actions.asJava
   }
 
+  def getTaggingStatus: String = {
+    if (handTags.nonEmpty) {
+      "Manually tagged"
+    } else {
+      if (tags.nonEmpty) {
+        "Automatically tagged"
+      } else {
+        "Not tagged"
+      }
+    }
+  }
+
 }
