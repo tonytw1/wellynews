@@ -51,10 +51,10 @@ import scala.concurrent.{ExecutionContext, Future}
         }
 
         for {
+          feed <- eventualFeed
           place <- eventualPlace
           tags <- frontendTagsFor(n)
-          feed <- eventualFeed
-          handTags <- taggingReturnsOfficerService.getHandTagsForResource(contentItem)
+          handTags <- taggingReturnsOfficerService.getHandTagsForResource(n)
           publisher <- eventualPublisher
           acceptedByUser <- eventualAcceptedByUser
 
@@ -218,9 +218,8 @@ import scala.concurrent.{ExecutionContext, Future}
   }
 
   def mapFrontendWebsite(website: Website)(implicit ec: ExecutionContext): Future[FrontendWebsite] = {
-    val eventualTags = frontendTagsFor(website)
     for {
-      tags <- eventualTags
+      tags <- frontendTagsFor(website)
     } yield {
       FrontendWebsite(
         id = website.id,
@@ -239,7 +238,7 @@ import scala.concurrent.{ExecutionContext, Future}
   }
 
   private def frontendTagsFor(resource: Resource): Future[Seq[Tag]] = {
-    taggingReturnsOfficerService.getHandTagsForResource(resource) // TODO duplicate call as it stands?
+    taggingReturnsOfficerService.getIndexTagsForResource(resource)
   }
 
 }
