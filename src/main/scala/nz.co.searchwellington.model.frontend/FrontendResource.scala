@@ -99,4 +99,18 @@ trait FrontendResource extends RssFeedable with Serializable {
     }
   }
 
+  def getTaggingsToShow: List[Tag] = {
+    import scala.collection.JavaConverters._
+    if (handTags.nonEmpty) {
+      handTags.asJava
+    } else {
+      if (tags.nonEmpty) {
+        tags.asJava
+      } else {
+        Seq.empty.asJava
+      }
+    }
+  }
+
 }
+

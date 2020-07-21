@@ -13,6 +13,9 @@ class FrontendResourceTest {
     val newsitemWithNoTags = FrontendNewsitem(id = UUID.randomUUID().toString)
 
     assertEquals("Not tagged", newsitemWithNoTags.getTaggingStatus)
+
+    import scala.collection.JavaConverters._
+    assertEquals(Seq.empty.asJava, newsitemWithNoTags.getTaggingsToShow)
   }
 
   @Test
@@ -25,6 +28,9 @@ class FrontendResourceTest {
     )
 
     assertEquals("Automatically tagged", newsitemWithNoTags.getTaggingStatus)
+
+    import scala.collection.JavaConverters._
+    assertEquals(Seq(aTag).asJava, newsitemWithNoTags.getTaggingsToShow)
   }
 
   @Test
@@ -38,6 +44,8 @@ class FrontendResourceTest {
     )
 
     assertEquals("Manually tagged", newsitemWithNoTags.getTaggingStatus)
+    import scala.collection.JavaConverters._
+    assertEquals(Seq(aTag).asJava, newsitemWithNoTags.getTaggingsToShow)
   }
 
 }
