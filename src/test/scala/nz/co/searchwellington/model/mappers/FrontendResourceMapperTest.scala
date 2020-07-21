@@ -28,6 +28,7 @@ class FrontendResourceMapperTest extends ReasonableWaits {
     val newsitem = Newsitem(id = "123", http_status = 200)
     when(urlWordsGenerator.makeUrlForNewsitem(newsitem)).thenReturn(Some("some-url-words"))
     when(taggingReturnsOfficerService.getHandTagsForResource(newsitem)).thenReturn(Future.successful(Seq.empty))
+    when(taggingReturnsOfficerService.getIndexTagsForResource(newsitem)).thenReturn(Future.successful(Seq.empty))
     when(taggingReturnsOfficerService.getIndexGeocodeForResource(newsitem)).thenReturn(Future.successful(None))
 
     val frontendNewsitem = Await.result(mapper.createFrontendResourceFrom(newsitem), TenSeconds)
@@ -45,27 +46,13 @@ class FrontendResourceMapperTest extends ReasonableWaits {
     val tag = Tag(id = UUID.randomUUID().toString, name = "123", display_name = "123")
 
     when(taggingReturnsOfficerService.getHandTagsForResource(newsitem)).thenReturn(Future.successful(Seq(tag)))
+    when(taggingReturnsOfficerService.getIndexTagsForResource(newsitem)).thenReturn(Future.successful(Seq.empty))
     when(taggingReturnsOfficerService.getIndexGeocodeForResource(newsitem)).thenReturn(Future.successful(None))
 
     val frontendNewsitem = Await.result(mapper.createFrontendResourceFrom(newsitem), TenSeconds)
 
     assertFalse(frontendNewsitem.handTags.isEmpty)
     assertEquals(tag.id, frontendNewsitem.handTags.head.id)
-  }
-
-  @Test
-  def indexTagsShouldNotBeAppliedToFrontendNewsitems(): Unit = {
-    val newsitem = Newsitem(id = "123")
-    when(urlWordsGenerator.makeUrlForNewsitem(newsitem)).thenReturn(Some("some-url-words"))
-
-    val tag = Tag(id = UUID.randomUUID().toString, name = "123", display_name = "123")
-    when(taggingReturnsOfficerService.getIndexTagsForResource(newsitem)).thenReturn(Future.successful(Seq(tag)))
-    when(taggingReturnsOfficerService.getHandTagsForResource(newsitem)).thenReturn(Future.successful(Seq.empty))
-    when(taggingReturnsOfficerService.getIndexGeocodeForResource(newsitem)).thenReturn(Future.successful(None))
-
-    val frontendNewsitem = Await.result(mapper.createFrontendResourceFrom(newsitem), TenSeconds)
-
-    assertTrue(frontendNewsitem.tags.isEmpty)
   }
 
 }
