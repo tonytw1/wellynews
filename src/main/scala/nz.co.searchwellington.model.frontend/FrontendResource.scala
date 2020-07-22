@@ -4,6 +4,7 @@ import java.io.Serializable
 import java.util.{Date, List}
 
 import nz.co.searchwellington.model.{Geocode, Tag}
+import reactivemongo.bson.BSONObjectID
 import uk.co.eelpieconsulting.common.views.rss.RssFeedable
 
 trait FrontendResource extends RssFeedable with Serializable {
@@ -101,16 +102,27 @@ trait FrontendResource extends RssFeedable with Serializable {
 
   def getTaggingsToShow: List[Tag] = {
     import scala.collection.JavaConverters._
-    if (handTags.nonEmpty) {
-      handTags.asJava
+    val tagsToShow = if (handTags.nonEmpty) {
+      handTags
     } else {
       if (tags.nonEmpty) {
-        tags.asJava
+        tags
       } else {
-        Seq.empty.asJava
+        Seq.empty
       }
     }
+
+    val withNoChildren = tagsToShow.map { t =>
+      val children = tagsToShow.filter { c =>
+        c.parent.contains(t._id)
+      }.map(_._id).toSet
+      TagWithChildren(t, children)
+    }.filter(_.children.isEmpty).map(_.tag)
+
+    withNoChildren.asJava
   }
+
+  case class TagWithChildren(tag: Tag, children: Set[BSONObjectID])
 
 }
 

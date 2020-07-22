@@ -9,7 +9,7 @@ import org.junit.Test
 class FrontendResourceTest {
 
   @Test
-  def resourcesWithNoManualOrAutomaticTaggingsShowAsNotTagged(): Unit  = {
+  def resourcesWithNoManualOrAutomaticTaggingsShowAsNotTagged(): Unit = {
     val newsitemWithNoTags = FrontendNewsitem(id = UUID.randomUUID().toString)
 
     assertEquals("Not tagged", newsitemWithNoTags.getTaggingStatus)
@@ -19,33 +19,47 @@ class FrontendResourceTest {
   }
 
   @Test
-  def resourcesWithOnlyAutomaticTagsShowAsAutomaticallyTagged(): Unit  = {
+  def resourcesWithOnlyAutomaticTagsShowAsAutomaticallyTagged(): Unit = {
     val aTag = Tag()
 
-    val newsitemWithNoTags = FrontendNewsitem(id = UUID.randomUUID().toString,
+    val newsitemWithAutomaticTagsOnly = FrontendNewsitem(id = UUID.randomUUID().toString,
       handTags = Seq.empty,
       tags = Seq(aTag)
     )
 
-    assertEquals("Automatically tagged as: ", newsitemWithNoTags.getTaggingStatus)
+    assertEquals("Automatically tagged as: ", newsitemWithAutomaticTagsOnly.getTaggingStatus)
 
     import scala.collection.JavaConverters._
-    assertEquals(Seq(aTag).asJava, newsitemWithNoTags.getTaggingsToShow)
+    assertEquals(Seq(aTag).asJava, newsitemWithAutomaticTagsOnly.getTaggingsToShow)
   }
 
   @Test
-  def resourcesWithManualAndAutomaticTagsShowAManuallyTagged(): Unit  = {
+  def resourcesWithManualAndAutomaticTagsShowAManuallyTagged(): Unit = {
     val aTag = Tag()
     val anotherTag = Tag()
 
-    val newsitemWithNoTags = FrontendNewsitem(id = UUID.randomUUID().toString,
+    val newsitemWithManualAndAutomaticTags = FrontendNewsitem(id = UUID.randomUUID().toString,
       handTags = Seq(aTag),
       tags = Seq(anotherTag)
     )
 
-    assertEquals("Tagged as: ", newsitemWithNoTags.getTaggingStatus)
+    assertEquals("Tagged as: ", newsitemWithManualAndAutomaticTags.getTaggingStatus)
     import scala.collection.JavaConverters._
-    assertEquals(Seq(aTag).asJava, newsitemWithNoTags.getTaggingsToShow)
+    assertEquals(Seq(aTag).asJava, newsitemWithManualAndAutomaticTags.getTaggingsToShow)
+  }
+
+  @Test
+  def shouldFilterDisplayedTagsToMostInterestingLeafTags(): Unit = {
+    val aTag = Tag(name = "A tag")
+    val anotherTag = Tag(name = "Another tag")
+    val childOfAnotherTag = Tag(name = "Child of another tag", parent = Some(anotherTag._id))
+
+    val newsitem = FrontendNewsitem(id = UUID.randomUUID().toString,
+      tags = Seq(aTag, anotherTag, childOfAnotherTag)
+    )
+
+    import scala.collection.JavaConverters._
+    assertEquals(Seq(aTag, childOfAnotherTag).asJava, newsitem.getTaggingsToShow)
   }
 
 }
