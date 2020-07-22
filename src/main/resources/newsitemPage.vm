@@ -38,18 +38,22 @@
 	<h2>Tagging</h2>
 
 	<h3>Hand taggings</h3>
-	<p>These tags have been manually added to this item.</p>
-    <ul>
-        #foreach ($tagging in $hand_taggings)
-            <li>
-                $tagging.tag.name - $tagging.explanation
 
-            </li>
-        #end
-	</ul>
+	#if($taggings.size > 0)
+    	<p>These tags have been manually added to this item:</p>
+        <ul>
+            #foreach ($tagging in $hand_taggings)
+                <li>
+                    $tagging.tag.name - $tagging.explanation
+                </li>
+           #end
+    	</ul>
+    #else
+        <p>This item has no been manually tagged.<p>
+    #end
 
     <h3>Geotag votes</h3>
-    <p>These taggings where considered when deciding the location for this item.<p>
+    <p>These taggings contributed to this item's location:<p>
     <ul>
         #foreach ($vote in $geotag_votes)
             <li>#parse("includes/geotag_icon.vm") $vote.geocode.address - $vote.explanation</li>
