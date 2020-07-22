@@ -27,7 +27,7 @@ class FrontendResourceTest {
       tags = Seq(aTag)
     )
 
-    assertEquals("Automatically tagged", newsitemWithNoTags.getTaggingStatus)
+    assertEquals("Automatically tagged as: ", newsitemWithNoTags.getTaggingStatus)
 
     import scala.collection.JavaConverters._
     assertEquals(Seq(aTag).asJava, newsitemWithNoTags.getTaggingsToShow)
@@ -43,7 +43,7 @@ class FrontendResourceTest {
       tags = Seq(anotherTag)
     )
 
-    assertEquals("Manually tagged", newsitemWithNoTags.getTaggingStatus)
+    assertEquals("Tagged as: ", newsitemWithNoTags.getTaggingStatus)
     import scala.collection.JavaConverters._
     assertEquals(Seq(aTag).asJava, newsitemWithNoTags.getTaggingsToShow)
   }
