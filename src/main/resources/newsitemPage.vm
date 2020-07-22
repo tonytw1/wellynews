@@ -49,7 +49,7 @@
            #end
     	</ul>
     #else
-        <p>This item has no been manually tagged.<p>
+        <p>This item has not been manually tagged.<p>
     #end
 
     <h3>Geotag votes</h3>
