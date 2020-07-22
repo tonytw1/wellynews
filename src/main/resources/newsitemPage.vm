@@ -39,7 +39,7 @@
 
 	<h3>Hand taggings</h3>
 
-	#if($taggings.size > 0)
+	#if($hand_taggings.size > 0)
     	<p>These tags have been manually added to this item:</p>
         <ul>
             #foreach ($tagging in $hand_taggings)
