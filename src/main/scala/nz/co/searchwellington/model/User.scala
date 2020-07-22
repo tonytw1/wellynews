@@ -38,4 +38,6 @@ case class User(_id: BSONObjectID = BSONObjectID.generate,
 
   def getApikey: String = apikey.getOrElse("")
 
+  def getDisplayName: String = profilename.getOrElse(id)
+
 }

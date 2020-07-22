@@ -4,5 +4,5 @@ import nz.co.searchwellington.model.taggingvotes.TaggingVote
 import nz.co.searchwellington.model.{Tag, User}
 
 class HandTagging(val tag: Tag, user: User) extends TaggingVote {
-  override def explanation: String = "Hand tagged by " + user.getProfilename
+  override def explanation: String = "Hand tagged by " + user.getDisplayName
 }
