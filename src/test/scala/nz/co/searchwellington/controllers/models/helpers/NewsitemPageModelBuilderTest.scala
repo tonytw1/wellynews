@@ -115,7 +115,7 @@ class NewsitemPageModelBuilderTest extends ReasonableWaits {
     when(taggingReturnsOfficerService.getHandTaggingsForResource(geotaggedNewsitem)).thenReturn(Future.successful(Seq.empty))
     when(taggingReturnsOfficerService.getIndexTaggingsForResource(geotaggedNewsitem)).thenReturn(Future.successful(Seq.empty))
 
-    val geotaggingVote = new GeotaggingVote(place, "Publisher geotagged", 1)
+    val geotaggingVote = new GeotaggingVote(place, "Publisher's location", 1)
     when(taggingReturnsOfficerService.getGeotagVotesForResource(geotaggedNewsitem)).thenReturn(Future.successful(Seq(geotaggingVote)))
 
     val mv = Await.result(modelBuilder.populateContentModel(request), TenSeconds).get

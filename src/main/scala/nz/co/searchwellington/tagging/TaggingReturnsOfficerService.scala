@@ -101,7 +101,7 @@ import scala.concurrent.Future
               maybePublisher.flatMap { publisher =>
                 publisher.geocode.map { pg =>
                   log.debug("Adding publisher geotag: " + pg)
-                  new GeotaggingVote(pg, "Publisher geo tag", 1)
+                  new GeotaggingVote(pg, "Publisher's location", 1)
                 }
               }
             }
