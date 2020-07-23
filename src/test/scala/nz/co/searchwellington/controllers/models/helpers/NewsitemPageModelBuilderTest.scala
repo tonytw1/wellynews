@@ -150,16 +150,21 @@ class NewsitemPageModelBuilderTest extends ReasonableWaits {
 
   @Test
   def shouldDisplayGeotaggingVotes {
-    val validPath = "/newsitem/" + Newsitem().id
+    val newsitem = Newsitem()
+    val validPath = "/newsitem/" + newsitem.id
     val request = new MockHttpServletRequest
     request.setRequestURI(validPath)
 
-    val geotaggingVote = mock(classOf[GeotaggingVote])
-
-    val newsitem = Newsitem()
     val frontendNewsitem = FrontendNewsitem(id = newsitem.id)
     when(mongoRepository.getResourceById(newsitem.id)).thenReturn(Future.successful(Some(newsitem)))
-    when(taggingReturnsOfficerService.getGeotagVotesForResource(newsitem)).thenReturn(Future.successful(List(geotaggingVote)))
+    when(frontendResourceMapper.createFrontendResourceFrom(newsitem, None)).thenReturn(Future.successful(frontendNewsitem))
+
+    when(taggingReturnsOfficerService.getHandTaggingsForResource(newsitem)).thenReturn(Future.successful(Seq.empty))
+    when(taggingReturnsOfficerService.getIndexTaggingsForResource(newsitem)).thenReturn(Future.successful(Seq.empty))
+
+    val place = Geocode(address = Some("Somewhere"))
+    val geotaggingVote = new GeotaggingVote(place, "Publisher's location", 1)
+    when(taggingReturnsOfficerService.getGeotagVotesForResource(newsitem)).thenReturn(Future.successful(Seq(geotaggingVote)))
 
     val mv = Await.result(modelBuilder.populateContentModel(request), TenSeconds).get
 
