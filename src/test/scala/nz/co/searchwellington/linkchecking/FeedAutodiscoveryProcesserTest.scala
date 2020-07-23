@@ -2,6 +2,7 @@ package nz.co.searchwellington.linkchecking
 
 import java.util.UUID
 
+import nz.co.searchwellington.ReasonableWaits
 import nz.co.searchwellington.commentfeeds.{CommentFeedDetectorService, CommentFeedGuesserService}
 import nz.co.searchwellington.htmlparsing.RssLinkExtractor
 import nz.co.searchwellington.model.{DiscoveredFeed, Feed, Newsitem}
@@ -9,14 +10,14 @@ import nz.co.searchwellington.repositories.mongo.MongoRepository
 import org.joda.time.DateTime
 import org.junit.Assert.assertEquals
 import org.junit.Test
-import org.mockito.ArgumentCaptor
 import org.mockito.Matchers.any
 import org.mockito.Mockito.{mock, never, verify, when}
+import org.mockito.{ArgumentCaptor, Matchers}
+import reactivemongo.api.commands.UpdateWriteResult
 
-import scala.concurrent.Future
-import scala.concurrent.ExecutionContext.Implicits.global
+import scala.concurrent.{Await, ExecutionContext, Future}
 
-class FeedAutodiscoveryProcesserTest {
+class FeedAutodiscoveryProcesserTest extends ReasonableWaits {
 
   private val UNSEEN_FEED_URL = "http://something/new"
   private val EXISTING_FEED_URL = "http://something/old"
@@ -29,50 +30,63 @@ class FeedAutodiscoveryProcesserTest {
 
   private val resource = Newsitem(id = UUID.randomUUID().toString, page = "https://localhost/test")
   private val pageContent = "Meh"
-  private var feedAutodiscoveryProcesser = new FeedAutodiscoveryProcesser(mongoRepository, rssLinkExtractor, commentFeedDetector, commentFeedGuesser)
 
-  @Test def newlyDiscoveredFeedsUrlsShouldBeRecordedAsDiscoveredFeeds(): Unit = {
+  private val feedAutodiscoveryProcesser = new FeedAutodiscoveryProcesser(mongoRepository, rssLinkExtractor, commentFeedDetector, commentFeedGuesser)
+
+  @Test
+  def newlyDiscoveredFeedsUrlsShouldBeRecordedAsDiscoveredFeeds(): Unit = {
+    implicit val ec = ExecutionContext.Implicits.global
+    val now = DateTime.now
+
     when(rssLinkExtractor.extractLinks(pageContent)).thenReturn(Seq(UNSEEN_FEED_URL))
 
     when(commentFeedDetector.isCommentFeedUrl(UNSEEN_FEED_URL)).thenReturn(false)
     when(mongoRepository.getDiscoveredFeedByUrlAndReference(UNSEEN_FEED_URL, resource.page)).thenReturn(Future.successful(None))
     when(mongoRepository.getFeedByUrl(UNSEEN_FEED_URL)).thenReturn(Future.successful(None))
+    when(mongoRepository.saveDiscoveredFeed(Matchers.any(classOf[DiscoveredFeed]))(Matchers.eq(ec))).thenReturn(Future.successful(mock(classOf[UpdateWriteResult])))
 
     val saved = ArgumentCaptor.forClass(classOf[DiscoveredFeed])
 
-    feedAutodiscoveryProcesser.process(resource, pageContent, DateTime.now)
+    val eventualBoolean = feedAutodiscoveryProcesser.process(resource, pageContent, now)(ec)
+    Await.result(eventualBoolean, TenSeconds)
 
-    verify(mongoRepository).saveDiscoveredFeed(saved.capture())
+    verify(mongoRepository).saveDiscoveredFeed(saved.capture())(Matchers.eq(ec))
     assertEquals(UNSEEN_FEED_URL, saved.getValue.url)
     assertEquals(resource.page, saved.getValue.referencedFrom)
   }
 
-  @Test def relativeFeedUrlsShouldBeExpandedIntoFullyQualifiedUrls(): Unit = {
+  @Test
+  def relativeFeedUrlsShouldBeExpandedIntoFullyQualifiedUrls(): Unit = {
+    implicit val ec = ExecutionContext.Implicits.global
+
     when(rssLinkExtractor.extractLinks(pageContent)).thenReturn(Seq(RELATIVE_FEED_URL))
 
     when(commentFeedDetector.isCommentFeedUrl("https://localhost/feed.xml")).thenReturn(false)
     when(mongoRepository.getDiscoveredFeedByUrlAndReference("https://localhost/feed.xml", resource.page)).thenReturn(Future.successful(None))
     when(mongoRepository.getFeedByUrl("https://localhost/feed.xml")).thenReturn(Future.successful(None))
+    when(mongoRepository.saveDiscoveredFeed(Matchers.any(classOf[DiscoveredFeed]))(Matchers.eq(ec))).thenReturn(Future.successful(mock(classOf[UpdateWriteResult])))
 
     val saved = ArgumentCaptor.forClass(classOf[DiscoveredFeed])
 
-    feedAutodiscoveryProcesser.process(resource, pageContent, DateTime.now)
+    Await.result(feedAutodiscoveryProcesser.process(resource, pageContent, DateTime.now), TenSeconds)
 
-    verify(mongoRepository).saveDiscoveredFeed(saved.capture())
+    verify(mongoRepository).saveDiscoveredFeed(saved.capture())(Matchers.eq(ec))
     assertEquals("https://localhost/feed.xml", saved.getValue.url)
   }
 
   @Test
   def doNotRecordDiscoveredFeedsIfWeAlreadyHaveThisFeed(): Unit = {
+    implicit val ec = ExecutionContext.Implicits.global
+
     val autoDiscoveredLinks = Seq(EXISTING_FEED_URL)
     when(rssLinkExtractor.extractLinks(pageContent)).thenReturn(autoDiscoveredLinks)
     when(commentFeedDetector.isCommentFeedUrl(EXISTING_FEED_URL)).thenReturn(false)
     when(mongoRepository.getDiscoveredFeedByUrlAndReference(EXISTING_FEED_URL, resource.page)).thenReturn(Future.successful(None))
     when(mongoRepository.getFeedByUrl(EXISTING_FEED_URL)).thenReturn(Future.successful(Some(mock(classOf[Feed]))))
 
-    feedAutodiscoveryProcesser.process(resource, pageContent, DateTime.now)
+    Await.result(feedAutodiscoveryProcesser.process(resource, pageContent, DateTime.now), TenSeconds)
 
-    verify(mongoRepository, never).saveDiscoveredFeed(any(classOf[DiscoveredFeed]))
+    verify(mongoRepository, never).saveDiscoveredFeed(any(classOf[DiscoveredFeed]))(Matchers.eq(ec))
   }
 
 }

@@ -68,7 +68,6 @@ import scala.concurrent.{ExecutionContext, Future}
           }
         }
       }.map(_.flatten)
-
       newlyDiscovered.flatMap { ds =>
         Future.sequence {
           ds.map { d =>
@@ -84,13 +83,13 @@ import scala.concurrent.{ExecutionContext, Future}
 
   private def isFullQualified(discoveredUrl: String): Boolean = discoveredUrl.startsWith("http://") || discoveredUrl.startsWith("https://")
 
-  private def recordDiscoveredFeedUrl(checkResource: Resource, discoveredFeedUrl: String, seen: DateTime)(implicit ec: ExecutionContext): Future[Object] = {
+  private def recordDiscoveredFeedUrl(checkResource: Resource, discoveredFeedUrl: String, seen: DateTime)(implicit ec: ExecutionContext): Future[Boolean] = {
     val eventualMaybeExistingDiscoveredFeed = mongoRepository.getDiscoveredFeedByUrlAndReference(discoveredFeedUrl, checkResource.page)
     eventualMaybeExistingDiscoveredFeed.flatMap { maybeExistingDiscoveredFeed =>
       if (maybeExistingDiscoveredFeed.isEmpty) {
-        mongoRepository.saveDiscoveredFeed(DiscoveredFeed(url = discoveredFeedUrl, referencedFrom = checkResource.page, seen = seen.toDate))
+        mongoRepository.saveDiscoveredFeed(DiscoveredFeed(url = discoveredFeedUrl, referencedFrom = checkResource.page, seen = seen.toDate)).map(_.ok)
       } else {
-        Future.successful(Unit)
+        Future.successful(false)
       }
     }
   }
