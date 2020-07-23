@@ -1,5 +1,7 @@
 package nz.co.searchwellington.repositories.elasticsearch
 
+import java.util.UUID
+
 import nz.co.searchwellington.ReasonableWaits
 import nz.co.searchwellington.controllers.ShowBrokenDecisionService
 import nz.co.searchwellington.model._
@@ -11,19 +13,17 @@ import org.junit.Assert.{assertEquals, assertFalse, assertTrue}
 import org.junit.Test
 import org.mockito.Mockito.{mock, when}
 import org.scalatest.concurrent.Eventually.{eventually, interval, _}
-import uk.co.eelpieconsulting.common.geo.model.LatLong
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.{Await, Future}
 
 class ElasticSearchIndexerTest extends ReasonableWaits {
+  private val databaseAndIndexName = "wellynews-" + UUID.randomUUID().toString()
+  val mongoRepository = new MongoRepository("mongodb://localhost:27017/" + databaseAndIndexName)
 
   private val showBrokenDecisionService = mock(classOf[ShowBrokenDecisionService])
-
-  val mongoRepository = new MongoRepository("mongodb://localhost:27017/searchwellington")
   val taggingReturnsOfficerService = new TaggingReturnsOfficerService(new HandTaggingDAO(mongoRepository), mongoRepository)
-
-  val elasticSearchIndexer = new ElasticSearchIndexer(showBrokenDecisionService, "http://localhost:9200", "wellynews", taggingReturnsOfficerService)
+  val elasticSearchIndexer = new ElasticSearchIndexer(showBrokenDecisionService, "http://localhost:9200", databaseAndIndexName, taggingReturnsOfficerService)
   val rebuild = new ElasticSearchIndexRebuildService(mongoRepository, elasticSearchIndexer, taggingReturnsOfficerService)
 
   private val loggedInUser = User()
