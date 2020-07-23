@@ -9,7 +9,7 @@ import nz.co.searchwellington.repositories.HandTaggingDAO
 import nz.co.searchwellington.repositories.mongo.MongoRepository
 import nz.co.searchwellington.tagging.TaggingReturnsOfficerService
 import org.joda.time.{DateTime, Interval}
-import org.junit.Assert.{assertEquals, assertFalse, assertTrue}
+import org.junit.Assert.{assertFalse, assertTrue}
 import org.junit.Test
 import org.mockito.Mockito.{mock, when}
 import org.scalatest.concurrent.Eventually.{eventually, interval, _}
@@ -18,6 +18,7 @@ import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.{Await, Future}
 
 class ElasticSearchIndexerTest extends ReasonableWaits {
+  
   private val databaseAndIndexName = "wellynews-" + UUID.randomUUID().toString()
   val mongoRepository = new MongoRepository("mongodb://localhost:27017/" + databaseAndIndexName)
 
@@ -45,16 +46,16 @@ class ElasticSearchIndexerTest extends ReasonableWaits {
 
     indexResources(Seq(newsitem, website, feed))
 
-    val newsitems = queryForResources(allNewsitems)
-    eventually(timeout(TenSeconds), interval(OneHundredMilliSeconds), newsitems.nonEmpty)
+    def newsitems = queryForResources(allNewsitems)
+    eventually(timeout(TenSeconds), interval(TenMilliSeconds), newsitems.nonEmpty)
     assertTrue(newsitems.forall(i => i.`type` == "N"))
 
-    val websites = queryForResources(ResourceQuery(`type` = Some(Set("W"))))
-    eventually(timeout(TenSeconds), interval(OneHundredMilliSeconds), websites.nonEmpty)
+    def websites = queryForResources(ResourceQuery(`type` = Some(Set("W"))))
+    eventually(timeout(TenSeconds), interval(TenMilliSeconds), websites.nonEmpty)
     assertTrue(websites.forall(i => i.`type` == "W"))
 
-    val feeds = queryForResources(ResourceQuery(`type` = Some(Set("F"))))
-    eventually(timeout(TenSeconds), interval(OneHundredMilliSeconds), feeds.nonEmpty)
+    def feeds = queryForResources(ResourceQuery(`type` = Some(Set("F"))))
+    eventually(timeout(TenSeconds), interval(TenMilliSeconds), feeds.nonEmpty)
     assertTrue(feeds.forall(i => i.`type` == "F"))
   }
 
@@ -68,8 +69,8 @@ class ElasticSearchIndexerTest extends ReasonableWaits {
 
     def acceptedFeeds = queryForResources(ResourceQuery(`type` = Some(Set("F")), feedAcceptancePolicy = Some(FeedAcceptancePolicy.ACCEPT)))
 
-    eventually(timeout(TenSeconds), interval(OneHundredMilliSeconds), acceptedFeeds.size == 2)
-    eventually(timeout(TenSeconds), interval(OneHundredMilliSeconds), acceptedFeeds.contains(acceptedFeed))
+    eventually(timeout(TenSeconds), interval(TenMilliSeconds), acceptedFeeds.size == 2)
+    eventually(timeout(TenSeconds), interval(TenMilliSeconds), acceptedFeeds.contains(acceptedFeed))
     assertFalse(acceptedFeeds.map(_.id).contains(ignoredFeed.id))
     assertTrue(acceptedFeeds.forall(i => i.asInstanceOf[Feed].acceptance == FeedAcceptancePolicy.ACCEPT))
   }
@@ -98,8 +99,8 @@ class ElasticSearchIndexerTest extends ReasonableWaits {
 
     def taggedNewsitems = queryForResources(taggedNewsitemsQuery)
 
-    eventually(timeout(TenSeconds), interval(OneHundredMilliSeconds), taggedNewsitems.nonEmpty)
-    eventually(timeout(TenSeconds), interval(OneHundredMilliSeconds), taggedNewsitems.size == 1)
+    eventually(timeout(TenSeconds), interval(TenMilliSeconds), taggedNewsitems.nonEmpty)
+    eventually(timeout(TenSeconds), interval(TenMilliSeconds), taggedNewsitems.size == 1)
 
     assertTrue(taggedNewsitems.forall(i => i.`type` == "N"))
     assertTrue(taggedNewsitems.forall(i => i.resource_tags.exists(t => t.tag_id == tag._id)))
@@ -108,7 +109,7 @@ class ElasticSearchIndexerTest extends ReasonableWaits {
 
     def taggedWebsites = queryForResources(taggedWebsitesQuery)
 
-    eventually(timeout(TenSeconds), interval(OneHundredMilliSeconds), taggedNewsitems.nonEmpty)
+    eventually(timeout(TenSeconds), interval(TenMilliSeconds), taggedNewsitems.nonEmpty)
     assertTrue(taggedWebsites.forall(i => i.`type` == "W"))
     assertTrue(taggedWebsites.forall(i => i.resource_tags.exists(t => t.tag_id == tag._id)))
   }
@@ -131,8 +132,8 @@ class ElasticSearchIndexerTest extends ReasonableWaits {
 
     def publisherNewsitems = queryForResources(publisherNewsitemsQuery)
 
-    eventually(timeout(TenSeconds), interval(OneHundredMilliSeconds), publisherNewsitems.nonEmpty)
-    eventually(timeout(TenSeconds), interval(OneHundredMilliSeconds), publisherNewsitems.contains(publishersNewsitem))
+    eventually(timeout(TenSeconds), interval(TenMilliSeconds), publisherNewsitems.nonEmpty)
+    eventually(timeout(TenSeconds), interval(TenMilliSeconds), publisherNewsitems.contains(publishersNewsitem))
     assertTrue(publisherNewsitems.forall(i => i.asInstanceOf[Newsitem].publisher.contains(publisher._id)))
   }
 
@@ -150,7 +151,7 @@ class ElasticSearchIndexerTest extends ReasonableWaits {
     val publisherFeedsQuery = ResourceQuery(`type` = Some(Set("F")), publisher = Some(publisher))
     val publisherFeeds = queryForResources(publisherFeedsQuery)
 
-    eventually(timeout(TenSeconds), interval(OneHundredMilliSeconds), publisherFeeds.nonEmpty)
+    eventually(timeout(TenSeconds), interval(TenMilliSeconds), publisherFeeds.nonEmpty)
     assertTrue(publisherFeeds.forall(i => i.`type` == "F"))
     assertTrue(publisherFeeds.forall(i => i.asInstanceOf[Feed].publisher.contains(publisher._id)))
   }
@@ -167,12 +168,11 @@ class ElasticSearchIndexerTest extends ReasonableWaits {
     indexResources(Seq(newsitem, anotherNewsitem, yetAnotherNewsitem))
 
     def archiveLinks = Await.result(elasticSearchIndexer.createdMonthAggregationFor(allNewsitems, loggedInUser = Some(loggedInUser)), TenSeconds)
+    def monthStrings = archiveLinks.map(_._1.getStart.toDate.toString)
 
-    eventually(timeout(TenSeconds), interval(OneHundredMilliSeconds), archiveLinks.nonEmpty)
-    val monthStrings = archiveLinks.map(_._1.getStart.toDate.toString)
-    assertTrue(monthStrings.contains("Tue Jan 01 00:00:00 GMT 2019"))
-    assertTrue(monthStrings.contains("Thu Mar 01 00:00:00 GMT 2018"))
-    assertTrue(monthStrings.contains("Sat Jul 01 01:00:00 BST 2017"))
+    eventually(timeout(TenSeconds), interval(TenMilliSeconds), monthStrings.contains("Tue Jan 01 00:00:00 GMT 2019"))
+    eventually(timeout(TenSeconds), interval(TenMilliSeconds), monthStrings.contains("Thu Mar 01 00:00:00 GMT 2018"))
+    eventually(timeout(TenSeconds), interval(TenMilliSeconds), monthStrings.contains("Sat Jul 01 01:00:00 BST 2017"))
   }
 
   @Test
@@ -189,7 +189,7 @@ class ElasticSearchIndexerTest extends ReasonableWaits {
 
     def monthNewsitems = queryForResources(ResourceQuery(`type` = Some(Set("N")), interval = Some(month)))
 
-    eventually(timeout(TenSeconds), interval(OneHundredMilliSeconds), monthNewsitems.contains(newsitem))
+    eventually(timeout(TenSeconds), interval(TenMilliSeconds), monthNewsitems.contains(newsitem))
     assertTrue(monthNewsitems.forall(n => month.contains(n.date.get.getTime)))
   }
 
@@ -206,10 +206,10 @@ class ElasticSearchIndexerTest extends ReasonableWaits {
 
     indexResources(Seq(website, newsitem, watchlist, feed))
 
-    val typeCounts = Await.result(elasticSearchIndexer.getArchiveCounts(Some(loggedInUser)), TenSeconds)
+    def typeCounts = Await.result(elasticSearchIndexer.getArchiveCounts(Some(loggedInUser)), TenSeconds)
+    def typesFound = typeCounts.keys.toSet
 
-    val typesFound = typeCounts.keys.toSet
-    assertEquals(Set("W", "N", "F", "L"), typesFound)
+    eventually(timeout(TenSeconds), interval(TenMilliSeconds), Set("W", "N", "F", "L").equals(typesFound))
   }
 
   private def indexResources(resources: Seq[Resource]) = {
