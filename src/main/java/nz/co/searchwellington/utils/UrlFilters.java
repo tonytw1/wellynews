@@ -43,7 +43,7 @@ public class UrlFilters {
         if (isCapitalised(input)) {
             // Lower the string and then recapitalise.
             result = StringUtils.lowerCase(result);
-            result = StringUtils.capitalize(result);
+            result =  StringUtils.capitalize(result);
         }
         return result;
     }

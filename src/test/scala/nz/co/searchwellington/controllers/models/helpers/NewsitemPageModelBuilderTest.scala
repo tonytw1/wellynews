@@ -11,7 +11,7 @@ import nz.co.searchwellington.repositories.mongo.MongoRepository
 import nz.co.searchwellington.repositories.{ContentRetrievalService, HandTaggingDAO}
 import nz.co.searchwellington.tagging.TaggingReturnsOfficerService
 import nz.co.searchwellington.widgets.TagsWidgetFactory
-import org.junit.Assert.{assertEquals, assertTrue, assertNotNull}
+import org.junit.Assert.{assertEquals, assertTrue, assertNotNull, assertNull}
 import org.junit.Test
 import org.mockito.Mockito.{mock, when}
 import org.springframework.mock.web.MockHttpServletRequest
@@ -126,7 +126,6 @@ class NewsitemPageModelBuilderTest extends ReasonableWaits {
     assertEquals(geotaggedFrontendNewsitem, geotagged.get(0))
   }
 
-  /*
   @Test
   def shouldNotPopulateGeotaggedItemsIfNewsitemIsNotGeotagged {
     val validPath = "/newsitem/" + Newsitem().id
@@ -135,23 +134,23 @@ class NewsitemPageModelBuilderTest extends ReasonableWaits {
 
     val id = UUID.randomUUID()
     val frontendNewsitem = FrontendNewsitem(id = id.toString)
-    when(contentRetrievalService.getNewsPage(validPath)).thenReturn(Some(frontendNewsitem))
     when(mongoRepository.getResourceById(id.toString)).thenReturn(Future.successful(Some(Newsitem()))) // TODO properly exercise mapped option branch
 
     val mv = Await.result(modelBuilder.populateContentModel(request), TenSeconds).get
 
     assertNull(mv.getModel.get("geocoded"))
   }
-  */
 
-  /*
   @Test
   def shouldDisplayGeotaggingVotes {
+    val validPath = "/newsitem/" + Newsitem().id
+    val request = new MockHttpServletRequest
+    request.setRequestURI(validPath)
+
     val geotaggingVote = mock(classOf[GeotaggingVote])
 
     val newsitem = Newsitem()
     val frontendNewsitem = FrontendNewsitem(id = newsitem.id)
-    when(contentRetrievalService.getNewsPage(VALID_NEWSITEM_PAGE_PATH)).thenReturn(Some(frontendNewsitem))
     when(mongoRepository.getResourceById(newsitem.id)).thenReturn(Future.successful(Some(newsitem)))
     when(taggingReturnsOfficerService.getGeotagVotesForResource(newsitem)).thenReturn(Future.successful(List(geotaggingVote)))
 
@@ -161,6 +160,5 @@ class NewsitemPageModelBuilderTest extends ReasonableWaits {
     assertEquals(1, geotaggedVotesOnModel.size)
     assertEquals(geotaggingVote, geotaggedVotesOnModel.get(0))
   }
-   */
 
 }

@@ -37,7 +37,6 @@ class TagCombinerModelBuilderTest extends ReasonableWaits with ContentFields {
   }
 
   @Test
-  @throws(classOf[Exception])
   def isNotValidIfNotTagsAreOnTheRequest(): Unit = {
     assertFalse(modelBuilder.isValid(request))
   }

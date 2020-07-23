@@ -43,13 +43,11 @@ class FeedItemAcceptorTest {
     assertEquals(Some(feedReadingUser._id), acceptedNewsitem.owner)
   }
 
-  /*
   @Test
-  @throws[Exception]
   def shouldFlattenLoudHeadlinesWhenAccepting(): Unit = {
-    val accepted = feedItemAcceptor.acceptFeedItem(feedReadingUser, feednewsitem, null)
+    val feedItem = mock(classOf[FeedItem])
+    val accepted = service.acceptFeedItem(feedReadingUser, (feedItem, feed))
     assertEquals("Headline", accepted.title.get)
   }
-  */
 
 }
