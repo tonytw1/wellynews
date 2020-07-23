@@ -128,13 +128,20 @@ class NewsitemPageModelBuilderTest extends ReasonableWaits {
 
   @Test
   def shouldNotPopulateGeotaggedItemsIfNewsitemIsNotGeotagged {
-    val validPath = "/newsitem/" + Newsitem().id
+    val id = UUID.randomUUID()
+    val newsitem = Newsitem(id = id.toString)
+    val frontendNewsitem = FrontendNewsitem(id = id.toString)
+
+    val validPath = "/newsitem/" + newsitem.id
     val request = new MockHttpServletRequest
     request.setRequestURI(validPath)
 
-    val id = UUID.randomUUID()
-    val frontendNewsitem = FrontendNewsitem(id = id.toString)
-    when(mongoRepository.getResourceById(id.toString)).thenReturn(Future.successful(Some(Newsitem()))) // TODO properly exercise mapped option branch
+    when(mongoRepository.getResourceById(id.toString)).thenReturn(Future.successful(Some(newsitem))) // TODO properly exercise mapped option branch
+    when(frontendResourceMapper.createFrontendResourceFrom(newsitem, None)).thenReturn(Future.successful(frontendNewsitem))
+
+    when(taggingReturnsOfficerService.getHandTaggingsForResource(newsitem)).thenReturn(Future.successful(Seq.empty))
+    when(taggingReturnsOfficerService.getIndexTaggingsForResource(newsitem)).thenReturn(Future.successful(Seq.empty))
+    when(taggingReturnsOfficerService.getGeotagVotesForResource(newsitem)).thenReturn(Future.successful(Seq.empty))
 
     val mv = Await.result(modelBuilder.populateContentModel(request), TenSeconds).get
 
