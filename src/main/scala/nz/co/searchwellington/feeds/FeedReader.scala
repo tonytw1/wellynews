@@ -88,7 +88,7 @@ import scala.concurrent.{ExecutionContext, Future}
 
     Future.sequence(eventualProcessed).map { processed =>
       val accepted = processed.flatten
-      log.info("Processed " + processed.size + " and accepted " + accepted.size)
+      log.info("Processed feed items " + processed.size + " and accepted " + accepted.size)
       accepted
     }
   }
