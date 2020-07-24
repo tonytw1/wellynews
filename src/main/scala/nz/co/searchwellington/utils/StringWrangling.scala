@@ -12,6 +12,14 @@ trait StringWrangling {
     }
   }
 
-  private def isCapitalised(input: String): Boolean = input == StringUtils.upperCase(input)
+  def trimToCharacterCount(description: String, maxLength: Int): String = {
+    if (description.length > maxLength) {
+      val trimmed = description.substring(0, maxLength)
+      if (trimmed.contains(".")) return StringUtils.substringBefore(trimmed, ".") + "."
+    }
+    description
+  }
+
+  private def isCapitalised(input: String) = input == StringUtils.upperCase(input)
 
 }

@@ -2,22 +2,15 @@ package nz.co.searchwellington.feeds
 
 import nz.co.searchwellington.feeds.reading.whakaoko.model.{FeedItem, LatLong, Place}
 import nz.co.searchwellington.model.{Feed, User}
-import nz.co.searchwellington.utils.TextTrimmer
 import org.junit.Assert.{assertEquals, assertNotNull, assertTrue}
-import org.junit.{Before, Test}
-import org.mockito.{Mock, MockitoAnnotations}
+import org.junit.Test
 import reactivemongo.bson.BSONObjectID
 
 class FeeditemToNewsitemServiceTest {
-  @Mock private[feeds] val textTrimmer: TextTrimmer = null
   private val feed: Feed = Feed(publisher = Some(BSONObjectID.generate))
-  private var service: FeeditemToNewsitemService = null
   private val user = User(name = Some("Feed reading user"))
 
-  @Before def setup {
-    MockitoAnnotations.initMocks(this)
-    service = new FeeditemToNewsitemService(textTrimmer, new PlaceToGeocodeMapper)
-  }
+  private val service = new FeeditemToNewsitemService(new PlaceToGeocodeMapper)
 
   @Test
   def shouldSetGeocodeWhenAcceptingFeedNewsitem {

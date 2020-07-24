@@ -2,12 +2,12 @@ package nz.co.searchwellington.feeds
 
 import nz.co.searchwellington.feeds.reading.whakaoko.model.FeedItem
 import nz.co.searchwellington.model.{Feed, Newsitem}
-import nz.co.searchwellington.utils.TextTrimmer
+import nz.co.searchwellington.utils.StringWrangling
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
 
 @Component
-class FeeditemToNewsitemService @Autowired()(textTrimmer: TextTrimmer, placeToGeocodeMapper: PlaceToGeocodeMapper) {
+class FeeditemToNewsitemService @Autowired()(placeToGeocodeMapper: PlaceToGeocodeMapper) extends StringWrangling {
 
   private val MAXIMUM_BODY_LENGTH = 400
 
@@ -31,7 +31,7 @@ class FeeditemToNewsitemService @Autowired()(textTrimmer: TextTrimmer, placeToGe
 
   private def composeDescription(feedNewsitem: FeedItem): String = {
     feedNewsitem.body.map { description =>
-      textTrimmer.trimToCharacterCount(description, MAXIMUM_BODY_LENGTH)
+      trimToCharacterCount(description, MAXIMUM_BODY_LENGTH)
     }.getOrElse("")
   }
 

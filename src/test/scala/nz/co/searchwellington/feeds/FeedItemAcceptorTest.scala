@@ -2,7 +2,6 @@ package nz.co.searchwellington.feeds
 
 import nz.co.searchwellington.feeds.reading.whakaoko.model.FeedItem
 import nz.co.searchwellington.model.{Feed, Newsitem, User}
-import nz.co.searchwellington.utils.TextTrimmer
 import org.joda.time.DateTime
 import org.junit.Assert.{assertEquals, assertFalse, assertTrue}
 import org.junit.Test
@@ -11,7 +10,6 @@ import reactivemongo.bson.BSONObjectID
 import uk.co.eelpieconsulting.common.geo.model.Place
 
 class FeedItemAcceptorTest {
-  private val textTrimmer = mock(classOf[TextTrimmer])
   private val place = mock(classOf[Place])
 
   private val feed = Feed(publisher = Some(BSONObjectID.generate))
