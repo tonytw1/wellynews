@@ -1,13 +1,10 @@
 package nz.co.searchwellington.utils;
 
-import java.util.regex.Pattern;
-
-import org.apache.commons.lang.StringUtils;
-import org.apache.log4j.Logger;
-
 import com.google.common.base.Strings;
-
+import org.apache.log4j.Logger;
 import uk.co.eelpieconsulting.common.html.HtmlCleaner;
+
+import java.util.regex.Pattern;
 
 public class UrlFilters {
     
@@ -30,24 +27,7 @@ public class UrlFilters {
     public static String trimWhiteSpace(String title) {
         return title.trim();
     }
-    
-    // TODO this is not todo with urls; move.
-    protected static boolean isCapitalised(String input) {
-        return (input.equals(StringUtils.upperCase(input)));
-    }
- 
-    // TODO this is not todo with urls; move.
-    public static String lowerCappedSentence(String input) {
-        String result = input;
-        // Is the sentence entirely capitalised?
-        if (isCapitalised(input)) {
-            // Lower the string and then recapitalise.
-            result = StringUtils.lowerCase(result);
-            result =  StringUtils.capitalize(result);
-        }
-        return result;
-    }
-    
+
     protected static String stripHttpPrefix(String url) {
         final String REGEX = "^http://";
         Pattern pattern = Pattern.compile(REGEX);

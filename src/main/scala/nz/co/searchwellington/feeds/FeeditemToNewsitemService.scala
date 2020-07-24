@@ -2,7 +2,7 @@ package nz.co.searchwellington.feeds
 
 import nz.co.searchwellington.feeds.reading.whakaoko.model.FeedItem
 import nz.co.searchwellington.model.{Feed, Newsitem}
-import nz.co.searchwellington.utils.{TextTrimmer, UrlFilters}
+import nz.co.searchwellington.utils.TextTrimmer
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
 
@@ -34,10 +34,5 @@ class FeeditemToNewsitemService @Autowired()(textTrimmer: TextTrimmer, placeToGe
       textTrimmer.trimToCharacterCount(description, MAXIMUM_BODY_LENGTH)
     }.getOrElse("")
   }
-
-  private def flattenLoudCapsInTitle(title: String) = { // TODO unused
-    UrlFilters.lowerCappedSentence(title)
-  }
-
 
 }

@@ -45,8 +45,11 @@ class FeedItemAcceptorTest {
 
   @Test
   def shouldFlattenLoudHeadlinesWhenAccepting(): Unit = {
-    val feedItem = mock(classOf[FeedItem])
-    val accepted = service.acceptFeedItem(feedReadingUser, (feedItem, feed))
+    val feedItemWithLoudCapsHeadline = FeedItem(id = "", title = Some("Headline"), url ="",  subscriptionId = "")
+    when(feeditemToNewsItemSerice.makeNewsitemFromFeedItem(feedItemWithLoudCapsHeadline, feed)).thenReturn(Newsitem(title = Some("HEADLINE")))  // TODO consider using real service here
+
+    val accepted = service.acceptFeedItem(feedReadingUser, (feedItemWithLoudCapsHeadline, feed))
+
     assertEquals("Headline", accepted.title.get)
   }
 

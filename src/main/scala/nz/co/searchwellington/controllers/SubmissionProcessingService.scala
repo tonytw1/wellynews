@@ -11,20 +11,20 @@ import nz.co.searchwellington.geocoding.osm.{CachingNominatimGeocodingService, O
 import nz.co.searchwellington.model._
 import nz.co.searchwellington.repositories.mongo.MongoRepository
 import nz.co.searchwellington.repositories.{HandTaggingDAO, HibernateResourceDAO, TagDAO}
-import nz.co.searchwellington.utils.UrlFilters
+import nz.co.searchwellington.utils.{StringWrangling, UrlFilters}
 import org.apache.commons.lang.{StringEscapeUtils, StringUtils}
 import org.apache.log4j.Logger
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
 import uk.co.eelpieconsulting.common.geo.model.{OsmId, Place}
 
-import scala.concurrent.{Await, ExecutionContext}
+import scala.concurrent.Await
 import scala.concurrent.ExecutionContext.Implicits.global
 
 @Component class SubmissionProcessingService @Autowired()(nominatimGeocodeService: CachingNominatimGeocodingService, tagDAO: TagDAO,
                                                           tagVoteDAO: HandTaggingDAO, resourceDAO: HibernateResourceDAO, urlProcessor: UrlProcessor,
                                                           osmIdParser: OsmIdParser, placeToGeocodeMapper: PlaceToGeocodeMapper,
-                                                          mongoRepository: MongoRepository) extends ReasonableWaits {
+                                                          mongoRepository: MongoRepository) extends ReasonableWaits with StringWrangling {
 
   private val log = Logger.getLogger(classOf[SubmissionProcessingService])
 
@@ -39,7 +39,7 @@ import scala.concurrent.ExecutionContext.Implicits.global
       var title = new String(req.getParameter(REQUEST_TITLE_NAME))
       title = UrlFilters.trimWhiteSpace(title)
       title = UrlFilters.stripHtml(title)
-      val flattenedTitle = UrlFilters.lowerCappedSentence(title)
+      val flattenedTitle = lowerCappedSentence(title)
       if (!(flattenedTitle == title)) {
         title = flattenedTitle
         log.info("Flatten capitalised sentence to '" + title + "'")
