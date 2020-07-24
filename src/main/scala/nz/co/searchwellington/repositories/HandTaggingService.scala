@@ -27,7 +27,7 @@ import scala.concurrent.{Await, Future}
     }
   }
 
-  def clearTaggingsForTag(tag: Tag) {
+  def clearTaggingsForTag(tag: Tag): Unit = {
 
     def deleteTagFromResource(tag: Tag, resource: Resource): Resource = {
       val filtered = resource.resource_tags.filterNot(t => t.tag_id == tag._id)
@@ -42,7 +42,7 @@ import scala.concurrent.{Await, Future}
       mongoRepository.getResourceByObjectId(rid)
     }).map( _.flatten)
 
-    Await.result(eventualResources, TenSeconds).foreach { taggedResource =>
+    Await.result(eventualResources, TenSeconds).foreach { taggedResource => // TODO remove blocking Await
       val updatedResource = deleteTagFromResource(tag, taggedResource)
       mongoRepository.saveResource(updatedResource) // TODO Map
       frontendContentUpdater.update(updatedResource)

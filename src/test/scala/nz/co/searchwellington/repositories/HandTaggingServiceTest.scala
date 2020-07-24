@@ -4,11 +4,10 @@ import nz.co.searchwellington.model._
 import nz.co.searchwellington.repositories.mongo.MongoRepository
 import org.junit.Assert.{assertEquals, assertTrue}
 import org.junit.Test
-import org.mockito.ArgumentCaptor
-import org.mockito.Mockito.{mock, verify, when, verifyZeroInteractions}
+import org.mockito.{ArgumentCaptor, Matchers}
+import org.mockito.Mockito.{mock, verify, verifyZeroInteractions, when}
 
-import scala.concurrent.Future
-import scala.concurrent.ExecutionContext.Implicits.global
+import scala.concurrent.{ExecutionContext, Future}
 
 class HandTaggingServiceTest {
   private val handTaggingDAO = mock(classOf[HandTaggingDAO])
@@ -24,6 +23,8 @@ class HandTaggingServiceTest {
   private val taggedResource = Website(resource_tags = Seq(handTagging))
   private val newUser = User(name = Some("New user"))
 
+  implicit val ec = ExecutionContext.Implicits.global
+
   @Test
   def clearingTagVotesClearAllVotesForThatTagFromTheDatabase {
     when(mongoRepository.getResourceIdsByTag(tag)).thenReturn(Future.successful(Seq(taggedResource._id)))
@@ -32,7 +33,8 @@ class HandTaggingServiceTest {
     val updated = ArgumentCaptor.forClass(classOf[Resource])
     handTaggingService.clearTaggingsForTag(tag)
 
-    verify(mongoRepository).saveResource(updated.capture())
+    // Expect the previously tagged resource to be updated with the tagging for the deleted tag removed
+    verify(mongoRepository).saveResource(updated.capture())(Matchers.eq(ec))
     assertEquals(taggedResource._id, updated.getValue._id)
     assertTrue(updated.getValue.resource_tags.isEmpty)
   }
@@ -81,7 +83,7 @@ class HandTaggingServiceTest {
     val updated = ArgumentCaptor.forClass(classOf[Resource])
     handTaggingService.transferVotes(taggingUser, newUser)
 
-    verify(mongoRepository).saveResource(updated.capture())
+    verify(mongoRepository).saveResource(updated.capture())(Matchers.eq(ec))
     assertEquals(taggedResource._id, updated.getValue._id)
     assertEquals(newUser._id, updated.getValue.resource_tags.head.user_id)
   }
