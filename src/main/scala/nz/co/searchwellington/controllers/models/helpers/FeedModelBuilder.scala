@@ -3,7 +3,7 @@ package nz.co.searchwellington.controllers.models.helpers
 import javax.servlet.http.HttpServletRequest
 import nz.co.searchwellington.ReasonableWaits
 import nz.co.searchwellington.controllers.models.{GeotaggedNewsitemExtractor, ModelBuilder}
-import nz.co.searchwellington.feeds.reading.WhakaokoService
+import nz.co.searchwellington.feeds.whakaoko.WhakaokoService
 import nz.co.searchwellington.feeds.{FeedItemLocalCopyDecorator, FeeditemToNewsitemService, RssfeedNewsitemService}
 import nz.co.searchwellington.model.frontend.FrontendResource
 import nz.co.searchwellington.model.mappers.FrontendResourceMapper

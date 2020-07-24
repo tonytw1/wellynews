@@ -4,7 +4,7 @@ import java.util.UUID
 
 import com.google.common.base.Strings
 import javax.servlet.http.{HttpServletRequest, HttpServletResponse}
-import nz.co.searchwellington.feeds.reading.WhakaokoService
+import nz.co.searchwellington.feeds.whakaoko.WhakaokoService
 import nz.co.searchwellington.feeds.{FeedItemAcceptor, FeeditemToNewsitemService, RssfeedNewsitemService}
 import nz.co.searchwellington.filters.AdminRequestFilter
 import nz.co.searchwellington.htmlparsing.SnapshotBodyExtractor

@@ -5,8 +5,8 @@ import java.util.UUID
 import nz.co.searchwellington.ReasonableWaits
 import nz.co.searchwellington.controllers.LoggedInUserFilter
 import nz.co.searchwellington.controllers.models.GeotaggedNewsitemExtractor
-import nz.co.searchwellington.feeds.reading.WhakaokoService
-import nz.co.searchwellington.feeds.reading.whakaoko.model.{FeedItem, Subscription}
+import nz.co.searchwellington.feeds.whakaoko.WhakaokoService
+import nz.co.searchwellington.feeds.whakaoko.model.{FeedItem, Subscription}
 import nz.co.searchwellington.feeds.{FeedItemLocalCopyDecorator, FeeditemToNewsitemService, RssfeedNewsitemService}
 import nz.co.searchwellington.model.frontend.{FrontendFeed, FrontendNewsitem}
 import nz.co.searchwellington.model.mappers.FrontendResourceMapper

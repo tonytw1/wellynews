@@ -1,4 +1,4 @@
-package nz.co.searchwellington.feeds.reading.whakaoko.model
+package nz.co.searchwellington.feeds.whakaoko.model
 
 import org.joda.time.DateTime
 

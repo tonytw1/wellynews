@@ -2,7 +2,7 @@ package nz.co.searchwellington.controllers
 
 import javax.validation.Valid
 import nz.co.searchwellington.ReasonableWaits
-import nz.co.searchwellington.feeds.reading.WhakaokoService
+import nz.co.searchwellington.feeds.whakaoko.WhakaokoService
 import nz.co.searchwellington.forms.NewFeed
 import nz.co.searchwellington.model.{Feed, UrlWordsGenerator, User}
 import nz.co.searchwellington.modification.ContentUpdateService

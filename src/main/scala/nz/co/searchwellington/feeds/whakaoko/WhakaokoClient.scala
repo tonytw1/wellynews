@@ -1,8 +1,8 @@
-package nz.co.searchwellington.feeds.reading.whakaoko
+package nz.co.searchwellington.feeds.whakaoko
 
 import akka.actor.ActorSystem
 import akka.stream.ActorMaterializer
-import nz.co.searchwellington.feeds.reading.whakaoko.model.{FeedItem, LatLong, Place, Subscription}
+import nz.co.searchwellington.feeds.whakaoko.model.{FeedItem, LatLong, Place, Subscription}
 import org.apache.http.HttpStatus
 import org.apache.log4j.Logger
 import org.joda.time.{DateTime, Duration}

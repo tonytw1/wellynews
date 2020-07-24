@@ -1,6 +1,6 @@
 package nz.co.searchwellington.feeds
 
-import nz.co.searchwellington.feeds.reading.whakaoko.model.FeedItem
+import nz.co.searchwellington.feeds.whakaoko.model.FeedItem
 import nz.co.searchwellington.model.{Feed, Newsitem, User}
 import org.joda.time.DateTime
 import org.junit.Assert.{assertEquals, assertFalse, assertTrue}

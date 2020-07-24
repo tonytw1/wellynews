@@ -1,6 +1,6 @@
 package nz.co.searchwellington.controllers.admin
 
-import nz.co.searchwellington.feeds.reading.whakaoko.model.Subscription
+import nz.co.searchwellington.feeds.whakaoko.model.Subscription
 import nz.co.searchwellington.model.frontend.{FrontendFeed, FrontendNewsitem, FrontendResource, FrontendWebsite}
 import nz.co.searchwellington.model._
 import nz.co.searchwellington.urls.{UrlBuilder, UrlParameterEncoder}

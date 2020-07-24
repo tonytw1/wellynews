@@ -1,8 +1,7 @@
-package nz.co.searchwellington.feeds.reading
+package nz.co.searchwellington.feeds.whakaoko
 
 import nz.co.searchwellington.ReasonableWaits
-import nz.co.searchwellington.feeds.reading.whakaoko.model
-import nz.co.searchwellington.feeds.reading.whakaoko.model.Subscription
+import nz.co.searchwellington.feeds.whakaoko.model.Subscription
 import nz.co.searchwellington.model.Feed
 import org.apache.log4j.Logger
 import org.springframework.beans.factory.annotation.Autowired
@@ -12,11 +11,18 @@ import scala.concurrent.{ExecutionContext, Future}
 
 @Component class WhakaokoFeedReader @Autowired()(whakaokoService: WhakaokoService) extends ReasonableWaits {
 
+  /*
+    Whakaoko (https://github.com/tonytw1/whakaoko) is an RSS reading and aggregation service.
+    It allows us to subscribe to an RSS feed URL and get the feed items back in JSON format.
+    Multiple RSS feed subscriptions can be aggregated into a channel.
+    This package handles the interactions with Whakaoko.
+   */
+
   private val log = Logger.getLogger(classOf[WhakaokoFeedReader])
 
-  def fetchChannelFeedItems(page: Int)(implicit ec: ExecutionContext): Future[Seq[model.FeedItem]] = whakaokoService.getChannelFeedItems(page)
+  def fetchChannelFeedItems(page: Int)(implicit ec: ExecutionContext): Future[Seq[nz.co.searchwellington.feeds.whakaoko.model.FeedItem]] = whakaokoService.getChannelFeedItems(page)
 
-  def fetchFeedItems(feed: Feed)(implicit ec: ExecutionContext): Future[Either[String, (Seq[model.FeedItem], Subscription)]] = {
+  def fetchFeedItems(feed: Feed)(implicit ec: ExecutionContext): Future[Either[String, (Seq[nz.co.searchwellington.feeds.whakaoko.model.FeedItem], Subscription)]] = {
     log.info("Fetching feed items for feed with url: " + feed.page)
     whakaokoService.getWhakaokoSubscriptionByUrl(feed.page).flatMap { mayBeSubscription =>
       mayBeSubscription.map { subscription =>

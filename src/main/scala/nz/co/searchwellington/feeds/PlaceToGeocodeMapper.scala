@@ -1,6 +1,6 @@
 package nz.co.searchwellington.feeds
 
-import nz.co.searchwellington.feeds.reading.whakaoko.model.Place
+import nz.co.searchwellington.feeds.whakaoko.model.Place
 import nz.co.searchwellington.model.Geocode
 import org.springframework.stereotype.Component
 

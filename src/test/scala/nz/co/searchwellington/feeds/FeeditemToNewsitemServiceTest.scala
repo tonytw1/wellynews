@@ -1,6 +1,6 @@
 package nz.co.searchwellington.feeds
 
-import nz.co.searchwellington.feeds.reading.whakaoko.model.{FeedItem, LatLong, Place}
+import nz.co.searchwellington.feeds.whakaoko.model.{FeedItem, LatLong, Place}
 import nz.co.searchwellington.model.{Feed, User}
 import org.junit.Assert.{assertEquals, assertNotNull, assertTrue}
 import org.junit.Test

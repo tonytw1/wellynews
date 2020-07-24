@@ -1,4 +1,4 @@
-package nz.co.searchwellington.feeds.reading
+package nz.co.searchwellington.feeds.whakaoko
 
 import com.google.common.base.Strings
 import nz.co.searchwellington.ReasonableWaits

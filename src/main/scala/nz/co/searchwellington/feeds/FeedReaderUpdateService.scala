@@ -1,6 +1,6 @@
 package nz.co.searchwellington.feeds
 
-import nz.co.searchwellington.feeds.reading.whakaoko.model.FeedItem
+import nz.co.searchwellington.feeds.whakaoko.model.FeedItem
 import nz.co.searchwellington.model.{Feed, Resource, Tagging, User}
 import nz.co.searchwellington.modification.ContentUpdateService
 import nz.co.searchwellington.queues.LinkCheckerQueue

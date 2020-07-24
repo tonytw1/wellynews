@@ -3,7 +3,7 @@ package nz.co.searchwellington.feeds
 import java.util.UUID
 
 import nz.co.searchwellington.ReasonableWaits
-import nz.co.searchwellington.feeds.reading.whakaoko.model.FeedItem
+import nz.co.searchwellington.feeds.whakaoko.model.FeedItem
 import nz.co.searchwellington.model.{FeedAcceptancePolicy, Newsitem}
 import nz.co.searchwellington.repositories.SuppressionDAO
 import nz.co.searchwellington.repositories.mongo.MongoRepository

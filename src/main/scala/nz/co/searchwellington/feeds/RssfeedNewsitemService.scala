@@ -3,8 +3,8 @@ package nz.co.searchwellington.feeds
 import java.util.Date
 
 import nz.co.searchwellington.ReasonableWaits
-import nz.co.searchwellington.feeds.reading.whakaoko.model.{FeedItem, Subscription}
-import nz.co.searchwellington.feeds.reading.{WhakaokoFeedReader, WhakaokoService}
+import nz.co.searchwellington.feeds.whakaoko.model.{FeedItem, Subscription}
+import nz.co.searchwellington.feeds.whakaoko.{WhakaokoFeedReader, WhakaokoService}
 import nz.co.searchwellington.model.{Feed, FeedAcceptancePolicy}
 import nz.co.searchwellington.repositories.mongo.MongoRepository
 import org.apache.log4j.Logger
@@ -80,7 +80,7 @@ import scala.concurrent.{Await, ExecutionContext, Future}
     }
   }
 
-  // TODO this is interesting but always suppressing when deleting a newsitem which same from a feed would be simpler
+  // TODO this is interesting but always suppressing when deleting a newsitem which came from a feed would be simpler
   def isUrlInAcceptedFeeds(url: String)(implicit ec: ExecutionContext): Future[Boolean] = { // TODO should be option
     @Deprecated() // Should really use the Either return
     def getFeedItemsFor(feed: Feed)(implicit ec: ExecutionContext): Future[Option[Seq[FeedItem]]] = {

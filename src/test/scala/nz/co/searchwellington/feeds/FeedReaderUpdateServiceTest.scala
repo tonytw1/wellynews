@@ -1,7 +1,7 @@
 package nz.co.searchwellington.feeds
 
 import nz.co.searchwellington.ReasonableWaits
-import nz.co.searchwellington.feeds.reading.whakaoko.model.FeedItem
+import nz.co.searchwellington.feeds.whakaoko.model.FeedItem
 import nz.co.searchwellington.model.taggingvotes.HandTagging
 import nz.co.searchwellington.model.{Feed, Newsitem, Tag, Tagging, User}
 import nz.co.searchwellington.modification.ContentUpdateService

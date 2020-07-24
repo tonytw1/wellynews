@@ -1,7 +1,6 @@
-package nz.co.searchwellington.feeds.reading
+package nz.co.searchwellington.feeds.whakaoko
 
-import nz.co.searchwellington.feeds.reading.whakaoko.WhakaokoClient
-import nz.co.searchwellington.feeds.reading.whakaoko.model.{FeedItem, Subscription}
+import nz.co.searchwellington.feeds.whakaoko.model.{FeedItem, Subscription}
 import org.apache.log4j.Logger
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
