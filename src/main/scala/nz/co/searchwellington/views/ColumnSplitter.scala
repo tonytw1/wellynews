@@ -1,4 +1,4 @@
-package nz.co.searchwellington.utils
+package nz.co.searchwellington.views
 
 import java.math.BigDecimal
 import java.util

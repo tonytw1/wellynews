@@ -10,7 +10,7 @@ import nz.co.searchwellington.filters.RequestObjectLoadingFilter;
 import nz.co.searchwellington.model.SiteInformation;
 import nz.co.searchwellington.permissions.EditPermissionService;
 import nz.co.searchwellington.urls.UrlBuilder;
-import nz.co.searchwellington.utils.ColumnSplitter;
+import nz.co.searchwellington.views.ColumnSplitter;
 import nz.co.searchwellington.utils.EscapeTools;
 import nz.co.searchwellington.views.ContentDedupingService;
 import nz.co.searchwellington.views.GoogleMapsDisplayCleaner;
