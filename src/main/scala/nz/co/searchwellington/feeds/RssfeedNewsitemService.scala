@@ -60,7 +60,6 @@ import scala.concurrent.{Await, ExecutionContext, Future}
   }
 
   def getFeedItemsAndDetailsFor(feed: Feed)(implicit ec: ExecutionContext): Future[Either[String, (Seq[FeedItem], Subscription)]] = {
-    log.info("Getting feed items for: " + feed.title + " / " + feed.page)
     whakaokoFeedReader.fetchFeedItems(feed)
   }
 
@@ -81,7 +80,22 @@ import scala.concurrent.{Await, ExecutionContext, Future}
     }
   }
 
+  // TODO this is interesting but always suppressing when deleting a newsitem which same from a feed would be simpler
   def isUrlInAcceptedFeeds(url: String)(implicit ec: ExecutionContext): Future[Boolean] = { // TODO should be option
+    @Deprecated() // Should really use the Either return
+    def getFeedItemsFor(feed: Feed)(implicit ec: ExecutionContext): Future[Option[Seq[FeedItem]]] = {
+      whakaokoFeedReader.fetchFeedItems(feed).map { feedItems =>
+        feedItems.fold(
+          { l =>
+            log.warn("Fetch feed items failed for " + feed.title + ": " + l)
+            None
+          }, { r =>
+            Some(r._1)
+          }
+        )
+      }
+    }
+
     val eventualAutoAcceptingFeeds = mongoRepository.getAllFeeds.map { autoAcceptFeeds =>
       autoAcceptFeeds.filter { f =>
         f.acceptance == FeedAcceptancePolicy.ACCEPT || f.getAcceptancePolicy == FeedAcceptancePolicy.ACCEPT_EVEN_WITHOUT_DATES
@@ -94,19 +108,5 @@ import scala.concurrent.{Await, ExecutionContext, Future}
     }
   }
 
-  @Deprecated() // Should really use the Either return
-  private def getFeedItemsFor(feed: Feed)(implicit ec: ExecutionContext): Future[Option[Seq[FeedItem]]] = {
-    log.info("Getting feed items for: " + feed.title + " / " + feed.page)
-    whakaokoFeedReader.fetchFeedItems(feed).map { feedItems =>
-      feedItems.fold(
-        { l =>
-          log.warn("Fetch feed items failed for " + feed.title + ": " + l)
-          None
-        }, { r =>
-          Some(r._1)
-        }
-      )
-    }
-  }
 
 }

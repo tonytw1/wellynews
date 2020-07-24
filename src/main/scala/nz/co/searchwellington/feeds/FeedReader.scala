@@ -27,7 +27,7 @@ import scala.concurrent.{ExecutionContext, Future}
 
   def processFeed(feed: Feed, readingUser: User, acceptancePolicy: FeedAcceptancePolicy)(implicit ec: ExecutionContext): Future[Unit] = {
     try {
-      log.info("Processing feed: " + feed.title + " using acceptance policy '" + acceptancePolicy + "' with ec: " + ec.toString + ". Last read: " + feed.last_read)
+      log.info("Processing feed: " + feed.title.getOrElse(feed.page) + " using acceptance policy '" + acceptancePolicy + ". Last read: " + feed.last_read)
       rssfeedNewsitemService.getFeedItemsAndDetailsFor(feed).flatMap { feedItemsFetch =>
         feedItemsFetch.fold({ l =>
           log.warn("Could new get feed items for feed + '" + feed.title + "':" + l)
