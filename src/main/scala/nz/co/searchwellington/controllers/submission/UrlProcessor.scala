@@ -2,7 +2,7 @@ package nz.co.searchwellington.controllers.submission
 
 import javax.servlet.http.HttpServletRequest
 import nz.co.searchwellington.model.Resource
-import nz.co.searchwellington.utils.UrlCleaner
+import nz.co.searchwellington.urls.UrlCleaner
 import org.apache.log4j.Logger
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component

@@ -1,10 +1,10 @@
 package nz.co.searchwellington.feeds
 
 import nz.co.searchwellington.feeds.whakaoko.model.FeedItem
-import nz.co.searchwellington.model.{Feed, FeedAcceptancePolicy}
+import nz.co.searchwellington.model.FeedAcceptancePolicy
 import nz.co.searchwellington.repositories.SuppressionDAO
 import nz.co.searchwellington.repositories.mongo.MongoRepository
-import nz.co.searchwellington.utils.UrlCleaner
+import nz.co.searchwellington.urls.UrlCleaner
 import org.apache.log4j.Logger
 import org.joda.time.DateTime
 import org.springframework.beans.factory.annotation.Autowired
@@ -19,7 +19,7 @@ import scala.concurrent.{ExecutionContext, Future}
   private val log = Logger.getLogger(classOf[FeedItemAcceptanceDecider])
 
   def getAcceptanceErrors(feeditem: FeedItem, acceptancePolicy: FeedAcceptancePolicy)(implicit ec: ExecutionContext): Future[Seq[String]] = {
-    val cleanedUrl = urlCleaner.cleanSubmittedItemUrl(feeditem.url) // TODO duplication
+    val cleanedUrl = urlCleaner.cleanSubmittedItemUrl(feeditem.url) // TODO duplication TODO URL cleaning is something we can do earlier in the feed reading flow
 
     def cannotBeSupressed(): Future[Option[String]] = {
       suppressionDAO.isSupressed(cleanedUrl).map { isSuppressed =>

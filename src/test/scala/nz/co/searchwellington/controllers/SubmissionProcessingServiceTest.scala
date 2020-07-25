@@ -4,24 +4,16 @@ import java.util.UUID
 
 import nz.co.searchwellington.controllers.submission.UrlProcessor
 import nz.co.searchwellington.feeds.PlaceToGeocodeMapper
-import nz.co.searchwellington.geocoding.osm.CachingNominatimGeocodingService
-import nz.co.searchwellington.geocoding.osm.OsmIdParser
-import nz.co.searchwellington.model.Feed
-import nz.co.searchwellington.model.Newsitem
-import nz.co.searchwellington.model.UrlWordsGenerator
-import nz.co.searchwellington.model.User
-import nz.co.searchwellington.repositories.HandTaggingDAO
-import nz.co.searchwellington.repositories.HibernateResourceDAO
-import nz.co.searchwellington.repositories.TagDAO
+import nz.co.searchwellington.geocoding.osm.{CachingNominatimGeocodingService, OsmIdParser}
+import nz.co.searchwellington.model.{Feed, Newsitem, UrlWordsGenerator, User}
+import nz.co.searchwellington.repositories.{HandTaggingDAO, HibernateResourceDAO, TagDAO}
 import nz.co.searchwellington.repositories.mongo.MongoRepository
-import nz.co.searchwellington.utils.UrlCleaner
+import nz.co.searchwellington.urls.UrlCleaner
 import org.apache.struts.mock.MockHttpServletRequest
 import org.joda.time.DateTime
-import org.junit.Before
-import org.junit.Test
-import org.mockito.Mock
-import org.mockito.MockitoAnnotations
+import org.junit.{Before, Test}
 import org.mockito.Mockito.{verify, when}
+import org.mockito.{Mock, MockitoAnnotations}
 
 import scala.concurrent.ExecutionContext.Implicits.global
 

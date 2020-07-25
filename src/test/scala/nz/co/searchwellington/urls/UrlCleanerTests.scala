@@ -1,7 +1,6 @@
 package nz.co.searchwellington.urls
 
-import nz.co.searchwellington.urls.shorturls.CachingUrlResolverService
-import nz.co.searchwellington.utils.UrlCleaner
+import nz.co.searchwellington.urls.shorturls.CachingShortUrlResolverService
 import org.junit.Assert.assertEquals
 import org.junit.{Before, Test}
 import org.mockito.Mockito.{mock, verify, when}
@@ -15,7 +14,7 @@ class UrlCleanerTests {
   private val SHORT_URL = "http://short.url/12234"
   private val UNCLEANED_SHORT_URL = " http://short.url/12234  "
   
-  private val urlResolverService = mock(classOf[CachingUrlResolverService])
+  private val urlResolverService = mock(classOf[CachingShortUrlResolverService])
   private val cleaner = new UrlCleaner(urlResolverService)
 
   @Before
