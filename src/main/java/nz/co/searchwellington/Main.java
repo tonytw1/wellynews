@@ -12,7 +12,6 @@ import nz.co.searchwellington.permissions.EditPermissionService;
 import nz.co.searchwellington.urls.UrlBuilder;
 import nz.co.searchwellington.views.ColumnSplitter;
 import nz.co.searchwellington.utils.EscapeTools;
-import nz.co.searchwellington.views.ContentDedupingService;
 import nz.co.searchwellington.views.GoogleMapsDisplayCleaner;
 import org.apache.log4j.Logger;
 import org.apache.velocity.app.Velocity;
@@ -99,7 +98,6 @@ public class Main {
     public VelocityViewResolver velocityViewResolver(
             AdminUrlBuilder adminUrlBuilder,
             ColumnSplitter columnSplitter,
-            ContentDedupingService contentDedupingService,
             DateFormatter dateFormatter,
             EditPermissionService editPermissionService,
             GoogleMapsDisplayCleaner googleMapsDisplayCleaner,
@@ -116,7 +114,6 @@ public class Main {
         final Map<String, Object> attributes = Maps.newHashMap();
         attributes.put("adminUrlBuilder", adminUrlBuilder);
         attributes.put("columnSplitter", columnSplitter);
-        attributes.put("contentDeduper", contentDedupingService);
         attributes.put("dateFormatter", dateFormatter);
         attributes.put("editPermissionService", editPermissionService);
         attributes.put("escape", new EscapeTools());
