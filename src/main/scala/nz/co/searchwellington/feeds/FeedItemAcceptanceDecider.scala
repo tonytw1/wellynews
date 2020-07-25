@@ -21,7 +21,7 @@ import scala.concurrent.{ExecutionContext, Future}
   def getAcceptanceErrors(feeditem: FeedItem, acceptancePolicy: FeedAcceptancePolicy)(implicit ec: ExecutionContext): Future[Seq[String]] = {
     val cleanedUrl = urlCleaner.cleanSubmittedItemUrl(feeditem.url) // TODO duplication TODO URL cleaning is something we can do earlier in the feed reading flow
 
-    def cannotBeSupressed(): Future[Option[String]] = {
+    def cannotBeSuppressed(): Future[Option[String]] = {
       suppressionDAO.isSupressed(cleanedUrl).map { isSuppressed =>
         log.debug("Is feed item url '" + cleanedUrl + "' suppressed: " + isSuppressed)
         if (isSuppressed) Some("This item is suppressed") else None
@@ -83,7 +83,7 @@ import scala.concurrent.{ExecutionContext, Future}
 
 
     val eventualObjections = Future.sequence {
-      Seq(cannotBeSupressed(),
+      Seq(cannotBeSuppressed(),
         titleCannotBeBlank(),
         // cannotBeMoreThanOneWeekOld(),  TODO reinstate
         cannotHaveDateInTheFuture(),
