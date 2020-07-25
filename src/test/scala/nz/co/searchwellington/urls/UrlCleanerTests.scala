@@ -14,14 +14,14 @@ class UrlCleanerTests {
   private val SHORT_URL = "http://short.url/12234"
   private val UNCLEANED_SHORT_URL = " http://short.url/12234  "
   
-  private val urlResolverService = mock(classOf[CachingShortUrlResolverService])
-  private val cleaner = new UrlCleaner(urlResolverService)
+  private val shortUrlResolverService = mock(classOf[CachingShortUrlResolverService])
+  private val cleaner = new UrlCleaner(shortUrlResolverService)
 
   @Before
   def setUp(): Unit = {
-    when(urlResolverService.resolveUrl(BASIC_CLEANED_URL)).thenReturn(BASIC_CLEANED_URL)
-    when(urlResolverService.resolveUrl(SHORT_URL)).thenReturn(BASIC_CLEANED_URL)
-    when(urlResolverService.resolveUrl(SECURE_URL)).thenReturn(SECURE_URL)
+    when(shortUrlResolverService.resolveUrl(BASIC_CLEANED_URL)).thenReturn(BASIC_CLEANED_URL)
+    when(shortUrlResolverService.resolveUrl(SHORT_URL)).thenReturn(BASIC_CLEANED_URL)
+    when(shortUrlResolverService.resolveUrl(SECURE_URL)).thenReturn(SECURE_URL)
   }
 
   @Test
@@ -30,14 +30,14 @@ class UrlCleanerTests {
   @Test
   def shouldConsultRedirectingUrlResolvers(): Unit = {
     val cleanedUrl = cleaner.cleanSubmittedItemUrl(SHORT_URL)
-    verify(urlResolverService).resolveUrl(SHORT_URL)
+    verify(shortUrlResolverService).resolveUrl(SHORT_URL)
     assertEquals(EXPECTED_CLEAN_URL, cleanedUrl)
   }
 
   @Test
   def shouldCleanupShortUrlsBeforeResolving(): Unit = {
     val cleanedUrl = cleaner.cleanSubmittedItemUrl(UNCLEANED_SHORT_URL)
-    verify(urlResolverService).resolveUrl(SHORT_URL)
+    verify(shortUrlResolverService).resolveUrl(SHORT_URL)
     assertEquals(EXPECTED_CLEAN_URL, cleanedUrl)
   }
 
