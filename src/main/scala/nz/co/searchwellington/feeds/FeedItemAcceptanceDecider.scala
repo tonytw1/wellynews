@@ -4,7 +4,6 @@ import nz.co.searchwellington.feeds.whakaoko.model.FeedItem
 import nz.co.searchwellington.model.FeedAcceptancePolicy
 import nz.co.searchwellington.repositories.SuppressionDAO
 import nz.co.searchwellington.repositories.mongo.MongoRepository
-import nz.co.searchwellington.urls.UrlCleaner
 import org.apache.log4j.Logger
 import org.joda.time.DateTime
 import org.springframework.beans.factory.annotation.Autowired
@@ -13,17 +12,16 @@ import org.springframework.stereotype.Component
 import scala.concurrent.{ExecutionContext, Future}
 
 @Component class FeedItemAcceptanceDecider @Autowired()(mongoRepository: MongoRepository,
-                                                        suppressionDAO: SuppressionDAO,
-                                                        urlCleaner: UrlCleaner) {
+                                                        suppressionDAO: SuppressionDAO) {
 
   private val log = Logger.getLogger(classOf[FeedItemAcceptanceDecider])
 
   def getAcceptanceErrors(feeditem: FeedItem, acceptancePolicy: FeedAcceptancePolicy)(implicit ec: ExecutionContext): Future[Seq[String]] = {
-    val cleanedUrl = urlCleaner.cleanSubmittedItemUrl(feeditem.url) // TODO duplication TODO URL cleaning is something we can do earlier in the feed reading flow
+    val feedItemUrl = feeditem.url
 
     def cannotBeSuppressed(): Future[Option[String]] = {
-      suppressionDAO.isSupressed(cleanedUrl).map { isSuppressed =>
-        log.debug("Is feed item url '" + cleanedUrl + "' suppressed: " + isSuppressed)
+      suppressionDAO.isSupressed(feedItemUrl).map { isSuppressed =>
+        log.debug("Is feed item url '" + feedItemUrl + "' suppressed: " + isSuppressed)
         if (isSuppressed) Some("This item is suppressed") else None
       }
     }
@@ -97,9 +95,8 @@ import scala.concurrent.{ExecutionContext, Future}
     }
   }
 
-  private def alreadyHaveThisFeedItem(feedNewsitem: FeedItem)(implicit ec: ExecutionContext): Future[Boolean] = {
-    val url = urlCleaner.cleanSubmittedItemUrl(feedNewsitem.url)
-    mongoRepository.getResourceByUrl(url).map(_.nonEmpty)
+  private def alreadyHaveThisFeedItem(feedItem: FeedItem)(implicit ec: ExecutionContext): Future[Boolean] = {
+    mongoRepository.getResourceByUrl(feedItem.url).map(_.nonEmpty)
   }
 
 }

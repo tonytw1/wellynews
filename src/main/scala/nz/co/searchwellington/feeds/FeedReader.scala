@@ -80,7 +80,7 @@ import scala.concurrent.{ExecutionContext, Future}
           }
 
         } else {
-          log.debug("Not accepting " + feednewsitem.url + " due to acceptance errors: " + acceptanceErrors.mkString(", "))
+          log.debug("Not accepting " + withCleanedUrl.url + " due to acceptance errors: " + acceptanceErrors.mkString(", "))
           Future.successful(None)
         }
       }

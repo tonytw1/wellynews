@@ -20,9 +20,8 @@ class FeedReaderUpdateServiceTest extends ReasonableWaits {
   private val contentUpdateService = mock(classOf[ContentUpdateService])
   private val autoTaggingService = mock(classOf[AutoTaggingService])
   private val feedItemAcceptor = mock(classOf[FeedItemAcceptor])
-  private val linkCheckerQueue = mock(classOf[LinkCheckerQueue])
 
-  private val feedReaderUpdateService = new FeedReaderUpdateService(contentUpdateService, autoTaggingService, feedItemAcceptor, linkCheckerQueue)
+  private val feedReaderUpdateService = new FeedReaderUpdateService(contentUpdateService, autoTaggingService, feedItemAcceptor)
 
   @Test
   def acceptedFeedItemsShouldBeAutotaggedAndSaved(): Unit = {

@@ -12,7 +12,7 @@ import org.springframework.stereotype.Component
 import scala.concurrent.{ExecutionContext, Future}
 
 @Component class FeedReaderUpdateService @Autowired()(contentUpdateService: ContentUpdateService, autoTagger: AutoTaggingService,
-                                         feedItemAcceptor: FeedItemAcceptor, linkCheckerQueue: LinkCheckerQueue) {
+                                                      feedItemAcceptor: FeedItemAcceptor) {
 
   private val log = Logger.getLogger(classOf[FeedReaderUpdateService])
 
