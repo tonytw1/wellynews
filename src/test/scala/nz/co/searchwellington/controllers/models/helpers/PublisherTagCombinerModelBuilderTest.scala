@@ -44,7 +44,7 @@ class PublisherTagCombinerModelBuilderTest extends ReasonableWaits with ContentF
   def mainContentIsNewsitemsWithPublisherAndTag(): Unit = {
     request.setAttribute("publisher", apublisher)
     request.setAttribute("tag", atag)
-    when(frontendResourceMapper.mapFrontendWebsite(apublisher)).thenReturn(Future.successful(FrontendWebsite(id = "123", name = "A publisher")))
+    when(frontendResourceMapper.createFrontendResourceFrom(apublisher)).thenReturn(Future.successful(FrontendWebsite(id = "123", name = "A publisher")))
 
     val expectedNewsitems = Seq(FrontendNewsitem(id = "123"), FrontendNewsitem(id = "456"))
     when(contentRetrievalService.getPublisherTagCombinerNewsitems(apublisher, atag, 30, None)).thenReturn(Future.successful(expectedNewsitems))

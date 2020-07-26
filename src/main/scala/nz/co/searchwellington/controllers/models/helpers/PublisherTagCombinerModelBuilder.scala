@@ -33,7 +33,7 @@ import scala.concurrent.Future
     logger.info("Building publisher tag combiner page model")
     val tag = request.getAttribute("tag").asInstanceOf[Tag]
     val publisher = request.getAttribute("publisher").asInstanceOf[Website]
-    val eventualFrontendPublisher = frontendResourceMapper.mapFrontendWebsite(publisher)
+    val eventualFrontendPublisher = frontendResourceMapper.createFrontendResourceFrom(publisher)
     for {
       frontendPublisher <- eventualFrontendPublisher
       publisherTagNewsitems <- contentRetrievalService.getPublisherTagCombinerNewsitems(publisher, tag, MAX_NEWSITEMS, loggedInUser)

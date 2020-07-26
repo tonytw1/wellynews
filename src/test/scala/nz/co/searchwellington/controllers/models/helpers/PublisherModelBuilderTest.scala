@@ -43,7 +43,7 @@ class PublisherModelBuilderTest extends ReasonableWaits with ContentFields {
     val publisherNewsitems = Seq(FrontendNewsitem(id = "456"))
     val publisherFeeds = Seq(FrontendFeed(id = "789"))
 
-    when(frontendResourceMapper.mapFrontendWebsite(publisher)).thenReturn(Future.successful(frontendPublisher))
+    when(frontendResourceMapper.createFrontendResourceFrom(publisher)).thenReturn(Future.successful(frontendPublisher))
     when(contentRetrievalService.getPublisherNewsitems(publisher, 30, 0, None)).thenReturn(Future.successful((publisherNewsitems, 1L)))
     when(contentRetrievalService.getPublisherFeeds(publisher, None)).thenReturn(Future.successful(publisherFeeds))
 
@@ -67,7 +67,7 @@ class PublisherModelBuilderTest extends ReasonableWaits with ContentFields {
     when(contentRetrievalService.getPublisherFeeds(publisher, loggedInUser)).thenReturn(Future.successful(Seq.empty))
 
     when(relatedTagsService.getRelatedTagsForPublisher(publisher, None)).thenReturn(Future.successful(Seq()))
-    when(frontendResourceMapper.mapFrontendWebsite(publisher)).thenReturn(Future.successful(frontendPublisher))
+    when(frontendResourceMapper.createFrontendResourceFrom(publisher)).thenReturn(Future.successful(frontendPublisher))
 
     val request = new MockHttpServletRequest
     request.setAttribute("publisher", publisher)

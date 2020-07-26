@@ -4,7 +4,6 @@ import nz.co.searchwellington.ReasonableWaits
 import nz.co.searchwellington.controllers.admin.AdminUrlBuilder
 import nz.co.searchwellington.model.User
 import nz.co.searchwellington.model.frontend.{Action, FrontendNewsitem, FrontendResource}
-import nz.co.searchwellington.model.mappers.FrontendResourceMapper
 import nz.co.searchwellington.repositories.SuppressionDAO
 import nz.co.searchwellington.repositories.mongo.MongoRepository
 import org.springframework.beans.factory.annotation.Autowired
@@ -14,7 +13,6 @@ import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
 @Component class FeedItemLocalCopyDecorator @Autowired()(mongoRepository: MongoRepository, suppressionDAO: SuppressionDAO,
-                                                         frontendResourceMapper: FrontendResourceMapper,
                                                          adminUrlBuilder: AdminUrlBuilder) extends ReasonableWaits {
 
   def withFeedItemSpecificActions(feedNewsitems: Seq[FrontendResource], loggedInUser: Option[User]): Future[Seq[FrontendResource]] = {

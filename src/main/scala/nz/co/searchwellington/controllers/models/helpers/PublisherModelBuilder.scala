@@ -42,7 +42,7 @@ import scala.concurrent.Future
 
       val eventualPublisherNewsitems = contentRetrievalService.getPublisherNewsitems(publisher, MAX_NEWSITEMS, startIndex, loggedInUser)
       val eventualPublisherFeeds = contentRetrievalService.getPublisherFeeds(publisher, loggedInUser)
-      val eventualFrontendWebsite = frontendResourceMapper.mapFrontendWebsite(publisher)
+      val eventualFrontendWebsite = frontendResourceMapper.createFrontendResourceFrom(publisher)
 
       for {
         publisherNewsitems <- eventualPublisherNewsitems

@@ -6,7 +6,6 @@ import nz.co.searchwellington.model._
 import nz.co.searchwellington.model.frontend._
 import nz.co.searchwellington.repositories.mongo.MongoRepository
 import nz.co.searchwellington.tagging.TaggingReturnsOfficerService
-import org.apache.log4j.Logger
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
 
@@ -17,11 +16,18 @@ import scala.concurrent.{ExecutionContext, Future}
                                                      mongoRepository: MongoRepository,
                                                      adminUrlBuilder: AdminUrlBuilder) extends ReasonableWaits {
 
-  private val log = Logger.getLogger(classOf[FrontendResourceMapper])
-
   def createFrontendResourceFrom(contentItem: Resource, loggedInUser: Option[User] = None)(implicit ec: ExecutionContext): Future[FrontendResource] = {
-    val eventualPlace = taggingReturnsOfficerService.getIndexGeocodeForResource(contentItem)
+    val eventualIndexTags: Future[Seq[Tag]] = taggingReturnsOfficerService.getIndexTagsForResource(contentItem)
+    val eventualPlace: Future[Option[Geocode]] = taggingReturnsOfficerService.getIndexGeocodeForResource(contentItem)
 
+    eventualIndexTags.flatMap { indexTags =>
+      eventualPlace.flatMap { place =>
+        mapFrontendResource(contentItem, loggedInUser, indexTags, place)
+      }
+    }
+  }
+
+  private def mapFrontendResource(contentItem: Resource, loggedInUser: Option[User] = None, indexTags: Seq[Tag], place: Option[Geocode])(implicit ec: ExecutionContext): Future[FrontendResource] = {
     val eventualFrontendResource = contentItem match {
       case n: Newsitem =>
         val eventualPublisher = n.publisher.map { pid =>
@@ -52,9 +58,7 @@ import scala.concurrent.{ExecutionContext, Future}
 
         for {
           feed <- eventualFeed
-          place <- eventualPlace
-          tags <- frontendTagsFor(n)
-          handTags <- taggingReturnsOfficerService.getHandTagsForResource(n)  // TODO This is interesting as it's applied to unaccepted feed items as well.
+          handTags <- taggingReturnsOfficerService.getHandTagsForResource(n) // TODO This is interesting as it's applied to unaccepted feed items as well.
           publisher <- eventualPublisher
           acceptedByUser <- eventualAcceptedByUser
 
@@ -73,7 +77,7 @@ import scala.concurrent.{ExecutionContext, Future}
             image = null, // TODO
             urlWords = urlWordsGenerator.makeUrlForNewsitem(n).getOrElse(""),
             publisher = publisher.map(_.asInstanceOf[Website]), // TODO should be frontend resource or string?
-            tags = tags,
+            tags = indexTags,
             handTags = handTags,
             httpStatus = n.http_status,
             lastScanned = n.last_scanned,
@@ -95,8 +99,6 @@ import scala.concurrent.{ExecutionContext, Future}
         }
 
         for {
-          place <- eventualPlace
-          tags <- frontendTagsFor(f)
           frontendPublisher <- eventualFrontendPublisher
 
         } yield {
@@ -110,7 +112,7 @@ import scala.concurrent.{ExecutionContext, Future}
             description = f.description.orNull,
             place = place,
             latestItemDate = f.getLatestItemDate,
-            tags = tags,
+            tags = indexTags,
             lastRead = f.last_read,
             acceptancePolicy = f.acceptance,
             publisher = frontendPublisher,
@@ -121,10 +123,7 @@ import scala.concurrent.{ExecutionContext, Future}
         }
 
       case l: Watchlist =>
-        for {
-          place <- eventualPlace
-          tags <- frontendTagsFor(l)
-        } yield {
+        Future.successful {
           FrontendWatchlist(
             id = l.id,
             `type` = l.`type`,
@@ -133,7 +132,7 @@ import scala.concurrent.{ExecutionContext, Future}
             date = l.date.orNull,
             description = l.description.orNull,
             place = place,
-            tags = tags,
+            tags = indexTags,
             httpStatus = l.http_status,
             lastScanned = l.last_scanned,
             lastChanged = l.last_changed
@@ -141,7 +140,21 @@ import scala.concurrent.{ExecutionContext, Future}
         }
 
       case w: Website =>
-        mapFrontendWebsite(w)
+        Future.successful {
+          FrontendWebsite(
+            id = w.id,
+            name = w.title.orNull,
+            url = w.page,
+            urlWords = w.url_words.orNull,
+            description = w.description.getOrElse(""),
+            place = w.geocode,
+            tags = indexTags,
+            httpStatus = w.http_status,
+            date = w.date.orNull,
+            lastScanned = w.last_scanned,
+            lastChanged = w.last_changed
+          )
+        }
 
       case _ =>
         throw new RuntimeException("Unknown type")
@@ -215,30 +228,6 @@ import scala.concurrent.{ExecutionContext, Future}
           l.copy(actions = availableActions)
       }
     }.getOrElse(r)
-  }
-
-  def mapFrontendWebsite(website: Website)(implicit ec: ExecutionContext): Future[FrontendWebsite] = {
-    for {
-      tags <- frontendTagsFor(website)
-    } yield {
-      FrontendWebsite(
-        id = website.id,
-        name = website.title.orNull,
-        url = website.page,
-        urlWords = website.url_words.orNull,
-        description = website.description.getOrElse(""),
-        place = website.geocode,
-        tags = tags,
-        httpStatus = website.http_status,
-        date = website.date.orNull,
-        lastScanned = website.last_scanned,
-        lastChanged = website.last_changed
-      )
-    }
-  }
-
-  private def frontendTagsFor(resource: Resource): Future[Seq[Tag]] = {
-    taggingReturnsOfficerService.getIndexTagsForResource(resource)
   }
 
 }
