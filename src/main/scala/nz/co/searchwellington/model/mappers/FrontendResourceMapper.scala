@@ -54,7 +54,7 @@ import scala.concurrent.{ExecutionContext, Future}
           feed <- eventualFeed
           place <- eventualPlace
           tags <- frontendTagsFor(n)
-          handTags <- taggingReturnsOfficerService.getHandTagsForResource(n)
+          handTags <- taggingReturnsOfficerService.getHandTagsForResource(n)  // TODO This is interesting as it's applied to unaccepted feed items as well.
           publisher <- eventualPublisher
           acceptedByUser <- eventualAcceptedByUser
 
