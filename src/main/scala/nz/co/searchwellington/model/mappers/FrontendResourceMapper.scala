@@ -18,16 +18,24 @@ import scala.concurrent.{ExecutionContext, Future}
 
   def createFrontendResourceFrom(contentItem: Resource, loggedInUser: Option[User] = None)(implicit ec: ExecutionContext): Future[FrontendResource] = {
     val eventualIndexTags: Future[Seq[Tag]] = taggingReturnsOfficerService.getIndexTagsForResource(contentItem)
+    // TODO this could probably be extracted from the index tags if we wanted to save dao calls
+    val eventualHandTags = taggingReturnsOfficerService.getHandTagsForResource(contentItem) // TODO This is interesting as it's applied to unaccepted feed items as well.
     val eventualPlace: Future[Option[Geocode]] = taggingReturnsOfficerService.getIndexGeocodeForResource(contentItem)
 
     eventualIndexTags.flatMap { indexTags =>
-      eventualPlace.flatMap { place =>
-        mapFrontendResource(contentItem, loggedInUser, indexTags, place)
+      eventualHandTags.flatMap { handTags =>
+        eventualPlace.flatMap { place =>
+          mapFrontendResource(contentItem, loggedInUser, handTags, indexTags, place)
+        }
       }
     }
   }
 
-  private def mapFrontendResource(contentItem: Resource, loggedInUser: Option[User] = None, indexTags: Seq[Tag], place: Option[Geocode])(implicit ec: ExecutionContext): Future[FrontendResource] = {
+  private def mapFrontendResource(contentItem: Resource,
+                                  loggedInUser: Option[User],
+                                  handTags: Seq[Tag],
+                                  indexTags: Seq[Tag],
+                                  place: Option[Geocode])(implicit ec: ExecutionContext): Future[FrontendResource] = {
     val eventualFrontendResource = contentItem match {
       case n: Newsitem =>
         val eventualPublisher = n.publisher.map { pid =>
@@ -58,7 +66,6 @@ import scala.concurrent.{ExecutionContext, Future}
 
         for {
           feed <- eventualFeed
-          handTags <- taggingReturnsOfficerService.getHandTagsForResource(n) // TODO This is interesting as it's applied to unaccepted feed items as well.
           publisher <- eventualPublisher
           acceptedByUser <- eventualAcceptedByUser
 
@@ -113,6 +120,7 @@ import scala.concurrent.{ExecutionContext, Future}
             place = place,
             latestItemDate = f.getLatestItemDate,
             tags = indexTags,
+            handTags = handTags,
             lastRead = f.last_read,
             acceptancePolicy = f.acceptance,
             publisher = frontendPublisher,
@@ -133,6 +141,7 @@ import scala.concurrent.{ExecutionContext, Future}
             description = l.description.orNull,
             place = place,
             tags = indexTags,
+            handTags = handTags,
             httpStatus = l.http_status,
             lastScanned = l.last_scanned,
             lastChanged = l.last_changed
@@ -149,6 +158,7 @@ import scala.concurrent.{ExecutionContext, Future}
             description = w.description.getOrElse(""),
             place = w.geocode,
             tags = indexTags,
+            handTags = handTags,
             httpStatus = w.http_status,
             date = w.date.orNull,
             lastScanned = w.last_scanned,
