@@ -91,8 +91,8 @@ class EditWebsiteController @Autowired()(contentUpdateService: ContentUpdateServ
           )
 
           import scala.collection.JavaConverters._
-          val tags = Await.result(tagDAO.loadTagsById(editWebsite.getTags.asScala), TenSeconds)
-          val withNewTags = handTaggingService.setUsersTagging(loggedInUser, tags, updated)
+          val tags = Await.result(tagDAO.loadTagsById(editWebsite.getTags.asScala), TenSeconds).toSet
+          val withNewTags = handTaggingService.setUsersTagging(loggedInUser, tags.map(_._id), updated)
 
           contentUpdateService.update(withNewTags)
           log.info("Updated website: " + withNewTags)

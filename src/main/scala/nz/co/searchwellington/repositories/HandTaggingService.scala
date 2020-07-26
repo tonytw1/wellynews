@@ -6,6 +6,7 @@ import nz.co.searchwellington.repositories.mongo.MongoRepository
 import org.apache.log4j.Logger
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
+import reactivemongo.bson.BSONObjectID
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.{Await, Future}
@@ -15,22 +16,15 @@ import scala.concurrent.{Await, Future}
 
   private val log = Logger.getLogger(classOf[HandTaggingService])
 
-  @Deprecated // Anyone calling this is probably interacting and should use setUsersTagging()
-  def addTag(user: User, tag: Tag, resource: Resource): Resource = {
-    val newTagging = Tagging(user_id = user._id, tag_id = tag._id)
-
-    if (!resource.resource_tags.contains(newTagging)) {
-      log.info("Adding new tagging: " + newTagging)
-      val updatedTaggings = resource.resource_tags :+ newTagging
-      resource.withTaggings(updatedTaggings)
-    } else {
-      resource
-    }
+  def addUserTagging(user: User, tag: Tag, resource: Resource): Resource = {
+    val existingUserTags = resource.resource_tags.filter(_.user_id == user._id).map(_.tag_id).toSet
+    val withNewTagging = existingUserTags + tag._id
+    setUsersTagging(user, withNewTagging, resource)
   }
 
-  def setUsersTagging(user: User, tags: Seq[Tag], resource: Resource): Resource = {
+  def setUsersTagging(user: User, tags: Set[BSONObjectID], resource: Resource): Resource = {
     val otherUsersTaggings = resource.resource_tags.filterNot(_.user_id == user._id)
-    val usersNewsTaggings = tags.map(t => Tagging(tag_id = t._id, user_id = user._id))
+    val usersNewsTaggings = tags.map(t => Tagging(tag_id = t, user_id = user._id))
     resource.withTaggings(otherUsersTaggings ++ usersNewsTaggings)
   }
 

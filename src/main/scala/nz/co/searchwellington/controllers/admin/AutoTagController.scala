@@ -66,7 +66,7 @@ import scala.concurrent.{Await, Future}
           autoTagService.alreadyHasTag(resource, tag).flatMap { alreadyHasTag =>
             if (!alreadyHasTag) {
               log.info("Applying tag " + tag.getName + " to:" + resource.title)
-              val withTag = handTaggingService.addTag(loggedInUser, tag, resource)
+              val withTag = handTaggingService.addUserTagging(loggedInUser, tag, resource)
               contentUpdateService.update(withTag).map { u =>
                 withTag
               }

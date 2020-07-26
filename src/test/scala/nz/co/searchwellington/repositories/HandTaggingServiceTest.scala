@@ -44,7 +44,7 @@ class HandTaggingServiceTest {
     val tag = Tag()
     val resource = Newsitem()
 
-    val updated = handTaggingService.addTag(user, tag, resource)
+    val updated = handTaggingService.addUserTagging(user, tag, resource)
 
     assertTrue(updated.resource_tags.nonEmpty)
     assertEquals(Tagging(user_id = user._id, tag_id = tag._id), updated.resource_tags.head)
@@ -62,12 +62,12 @@ class HandTaggingServiceTest {
 
     val usersExistingTaggings: Seq[Tagging] = Seq(Tagging(user_id = user._id, tag_id = tag._id))
     val anotherUserApplyingTag = Tagging(user_id = anotherUser._id, tag_id = tag._id)
-    val anotherUsersTaggings: Seq[Tagging] = Seq(anotherUserApplyingTag)
+    val anotherUsersTaggings = Seq(anotherUserApplyingTag)
 
     val newsitem = Newsitem(resource_tags = usersExistingTaggings ++ anotherUsersTaggings)
-    val usersUpdateTaggings = Seq(anotherTag, yetAnotherTag)
+    val usersUpdatedTaggings = Seq(anotherTag, yetAnotherTag).map(_._id).toSet
 
-    val updated = handTaggingService.setUsersTagging(user, usersUpdateTaggings, newsitem)
+    val updated = handTaggingService.setUsersTagging(user, usersUpdatedTaggings, newsitem)
 
     assertTrue("New tag should have been applied", updated.resource_tags.contains(Tagging(user_id = user._id, tag_id = yetAnotherTag._id)))
     assertFalse("Old tag should have been removed", updated.resource_tags.contains(Tagging(user_id = user._id, tag_id = tag._id)))
@@ -82,7 +82,7 @@ class HandTaggingServiceTest {
     val existingTagging = Tagging(user_id = user._id, tag_id = tag._id)
     val resource = Newsitem(resource_tags = Seq(existingTagging))
 
-    val updated = handTaggingService.addTag(user, tag, resource)
+    val updated = handTaggingService.addUserTagging(user, tag, resource)
 
     assertEquals(resource.resource_tags, updated.resource_tags)
     verifyZeroInteractions(mongoRepository)

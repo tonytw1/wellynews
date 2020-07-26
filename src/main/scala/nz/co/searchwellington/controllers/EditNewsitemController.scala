@@ -65,9 +65,9 @@ class EditNewsitemController @Autowired()(contentUpdateService: ContentUpdateSer
           }
 
           import scala.collection.JavaConverters._
-          val submittedTags: Seq[Tag] = Await.result(tagDAO.loadTagsById(formObject.getTags.asScala), TenSeconds)
+          val submittedTags = Await.result(tagDAO.loadTagsById(formObject.getTags.asScala), TenSeconds).toSet
 
-          val updated = handTaggingService.setUsersTagging(loggedInUser, submittedTags, newsitem.copy(
+          val updated = handTaggingService.setUsersTagging(loggedInUser, submittedTags.map(_._id), newsitem.copy(
             title = Some(formObject.getTitle),
             page = formObject.getUrl,
             description = Some(formObject.getDescription),
