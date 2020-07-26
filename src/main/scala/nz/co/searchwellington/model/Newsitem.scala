@@ -27,6 +27,6 @@ case class Newsitem(override val _id: BSONObjectID = BSONObjectID.generate,
                     val acceptedBy: Option[BSONObjectID] = None
 ) extends PublishedResource {
 
-  override def withTags(taggings: Seq[Tagging]): Newsitem = this.copy(resource_tags = taggings)
+  override def withTaggings(taggings: Seq[Tagging]): Newsitem = this.copy(resource_tags = taggings)
 
 }

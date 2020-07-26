@@ -1,20 +1,19 @@
 package nz.co.searchwellington.repositories
 
-import nz.co.searchwellington.model._
+import nz.co.searchwellington.model.{Tagging, _}
 import nz.co.searchwellington.repositories.mongo.MongoRepository
-import org.junit.Assert.{assertEquals, assertTrue}
+import org.junit.Assert.{assertEquals, assertFalse, assertTrue}
 import org.junit.Test
-import org.mockito.{ArgumentCaptor, Matchers}
 import org.mockito.Mockito.{mock, verify, verifyZeroInteractions, when}
+import org.mockito.{ArgumentCaptor, Matchers}
 
 import scala.concurrent.{ExecutionContext, Future}
 
 class HandTaggingServiceTest {
-  private val handTaggingDAO = mock(classOf[HandTaggingDAO])
   private val frontendContentUpdater = mock(classOf[FrontendContentUpdater])
   private val mongoRepository = mock(classOf[MongoRepository])
 
-  private val handTaggingService = new HandTaggingService(handTaggingDAO, frontendContentUpdater, mongoRepository)
+  private val handTaggingService = new HandTaggingService(frontendContentUpdater, mongoRepository)
 
   private val tag = Tag()
   private val taggingUser = User()
@@ -50,6 +49,30 @@ class HandTaggingServiceTest {
     assertTrue(updated.resource_tags.nonEmpty)
     assertEquals(Tagging(user_id = user._id, tag_id = tag._id), updated.resource_tags.head)
     verifyZeroInteractions(mongoRepository)
+  }
+
+  @Test
+  def canSetUsersTagsForResource: Unit = {
+    val user = User()
+    val anotherUser = User()
+
+    val tag = Tag(name = "Tag")
+    val anotherTag = Tag(name = "Another tag")
+    val yetAnotherTag = Tag(name = "Yet another tag")
+
+    val usersExistingTaggings: Seq[Tagging] = Seq(Tagging(user_id = user._id, tag_id = tag._id))
+    val anotherUserApplyingTag = Tagging(user_id = anotherUser._id, tag_id = tag._id)
+    val anotherUsersTaggings: Seq[Tagging] = Seq(anotherUserApplyingTag)
+
+    val newsitem = Newsitem(resource_tags = usersExistingTaggings ++ anotherUsersTaggings)
+    val usersUpdateTaggings = Seq(anotherTag, yetAnotherTag)
+
+    val updated = handTaggingService.setUsersTagging(user, usersUpdateTaggings, newsitem)
+
+    assertTrue("New tag should have been applied", updated.resource_tags.contains(Tagging(user_id = user._id, tag_id = yetAnotherTag._id)))
+    assertFalse("Old tag should have been removed", updated.resource_tags.contains(Tagging(user_id = user._id, tag_id = tag._id)))
+    assertTrue("A user updating their tags for a resource should not effect other user's tagging of the same resource",
+      updated.resource_tags.contains(anotherUserApplyingTag))
   }
 
   @Test

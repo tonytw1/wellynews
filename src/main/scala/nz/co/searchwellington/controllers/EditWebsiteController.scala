@@ -6,7 +6,7 @@ import nz.co.searchwellington.forms.EditWebsite
 import nz.co.searchwellington.geocoding.osm.CachingNominatimResolveOsmIdService
 import nz.co.searchwellington.model._
 import nz.co.searchwellington.modification.ContentUpdateService
-import nz.co.searchwellington.repositories.TagDAO
+import nz.co.searchwellington.repositories.{HandTaggingService, TagDAO}
 import nz.co.searchwellington.repositories.mongo.MongoRepository
 import nz.co.searchwellington.urls.UrlBuilder
 import nz.co.searchwellington.views.Errors
@@ -27,7 +27,8 @@ class EditWebsiteController @Autowired()(contentUpdateService: ContentUpdateServ
                                          urlBuilder: UrlBuilder,
                                          val loggedInUserFilter: LoggedInUserFilter,
                                          tagDAO: TagDAO,
-                                         val cachingNominatimResolveOsmIdService: CachingNominatimResolveOsmIdService
+                                         val cachingNominatimResolveOsmIdService: CachingNominatimResolveOsmIdService,
+                                         handTaggingService: HandTaggingService
                                         ) extends ReasonableWaits with AcceptancePolicyOptions with Errors with GeotagParsing with RequiringLoggedInUser {
 
   private val log = Logger.getLogger(classOf[EditWebsiteController])
@@ -81,24 +82,22 @@ class EditWebsiteController @Autowired()(contentUpdateService: ContentUpdateServ
             }
           }
 
-          import scala.collection.JavaConverters._
-          val taggings = Await.result(tagDAO.loadTagsById(editWebsite.getTags.asScala), TenSeconds).map { tag =>
-            Tagging(tag_id = tag._id, user_id = loggedInUser._id)
-          }
-
-          val updatedWebsite = w.copy(
+          val updated = w.copy(
             title = Some(editWebsite.getTitle),
             page = editWebsite.getUrl,
             description = Some(editWebsite.getDescription),
             geocode = geocode,
             held = submissionShouldBeHeld(loggedInUser)
-          ).withTags(taggings)
+          )
 
+          import scala.collection.JavaConverters._
+          val tags = Await.result(tagDAO.loadTagsById(editWebsite.getTags.asScala), TenSeconds)
+          val withNewTags = handTaggingService.setUsersTagging(loggedInUser, tags, updated)
 
-          contentUpdateService.update(updatedWebsite)
-          log.info("Updated website: " + updatedWebsite)
+          contentUpdateService.update(withNewTags)
+          log.info("Updated website: " + withNewTags)
 
-          new ModelAndView(new RedirectView(urlBuilder.getPublisherUrl(updatedWebsite)))
+          new ModelAndView(new RedirectView(urlBuilder.getPublisherUrl(updated)))
         }
 
       }.getOrElse(NotFound)

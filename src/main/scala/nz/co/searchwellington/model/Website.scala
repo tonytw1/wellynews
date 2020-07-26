@@ -37,6 +37,6 @@ case class Website(override val _id: BSONObjectID = BSONObjectID.generate,
   // TODO
   def setWatchlist(watchlist: Set[Watchlist]): Unit = {} // TODO
 
-  override def withTags(taggings: Seq[Tagging]): Website = this.copy(resource_tags = taggings)
+  override def withTaggings(taggings: Seq[Tagging]): Website = this.copy(resource_tags = taggings)
 
 }

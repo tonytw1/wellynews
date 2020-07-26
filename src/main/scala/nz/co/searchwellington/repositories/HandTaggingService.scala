@@ -10,37 +10,44 @@ import org.springframework.stereotype.Component
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.{Await, Future}
 
-@Component class HandTaggingService @Autowired()(handTaggingDao: HandTaggingDAO, frontendContentUpdater: FrontendContentUpdater,
+@Component class HandTaggingService @Autowired()(frontendContentUpdater: FrontendContentUpdater,
                                                  mongoRepository: MongoRepository) extends ReasonableWaits {
 
   private val log = Logger.getLogger(classOf[HandTaggingService])
 
+  @Deprecated // Anyone calling this is probably interacting and should use setUsersTagging()
   def addTag(user: User, tag: Tag, resource: Resource): Resource = {
-    val newTagging = Tagging(user_id = user._id, tag_id= tag._id)
+    val newTagging = Tagging(user_id = user._id, tag_id = tag._id)
 
     if (!resource.resource_tags.contains(newTagging)) {
       log.info("Adding new tagging: " + newTagging)
       val updatedTaggings = resource.resource_tags :+ newTagging
-      resource.withTags(updatedTaggings)
+      resource.withTaggings(updatedTaggings)
     } else {
       resource
     }
+  }
+
+  def setUsersTagging(user: User, tags: Seq[Tag], resource: Resource): Resource = {
+    val otherUsersTaggings = resource.resource_tags.filterNot(_.user_id == user._id)
+    val usersNewsTaggings = tags.map(t => Tagging(tag_id = t._id, user_id = user._id))
+    resource.withTaggings(otherUsersTaggings ++ usersNewsTaggings)
   }
 
   def clearTaggingsForTag(tag: Tag): Unit = {
 
     def deleteTagFromResource(tag: Tag, resource: Resource): Resource = {
       val filtered = resource.resource_tags.filterNot(t => t.tag_id == tag._id)
-      resource.withTags(filtered)
+      resource.withTaggings(filtered)
     }
 
     log.info("Clearing tagging votes for tag: " + tag.getName)
     val resourceIdsTaggedWithTag = Await.result(mongoRepository.getResourceIdsByTag(tag), TenSeconds)
     log.info(resourceIdsTaggedWithTag.size + " votes will needs to be cleared and the frontend resources updated.")
 
-    val eventualResources  = Future.sequence(resourceIdsTaggedWithTag.map { rid =>
+    val eventualResources = Future.sequence(resourceIdsTaggedWithTag.map { rid =>
       mongoRepository.getResourceByObjectId(rid)
-    }).map( _.flatten)
+    }).map(_.flatten)
 
     Await.result(eventualResources, TenSeconds).foreach { taggedResource => // TODO remove blocking Await
       val updatedResource = deleteTagFromResource(tag, taggedResource)
@@ -59,15 +66,15 @@ import scala.concurrent.{Await, Future}
           t
         }
       }
-      resource.withTags(updatedTaggings)
+      resource.withTaggings(updatedTaggings)
     }
 
     val resourcesTaggedByPreviousUser = Await.result(mongoRepository.getResourceIdsByTaggingUser(previousOwner), TenSeconds)
 
     log.info("Transferring taggings on " + resourcesTaggedByPreviousUser.size + " resources from user " + previousOwner.getName + " to " + newOwner.getName)
-    val eventualResources  = Future.sequence(resourcesTaggedByPreviousUser.map { rid =>
+    val eventualResources = Future.sequence(resourcesTaggedByPreviousUser.map { rid =>
       mongoRepository.getResourceByObjectId(rid)
-    }).map( _.flatten)
+    }).map(_.flatten)
 
     Await.result(eventualResources, TenSeconds).foreach { resource =>
       val updatedResource = transferTaggings(resource)

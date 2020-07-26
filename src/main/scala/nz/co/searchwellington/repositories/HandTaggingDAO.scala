@@ -45,7 +45,7 @@ import scala.concurrent.ExecutionContext.Implicits.global
     val newTaggings = tags.map(t => Tagging(tag_id = t._id, user_id = user._id))
     val withNewTaggings = (withoutUsersTaggings ++ newTaggings).toSeq
 
-    val updated = resource.withTags(withNewTaggings)
+    val updated = resource.withTaggings(withNewTaggings)
 
     mongoRepository.saveResource(updated).map { _ =>
       //contentUpdater.update(resource) // TODO?

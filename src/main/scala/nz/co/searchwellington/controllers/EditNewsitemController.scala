@@ -6,7 +6,7 @@ import nz.co.searchwellington.forms.EditNewsitem
 import nz.co.searchwellington.geocoding.osm.CachingNominatimResolveOsmIdService
 import nz.co.searchwellington.model._
 import nz.co.searchwellington.modification.ContentUpdateService
-import nz.co.searchwellington.repositories.TagDAO
+import nz.co.searchwellington.repositories.{HandTaggingService, TagDAO}
 import nz.co.searchwellington.repositories.mongo.MongoRepository
 import nz.co.searchwellington.urls.UrlBuilder
 import nz.co.searchwellington.views.Errors
@@ -27,7 +27,8 @@ class EditNewsitemController @Autowired()(contentUpdateService: ContentUpdateSer
                                           urlBuilder: UrlBuilder,
                                           val loggedInUserFilter: LoggedInUserFilter,
                                           tagDAO: TagDAO,
-                                          val cachingNominatimResolveOsmIdService: CachingNominatimResolveOsmIdService)
+                                          val cachingNominatimResolveOsmIdService: CachingNominatimResolveOsmIdService,
+                                          handTaggingService: HandTaggingService)
   extends ReasonableWaits with AcceptancePolicyOptions with Errors with GeotagParsing with RequiringLoggedInUser {
 
   private val log = Logger.getLogger(classOf[EditNewsitemController])
@@ -64,18 +65,15 @@ class EditNewsitemController @Autowired()(contentUpdateService: ContentUpdateSer
           }
 
           import scala.collection.JavaConverters._
-          val taggings = Await.result(tagDAO.loadTagsById(formObject.getTags.asScala), TenSeconds).map { tag =>
-            Tagging(tag_id = tag._id, user_id = loggedInUser._id)
-          }
+          val submittedTags: Seq[Tag] = Await.result(tagDAO.loadTagsById(formObject.getTags.asScala), TenSeconds)
 
-          val updated = newsitem.copy(
+          val updated = handTaggingService.setUsersTagging(loggedInUser, submittedTags, newsitem.copy(
             title = Some(formObject.getTitle),
             page = formObject.getUrl,
             description = Some(formObject.getDescription),
             geocode = geocode,
             held = submissionShouldBeHeld(loggedInUser)
-          ).withTags(taggings)
-
+          ))
 
           contentUpdateService.update(updated)
 

@@ -38,7 +38,7 @@ case class Feed(override val _id: BSONObjectID = BSONObjectID.generate,
 
   def isScreenScraped: Boolean = page.startsWith("http://brownbag.wellington.gen.nz/")
 
-  override def withTags(taggings: Seq[Tagging]): Feed = this.copy(resource_tags = taggings)
+  override def withTaggings(taggings: Seq[Tagging]): Feed = this.copy(resource_tags = taggings)
 
 }
 
