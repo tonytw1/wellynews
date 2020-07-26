@@ -58,13 +58,7 @@ import scala.concurrent.{Await, Future}
   @RequestMapping(value = Array("/*/autotag/apply"), method = Array(RequestMethod.POST)) def apply(request: HttpServletRequest, response: HttpServletResponse): ModelAndView = {
     def apply(loggedInUser: User): ModelAndView = {
       requestFilter.loadAttributesOntoRequest(request)
-      val tag = request.getAttribute("tag").asInstanceOf[Tag]
-      if (tag == null) {
-        response.setStatus(HttpServletResponse.SC_NOT_FOUND)  // TODO deduplicate 404 response
-        null
-
-      } else {
-        val autotaggedResourceIds = request.getParameterValues("autotag")
+      Option(request.getAttribute("tag").asInstanceOf[Tag]).map { tag =>
 
         def applyTagTo(resource: Resource, tag: Tag): Future[Resource] = {
           autoTagService.alreadyHasTag(resource, tag).flatMap { alreadyHasTag =>
@@ -80,6 +74,7 @@ import scala.concurrent.{Await, Future}
           }
         }
 
+        val autotaggedResourceIds = request.getParameterValues("autotag")
         val eventuallyAutoTaggedResources = Future.sequence {
           autotaggedResourceIds.toSeq.map(mongoRepository.getResourceById).map { ero =>
             ero.flatMap { ro =>
@@ -96,6 +91,10 @@ import scala.concurrent.{Await, Future}
           addObject("resources_to_tag", Await.result(eventuallyAutoTaggedResources, ThirtySeconds).flatten.asJava)
 
         Await.result(withCommonLocal(mv), TenSeconds)
+
+      }.getOrElse{
+        response.setStatus(HttpServletResponse.SC_NOT_FOUND)  // TODO deduplicate 404 response
+        null
       }
     }
 
