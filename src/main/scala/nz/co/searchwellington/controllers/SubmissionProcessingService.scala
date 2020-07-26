@@ -132,11 +132,11 @@ import scala.concurrent.ExecutionContext.Implicits.global
       val requestTagsList: Seq[Tag] = request.getAttribute("tags").asInstanceOf[java.util.List[Tag]]
       log.debug("Found tags on request: " + requestTagsList)
       log.info("Found " + requestTagsList.size + " tags on the request")
-      tagVoteDAO.setUsersTagVotesForResource(editResource, user, requestTagsList.toSet)
+      //tagVoteDAO.setUsersTagVotesForResource(editResource, user, requestTagsList.toSet)
 
     } else {
       log.info("No tags request attribute seen; clearing users tag votes")
-      tagVoteDAO.setUsersTagVotesForResource(editResource, user, Set())
+      //tagVoteDAO.setUsersTagVotesForResource(editResource, user, Set())
     }
   }
 

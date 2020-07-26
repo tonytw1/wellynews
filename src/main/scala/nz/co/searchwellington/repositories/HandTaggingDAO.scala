@@ -40,18 +40,6 @@ import scala.concurrent.ExecutionContext.Implicits.global
     getHandTaggingsForResourceByUser(resource, user).map(tagging => tagging.tag).toSet
   }
 
-  def setUsersTagVotesForResource(resource: Resource, user: User, tags: Set[Tag]) {
-    val withoutUsersTaggings = resource.resource_tags.filterNot(_.user_id == user._id).toSet
-    val newTaggings = tags.map(t => Tagging(tag_id = t._id, user_id = user._id))
-    val withNewTaggings = (withoutUsersTaggings ++ newTaggings).toSeq
-
-    val updated = resource.withTaggings(withNewTaggings)
-
-    mongoRepository.saveResource(updated).map { _ =>
-      //contentUpdater.update(resource) // TODO?
-    }
-  }
-
   def clearTags(resource: Resource) {
     for (handTagging <- this.getHandTaggingsForResource(resource)) {
       // TODO sessionFactory.getCurrentSession.delete(handTagging)
