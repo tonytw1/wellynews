@@ -11,9 +11,16 @@ Currently Scala controllers behind Spring framework built with Maven :grimace:
 
 ## Local dev
 
-docker-compose -f docker/docker-compose.yml up
+Use docker to provide local MongoDB, Elasticsearch, Memcached andRabbitMQ dependencies.
 
+```
+docker-compose -f docker/docker-compose.yml up
+```
+
+Start locally.
+```
 mvn spring-boot:run
+```
 
 
 ## Index tags
