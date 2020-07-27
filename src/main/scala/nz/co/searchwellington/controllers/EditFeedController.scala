@@ -124,7 +124,8 @@ class EditFeedController @Autowired()(contentUpdateService: ContentUpdateService
     new ModelAndView("editFeed").
       addObject("feed", f).
       addObject("formObject", formObject).
-      addObject("acceptancePolicyOptions", acceptancePolicyOptions.asJava)
+      addObject("acceptancePolicyOptions", acceptancePolicyOptions.asJava).
+      addObject("tags", Await.result(tagDAO.getAllTags, TenSeconds).asJava)
   }
 
 }
