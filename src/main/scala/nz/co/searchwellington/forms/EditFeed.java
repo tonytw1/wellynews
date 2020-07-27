@@ -1,7 +1,10 @@
 package nz.co.searchwellington.forms;
 
+import com.google.common.collect.Lists;
 import nz.co.searchwellington.model.FeedAcceptancePolicy;
 import org.hibernate.validator.constraints.NotBlank;
+
+import java.util.List;
 
 public class EditFeed {
 
@@ -10,6 +13,8 @@ public class EditFeed {
     private String publisher;
 
     private FeedAcceptancePolicy acceptancePolicy;
+
+    private List<String> tags = Lists.newArrayList();
 
     public String getTitle() {
         return title;
@@ -43,6 +48,14 @@ public class EditFeed {
         this.acceptancePolicy = acceptancePolicy;
     }
 
+    public List<String> getTags() {
+        return tags;
+    }
+
+    public void setTags(List<String> tags) {
+        this.tags = tags;
+    }
+
     @Override
     public String toString() {
         return "EditFeed{" +
@@ -50,6 +63,7 @@ public class EditFeed {
                 ", url='" + url + '\'' +
                 ", publisher='" + publisher + '\'' +
                 ", acceptancePolicy=" + acceptancePolicy +
+                ", tags=" + tags +
                 '}';
     }
 }

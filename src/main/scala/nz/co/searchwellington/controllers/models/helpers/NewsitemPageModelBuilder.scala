@@ -36,8 +36,8 @@ import scala.concurrent.Future
     val matcher = pattern.matcher(RequestPath.getPathFrom(request))
     if (matcher.matches()) {
       val id = matcher.group(1)
-      mongoRepository.getResourceById(id).flatMap { maybeResouce =>
-        maybeResouce.map { resource =>
+      mongoRepository.getResourceById(id).flatMap { maybeResource =>
+        maybeResource.map { resource =>
           val eventualFrontendResource = frontendResourceMapper.createFrontendResourceFrom(resource, loggedInUser)
           val eventualHandTaggings = taggingReturnsOfficerService.getHandTaggingsForResource(resource)
           val eventualGeotagVotes = taggingReturnsOfficerService.getGeotagVotesForResource(resource)

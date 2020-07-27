@@ -114,9 +114,9 @@ class EditNewsitemController @Autowired()(contentUpdateService: ContentUpdateSer
     }
 
     val usersTags = n.resource_tags.filter(_.user_id == loggedInUser._id)
-
     import scala.collection.JavaConverters._
     formObject.setTags(usersTags.map(_.tag_id.stringify).asJava)
+
     formObject
   }
 

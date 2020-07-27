@@ -5,6 +5,7 @@ import nz.co.searchwellington.ReasonableWaits
 import nz.co.searchwellington.forms.EditFeed
 import nz.co.searchwellington.model.{Feed, UrlWordsGenerator, User}
 import nz.co.searchwellington.modification.ContentUpdateService
+import nz.co.searchwellington.repositories.{HandTaggingService, TagDAO}
 import nz.co.searchwellington.repositories.mongo.MongoRepository
 import nz.co.searchwellington.urls.UrlBuilder
 import nz.co.searchwellington.views.Errors
@@ -24,7 +25,9 @@ class EditFeedController @Autowired()(contentUpdateService: ContentUpdateService
                                       mongoRepository: MongoRepository,
                                       urlWordsGenerator: UrlWordsGenerator,
                                       urlBuilder: UrlBuilder,
-                                      val loggedInUserFilter: LoggedInUserFilter) extends ReasonableWaits with AcceptancePolicyOptions with Errors with RequiringLoggedInUser {
+                                      val loggedInUserFilter: LoggedInUserFilter,
+                                      tagDAO: TagDAO,
+                                      handTaggingService: HandTaggingService) extends ReasonableWaits with AcceptancePolicyOptions with Errors with RequiringLoggedInUser {
 
   private val log = Logger.getLogger(classOf[EditFeedController])
 
@@ -39,6 +42,11 @@ class EditFeedController @Autowired()(contentUpdateService: ContentUpdateService
         editFeed.setUrl(f.page)
         editFeed.setPublisher(publisher.flatMap(_.title).getOrElse(""))
         editFeed.setAcceptancePolicy(f.acceptance)
+
+        val usersTags = f.resource_tags.filter(_.user_id == loggedInUser._id)
+        import scala.collection.JavaConverters._
+        editFeed.setTags(usersTags.map(_.tag_id.stringify).asJava)
+
         renderEditForm(f, editFeed)
 
       }.getOrElse {
@@ -81,8 +89,13 @@ class EditFeedController @Autowired()(contentUpdateService: ContentUpdateService
             held = submissionShouldBeHeld(loggedInUser)
           )
 
-          contentUpdateService.update(updatedFeed)
-          log.info("Updated feed: " + updatedFeed)
+          import scala.collection.JavaConverters._
+          val submittedTags = Await.result(tagDAO.loadTagsById(editFeed.getTags.asScala), TenSeconds).toSet
+
+          val updated = handTaggingService.setUsersTagging(loggedInUser, submittedTags.map(_._id), updatedFeed)
+
+          contentUpdateService.update(updated)
+          log.info("Updated feed: " + updated)
 
           new ModelAndView(new RedirectView(urlBuilder.getFeedUrl(updatedFeed)))
         }
