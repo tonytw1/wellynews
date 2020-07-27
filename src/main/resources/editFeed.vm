@@ -12,22 +12,22 @@
 		
 		<form id="editForm" action="$adminUrlBuilder.getResourceEditUrl($feed)" method="POST">
             <fieldset>
-                #springBind("editFeed.title")
+                #springBind("formObject.title")
                 <label for="${status.expression}">Title:</label>
                 <input name="${status.expression}" class="title" value="$!{status.value}" />
                 <br />
 
-                #springBind("editFeed.url")
+                #springBind("formObject.url")
                 <label for="${status.expression}">URL:</label>
                 <input name="${status.expression}" class="title" value="$!{status.value}" />
                 <br />
 
-                #springBind("editFeed.publisher")
+                #springBind("formObject.publisher")
                 <label for="${status.expression}">Publisher:</label>
                 <input id="publisher" name="${status.expression}" class="title" value="$!{status.value}" />
                 <br />
 
-                #springBind("editFeed.acceptancePolicy")
+                #springBind("formObject.acceptancePolicy")
                 <label for="${status.expression}">Acceptance policy:</label>
                 <select name="${status.expression}">
                   #foreach($option in $acceptancePolicyOptions)

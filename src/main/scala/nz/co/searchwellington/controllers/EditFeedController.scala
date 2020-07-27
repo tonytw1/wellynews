@@ -58,19 +58,19 @@ class EditFeedController @Autowired()(contentUpdateService: ContentUpdateService
   }
 
   @RequestMapping(value = Array("/edit-feed/{id}"), method = Array(RequestMethod.POST))
-  def submit(@PathVariable id: String, @Valid @ModelAttribute("editFeed") editFeed: EditFeed, result: BindingResult): ModelAndView = {
+  def submit(@PathVariable id: String, @Valid @ModelAttribute("formObject") formObject: EditFeed, result: BindingResult): ModelAndView = {
     def handleSubmission(loggedInUser: User): ModelAndView = {
       getFeedById(id).map { f =>
         if (result.hasErrors) {
           log.warn("Edit feed submission has errors: " + result)
-          renderEditForm(f, editFeed)
+          renderEditForm(f, formObject)
 
         } else {
-          log.info("Got valid edit feed submission: " + editFeed)
+          log.info("Got valid edit feed submission: " + formObject)
 
-          val publisherName = if (editFeed.getPublisher.trim.nonEmpty) {
-            log.info("Publisher is: " + editFeed.getPublisher.trim)
-            Some(editFeed.getPublisher.trim)
+          val publisherName = if (formObject.getPublisher.trim.nonEmpty) {
+            log.info("Publisher is: " + formObject.getPublisher.trim)
+            Some(formObject.getPublisher.trim)
           } else {
             None
           }
@@ -81,16 +81,16 @@ class EditFeedController @Autowired()(contentUpdateService: ContentUpdateService
           log.info("Resolved publisher: " + publisher)
 
           val updatedFeed = f.copy(
-            title = Some(editFeed.getTitle),
-            page = editFeed.getUrl,
-            url_words = Some(urlWordsGenerator.makeUrlWordsFromName(editFeed.getTitle)),
+            title = Some(formObject.getTitle),
+            page = formObject.getUrl,
+            url_words = Some(urlWordsGenerator.makeUrlWordsFromName(formObject.getTitle)),
             publisher = publisher.map(_._id),
-            acceptance = editFeed.getAcceptancePolicy,
+            acceptance = formObject.getAcceptancePolicy,
             held = submissionShouldBeHeld(loggedInUser)
           )
 
           import scala.collection.JavaConverters._
-          val submittedTags = Await.result(tagDAO.loadTagsById(editFeed.getTags.asScala), TenSeconds).toSet
+          val submittedTags = Await.result(tagDAO.loadTagsById(formObject.getTags.asScala), TenSeconds).toSet
 
           val updated = handTaggingService.setUsersTagging(loggedInUser, submittedTags.map(_._id), updatedFeed)
 
@@ -119,11 +119,11 @@ class EditFeedController @Autowired()(contentUpdateService: ContentUpdateService
     !loggerInUser.isAdmin
   }
 
-  private def renderEditForm(f: Feed, editFeed: EditFeed): ModelAndView = {
+  private def renderEditForm(f: Feed, formObject: EditFeed): ModelAndView = {
     import scala.collection.JavaConverters._
     new ModelAndView("editFeed").
       addObject("feed", f).
-      addObject("editFeed", editFeed).
+      addObject("formObject", formObject).
       addObject("acceptancePolicyOptions", acceptancePolicyOptions.asJava)
   }
 
