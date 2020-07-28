@@ -21,8 +21,8 @@
 #set($current = "")
 #foreach ($tag in $main_content)
 	#if (!$tag.hidden2)
-	    #if ($tag.name.length() > 0)
-    		#set($current = $tag.name.substring(0, 1).toUpperCase())
+	    #if ($tag.displayName.length() > 0)
+    		#set($current = $tag.displayName.substring(0, 1).toUpperCase())
     	#end
 		#if ($current != $letter)
 			#set($letter = $current)		
