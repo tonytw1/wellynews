@@ -5,7 +5,7 @@ import nz.co.searchwellington.model._
 import nz.co.searchwellington.model.taggingvotes.HandTagging
 import nz.co.searchwellington.repositories.HandTaggingDAO
 import nz.co.searchwellington.repositories.mongo.MongoRepository
-import org.junit.Assert._
+import org.junit.Assert.assertTrue
 import org.junit.Test
 import org.mockito.Mockito.{mock, when}
 
@@ -37,7 +37,7 @@ class TaggingReturnsOfficerServiceTest extends ReasonableWaits {
   private val taggingReturnsOfficerService: TaggingReturnsOfficerService = new TaggingReturnsOfficerService(handTaggingDAO, mongoRepository)
 
   @Test
-  def compliedTagsShouldContainAtLeastOneCopyOfEachManuallyAppliedTag {
+  def compliedTagsShouldContainAtLeastOneCopyOfEachManuallyAppliedTag(): Unit = {
     val handTags = Seq(new HandTagging(user = taggingUser, tag = aroValleyTag))
     when(handTaggingDAO.getHandTaggingsForResource(aroValleyNewsitem)).thenReturn(Future.successful(handTags))
     when(handTaggingDAO.getHandTaggingsForResourceId(victoriaUniversity._id)).thenReturn(Future.successful(Seq(new HandTagging(user = taggingUser, tag = educationTag))))
@@ -49,7 +49,7 @@ class TaggingReturnsOfficerServiceTest extends ReasonableWaits {
   }
 
   @Test
-  def indexTagsShouldContainAtLeastOneCopyOfEachManuallyAppliedTag {
+  def indexTagsShouldContainAtLeastOneCopyOfEachManuallyAppliedTag(): Unit = {
     val handTags = Seq(new HandTagging(user = taggingUser, tag = aroValleyTag))
     when(handTaggingDAO.getHandTaggingsForResource(aroValleyNewsitem)).thenReturn(Future.successful(handTags))
     when(handTaggingDAO.getHandTaggingsForResourceId(victoriaUniversity._id)).thenReturn(Future.successful(Seq(new HandTagging(user = taggingUser, tag = educationTag))))
@@ -61,7 +61,7 @@ class TaggingReturnsOfficerServiceTest extends ReasonableWaits {
   }
 
   @Test
-  def shouldIncludePublishersTagsInNewsitemsIndexTags = {
+  def shouldIncludePublishersTagsInNewsitemsIndexTags() = {
     when(handTaggingDAO.getHandTaggingsForResource(aroValleyNewsitem)).thenReturn(Future.successful(Seq(HandTagging(user = taggingUser, tag = aroValleyTag))))
     when(handTaggingDAO.getHandTaggingsForResourceId(victoriaUniversity._id)).thenReturn(Future.successful(Seq(HandTagging(user = taggingUser, tag = educationTag))))
     when(mongoRepository.getTagByObjectId(placesTag._id)).thenReturn(Future.successful(Some(placesTag)))
@@ -72,7 +72,7 @@ class TaggingReturnsOfficerServiceTest extends ReasonableWaits {
   }
 
   @Test
-  def shouldIncludeAncestorsOfPublishersTags = {
+  def shouldIncludeAncestorsOfPublishersTags(): Unit = {
     val cricketWellingtonNewsitem = Newsitem(title = Some("Cricket"),
       description = Some("Cricket thing"),
       publisher = Some(cricketWellington._id)
@@ -88,7 +88,7 @@ class TaggingReturnsOfficerServiceTest extends ReasonableWaits {
   }
 
   @Test
-  def shouldIncludeFeedsTagsInNewsitemIndexTags = {
+  def shouldIncludeFeedsTagsInNewsitemIndexTags(): Unit = {
     val publicInputFeed = Feed(title = Some("Wellington City Council - Public Input"))
 
     val publicInputNewsitem = Newsitem(
@@ -101,11 +101,12 @@ class TaggingReturnsOfficerServiceTest extends ReasonableWaits {
 
     val indexTags = Await.result(taggingReturnsOfficerService.getIndexTagsForResource(publicInputNewsitem), TenSeconds)
 
-    assertTrue(indexTags.contains(consultationTag))
+    import scala.collection.JavaConverters._
+    com.google.common.truth.Truth.assertThat(indexTags.asJava).contains(consultationTag)
   }
 
   @Test
-  def shouldIncludeAncestorsOfFeedTags = {
+  def shouldIncludeAncestorsOfFeedTags(): Unit = {
     val cricketWellingtonNewsFeed = Feed(title = Some("Cricket Wellington news"))
 
     val cricketWellingtonNewsitem = Newsitem(title = Some("Cricket"),
