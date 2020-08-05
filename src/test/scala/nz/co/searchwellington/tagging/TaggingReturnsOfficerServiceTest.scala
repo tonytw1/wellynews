@@ -1,16 +1,16 @@
 package nz.co.searchwellington.tagging
 
+import com.google.common.truth.Truth._
 import nz.co.searchwellington.ReasonableWaits
 import nz.co.searchwellington.model._
 import nz.co.searchwellington.model.taggingvotes.HandTagging
 import nz.co.searchwellington.repositories.HandTaggingDAO
 import nz.co.searchwellington.repositories.mongo.MongoRepository
-import org.junit.Assert.assertTrue
 import org.junit.Test
 import org.mockito.Mockito.{mock, when}
 
-import scala.concurrent.{Await, Future}
 import scala.concurrent.ExecutionContext.Implicits.global
+import scala.concurrent.{Await, Future}
 
 class TaggingReturnsOfficerServiceTest extends ReasonableWaits {
 
@@ -45,7 +45,7 @@ class TaggingReturnsOfficerServiceTest extends ReasonableWaits {
 
     val taggings = Await.result(taggingReturnsOfficerService.compileTaggingVotes(aroValleyNewsitem), TenSeconds)
 
-    assertTrue(taggings.head.tag.equals(aroValleyTag)); // TODO not a great assert
+    assertThat(taggings.head.tag).isEqualTo(aroValleyTag) // TODO not a great assert
   }
 
   @Test
@@ -57,18 +57,20 @@ class TaggingReturnsOfficerServiceTest extends ReasonableWaits {
 
     val indexTags = Await.result(taggingReturnsOfficerService.getIndexTagsForResource(aroValleyNewsitem), TenSeconds)
 
-    assertTrue(indexTags.contains(aroValleyTag))
+    import scala.collection.JavaConverters._
+    assertThat(indexTags.asJava).contains(aroValleyTag)
   }
 
   @Test
-  def shouldIncludePublishersTagsInNewsitemsIndexTags() = {
+  def shouldIncludePublishersTagsInNewsitemsIndexTags(): Unit = {
     when(handTaggingDAO.getHandTaggingsForResource(aroValleyNewsitem)).thenReturn(Future.successful(Seq(HandTagging(user = taggingUser, tag = aroValleyTag))))
     when(handTaggingDAO.getHandTaggingsForResourceId(victoriaUniversity._id)).thenReturn(Future.successful(Seq(HandTagging(user = taggingUser, tag = educationTag))))
     when(mongoRepository.getTagByObjectId(placesTag._id)).thenReturn(Future.successful(Some(placesTag)))
 
     val indexTags = Await.result(taggingReturnsOfficerService.getIndexTagsForResource(aroValleyNewsitem), TenSeconds)
 
-    assertTrue(indexTags.contains(educationTag))
+    import scala.collection.JavaConverters._
+    assertThat(indexTags.asJava).contains(educationTag)
   }
 
   @Test
@@ -84,7 +86,8 @@ class TaggingReturnsOfficerServiceTest extends ReasonableWaits {
 
     val indexTags = Await.result(taggingReturnsOfficerService.getIndexTagsForResource(cricketWellingtonNewsitem), TenSeconds)
 
-    assertTrue(indexTags.contains(sportTag))
+    import scala.collection.JavaConverters._
+    assertThat(indexTags.asJava).contains(sportTag)
   }
 
   @Test
@@ -102,7 +105,7 @@ class TaggingReturnsOfficerServiceTest extends ReasonableWaits {
     val indexTags = Await.result(taggingReturnsOfficerService.getIndexTagsForResource(publicInputNewsitem), TenSeconds)
 
     import scala.collection.JavaConverters._
-    com.google.common.truth.Truth.assertThat(indexTags.asJava).contains(consultationTag)
+    assertThat(indexTags.asJava).contains(consultationTag)
   }
 
   @Test
@@ -120,7 +123,8 @@ class TaggingReturnsOfficerServiceTest extends ReasonableWaits {
 
     val indexTags = Await.result(taggingReturnsOfficerService.getIndexTagsForResource(cricketWellingtonNewsitem), TenSeconds)
 
-    assertTrue(indexTags.contains(sportTag))
+    import scala.collection.JavaConverters._
+    assertThat(indexTags.asJava).contains(sportTag)
   }
 
 }
