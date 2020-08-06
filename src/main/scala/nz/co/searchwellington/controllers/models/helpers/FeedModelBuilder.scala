@@ -57,11 +57,10 @@ import scala.concurrent.Future
             val eventualFrontendFeedNewitems = Future.sequence {
               feedNewsitems.map { r =>
                 frontendResourceMapper.mapFrontendResource(r, r.geocode)
-                // TODO apply feed item specific actions here
               }
             }
 
-            val eventualWithSuppressionAndLocalCopyInformation = eventualFrontendFeedNewitems.flatMap { rs =>
+            val eventualWithSuppressionAndLocalCopyInformation: Future[Seq[FrontendResource]] = eventualFrontendFeedNewitems.flatMap { rs =>
               feedNewsItemLocalCopyDecorator.withFeedItemSpecificActions(rs, loggedInUser)
             }
 
