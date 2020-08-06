@@ -25,7 +25,7 @@ class PlaceAutoTaggerTest extends ReasonableWaits {
   private val tagDAO = mock(classOf[TagDAO])
   private val mongoRepository = mock(classOf[MongoRepository])
 
-  private val placeAutoTagger: PlaceAutoTagger = new PlaceAutoTagger(mongoRepository, tagDAO)
+  private val placeAutoTagger = new PlaceAutoTagger(mongoRepository, tagDAO)
 
   @Before
   def setUp {
@@ -34,7 +34,7 @@ class PlaceAutoTaggerTest extends ReasonableWaits {
   }
 
   @Test
-  def testShouldTagNewsitemWithPlaceTags {
+  def testShouldTagNewsitemsWithPlaceTags {
     val suggestedTags = Await.result(placeAutoTagger.suggestTags(aroValleyNewsitem), TenSeconds)
 
     assertTrue(suggestedTags.contains(aroValleyTag))

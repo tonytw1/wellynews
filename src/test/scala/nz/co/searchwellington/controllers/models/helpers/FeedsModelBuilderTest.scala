@@ -57,13 +57,12 @@ class FeedsModelBuilderTest extends ReasonableWaits with ContentFields {
     val discoveredFeeditems = Seq(DiscoveredFeed(url = "http://something", referencedFrom = "http://somewhere", seen = DateTime.now.toDate))
     when(contentRetrievalService.getDiscoveredFeeds).thenReturn(Future.successful(discoveredFeeditems))
     when(contentRetrievalService.getAllFeedsOrderedByLatestItemDate(loggedInUser)).thenReturn(Future.successful(Seq.empty))
-    when(contentRetrievalService.getSuggestOnlyFeeds(None)).thenReturn(Future.successful(Seq.empty))
     val mv = new ModelAndView()
 
     Await.result(modelBuilder.populateExtraModelContent(request, mv, None), TenSeconds)
 
     import scala.collection.JavaConverters._
-    //assertEquals(suggestedFeeditems.asJava, mv.getModel.get("suggestions"))
+    assertEquals(suggestedFeeditems.asJava, mv.getModel.get("suggestions"))
     assertEquals(discoveredFeeditems.asJava, mv.getModel.get("discovered_feeds"))
   }
 

@@ -43,22 +43,19 @@ import scala.concurrent.Future
   }
 
   def populateExtraModelContent(request: HttpServletRequest, mv: ModelAndView, loggedInUser: Option[User]): Future[ModelAndView] = {
-    val eventualSuggestedFeednewsitems = Future.successful(Seq.empty) // TODO suggestedFeeditemsService.getSuggestionFeednewsitems(6)
     val eventualDiscoveredFeeds = contentRetrievalService.getDiscoveredFeeds
     val eventualCurrentFeeds = contentRetrievalService.getAllFeedsOrderedByLatestItemDate(loggedInUser)
-    val eventualSuggestOnlyFeeds = contentRetrievalService.getSuggestOnlyFeeds(loggedInUser)
+    val eventualSuggestedFeedNewsitems = suggestedFeeditemsService.getSuggestionFeednewsitems(6, loggedInUser)
 
     for {
-      suggestedFeednewsitems <- eventualSuggestedFeednewsitems
+      suggestedFeednewsitems <- eventualSuggestedFeedNewsitems
       discoveredFeeds <- eventualDiscoveredFeeds
       currentFeeds <- eventualCurrentFeeds
-      suggestOnlyFeeds <- eventualSuggestOnlyFeeds
 
     } yield {
       import scala.collection.JavaConverters._
       mv.addObject("suggestions", suggestedFeednewsitems.asJava)
       mv.addObject("discovered_feeds", discoveredFeeds.asJava)
-      mv.addObject("suggest_feeds", suggestOnlyFeeds.asJava)
       commonAttributesModelBuilder.withSecondaryFeeds(mv, currentFeeds)
     }
   }

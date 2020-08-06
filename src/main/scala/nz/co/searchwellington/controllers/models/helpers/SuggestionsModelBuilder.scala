@@ -45,9 +45,9 @@ import scala.concurrent.Future
 
   def populateExtraModelContent(request: HttpServletRequest, mv: ModelAndView, loggedInUser: Option[User]): Future[ModelAndView] = {
     for {
-      allFeeds <- contentRetrievalService.getAllFeedsOrderedByLatestItemDate(loggedInUser)
+      suggestOnlyFeeds <- contentRetrievalService.getSuggestOnlyFeeds(loggedInUser)
     } yield {
-      commonAttributesModelBuilder.withSecondaryFeeds(mv, allFeeds)
+      commonAttributesModelBuilder.withSecondaryFeeds(mv, suggestOnlyFeeds)
     }
   }
 
