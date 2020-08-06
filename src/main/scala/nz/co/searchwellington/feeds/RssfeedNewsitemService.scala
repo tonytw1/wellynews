@@ -38,6 +38,11 @@ import scala.concurrent.{Await, ExecutionContext, Future}
 
       eventualFeedsBySubscriptionId.map { feeds =>
         feedItems.flatMap { fi =>
+
+          if (feeds.get(fi.subscriptionId).isEmpty) {
+            log.warn("No local feed found for feed item with subscription id (" + fi.subscriptionId + "): " + fi)
+          }
+
           feeds.get(fi.subscriptionId).map { feed =>
             (fi, feed)
           }
@@ -45,10 +50,8 @@ import scala.concurrent.{Await, ExecutionContext, Future}
       }
     }
 
-    val eventualChannelFeedItems = whakaokoFeedReader.fetchChannelFeedItems(page)
-
     for {
-      channelFeedItems <- eventualChannelFeedItems
+      channelFeedItems <- whakaokoFeedReader.fetchChannelFeedItems(page)
       channelFeedItemsWithFeeds <- decorateFeedItemsWithFeeds(channelFeedItems, subscriptions)
 
     } yield {
