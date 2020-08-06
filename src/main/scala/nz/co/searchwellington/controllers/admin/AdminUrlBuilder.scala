@@ -13,6 +13,8 @@ class AdminUrlBuilder @Autowired()(siteInformation: SiteInformation,
                                    @Value("${whakaoko.url}") whakaokoUrl: String,
                                    @Value("${whakaoko.username}") whakaokoUsername: String) {
 
+  def adminPage(): String = "/admin"
+
   def getResourceEditUrl(resource: FrontendResource): String = {
     resource match {
       case f: FrontendFeed =>

@@ -12,13 +12,15 @@ import org.springframework.core.annotation.Order
 import org.springframework.stereotype.Controller
 import org.springframework.web.bind.annotation.{RequestMapping, RequestMethod}
 import org.springframework.web.servlet.ModelAndView
+import org.springframework.web.servlet.view.RedirectView
 
 import scala.concurrent.ExecutionContext.Implicits.global
 
 @Order(2)
 @Controller class RebuildIndexController @Autowired()(mongoRepository: MongoRepository,
                                                       elasticSearchIndexRebuildService: ElasticSearchIndexRebuildService,
-                                                      val loggedInUserFilter: LoggedInUserFilter) extends ReasonableWaits
+                                                      val loggedInUserFilter: LoggedInUserFilter,
+                                                      adminUrlBuilder: AdminUrlBuilder) extends ReasonableWaits
   with RequiringLoggedInUser {
 
   private val log = Logger.getLogger(classOf[AcceptFeedItemController])
@@ -37,8 +39,7 @@ import scala.concurrent.ExecutionContext.Implicits.global
         log.info("Completed reindex: " + i)
       }
 
-      response.setStatus(HttpServletResponse.SC_ACCEPTED);
-      new ModelAndView("TODO");
+      new ModelAndView(new RedirectView(adminUrlBuilder.adminPage()))
     }
 
     requiringAdminUser(rebuild)
