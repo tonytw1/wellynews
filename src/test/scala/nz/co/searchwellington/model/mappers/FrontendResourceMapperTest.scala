@@ -4,11 +4,11 @@ import java.util.UUID
 
 import nz.co.searchwellington.ReasonableWaits
 import nz.co.searchwellington.controllers.admin.AdminUrlBuilder
-import nz.co.searchwellington.model.{Newsitem, Tag, UrlWordsGenerator, Website}
+import nz.co.searchwellington.model.{Newsitem, Tag, UrlWordsGenerator, User, Website}
 import nz.co.searchwellington.repositories.mongo.MongoRepository
 import nz.co.searchwellington.tagging.TaggingReturnsOfficerService
 import org.joda.time.DateTime
-import org.junit.Assert.{assertEquals, assertFalse}
+import org.junit.Assert.{assertEquals, assertFalse, assertTrue}
 import org.junit.Test
 import org.mockito.Mockito.{mock, when}
 
@@ -52,6 +52,20 @@ class FrontendResourceMapperTest extends ReasonableWaits {
 
     assertFalse(frontendWebsite.handTags.isEmpty)
     assertEquals(tag.id, frontendWebsite.handTags.head.id)
+  }
+
+  @Test
+  def shouldApplyActionsToFrontendResourcesViewedByAdmins(): Unit = {
+    val website = Website(id = "123")
+    val adminUser = User(admin = true)
+
+    when(taggingReturnsOfficerService.getHandTagsForResource(website)).thenReturn(Future.successful(Seq.empty))
+    when(taggingReturnsOfficerService.getIndexTagsForResource(website)).thenReturn(Future.successful(Seq.empty))
+    when(taggingReturnsOfficerService.getIndexGeocodeForResource(website)).thenReturn(Future.successful(None))
+
+    val frontendWebsite = Await.result(mapper.createFrontendResourceFrom(website, loggedInUser = Some(adminUser)), TenSeconds)
+
+    assertTrue(frontendWebsite.actions.nonEmpty)
   }
 
 }
