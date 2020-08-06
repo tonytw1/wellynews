@@ -15,13 +15,13 @@ class UrlWordsGeneratorTest {
     val publisher = Website(title = Some("Island Bay school"))
     val newsitemWithPublisher = Newsitem(title = Some("Something happened at the school"), date = Some(april2010), publisher = Some(publisher._id))
 
-    assertEquals(Some("/island-bay-school/2010/apr/2/something-happened"), urlWordsGenerator.makeUrlForNewsitem(newsitemWithPublisher))
+    assertEquals(Some("/island-bay-school/2010/apr/2/something-happened"), urlWordsGenerator.makeUrlWordsForNewsitem(newsitemWithPublisher))
   }
 
   @Test
   def urlWordshouldBeDateAndHeadlineIfPublisherIsNotSet {
     val newsitemWithNoPublisher = Newsitem(title = Some("Something-happening"), date = Some(april2010))
-    assertEquals(Some("/2010/apr/2/something-happening"), urlWordsGenerator.makeUrlForNewsitem(newsitemWithNoPublisher))
+    assertEquals(Some("/2010/apr/2/something-happening"), urlWordsGenerator.makeUrlWordsForNewsitem(newsitemWithNoPublisher))
   }
 
   @Test

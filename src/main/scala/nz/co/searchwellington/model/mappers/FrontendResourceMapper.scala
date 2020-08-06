@@ -82,7 +82,7 @@ import scala.concurrent.{ExecutionContext, Future}
             acceptedBy = acceptedByUser,
             accepted = n.accepted.orNull,
             image = null, // TODO
-            urlWords = urlWordsGenerator.makeUrlForNewsitem(n).getOrElse(""),
+            urlWords = n.url_words.orNull,
             publisher = publisher.map(_.asInstanceOf[Website]), // TODO should be frontend resource or string?
             httpStatus = n.http_status,
             lastScanned = n.last_scanned,

@@ -28,7 +28,7 @@ import uk.co.eelpieconsulting.common.dates.DateFormatter
   }
   */
 
-  def makeUrlForNewsitem(newsitem: Newsitem): Option[String] = {
+  def makeUrlWordsForNewsitem(newsitem: Newsitem): Option[String] = {
     val uri = new StringBuilder
 
     newsitem.publisher.map { p =>

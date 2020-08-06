@@ -35,7 +35,6 @@ class FrontendResourceMapperTest extends ReasonableWaits {
     val frontendNewsitem = Await.result(mapper.createFrontendResourceFrom(newsitem), TenSeconds)
 
     assertEquals(newsitem.id, frontendNewsitem.id)
-    assertEquals("/2020/oct/7/something-happened-today", frontendNewsitem.getUrlWords)
     assertEquals(200, frontendNewsitem.httpStatus)
   }
 
