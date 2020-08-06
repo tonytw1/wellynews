@@ -3,7 +3,7 @@
 <div class="box">
 <h2>Inbox</h2>
 
-<p>These newsitems have been seen in a suggest only feeds and are awaiting review.</p>
+<p>These newsitems have been seen in suggest only feeds and are awaiting review.</p>
 </p>
 
 #set ($righthand_content_one = $columnSplitter.left($suggestions))
