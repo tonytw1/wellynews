@@ -1,9 +1,9 @@
 #if($suggestions && $suggestions.size() > 0) 
 
 <div class="box">
-<h2>Feed Inbox</h2>
+<h2>Inbox</h2>
 
-<p>These items have been seen in a third party feed and are awaiting review.</p>
+<p>These newsitems have been seen in a suggest only feeds and are awaiting review.</p>
 </p>
 
 #set ($righthand_content_one = $columnSplitter.left($suggestions))

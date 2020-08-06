@@ -3,12 +3,9 @@
 <div class="page">
 	#parse("includes/topbar.vm")
 
-
-
 	<div class="left">
 		#parse("includes/tag_tree.vm")
 	</div>
-
 
 	<div class="main">
 

@@ -47,7 +47,7 @@ import scala.concurrent.Future
     for {
       suggestOnlyFeeds <- contentRetrievalService.getSuggestOnlyFeeds(loggedInUser)
     } yield {
-      commonAttributesModelBuilder.withSecondaryFeeds(mv, suggestOnlyFeeds)
+      commonAttributesModelBuilder.withSecondaryFeeds(mv, suggestOnlyFeeds, "Suggest only feeds", "Newsitems from these feeds are not automatically accepted.")
     }
   }
 
