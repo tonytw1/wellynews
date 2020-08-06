@@ -15,7 +15,7 @@ with ReasonableWaits {
     mv.addObject("rss_url", url)
   }
 
-  def withSecondaryFeeds(mv: ModelAndView, feeds: Seq[FrontendResource], heading: String = "Local Feeds",
+  def withSecondaryFeeds(mv: ModelAndView, feeds: Seq[FrontendResource], heading: String = "Updated Feeds",
                          description: String = "Recently updated feeds from local organisations."): ModelAndView = {
     mv.addObject("righthand_heading", heading)
     mv.addObject("righthand_description", description)

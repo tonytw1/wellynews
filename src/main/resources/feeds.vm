@@ -44,22 +44,11 @@
 
 <div class="right">
 
+#parse("includes/suggestions.vm")
+
 <div class="box">
 #parse("includes/righthand_content.vm")
 </div>
-
-#parse("includes/suggestions.vm")
-
-#if($suggest_feeds && $suggest_feeds.size() > 0)
-    <div class="box">
-        <h2>Suggest only feeds</h2>
-        <p>These feeds are suggest only. Newsitems from these feeds are not automatically included in the newslog.</p>
-        #set ($righthand_content_one = $columnSplitter.left($suggest_feeds))
-        #set ($righthand_content_two = $columnSplitter.right($suggest_feeds))
-        #set ($righthand_content_moreurl = "/feeds?acceptance=SUGGEST")
-        #parse("includes/righthand_two_columns.vm")
-    </div>
-#end
 
 #parse("includes/discovered_feeds.vm")
 
