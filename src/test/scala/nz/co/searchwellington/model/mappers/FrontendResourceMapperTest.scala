@@ -7,7 +7,8 @@ import nz.co.searchwellington.controllers.admin.AdminUrlBuilder
 import nz.co.searchwellington.model.{Newsitem, Tag, UrlWordsGenerator, Website}
 import nz.co.searchwellington.repositories.mongo.MongoRepository
 import nz.co.searchwellington.tagging.TaggingReturnsOfficerService
-import org.junit.Assert.{assertEquals, assertFalse, assertTrue}
+import org.joda.time.DateTime
+import org.junit.Assert.{assertEquals, assertFalse}
 import org.junit.Test
 import org.mockito.Mockito.{mock, when}
 
@@ -17,7 +18,7 @@ import scala.concurrent.{Await, Future}
 class FrontendResourceMapperTest extends ReasonableWaits {
 
   private val taggingReturnsOfficerService = mock(classOf[TaggingReturnsOfficerService])
-  private val urlWordsGenerator = mock(classOf[UrlWordsGenerator])
+  private val urlWordsGenerator = new UrlWordsGenerator
   private val mongoRepository = mock(classOf[MongoRepository])
   private val adminUrlBuilder = mock(classOf[AdminUrlBuilder])
 
@@ -25,8 +26,8 @@ class FrontendResourceMapperTest extends ReasonableWaits {
 
   @Test
   def canMapNewsitemsToFrontendNewsitems(): Unit = {
-    val newsitem = Newsitem(id = "123", http_status = 200)
-    when(urlWordsGenerator.makeUrlForNewsitem(newsitem)).thenReturn(Some("some-url-words"))
+    val newsitem = Newsitem(id = "123", http_status = 200, title = Some("Something happened today"),
+      date = Some(new DateTime(2020, 10, 7, 12, 0, 0, 0).toDate))
     when(taggingReturnsOfficerService.getHandTagsForResource(newsitem)).thenReturn(Future.successful(Seq.empty))
     when(taggingReturnsOfficerService.getIndexTagsForResource(newsitem)).thenReturn(Future.successful(Seq.empty))
     when(taggingReturnsOfficerService.getIndexGeocodeForResource(newsitem)).thenReturn(Future.successful(None))
@@ -34,7 +35,7 @@ class FrontendResourceMapperTest extends ReasonableWaits {
     val frontendNewsitem = Await.result(mapper.createFrontendResourceFrom(newsitem), TenSeconds)
 
     assertEquals(newsitem.id, frontendNewsitem.id)
-    assertEquals("some-url-words", frontendNewsitem.getUrlWords)
+    assertEquals("/2020/oct/7/something-happened-today", frontendNewsitem.getUrlWords)
     assertEquals(200, frontendNewsitem.httpStatus)
   }
 
