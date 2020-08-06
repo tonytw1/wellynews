@@ -84,8 +84,6 @@ import scala.concurrent.{ExecutionContext, Future}
             image = null, // TODO
             urlWords = urlWordsGenerator.makeUrlForNewsitem(n).getOrElse(""),
             publisher = publisher.map(_.asInstanceOf[Website]), // TODO should be frontend resource or string?
-            tags = indexTags,
-            handTags = handTags,
             httpStatus = n.http_status,
             lastScanned = n.last_scanned,
             lastChanged = n.last_changed
@@ -119,8 +117,6 @@ import scala.concurrent.{ExecutionContext, Future}
             description = f.description.orNull,
             place = place,
             latestItemDate = f.getLatestItemDate,
-            tags = indexTags,
-            handTags = handTags,
             lastRead = f.last_read,
             acceptancePolicy = f.acceptance,
             publisher = frontendPublisher,
@@ -140,8 +136,6 @@ import scala.concurrent.{ExecutionContext, Future}
             date = l.date.orNull,
             description = l.description.orNull,
             place = place,
-            tags = indexTags,
-            handTags = handTags,
             httpStatus = l.http_status,
             lastScanned = l.last_scanned,
             lastChanged = l.last_changed
@@ -157,8 +151,6 @@ import scala.concurrent.{ExecutionContext, Future}
             urlWords = w.url_words.orNull,
             description = w.description.getOrElse(""),
             place = w.geocode,
-            tags = indexTags,
-            handTags = handTags,
             httpStatus = w.http_status,
             date = w.date.orNull,
             lastScanned = w.last_scanned,
@@ -171,7 +163,16 @@ import scala.concurrent.{ExecutionContext, Future}
     }
 
     eventualFrontendResource.map { r =>
-      applyResourceActions(r, loggedInUser)
+      def applyTags(r: FrontendResource): FrontendResource = {
+        r match {
+          case n: FrontendNewsitem => n.copy(tags = indexTags, handTags = handTags)
+          case f: FrontendFeed => f.copy(tags = indexTags, handTags = handTags)
+          case l: FrontendWatchlist => l.copy(tags = indexTags, handTags = handTags)
+          case w: FrontendWebsite => w.copy(tags = indexTags, handTags = handTags)
+        }
+      }
+
+      applyTags(applyResourceActions(r, loggedInUser))
     }
   }
 
