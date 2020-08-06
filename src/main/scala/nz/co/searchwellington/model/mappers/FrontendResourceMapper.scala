@@ -12,7 +12,6 @@ import org.springframework.stereotype.Component
 import scala.concurrent.{ExecutionContext, Future}
 
 @Component class FrontendResourceMapper @Autowired()(taggingReturnsOfficerService: TaggingReturnsOfficerService,
-                                                     urlWordsGenerator: UrlWordsGenerator,
                                                      mongoRepository: MongoRepository,
                                                      adminUrlBuilder: AdminUrlBuilder) extends ReasonableWaits {
 
@@ -25,18 +24,23 @@ import scala.concurrent.{ExecutionContext, Future}
     eventualIndexTags.flatMap { indexTags =>
       eventualHandTags.flatMap { handTags =>
         eventualPlace.flatMap { place =>
-          mapFrontendResource(contentItem, loggedInUser, handTags, indexTags, place)
+          mapFrontendResource(contentItem, place).map { frontendResource =>
+            val actions = actionsFor(frontendResource, loggedInUser)
+            frontendResource match {
+              // TODO this match to call the same code on each class is a weird smell
+              case n: FrontendNewsitem => n.copy(tags = indexTags, handTags = handTags, actions = actions)
+              case f: FrontendFeed => f.copy(tags = indexTags, handTags = handTags, actions = actions)
+              case l: FrontendWatchlist => l.copy(tags = indexTags, handTags = handTags, actions = actions)
+              case w: FrontendWebsite => w.copy(tags = indexTags, handTags = handTags, actions = actions)
+            }
+          }
         }
       }
     }
   }
 
-  private def mapFrontendResource(contentItem: Resource,
-                                  loggedInUser: Option[User],
-                                  handTags: Seq[Tag],
-                                  indexTags: Seq[Tag],
-                                  place: Option[Geocode])(implicit ec: ExecutionContext): Future[FrontendResource] = {
-    val eventualFrontendResource = contentItem match {
+  private def mapFrontendResource(contentItem: Resource, place: Option[Geocode])(implicit ec: ExecutionContext): Future[FrontendResource] = {
+    contentItem match {
       case n: Newsitem =>
         val eventualPublisher = n.publisher.map { pid =>
           mongoRepository.getResourceByObjectId(pid)
@@ -161,88 +165,28 @@ import scala.concurrent.{ExecutionContext, Future}
       case _ =>
         throw new RuntimeException("Unknown type")
     }
-
-    eventualFrontendResource.map { r =>
-      def applyTags(r: FrontendResource): FrontendResource = {
-        r match {
-          case n: FrontendNewsitem => n.copy(tags = indexTags, handTags = handTags)
-          case f: FrontendFeed => f.copy(tags = indexTags, handTags = handTags)
-          case l: FrontendWatchlist => l.copy(tags = indexTags, handTags = handTags)
-          case w: FrontendWebsite => w.copy(tags = indexTags, handTags = handTags)
-        }
-      }
-
-      applyTags(applyResourceActions(r, loggedInUser))
-    }
   }
 
-  /*
+  private def actionsFor(r: FrontendResource, loggedInUser: Option[User]): Seq[Action] = {
+    loggedInUser.map { l =>
+      if (l.admin) {
+        val editResourceAction = Action(label = "Edit", link = adminUrlBuilder.getResourceEditUrl(r))
+        val checkResourceAction = Action(label = "Check", link = adminUrlBuilder.getResourceCheckUrl(r))
+        val deleteResourceAction = Action(label = "Delete", link = adminUrlBuilder.getResourceDeleteUrl(r))
+        val baseActions = Seq(editResourceAction, checkResourceAction, deleteResourceAction)
 
-
-    frontendContentItem.setDescription(contentItem.description.getOrElse(""))
-    frontendContentItem.setHttpStatus(contentItem.http_status)
-    frontendContentItem.setHeld(contentItem.held2)
-    contentItem.owner.map { o =>
-      frontendContentItem.setOwner(o.toString)
-    }
-    frontendContentItem.setUrlWords(urlWordsGenerator.makeUrlWordsFromName(contentItem.title.getOrElse("")))
-    if (frontendContentItem.getType == "N") {
-    }
-    else if (frontendContentItem.getType == "F") {
-      frontendContentItem.setUrlWords("/feed/" + urlWordsGenerator.makeUrlWordsFromName(contentItem.title.getOrElse("")))
-    }
-
-    val tags: mutable.MutableList[FrontendTag] = mutable.MutableList.empty
-    for (tag <- taggingReturnsOfficerService.getIndexTagsForResource(contentItem)) {
-      tags += mapTagToFrontendTag(tag)
-    }
-    frontendContentItem.setTags(tags)
-
-    val handTags: mutable.MutableList[FrontendTag] = mutable.MutableList.empty
-    for (tag <- taggingReturnsOfficerService.getHandTagsForResource(contentItem)) {
-      handTags += mapTagToFrontendTag(tag)
-    }
-    frontendContentItem.setHandTags(handTags)
-
-
-
-
-    frontendContentItem
-    */
-  // }
-
-  private def applyResourceActions(r: FrontendResource, loggedInUser: Option[User]): FrontendResource = {
-
-    def resourceActionsFor(r: FrontendResource, loggedInUser: Option[User]): Seq[Action] = {
-      loggedInUser.map { l =>
-        if (l.admin) {
-          val editResourceAction = Action(label = "Edit", link = adminUrlBuilder.getResourceEditUrl(r))
-          val checkResourceAction = Action(label = "Check", link = adminUrlBuilder.getResourceCheckUrl(r))
-          val deleteResourceAction = Action(label = "Delete", link = adminUrlBuilder.getResourceDeleteUrl(r))
-          val baseActions = Seq(editResourceAction, checkResourceAction, deleteResourceAction)
-
-          r match {
-            case f: FrontendFeed =>
-              val acceptAllAction = Action("Accept all", adminUrlBuilder.getAcceptAllFromFeed(f))
-              baseActions :+ acceptAllAction
-            case _ => baseActions
-          }
-
-        } else {
-          Seq.empty
+        r match {
+          case f: FrontendFeed =>
+            val acceptAllAction = Action("Accept all", adminUrlBuilder.getAcceptAllFromFeed(f))
+            baseActions :+ acceptAllAction
+          case _ => baseActions
         }
-      }.getOrElse {
+
+      } else {
         Seq.empty
       }
-    }
-
-    val actionsForResource = resourceActionsFor(r, loggedInUser)
-
-    r match {
-      case w: FrontendWebsite => w.copy(actions = actionsForResource)
-      case f: FrontendFeed => f.copy(actions = actionsForResource)
-      case l: FrontendWatchlist => l.copy(actions = actionsForResource)
-      case n: FrontendNewsitem => n.copy(actions = actionsForResource)
+    }.getOrElse {
+      Seq.empty
     }
   }
 

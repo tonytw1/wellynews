@@ -4,7 +4,7 @@ import java.util.UUID
 
 import nz.co.searchwellington.ReasonableWaits
 import nz.co.searchwellington.controllers.admin.AdminUrlBuilder
-import nz.co.searchwellington.model.{Newsitem, Tag, UrlWordsGenerator, User, Website}
+import nz.co.searchwellington.model.{Newsitem, Tag, User, Website}
 import nz.co.searchwellington.repositories.mongo.MongoRepository
 import nz.co.searchwellington.tagging.TaggingReturnsOfficerService
 import org.joda.time.DateTime
@@ -18,11 +18,10 @@ import scala.concurrent.{Await, Future}
 class FrontendResourceMapperTest extends ReasonableWaits {
 
   private val taggingReturnsOfficerService = mock(classOf[TaggingReturnsOfficerService])
-  private val urlWordsGenerator = new UrlWordsGenerator
   private val mongoRepository = mock(classOf[MongoRepository])
   private val adminUrlBuilder = mock(classOf[AdminUrlBuilder])
 
-  val mapper = new FrontendResourceMapper(taggingReturnsOfficerService, urlWordsGenerator, mongoRepository, adminUrlBuilder)
+  val mapper = new FrontendResourceMapper(taggingReturnsOfficerService, mongoRepository, adminUrlBuilder)
 
   @Test
   def canMapNewsitemsToFrontendNewsitems(): Unit = {
