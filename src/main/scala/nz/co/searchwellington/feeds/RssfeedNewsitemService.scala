@@ -21,7 +21,7 @@ import scala.concurrent.{Await, ExecutionContext, Future}
 
   def getChannelFeedItems(page: Int)(implicit ec: ExecutionContext): Future[Seq[(FeedItem, Feed)]] = {
 
-    def decorateFeedItemsWithFeeds(feedItmes: Seq[FeedItem], subscriptions: Seq[Subscription]): Future[Seq[(FeedItem, Feed)]] = {
+    def decorateFeedItemsWithFeeds(feedItems: Seq[FeedItem], subscriptions: Seq[Subscription]): Future[Seq[(FeedItem, Feed)]] = {
       val eventualMaybeFeedsBySubscriptionId = Future.sequence(subscriptions.map { s =>
         mongoRepository.getFeedByUrl(s.url).map { fo =>
           (s.id, fo)
@@ -37,7 +37,7 @@ import scala.concurrent.{Await, ExecutionContext, Future}
       }
 
       eventualFeedsBySubscriptionId.map { feeds =>
-        feedItmes.flatMap { fi =>
+        feedItems.flatMap { fi =>
           feeds.get(fi.subscriptionId).map { feed =>
             (fi, feed)
           }
