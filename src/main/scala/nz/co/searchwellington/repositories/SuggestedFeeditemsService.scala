@@ -1,6 +1,7 @@
 package nz.co.searchwellington.repositories
 
 import nz.co.searchwellington.ReasonableWaits
+import nz.co.searchwellington.feeds.whakaoko.WhakaokoService
 import nz.co.searchwellington.feeds.{FeedItemLocalCopyDecorator, FeeditemToNewsitemService, RssfeedNewsitemService}
 import nz.co.searchwellington.model.{Newsitem, User}
 import nz.co.searchwellington.model.frontend.FrontendResource
@@ -16,7 +17,8 @@ import scala.concurrent.{ExecutionContext, Future}
                                                         feedItemLocalCopyDecorator: FeedItemLocalCopyDecorator,
                                                         feeditemToNewsitemService: FeeditemToNewsitemService,
                                                         frontendResourceMapper: FrontendResourceMapper,
-                                                        mongoRepository: MongoRepository, suppressionDAO: SuppressionDAO) extends
+                                                        mongoRepository: MongoRepository, suppressionDAO: SuppressionDAO,
+                                                        whakaokoService: WhakaokoService) extends
   ReasonableWaits {
 
   private val log = Logger.getLogger(classOf[SuggestedFeeditemsService])
@@ -25,53 +27,56 @@ import scala.concurrent.{ExecutionContext, Future}
 
   def getSuggestionFeednewsitems(maxItems: Int, loggedInUser: Option[User])(implicit ec: ExecutionContext): Future[Seq[FrontendResource]] = {
 
-    def paginateChannelFeedItems(page: Int = 1, output: Seq[FrontendResource] = Seq.empty): Future[Seq[FrontendResource]] = {
-      log.info("Fetching filter page: " + page + "/" + output.size)
-      rssfeedNewsitemService.getChannelFeedItems(page).flatMap { channelFeedItems =>
-        log.info("Found " + channelFeedItems.size + " channel newsitems on page " + page)
+    whakaokoService.getSubscriptions.flatMap { subscriptions =>
 
-        val channelNewsitems = channelFeedItems.map(i => feeditemToNewsitemService.makeNewsitemFromFeedItem(i._1, i._2))
+      def paginateChannelFeedItems(page: Int = 1, output: Seq[FrontendResource] = Seq.empty): Future[Seq[FrontendResource]] = {
+        log.info("Fetching filter page: " + page + "/" + output.size)
+        rssfeedNewsitemService.getChannelFeedItems(page, subscriptions).flatMap { channelFeedItems =>
+          log.info("Found " + channelFeedItems.size + " channel newsitems on page " + page)
 
-        val eventuallyFiltered = channelNewsitems.map { newsitem =>
-          val eventuallyLocalCopy = mongoRepository.getResourceByUrl(newsitem.page)
-          val eventuallyIsSuppressed = suppressionDAO.isSupressed(newsitem.page)
-          for {
-            localCopy <- eventuallyLocalCopy
-            isSuppressed <- eventuallyIsSuppressed
-          } yield {
-            if (localCopy.nonEmpty || isSuppressed) {
-              None
-            } else {
-              Some(newsitem)
-            }
-          }
-        }
+          val channelNewsitems = channelFeedItems.map(i => feeditemToNewsitemService.makeNewsitemFromFeedItem(i._1, i._2))
 
-        Future.sequence(eventuallyFiltered).flatMap { filterResults =>
-          val eventualFrontendChannelResources: Future[Seq[FrontendResource]] = Future.sequence {
-            val filtered = filterResults.flatten
-            log.info("After filtering out those with local copies: " + filtered.size)
-            filtered.map { r =>
-              frontendResourceMapper.mapFrontendResource(r, r.geocode)
-            }
-          }
-
-          eventualFrontendChannelResources.flatMap { rs =>
-            feedItemLocalCopyDecorator.withFeedItemSpecificActions(rs, loggedInUser).flatMap { suggestions =>
-              log.info("Adding " + suggestions.size + " to " + output.size)
-              val result = output ++ suggestions
-              if (result.size >= maxItems || channelFeedItems.isEmpty || page == MaximumChannelPagesToScan) {
-                Future.successful(result.take(maxItems))
+          val eventuallyFiltered = channelNewsitems.map { newsitem =>
+            val eventuallyLocalCopy = mongoRepository.getResourceByUrl(newsitem.page)
+            val eventuallyIsSuppressed = suppressionDAO.isSupressed(newsitem.page)
+            for {
+              localCopy <- eventuallyLocalCopy
+              isSuppressed <- eventuallyIsSuppressed
+            } yield {
+              if (localCopy.nonEmpty || isSuppressed) {
+                None
               } else {
-                paginateChannelFeedItems(page + 1, result)
+                Some(newsitem)
+              }
+            }
+          }
+
+          Future.sequence(eventuallyFiltered).flatMap { filterResults =>
+            val eventualFrontendChannelResources: Future[Seq[FrontendResource]] = Future.sequence {
+              val filtered = filterResults.flatten
+              log.info("After filtering out those with local copies: " + filtered.size)
+              filtered.map { r =>
+                frontendResourceMapper.mapFrontendResource(r, r.geocode)
+              }
+            }
+
+            eventualFrontendChannelResources.flatMap { rs =>
+              feedItemLocalCopyDecorator.withFeedItemSpecificActions(rs, loggedInUser).flatMap { suggestions =>
+                log.info("Adding " + suggestions.size + " to " + output.size)
+                val result = output ++ suggestions
+                if (result.size >= maxItems || channelFeedItems.isEmpty || page == MaximumChannelPagesToScan) {
+                  Future.successful(result.take(maxItems))
+                } else {
+                  paginateChannelFeedItems(page + 1, result)
+                }
               }
             }
           }
         }
       }
-    }
 
-    paginateChannelFeedItems(1)
+      paginateChannelFeedItems(1)
+    }
   }
 
 }
