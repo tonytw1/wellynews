@@ -211,34 +211,39 @@ import scala.concurrent.{ExecutionContext, Future}
     */
   // }
 
-  private def applyResourceActions(r: FrontendResource, loggedInUser: Option[User]) = {
-    loggedInUser.map { l =>
-      val availableActions = if (l.admin) {
-        val editResourceAction = Action(label = "Edit", link = adminUrlBuilder.getResourceEditUrl(r))
-        val checkResourceAction = Action(label = "Check", link = adminUrlBuilder.getResourceCheckUrl(r))
-        val deleteResourceAction = Action(label = "Delete", link = adminUrlBuilder.getResourceDeleteUrl(r))
-        Seq(editResourceAction, checkResourceAction, deleteResourceAction)
-      } else {
+  private def applyResourceActions(r: FrontendResource, loggedInUser: Option[User]): FrontendResource = {
+
+    def resourceActionsFor(r: FrontendResource, loggedInUser: Option[User]): Seq[Action] = {
+      loggedInUser.map { l =>
+        if (l.admin) {
+          val editResourceAction = Action(label = "Edit", link = adminUrlBuilder.getResourceEditUrl(r))
+          val checkResourceAction = Action(label = "Check", link = adminUrlBuilder.getResourceCheckUrl(r))
+          val deleteResourceAction = Action(label = "Delete", link = adminUrlBuilder.getResourceDeleteUrl(r))
+          val baseActions = Seq(editResourceAction, checkResourceAction, deleteResourceAction)
+
+          r match {
+            case f: FrontendFeed =>
+              val acceptAllAction = Action("Accept all", adminUrlBuilder.getAcceptAllFromFeed(f))
+              baseActions :+ acceptAllAction
+            case _ => baseActions
+          }
+
+        } else {
+          Seq.empty
+        }
+      }.getOrElse {
         Seq.empty
       }
+    }
 
-      r match {
-        case n: FrontendNewsitem =>
-          n.copy(actions = availableActions)
-        case w: FrontendWebsite =>
-          w.copy(actions = availableActions)
-        case f: FrontendFeed =>
-          val withFeedActions = if (l.admin) {
-            val acceptAllAction = Action("Accept all", adminUrlBuilder.getAcceptAllFromFeed(f))
-            availableActions :+ acceptAllAction
-          } else {
-            availableActions
-          }
-          f.copy(actions = withFeedActions)
-        case l: FrontendWatchlist =>
-          l.copy(actions = availableActions)
-      }
-    }.getOrElse(r)
+    val actionsForResource = resourceActionsFor(r, loggedInUser)
+
+    r match {
+      case w: FrontendWebsite => w.copy(actions = actionsForResource)
+      case f: FrontendFeed => f.copy(actions = actionsForResource)
+      case l: FrontendWatchlist => l.copy(actions = actionsForResource)
+      case n: FrontendNewsitem => n.copy(actions = actionsForResource)
+    }
   }
 
 }
