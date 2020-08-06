@@ -51,6 +51,6 @@ import scala.concurrent.Future
     }
   }
 
-  def getViewName(mv: ModelAndView): String = "suggestions"
+  def getViewName(mv: ModelAndView) = "suggestions"
 
 }
