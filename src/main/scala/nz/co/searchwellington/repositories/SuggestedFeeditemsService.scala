@@ -25,9 +25,7 @@ import scala.concurrent.{ExecutionContext, Future}
 
   def getSuggestionFeednewsitems(maxItems: Int, loggedInUser: Option[User])(implicit ec: ExecutionContext): Future[Seq[FrontendResource]] = {
 
-    def canBeAccepted(feedItem: FrontendResource): Future[Boolean] = Future.successful(false)
-
-    def filteredPage(page: Int, output: Seq[FrontendResource]): Future[Seq[FrontendResource]] = {
+    def paginateChannelFeedItems(page: Int = 1, output: Seq[FrontendResource] = Seq.empty): Future[Seq[FrontendResource]] = {
       log.info("Fetching filter page: " + page + "/" + output.size)
       rssfeedNewsitemService.getChannelFeedItems(page).flatMap { channelFeedItems =>
         log.info("Found " + channelFeedItems.size + " channel newsitems on page " + page)
@@ -65,7 +63,7 @@ import scala.concurrent.{ExecutionContext, Future}
               if (result.size >= maxItems || channelFeedItems.isEmpty || page == MaximumChannelPagesToScan) {
                 Future.successful(result.take(maxItems))
               } else {
-                filteredPage(page + 1, result)
+                paginateChannelFeedItems(page + 1, result)
               }
             }
           }
@@ -73,7 +71,7 @@ import scala.concurrent.{ExecutionContext, Future}
       }
     }
 
-    filteredPage(1, Seq.empty)
+    paginateChannelFeedItems(1)
   }
 
 }
