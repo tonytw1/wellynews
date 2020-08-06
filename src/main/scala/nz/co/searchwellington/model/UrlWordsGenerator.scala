@@ -1,6 +1,5 @@
 package nz.co.searchwellington.model
 
-import nz.co.searchwellington.forms.NewTag
 import org.joda.time.DateTimeZone
 import org.springframework.stereotype.Component
 import uk.co.eelpieconsulting.common.dates.DateFormatter
@@ -14,8 +13,8 @@ import uk.co.eelpieconsulting.common.dates.DateFormatter
     }
   }
 
-  def makeUrlWordsForTag(newTag: NewTag): String = {  // TODO form backing object
-    makeUrlWordsFromName(newTag.getDisplayName)
+  def makeUrlWordsForTag(tag: Tag): String = {
+    makeUrlWordsFromName(tag.getDisplayName)
   }
 
   private def makeUrlWordsForNewsitem(newsitem: Newsitem, publisher: Option[Website]): Option[String] = {

@@ -42,24 +42,26 @@ class NewTagController @Autowired()(mongoRepository: MongoRepository,
       if (!result.hasErrors) {
         log.info("Got valid new tag submission: " + newTag)
 
-        val urlWordsFromDisplayName = urlWordsGenerator.makeUrlWordsForTag(newTag)
-
-        val existingTagWithSameUrlWords = Await.result(mongoRepository.getTagByUrlWords(urlWordsFromDisplayName), TenSeconds)
-        if (existingTagWithSameUrlWords.nonEmpty) {
-          result.addError(new ObjectError("displayName", "Found existing feed with same URL words"))
-        }
-
         if (!result.hasErrors) {
           val tag = Tag(
-            name = urlWordsFromDisplayName,
             display_name = newTag.getDisplayName,
             description = optionalInputString(newTag.getDescription)
           )
 
-          Await.result(mongoRepository.saveTag(tag), TenSeconds)
-          log.info("Created tag: " + tag)
+          val urlWordsFromDisplayName = urlWordsGenerator.makeUrlWordsForTag(tag)
 
-          new ModelAndView(new RedirectView(urlBuilder.getTagUrl(tag)))
+          val existingTagWithSameUrlWords = Await.result(mongoRepository.getTagByUrlWords(urlWordsFromDisplayName), TenSeconds)
+          if (existingTagWithSameUrlWords.isEmpty) {
+            val withUrlWords = tag.copy(name = urlWordsFromDisplayName)
+            Await.result(mongoRepository.saveTag(withUrlWords), TenSeconds)
+            log.info("Created tag: " + withUrlWords)
+
+            new ModelAndView(new RedirectView(urlBuilder.getTagUrl(withUrlWords)))
+
+          } else {
+            result.addError(new ObjectError("displayName", "Found existing feed with same URL words"))
+            renderForm(newTag)
+          }
 
         } else {
           log.warn("New tag submission has errors: " + result)
