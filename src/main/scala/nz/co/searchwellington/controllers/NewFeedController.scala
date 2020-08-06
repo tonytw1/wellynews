@@ -59,13 +59,6 @@ class NewFeedController @Autowired()(contentUpdateService: ContentUpdateService,
     if (!result.hasErrors) {
       log.info("Got valid new feed submission: " + newFeed)
 
-      val urlWordsFromTitle = urlWordsGenerator.makeUrlWordsFromName(newFeed.getTitle)
-
-      val existingFeedWithSameUrlWords = Await.result(mongoRepository.getFeedByUrlwords(urlWordsFromTitle), TenSeconds)
-      if (existingFeedWithSameUrlWords.nonEmpty) {
-        result.addError(new ObjectError("urlWords", "Found existing feed with same URL words"))
-      }
-
       if (!result.hasErrors) {
         val publisherName = if (newFeed.getPublisher.trim.nonEmpty) {
           Some(newFeed.getPublisher.trim)
@@ -78,22 +71,33 @@ class NewFeedController @Autowired()(contentUpdateService: ContentUpdateService,
 
         val owner = loggedInUserFilter.getLoggedInUser
 
-        val feed = Feed(title = Some(newFeed.getTitle),
+        val f = Feed(title = Some(newFeed.getTitle),
           page = newFeed.getUrl,
-          url_words = Some(urlWordsFromTitle),
           publisher = publisher.map(_._id),
           acceptance = newFeed.getAcceptancePolicy,
           owner = owner.map(_._id),
           date = Some(DateTime.now.toDate),
           held = submissionShouldBeHeld(owner)
         )
+        val feed = f.copy(url_words = urlWordsGenerator.makeUrlWordsFor(f))
 
-        contentUpdateService.create(feed)
-        log.info("Created feed: " + feed)
+        val existingFeedWithSameUrlWords = Await.result(mongoRepository.getFeedByUrlwords(feed.url_words.get), TenSeconds)  // TODO naked get
+        if (existingFeedWithSameUrlWords.nonEmpty) {
+          result.addError(new ObjectError("urlWords", "Found existing feed with same URL words"))
+        }
 
-        whakaokoService.createFeedSubscription(feed.page)
+        if (!result.hasErrors) {
+          contentUpdateService.create(feed)
+          log.info("Created feed: " + feed)
 
-        new ModelAndView(new RedirectView(urlBuilder.getFeedUrl(feed)))
+          whakaokoService.createFeedSubscription(feed.page)
+
+          new ModelAndView(new RedirectView(urlBuilder.getFeedUrl(feed)))
+
+        } else {
+          log.warn("New feed submission has errors: " + result)
+          renderForm(newFeed)
+        }
 
       } else {
         log.warn("New feed submission has errors: " + result)

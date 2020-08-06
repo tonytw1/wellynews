@@ -270,7 +270,7 @@ import scala.concurrent.ExecutionContext.Implicits.global
         }
         if (editResource.`type` == "W" || editResource.`type` == "F") {
           editResource.title.map { t =>
-            editResource.setUrlWords(urlWordsGenerator.makeUrlWordsFromName(t))
+            editResource.setUrlWords(urlWordsGenerator.makeUrlWordsFor(editResource).orNull)
           }
         }
         processFeedAcceptancePolicy(request, editResource)

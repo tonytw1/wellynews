@@ -40,20 +40,17 @@ class NewWebsiteController @Autowired()(contentUpdateService: ContentUpdateServi
 
     } else {
       log.info("Got valid new website submission: " + newWebsite)
+      val owner = loggedInUserFilter.getLoggedInUser
 
-      val proposedUrlWords = urlWordsGenerator.makeUrlWordsFromName(newWebsite.getTitle)
+      val w = Website(title = Some(newWebsite.getTitle),
+        page = newWebsite.getUrl,
+        owner = owner.map(_._id),
+        date = Some(DateTime.now.toDate),
+        held = submissionShouldBeHeld(owner)
+      )
+      val website = w.copy(url_words = urlWordsGenerator.makeUrlWordsFor(w))
 
-      Await.result(mongoRepository.getWebsiteByUrlwords(proposedUrlWords), TenSeconds).fold {
-        val owner = loggedInUserFilter.getLoggedInUser
-
-        val website = Website(title = Some(newWebsite.getTitle),
-          page = newWebsite.getUrl,
-          url_words = Some(proposedUrlWords),
-          owner = owner.map(_._id),
-          date = Some(DateTime.now.toDate),
-          held = submissionShouldBeHeld(owner)
-        )
-
+      Await.result(mongoRepository.getWebsiteByUrlwords(website.url_words.get), TenSeconds).fold {  // TODO naked get
         contentUpdateService.create(website)
         log.info("Created website: " + website)
         new ModelAndView(new RedirectView(urlBuilder.getPublisherUrl(website.title.get)))

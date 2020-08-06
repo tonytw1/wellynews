@@ -42,7 +42,7 @@ class NewTagController @Autowired()(mongoRepository: MongoRepository,
       if (!result.hasErrors) {
         log.info("Got valid new tag submission: " + newTag)
 
-        val urlWordsFromDisplayName = urlWordsGenerator.makeUrlWordsFromName(newTag.getDisplayName)
+        val urlWordsFromDisplayName = urlWordsGenerator.makeUrlWordsForTag(newTag)
 
         val existingTagWithSameUrlWords = Await.result(mongoRepository.getTagByUrlWords(urlWordsFromDisplayName), TenSeconds)
         if (existingTagWithSameUrlWords.nonEmpty) {

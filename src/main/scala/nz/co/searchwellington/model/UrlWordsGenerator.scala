@@ -1,34 +1,24 @@
 package nz.co.searchwellington.model
 
+import nz.co.searchwellington.forms.NewTag
 import org.joda.time.DateTimeZone
 import org.springframework.stereotype.Component
 import uk.co.eelpieconsulting.common.dates.DateFormatter
 
 @Component class UrlWordsGenerator {
 
-  def makeUrlWordsFromName(name: String): String = {
-    if (name != null) {
-      val urlWords = new String(name)
-      urlWords.replaceAll("\\(.*?\\)", "").trim.replaceAll(" ", "-").replaceAll("\\s", "").replaceAll("[^\\w-]", "").replaceAll("-+", "-").toLowerCase
-    }
-    else null
+  def makeUrlWordsForTag(newTag: NewTag): String = {  // TODO form backing object
+    makeUrlWordsFromName(newTag.getDisplayName)
   }
 
-  /*
-  def makeUrlForFrontendNewsitem(newsitem: FrontendNewsitem): String = {
-    val uri = new StringBuilder
-    if (newsitem.getPublisherName != null) uri.append("/" + makeUrlWordsFromName(newsitem.getPublisherName))
-    val dateFormatter = new DateFormatter(DateTimeZone.UTC)
-    if (newsitem.getDate != null) {
-      uri.append("/" + dateFormatter.yearMonthDayUrlStub(newsitem.getDate))
-      uri.append("/" + makeUrlWordsFromName(newsitem.getName))
-      return uri.toString
+  def makeUrlWordsFor(resource: Resource): Option[String] = {
+    resource match {
+      case n: Newsitem => makeUrlWordsForNewsitem(n)
+      case r: Resource => r.title.map(makeUrlWordsFromName)
     }
-    null
   }
-  */
 
-  def makeUrlWordsForNewsitem(newsitem: Newsitem): Option[String] = {
+  private def makeUrlWordsForNewsitem(newsitem: Newsitem): Option[String] = {
     val uri = new StringBuilder
 
     newsitem.publisher.map { p =>
@@ -41,6 +31,11 @@ import uk.co.eelpieconsulting.common.dates.DateFormatter
       uri.append("/" + makeUrlWordsFromName(newsitem.title.getOrElse("")))
       uri.toString()
     }
+  }
+
+  def makeUrlWordsFromName(name: String): String = {
+      val urlWords = new String(name)
+      urlWords.replaceAll("\\(.*?\\)", "").trim.replaceAll(" ", "-").replaceAll("\\s", "").replaceAll("[^\\w-]", "").replaceAll("-+", "-").toLowerCase
   }
 
 }
