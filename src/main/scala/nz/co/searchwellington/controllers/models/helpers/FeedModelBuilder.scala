@@ -56,7 +56,8 @@ import scala.concurrent.Future
 
             val eventualFrontendFeedNewitems = Future.sequence {
               feedNewsitems.map { r =>
-                frontendResourceMapper.createFrontendResourceFrom(r, loggedInUser)
+                frontendResourceMapper.mapFrontendResource(r, r.geocode)
+                // TODO apply feed item specific actions here
               }
             }
 

@@ -35,14 +35,13 @@ class FeedModelBuilderTest extends ReasonableWaits with ContentFields {
 
   private val feedItem = mock(classOf[FeedItem])
   private val anotherFeedItem = mock(classOf[FeedItem])
-  private var feeditems = Seq(feedItem, anotherFeedItem)
+  private val feeditems = Seq(feedItem, anotherFeedItem)
 
   private val somePlace = Some(Geocode())
 
   private val newsItem = Newsitem()
   private val anotherNewsitem = Newsitem()
 
-  private val feedNewsitems = Seq(newsItem, anotherNewsitem)
   private val frontendNewsitem = FrontendNewsitem(id = UUID.randomUUID().toString)
   private val anotherFrontendNewsitem = FrontendNewsitem(id = UUID.randomUUID().toString, place = somePlace)
 
@@ -53,7 +52,6 @@ class FeedModelBuilderTest extends ReasonableWaits with ContentFields {
 
   private val frontendFeed = mock(classOf[FrontendFeed])
 
-  private val loggedInUserFilter = mock(classOf[LoggedInUserFilter])
   private val loggedInUser = None
 
   var request: MockHttpServletRequest = null
@@ -68,9 +66,8 @@ class FeedModelBuilderTest extends ReasonableWaits with ContentFields {
     when(feeditemToNewsitemService.makeNewsitemFromFeedItem(feedItem, feed)).thenReturn(newsItem)
     when(feeditemToNewsitemService.makeNewsitemFromFeedItem(anotherFeedItem, feed)).thenReturn(anotherNewsitem)
 
-    when(frontendResourceMapper.createFrontendResourceFrom(newsItem, loggedInUser)).thenReturn(Future.successful(frontendNewsitem))
-    when(frontendResourceMapper.createFrontendResourceFrom(anotherNewsitem, loggedInUser)).thenReturn(Future.successful(anotherFrontendNewsitem))
-
+    when(frontendResourceMapper.mapFrontendResource(newsItem, newsItem.geocode)).thenReturn(Future.successful(frontendNewsitem))
+    when(frontendResourceMapper.mapFrontendResource(anotherNewsitem, newsItem.geocode)).thenReturn(Future.successful(anotherFrontendNewsitem))
 
     when(feedItemLocalCopyDecorator.withFeedItemSpecificActions(Seq(frontendNewsitem, anotherFrontendNewsitem), None)).
       thenReturn(Future.successful(Seq(frontendNewsitemWithActions, anotherFrontendNewsitemWithActions)))

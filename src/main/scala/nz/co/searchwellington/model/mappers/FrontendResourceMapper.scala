@@ -39,7 +39,7 @@ import scala.concurrent.{ExecutionContext, Future}
     }
   }
 
-  private def mapFrontendResource(contentItem: Resource, place: Option[Geocode])(implicit ec: ExecutionContext): Future[FrontendResource] = {
+  def mapFrontendResource(contentItem: Resource, place: Option[Geocode])(implicit ec: ExecutionContext): Future[FrontendResource] = {
     contentItem match {
       case n: Newsitem =>
         val eventualPublisher = n.publisher.map { pid =>
@@ -87,7 +87,7 @@ import scala.concurrent.{ExecutionContext, Future}
             accepted = n.accepted.orNull,
             image = null, // TODO
             urlWords = n.url_words.orNull,
-            publisher = publisher.map(_.asInstanceOf[Website]), // TODO should be frontend resource or string?
+            publisher = publisher.map(_.asInstanceOf[Website]), // TODO should be frontend resource or string? TODO remove instance of
             httpStatus = n.http_status,
             lastScanned = n.last_scanned,
             lastChanged = n.last_changed
