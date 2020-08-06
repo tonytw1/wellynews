@@ -7,22 +7,24 @@ import uk.co.eelpieconsulting.common.dates.DateFormatter
 
 @Component class UrlWordsGenerator {
 
-  def makeUrlWordsForTag(newTag: NewTag): String = {  // TODO form backing object
-    makeUrlWordsFromName(newTag.getDisplayName)
-  }
-
-  def makeUrlWordsFor(resource: Resource): Option[String] = {
+  def makeUrlWordsFor(resource: Resource, publisher: Option[Website] = None): Option[String] = {
     resource match {
-      case n: Newsitem => makeUrlWordsForNewsitem(n)
+      case n: Newsitem => makeUrlWordsForNewsitem(n, publisher)
       case r: Resource => r.title.map(makeUrlWordsFromName)
     }
   }
 
-  private def makeUrlWordsForNewsitem(newsitem: Newsitem): Option[String] = {
+  def makeUrlWordsForTag(newTag: NewTag): String = {  // TODO form backing object
+    makeUrlWordsFromName(newTag.getDisplayName)
+  }
+
+  private def makeUrlWordsForNewsitem(newsitem: Newsitem, publisher: Option[Website]): Option[String] = {
     val uri = new StringBuilder
 
-    newsitem.publisher.map { p =>
-      uri.append("/" + makeUrlWordsFromName(p.toString))
+    publisher.map { p =>
+      p.title.map { pn =>
+        uri.append("/" + makeUrlWordsFromName(pn))
+      }
     }
 
     newsitem.date.map { d =>

@@ -79,7 +79,7 @@ class NewFeedController @Autowired()(contentUpdateService: ContentUpdateService,
           date = Some(DateTime.now.toDate),
           held = submissionShouldBeHeld(owner)
         )
-        val feed = f.copy(url_words = urlWordsGenerator.makeUrlWordsFor(f))
+        val feed = f.copy(url_words = urlWordsGenerator.makeUrlWordsFor(f, publisher))
 
         val existingFeedWithSameUrlWords = Await.result(mongoRepository.getFeedByUrlwords(feed.url_words.get), TenSeconds)  // TODO naked get
         if (existingFeedWithSameUrlWords.nonEmpty) {

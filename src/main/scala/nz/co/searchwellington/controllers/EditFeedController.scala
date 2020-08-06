@@ -87,7 +87,7 @@ class EditFeedController @Autowired()(contentUpdateService: ContentUpdateService
             acceptance = formObject.getAcceptancePolicy,
             held = submissionShouldBeHeld(loggedInUser)
           )
-          val updatedFeed = uf.copy(url_words = urlWordsGenerator.makeUrlWordsFor(uf))
+          val updatedFeed = uf.copy(url_words = urlWordsGenerator.makeUrlWordsFor(uf, publisher))
 
           import scala.collection.JavaConverters._
           val submittedTags = Await.result(tagDAO.loadTagsById(formObject.getTags.asScala), TenSeconds).toSet
