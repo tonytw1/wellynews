@@ -21,9 +21,8 @@ class FrontendResourceMapperTest extends ReasonableWaits {
   private val taggingReturnsOfficerService = mock(classOf[TaggingReturnsOfficerService])
   private val mongoRepository = mock(classOf[MongoRepository])
 
-  private val siteInformation = new SiteInformation()
-  private val urlBuilder = new UrlBuilder(siteInformation, new UrlWordsGenerator)
-  private val adminUrlBuilder = new AdminUrlBuilder(siteInformation, urlBuilder, "", "")
+  private val urlBuilder = new UrlBuilder(new SiteInformation(), new UrlWordsGenerator)
+  private val adminUrlBuilder = new AdminUrlBuilder(urlBuilder, "", "")
 
   val mapper = new FrontendResourceMapper(taggingReturnsOfficerService, mongoRepository, adminUrlBuilder)
 

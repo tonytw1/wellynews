@@ -16,26 +16,10 @@ import org.mockito.MockitoAnnotations
 
 class AdminUrlBuilderTest {
 
-  private val SITE_URL = "http://somesite.local"
+  private val frontendFeed: FrontendFeed = new FrontendFeed(id = "124")
+  private val frontendWebsite = FrontendWebsite(id = "123", name = "My local sports team", urlWords = "my-local-sports-team")
 
-  @Mock val siteInformation: SiteInformation = null
-  private var frontendWebsite: FrontendWebsite= null
-  private var frontendFeed: FrontendFeed = null
-  private var frontendNewsitem: FrontendNewsitem = null
-  private var adminUrlBuilder: AdminUrlBuilder = null
-
-  @Before def setup(): Unit = {
-    MockitoAnnotations.initMocks(this)
-    when(siteInformation.getUrl).thenReturn(SITE_URL)
-    adminUrlBuilder = new AdminUrlBuilder(siteInformation, new UrlBuilder(siteInformation, new UrlWordsGenerator), "", "")
-    frontendWebsite = FrontendWebsite(id = "123", name = "My local sports team", urlWords = "my-local-sports-team")
-
-    frontendNewsitem = FrontendNewsitem(id = "123", name = "A news item", publisher = None,
-      date = new DateTime(2011, 5, 20, 0, 0, 0, 0).toDate)
-
-    frontendFeed = new FrontendFeed(id = "124")
-    // frontendFeed.setUrlWords("my-local-sports-team-news")
-  }
+  private val adminUrlBuilder = new AdminUrlBuilder(new UrlBuilder(new SiteInformation(), new UrlWordsGenerator), "", "")
 
   @Test
   def canConstructEditUrlForFrontendWebsite(): Unit = {
@@ -43,7 +27,9 @@ class AdminUrlBuilderTest {
   }
 
   @Test
-  def canBuildEditUrlForNewsitems(): Unit = { //assertEquals("http://somesite.local/my-local-sports-team/2011/may/20/a-news-item/edit", adminUrlBuilder.getResourceEditUrl(frontendNewsitem));
+  def canBuildEditUrlForNewsitems(): Unit = {
+    val frontendNewsitem = FrontendNewsitem(id = "123", name = "A news item", publisher = None,
+      date = new DateTime(2011, 5, 20, 0, 0, 0, 0).toDate)
     assertEquals("/edit-newsitem/123", adminUrlBuilder.getResourceEditUrl(frontendNewsitem))
   }
 
@@ -56,14 +42,14 @@ class AdminUrlBuilderTest {
   def canConstructEditUrlForFrontendFeed(): Unit = assertEquals("/edit-feed/124", adminUrlBuilder.getResourceEditUrl(frontendFeed))
 
   @Test
-  def canConstructDeleteUrlForFrontendResource(): Unit = assertEquals("http://somesite.local/delete?resource=123", adminUrlBuilder.getResourceDeleteUrl(frontendWebsite))
+  def canConstructDeleteUrlForFrontendResource(): Unit = assertEquals("/delete?resource=123", adminUrlBuilder.getResourceDeleteUrl(frontendWebsite))
 
   @Test
-  def canConstructCheckUrlForFrontendResource(): Unit = assertEquals("http://somesite.local/admin/linkchecker/add?resource=123", adminUrlBuilder.getResourceCheckUrl(frontendWebsite))
+  def canConstructCheckUrlForFrontendResource(): Unit = assertEquals("/admin/linkchecker/add?resource=123", adminUrlBuilder.getResourceCheckUrl(frontendWebsite))
 
   @Test
-  def canConstructViewSnapshotUrlForFrontendResource(): Unit = assertEquals("http://somesite.local/my-local-sports-team/viewsnapshot", adminUrlBuilder.getViewSnapshotUrl(frontendWebsite))
+  def canConstructViewSnapshotUrlForFrontendResource(): Unit = assertEquals("/my-local-sports-team/viewsnapshot", adminUrlBuilder.getViewSnapshotUrl(frontendWebsite))
 
-//  @Test
-//  def canConstructAutoGatherUrlForPublisher(): Unit = assertEquals("http://somesite.local/my-local-sports-team/gather", adminUrlBuilder.getPublisherAutoGatherUrl(frontendWebsite))
+  //  @Test
+  //  def canConstructAutoGatherUrlForPublisher(): Unit = assertEquals("http://somesite.local/my-local-sports-team/gather", adminUrlBuilder.getPublisherAutoGatherUrl(frontendWebsite))
 }

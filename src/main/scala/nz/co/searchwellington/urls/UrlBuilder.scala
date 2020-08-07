@@ -13,10 +13,8 @@ import uk.co.eelpieconsulting.common.geo.model.Place
 class UrlBuilder @Autowired()(siteInformation: SiteInformation, urlWordsGenerator: UrlWordsGenerator)
   extends ArchiveMonth {
 
-  private val dateFormatter = new DateFormatter(DateTimeZone.UTC);
-
   def getHomeUrl: String = {
-    siteInformation.getUrl
+    "/"
   }
 
   def getImageUrl(filename: String): String = getStaticUrl(filename)
@@ -26,31 +24,31 @@ class UrlBuilder @Autowired()(siteInformation: SiteInformation, urlWordsGenerato
   }
 
   def getPublishersAutoCompleteUrl: String = {
-    siteInformation.getUrl + "/ajax/publishers"
+    "/ajax/publishers"
   }
 
   def getTagsAutoCompleteUrl: String = {
-    siteInformation.getUrl + "/ajax/tags"
+    "/ajax/tags"
   }
 
   def getFeedUrl(feed: FrontendFeed): String = {
-    siteInformation.getUrl + "/feed/" + feed.getUrlWords
+    "/feed/" + feed.getUrlWords
   }
 
   def getFeedUrl(feed: Feed): String = {
-    siteInformation.getUrl + "/feed/" + feed.url_words.getOrElse("")
+    "/feed/" + feed.url_words.getOrElse("")
   }
 
   def getFeedUrlFromFeedName(feedname: String): String = {
-    siteInformation.getUrl + "/feed/" + urlWordsGenerator.makeUrlWordsFromName(feedname)
+    "/feed/" + urlWordsGenerator.makeUrlWordsFromName(feedname)
   }
 
   def getFeedsInboxUrl: String = {
-    siteInformation.getUrl + "/feeds/inbox"
+    "/feeds/inbox"
   }
 
   def getFeedsUrl: String = {
-    siteInformation.getUrl + "/feeds"
+    "/feeds"
   }
 
   def getNewFeedForPublisherUrl(publisher: FrontendWebsite): String = {
@@ -58,7 +56,7 @@ class UrlBuilder @Autowired()(siteInformation: SiteInformation, urlWordsGenerato
   }
 
   def getTagUrl(tag: Tag): String = {
-    siteInformation.getUrl + "/" + tag.name
+    "/" + tag.name
   }
 
   def getTagPageUrl(tag: Tag, page: Long): String = {
@@ -66,11 +64,11 @@ class UrlBuilder @Autowired()(siteInformation: SiteInformation, urlWordsGenerato
   }
 
   def getAutoTagUrl(tag: Tag): String = {
-    siteInformation.getUrl + "/" + tag.getName + "/autotag"
+    "/" + tag.getName + "/autotag"
   }
 
   def getTagCombinerUrl(firstTag: Tag, secondTag: Tag): String = {
-    siteInformation.getUrl + "/" + firstTag.getName + "+" + secondTag.getName
+    "/" + firstTag.getName + "+" + secondTag.getName
   }
 
   def getTagCombinerUrl(firstTag: Tag, secondTag: Tag, page: Int): String = {
@@ -88,7 +86,7 @@ class UrlBuilder @Autowired()(siteInformation: SiteInformation, urlWordsGenerato
       case f: FrontendFeed =>
         "/feed/" + f.getUrlWords
       case _ =>
-        //siteInformation.getUrl + "/" + resource.getUrlWords
+        //"/" + resource.getUrlWords
         ""
     }
   }
@@ -102,42 +100,42 @@ class UrlBuilder @Autowired()(siteInformation: SiteInformation, urlWordsGenerato
   @Deprecated
   def getPublisherUrl(publisherName: String): String = { // TODO use pubslishers url words
     if (publisherName != null) {
-      siteInformation.getUrl + "/" + urlWordsGenerator.makeUrlWordsFromName(publisherName)
+      "/" + urlWordsGenerator.makeUrlWordsFromName(publisherName)
     } else {
       null
     }
   }
 
   def getPublisherCombinerUrl(publisher: Website, tag: Tag): String = {
-    siteInformation.getUrl + "/" + publisher.url_words.get + "+" + tag.getName // TODO Naked get - make url words mandatory for publishers
+    "/" + publisher.url_words.get + "+" + tag.getName // TODO Naked get - make url words mandatory for publishers
   }
 
   def getPublisherTagCombinerUrl(publisher: FrontendWebsite, tag: Tag): String = {
-    siteInformation.getUrl + "/" + publisher.urlWords + "+" + tag.getName
+    "/" + publisher.urlWords + "+" + tag.getName
   }
 
   def getTagCommentUrl(tag: Tag): String = {
-    siteInformation.getUrl + "/" + tag.getName + "/comment"
+    "/" + tag.getName + "/comment"
   }
 
   def getTagGeocodedUrl(tag: Tag): String = {
-    siteInformation.getUrl + "/" + tag.getName + "/geotagged"
+    "/" + tag.getName + "/geotagged"
   }
 
   def getCommentUrl: String = {
-    siteInformation.getUrl + "/comment"
+    "/comment"
   }
 
   def getJustinUrl: String = {
-    siteInformation.getUrl + "/justin"
+    "/justin"
   }
 
   def getGeotaggedUrl: String = {
-    siteInformation.getUrl + "/geotagged"
+    "/geotagged"
   }
 
   def getPublicTaggingSubmissionUrl(resource: Resource): String = {
-    siteInformation.getUrl + "/tagging/submit"
+    "/tagging/submit"
   }
 
   @deprecated def getTaggingUrl(resource: FrontendResource): String = {
@@ -145,7 +143,7 @@ class UrlBuilder @Autowired()(siteInformation: SiteInformation, urlWordsGenerato
   }
 
   def getArchiveUrl: String = {
-    siteInformation.getUrl + "/archive"
+    "/archive"
   }
 
   def getArchiveLinkUrl(link: ArchiveLink): String = {
@@ -161,30 +159,30 @@ class UrlBuilder @Autowired()(siteInformation: SiteInformation, urlWordsGenerato
   }
 
   def getOpenIDCallbackUrl: String = {
-    siteInformation.getUrl + "/openid/callback"
+    "/openid/callback"
   }
 
   @deprecated def getProfileUrl(user: User): String = {
-    siteInformation.getUrl + "/profiles/" + user.getProfilename
+    "/profiles/" + user.getProfilename
   }
 
   def getProfileUrlFromProfileName(username: String): String = {
-    siteInformation.getUrl + "/profiles/" + UrlParameterEncoder.encode(username)
+    "/profiles/" + UrlParameterEncoder.encode(username)
   }
 
   def getWatchlistUrl: String = {
-    siteInformation.getUrl + "/watchlist"
+    "/watchlist"
   }
 
   def getTwitterCallbackUrl: String = {
-    siteInformation.getUrl + "/twitter/callback"
+    "/twitter/callback"
   }
 
   def getLocationUrlFor(place: Place): String = {
     if (place.getOsmId != null) {
-      siteInformation.getUrl + "/geotagged?osm=" + UrlParameterEncoder.encode(place.getOsmId.getId + "/" + place.getOsmId.getType)
+      "/geotagged?osm=" + UrlParameterEncoder.encode(place.getOsmId.getId + "/" + place.getOsmId.getType)
     } else if (place.getLatLong != null) {
-      siteInformation.getUrl + "/geotagged?latitude=" + place.getLatLong.getLatitude + "&longitude=" + place.getLatLong.getLongitude
+      "/geotagged?latitude=" + place.getLatLong.getLatitude + "&longitude=" + place.getLatLong.getLongitude
     } else {
       null
     }
@@ -192,16 +190,16 @@ class UrlBuilder @Autowired()(siteInformation: SiteInformation, urlWordsGenerato
 
   def getLocationUrlForRadius(place: Place, radius: Double): String = {
     if (place.getOsmId != null) {
-      siteInformation.getUrl + "/geotagged?osm=" + UrlParameterEncoder.encode(place.getOsmId.getId + "/" + place.getOsmId.getType) + "&radius=" + radius
+      "/geotagged?osm=" + UrlParameterEncoder.encode(place.getOsmId.getId + "/" + place.getOsmId.getType) + "&radius=" + radius
     } else if (place.getLatLong != null) {
-      siteInformation.getUrl + "/geotagged?latitude=" + place.getLatLong.getLatitude + "&longitude=" + place.getLatLong.getLongitude + "&radius=" + radius
+      "/geotagged?latitude=" + place.getLatLong.getLatitude + "&longitude=" + place.getLatLong.getLongitude + "&radius=" + radius
     } else {
       null
     }
   }
 
   def getSearchUrlFor(keywords: String, page: Option[Int] = None): String = {
-    siteInformation.getUrl + "/search?keywords=" + UrlParameterEncoder.encode(keywords) +
+    "/search?keywords=" + UrlParameterEncoder.encode(keywords) +
       page.map("&page=" + _).getOrElse("")
   }
 
@@ -210,15 +208,15 @@ class UrlBuilder @Autowired()(siteInformation: SiteInformation, urlWordsGenerato
   }
 
   def getSubmitFeedUrl: String = {
-    siteInformation.getUrl + "/new-feed"
+    "/new-feed"
   }
 
   def getSubmitNewsitemUrl: String = {
-    siteInformation.getUrl + "/new-newsitem"
+    "/new-newsitem"
   }
 
   def getSubmitWebsiteUrl: String = {
-    siteInformation.getUrl + "/new-website"
+    "/new-website"
   }
 
   def getResourceUrl(resource: FrontendResource): String = {
