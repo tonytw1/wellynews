@@ -32,9 +32,12 @@ import scala.concurrent.ExecutionContext.Implicits.global
       return null
     }
     try {
-      log.info("Getting request token")
+      val callbackUrl = urlBuilder.getTwitterCallbackUrl
+      log.info("Getting request token with callback url: " + callbackUrl)
+
       val twitterApi = twitterApiFactory.getTwitterApi
-      val requestToken = twitterApi.getOAuthRequestToken(urlBuilder.getTwitterCallbackUrl)
+      val requestToken = twitterApi.getOAuthRequestToken(callbackUrl)
+
       log.info("Got request token: " + requestToken.getToken)
       tokens.put(requestToken.getToken, requestToken)
       val authorizeUrl: String = requestToken.getAuthenticationURL
