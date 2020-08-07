@@ -11,10 +11,11 @@ import uk.co.eelpieconsulting.common.geo.model.{LatLong, OsmType, Place}
 
 class UrlBuilderTest {
 
-  private val frontendNewsitem: FrontendNewsitem = FrontendNewsitem(id = UUID.randomUUID().toString,
+  private val frontendNewsitem = FrontendNewsitem(id = UUID.randomUUID().toString,
     name = "Quick brown fox jumps over the lazy dog",
     date = new DateTime(2010, 10, 12, 0, 0, 0, 0).toDate,
     urlWords = "2010/oct/12/quick-brown-fox-jumps-over-lazy-dog")
+
   private val tag = Tag(name = "atag")
 
   private val urlBuilder = new UrlBuilder(new SiteInformation(), new UrlWordsGenerator)
