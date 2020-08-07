@@ -1,15 +1,14 @@
 package nz.co.searchwellington.model
 
-import org.springframework.beans.factory.annotation.Value
+import org.springframework.beans.factory.annotation.{Autowired, Value}
 import org.springframework.stereotype.Component
 
 @Component
-class SiteInformation() {
-  @Value("${areaname}") private val areaname: String = null
-  @Value("${installed}") private val url: String = null
-  @Value("${twitter.username}") private val twitterUsername: String = null
-  @Value("${imageroot}") private val imageRoot: String = null
-  @Value("${staticroot}") private val staticRoot: String = null
+class SiteInformation @Autowired()(@Value("${areaname}") areaname: String = "",
+                                   @Value("${installed}") url: String = "",
+                                   @Value("${twitter.username}") twitterUsername: String = "",
+                                   @Value("${imageroot}") imageRoot: String = "",
+                                   @Value("${staticroot}") staticRoot: String = "") {
 
   def getAreaname: String = areaname
 

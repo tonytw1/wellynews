@@ -11,8 +11,8 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
 import org.springframework.web.servlet.ModelAndView
 import org.springframework.web.servlet.view.RedirectView
+import twitter4j.TwitterException
 import twitter4j.auth.{AccessToken, RequestToken}
-import twitter4j.{Twitter, TwitterException}
 
 import scala.collection.mutable
 import scala.concurrent.Await
@@ -23,7 +23,7 @@ import scala.concurrent.ExecutionContext.Implicits.global
 
   private val log = Logger.getLogger(classOf[TwitterLoginHandler])
 
-  private var tokens = mutable.Map.empty[String, RequestToken]
+  private val tokens = mutable.Map.empty[String, RequestToken]
 
   @throws[Exception]
   override def getLoginView(request: HttpServletRequest, response: HttpServletResponse): ModelAndView = {
@@ -33,13 +33,14 @@ import scala.concurrent.ExecutionContext.Implicits.global
     }
     try {
       log.info("Getting request token")
-      val twitterApi: Twitter = twitterApiFactory.getTwitterApi
-      val requestToken: RequestToken = twitterApi.getOAuthRequestToken(urlBuilder.getHomeUrl + "/twitter/callback")
+      val twitterApi = twitterApiFactory.getTwitterApi
+      val requestToken = twitterApi.getOAuthRequestToken(urlBuilder.getTwitterCallbackUrl)
       log.info("Got request token: " + requestToken.getToken)
       tokens.put(requestToken.getToken, requestToken)
       val authorizeUrl: String = requestToken.getAuthenticationURL
       log.info("Redirecting user to authorize url : " + authorizeUrl)
       return new ModelAndView(new RedirectView(authorizeUrl))
+
     } catch {
       case e: Exception =>
         log.warn("Failed to obtain request token.", e)

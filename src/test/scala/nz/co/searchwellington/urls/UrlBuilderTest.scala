@@ -18,7 +18,7 @@ class UrlBuilderTest {
 
   private val tag = Tag(name = "atag")
 
-  private val urlBuilder = new UrlBuilder(new SiteInformation(), new UrlWordsGenerator)
+  private val urlBuilder = new UrlBuilder(new SiteInformation(url = "https://wellynews.local"), new UrlWordsGenerator)
 
   @Test
   def testTagSearchRefinementsShouldBeOnTheTagPages(): Unit = assertEquals("/atag?keywords=something", urlBuilder.getTagSearchUrl(tag, "something"))
@@ -92,6 +92,11 @@ class UrlBuilderTest {
     val link = urlBuilder.getPublisherArchiveLinkUrl(PublisherArchiveLink(publisher, monthOfFeb, 3))
 
     assertEquals("/a-publisher/2020-feb", link)
+  }
+
+  @Test
+  def shouldBuildFullyQualifiedUrlForTwitterSigninCallback(): Unit = {
+    assertEquals("https://wellynews.local/twitter/callback", urlBuilder.getTwitterCallbackUrl)
   }
 
 }

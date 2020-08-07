@@ -13,9 +13,7 @@ import uk.co.eelpieconsulting.common.geo.model.Place
 class UrlBuilder @Autowired()(siteInformation: SiteInformation, urlWordsGenerator: UrlWordsGenerator)
   extends ArchiveMonth {
 
-  def getHomeUrl: String = {
-    "/"
-  }
+  def getHomeUrl: String = "/"
 
   def getImageUrl(filename: String): String = getStaticUrl(filename)
 
@@ -174,9 +172,7 @@ class UrlBuilder @Autowired()(siteInformation: SiteInformation, urlWordsGenerato
     "/watchlist"
   }
 
-  def getTwitterCallbackUrl: String = {
-    "/twitter/callback"
-  }
+  def getTwitterCallbackUrl: String = siteInformation.getUrl + "/twitter/callback"
 
   def getLocationUrlFor(place: Place): String = {
     if (place.getOsmId != null) {
