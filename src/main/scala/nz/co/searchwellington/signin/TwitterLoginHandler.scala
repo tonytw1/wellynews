@@ -42,13 +42,14 @@ import scala.concurrent.ExecutionContext.Implicits.global
       tokens.put(requestToken.getToken, requestToken)
       val authorizeUrl: String = requestToken.getAuthenticationURL
       log.info("Redirecting user to authorize url : " + authorizeUrl)
-      return new ModelAndView(new RedirectView(authorizeUrl))
+      new ModelAndView(new RedirectView(authorizeUrl))
 
     } catch {
       case e: Exception =>
         log.warn("Failed to obtain request token.", e)
+        null
     }
-    return null
+
   }
 
   override def getExternalUserIdentifierFromCallbackRequest(request: HttpServletRequest): Option[twitter4j.User] = {
