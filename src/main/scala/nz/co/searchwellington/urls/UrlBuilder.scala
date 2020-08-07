@@ -13,6 +13,8 @@ import uk.co.eelpieconsulting.common.geo.model.Place
 class UrlBuilder @Autowired()(siteInformation: SiteInformation, urlWordsGenerator: UrlWordsGenerator)
   extends ArchiveMonth {
 
+  def fullyQualified(uri: String): String = siteInformation + uri
+
   def getHomeUrl: String = "/"
 
   def getImageUrl(filename: String): String = getStaticUrl(filename)

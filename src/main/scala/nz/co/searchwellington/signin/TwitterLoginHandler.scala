@@ -25,7 +25,6 @@ import scala.concurrent.ExecutionContext.Implicits.global
 
   private val tokens = mutable.Map.empty[String, RequestToken]
 
-  @throws[Exception]
   override def getLoginView(request: HttpServletRequest, response: HttpServletResponse): ModelAndView = {
     if (twitterApiFactory.apiIsConfigured) {
       try {
@@ -71,7 +70,7 @@ import scala.concurrent.ExecutionContext.Implicits.global
               tokens.remove(requestToken.getToken)
               log.info("Using access token to lookup twitter user details")
 
-              getTwitteUserCredentials(accessToken).map { twitterUser =>
+              getTwitterUserCredentials(accessToken).map { twitterUser =>
                 log.info("Authenticated user is: " + twitterUser.getName)
                 Some(twitterUser)
               }.getOrElse {
@@ -122,7 +121,7 @@ import scala.concurrent.ExecutionContext.Implicits.global
     }
   }
 
-  private def getTwitteUserCredentials(accessToken: AccessToken): Option[twitter4j.User] = {
+  private def getTwitterUserCredentials(accessToken: AccessToken): Option[twitter4j.User] = {
     try {
       val twitterApi = twitterApiFactory.getOauthedTwitterApiForAccessToken(accessToken.getToken, accessToken.getTokenSecret)
       Some(twitterApi.verifyCredentials)

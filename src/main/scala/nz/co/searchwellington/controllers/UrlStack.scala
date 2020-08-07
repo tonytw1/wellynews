@@ -15,7 +15,7 @@ import org.springframework.stereotype.Component
     val stackUrl = request.getSession.getAttribute("url").asInstanceOf[String]
     if (stackUrl != null) {
       log.debug("Stack url is: " + stackUrl)
-      urlBuilder.getHomeUrl + stackUrl
+      urlBuilder.fullyQualified(stackUrl)
     } else {
       urlBuilder.getHomeUrl
     }
