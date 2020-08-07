@@ -9,9 +9,6 @@
 	</div>
 
 	<div class="main">
-		<p>Search $siteInformation.areaname is ${siteInformation.areaname}'s own regional web directory;
-		it's $siteInformation.areaname in a box.</p>
-
 		#parse("includes/nearme.vm")
 
 		#parse("includes/search_widget.vm")
