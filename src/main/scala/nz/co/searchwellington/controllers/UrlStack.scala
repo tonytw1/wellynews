@@ -12,12 +12,11 @@ import org.springframework.stereotype.Component
   private val log = Logger.getLogger(classOf[UrlStack])
 
   def getExitUrlFromStack(request: HttpServletRequest): String = {
-    val stackUrl = request.getSession.getAttribute("url").asInstanceOf[String]
-    if (stackUrl != null) {
-      log.debug("Stack url is: " + stackUrl)
-      urlBuilder.fullyQualified(stackUrl)
-    } else {
-      urlBuilder.getHomeUrl
+    Option(request.getSession.getAttribute("url").asInstanceOf[String]).map { uri =>
+      log.debug("Stack url is: " + uri)
+      urlBuilder.fullyQualified(uri)
+    }.getOrElse{
+      urlBuilder.fullyQualified("")
     }
   }
 
