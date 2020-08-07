@@ -27,29 +27,30 @@ import scala.concurrent.ExecutionContext.Implicits.global
 
   @throws[Exception]
   override def getLoginView(request: HttpServletRequest, response: HttpServletResponse): ModelAndView = {
-    if (!(twitterApiFactory.apiIsConfigured)) {
+    if (twitterApiFactory.apiIsConfigured) {
+      try {
+        val callbackUrl = urlBuilder.getTwitterCallbackUrl
+        log.info("Getting request token with callback url: " + callbackUrl)
+
+        val twitterApi = twitterApiFactory.getTwitterApi
+        val requestToken = twitterApi.getOAuthRequestToken(callbackUrl)
+
+        log.info("Got request token: " + requestToken.getToken)
+        tokens.put(requestToken.getToken, requestToken)
+        val authorizeUrl: String = requestToken.getAuthenticationURL
+        log.info("Redirecting user to authorize url : " + authorizeUrl)
+        new ModelAndView(new RedirectView(authorizeUrl))
+
+      } catch {
+        case e: Exception =>
+          log.warn("Failed to obtain request token.", e)
+          null
+      }
+
+    } else {
       log.warn("Twitter API is not configured - not attempting to get send user to twitter")
-      return null
+      null
     }
-    try {
-      val callbackUrl = urlBuilder.getTwitterCallbackUrl
-      log.info("Getting request token with callback url: " + callbackUrl)
-
-      val twitterApi = twitterApiFactory.getTwitterApi
-      val requestToken = twitterApi.getOAuthRequestToken(callbackUrl)
-
-      log.info("Got request token: " + requestToken.getToken)
-      tokens.put(requestToken.getToken, requestToken)
-      val authorizeUrl: String = requestToken.getAuthenticationURL
-      log.info("Redirecting user to authorize url : " + authorizeUrl)
-      new ModelAndView(new RedirectView(authorizeUrl))
-
-    } catch {
-      case e: Exception =>
-        log.warn("Failed to obtain request token.", e)
-        null
-    }
-
   }
 
   override def getExternalUserIdentifierFromCallbackRequest(request: HttpServletRequest): Option[twitter4j.User] = {
