@@ -4,9 +4,10 @@ import java.util.UUID
 
 import nz.co.searchwellington.ReasonableWaits
 import nz.co.searchwellington.controllers.admin.AdminUrlBuilder
-import nz.co.searchwellington.model.{Newsitem, Tag, User, Website}
+import nz.co.searchwellington.model.{Newsitem, SiteInformation, Tag, UrlWordsGenerator, User, Website}
 import nz.co.searchwellington.repositories.mongo.MongoRepository
 import nz.co.searchwellington.tagging.TaggingReturnsOfficerService
+import nz.co.searchwellington.urls.UrlBuilder
 import org.joda.time.DateTime
 import org.junit.Assert.{assertEquals, assertFalse, assertTrue}
 import org.junit.Test
@@ -19,7 +20,10 @@ class FrontendResourceMapperTest extends ReasonableWaits {
 
   private val taggingReturnsOfficerService = mock(classOf[TaggingReturnsOfficerService])
   private val mongoRepository = mock(classOf[MongoRepository])
-  private val adminUrlBuilder = mock(classOf[AdminUrlBuilder])
+
+  private val siteInformation = new SiteInformation()
+  private val urlBuilder = new UrlBuilder(siteInformation, new UrlWordsGenerator)
+  private val adminUrlBuilder = new AdminUrlBuilder(siteInformation, urlBuilder, "", "")
 
   val mapper = new FrontendResourceMapper(taggingReturnsOfficerService, mongoRepository, adminUrlBuilder)
 
@@ -65,6 +69,9 @@ class FrontendResourceMapperTest extends ReasonableWaits {
     val frontendWebsite = Await.result(mapper.createFrontendResourceFrom(website, loggedInUser = Some(adminUser)), TenSeconds)
 
     assertTrue(frontendWebsite.actions.nonEmpty)
+    val editAction = frontendWebsite.actions.head
+    assertEquals("Edit", editAction.label)
+    assertEquals("/edit-website/123", editAction.link)
   }
 
   @Test
