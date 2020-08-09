@@ -2,7 +2,7 @@ package nz.co.searchwellington.controllers.models.helpers
 
 import nz.co.searchwellington.ReasonableWaits
 import nz.co.searchwellington.model.ArchiveLink
-import nz.co.searchwellington.model.frontend.FrontendResource
+import nz.co.searchwellington.model.frontend.FrontendNewsitem
 import nz.co.searchwellington.model.helpers.ArchiveLinksService
 import nz.co.searchwellington.repositories.ContentRetrievalService
 import org.joda.time.{DateTime, Interval}
@@ -19,8 +19,8 @@ class ArchiveModelBuilderTest extends ReasonableWaits with ContentFields {
   private val contentRetrievalService = mock(classOf[ContentRetrievalService])
   private val request = new MockHttpServletRequest
 
-  private val newsitem = mock(classOf[FrontendResource])
-  private val anotherNewsitem = mock(classOf[FrontendResource])
+  private val newsitem = new FrontendNewsitem(id = "123")
+  private val anotherNewsitem = FrontendNewsitem(id = "456")
   private val monthNewsitems = Seq(newsitem, anotherNewsitem)
 
   private val loggedInUser = None
