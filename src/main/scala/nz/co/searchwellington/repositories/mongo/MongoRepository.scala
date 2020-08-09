@@ -209,7 +209,7 @@ class MongoRepository @Autowired()(@Value("${mongo.uri}") mongoUri: String) exte
 
   def getSupressionByUrl(url: String)(implicit ec: ExecutionContext): Future[Option[Supression]] = {
     val byUrl = BSONDocument("url" -> url)
-    suppressionCollection.find(byUrl).one[Supression]
+    suppressionCollection.find(byUrl, noProjection).one[Supression]
   }
 
   def getResourceByUrl(url: String)(implicit ec: ExecutionContext): Future[Option[Resource]] = {
@@ -241,7 +241,7 @@ class MongoRepository @Autowired()(@Value("${mongo.uri}") mongoUri: String) exte
       selector
     }
 
-    resourceCollection.find(withHeldFilter).
+    resourceCollection.find(withHeldFilter, noProjection).
       sort(BSONDocument("title" -> 1)).
       cursor[Website]().collect[List](maxDocs = 10, err = Cursor.FailOnError[List[Website]]())
   }
@@ -251,19 +251,19 @@ class MongoRepository @Autowired()(@Value("${mongo.uri}") mongoUri: String) exte
   }
 
   def getTagById(id: String)(implicit ec: ExecutionContext): Future[Option[Tag]] = {
-    tagCollection.find(BSONDocument("id" -> id)).one[Tag]
+    tagCollection.find(BSONDocument("id" -> id), noProjection).one[Tag]
   }
 
   def getTagByObjectId(objectId: BSONObjectID)(implicit ec: ExecutionContext): Future[Option[Tag]] = {
-    tagCollection.find(BSONDocument("_id" -> objectId)).one[Tag]
+    tagCollection.find(BSONDocument("_id" -> objectId), noProjection).one[Tag]
   }
 
   def getTagByUrlWords(urlWords: String)(implicit ec: ExecutionContext): Future[Option[Tag]] = {
-    tagCollection.find(BSONDocument("name" -> urlWords)).one[Tag] // TODO rename field
+    tagCollection.find(BSONDocument("name" -> urlWords), noProjection).one[Tag] // TODO rename field
   }
 
   def getTagsByParent(parent: BSONObjectID)(implicit ec: ExecutionContext): Future[List[Tag]] = {
-    tagCollection.find(BSONDocument("parent" -> parent)).sort(BSONDocument("display_name" -> 1)).cursor[Tag]().
+    tagCollection.find(BSONDocument("parent" -> parent), noProjection).sort(BSONDocument("display_name" -> 1)).cursor[Tag]().
       collect[List](maxDocs = Integer.MAX_VALUE, err = Cursor.FailOnError[List[Tag]]())
   }
 
@@ -273,27 +273,24 @@ class MongoRepository @Autowired()(@Value("${mongo.uri}") mongoUri: String) exte
   }
 
   def getAllTags()(implicit ec: ExecutionContext): Future[Seq[Tag]] = {
-    tagCollection.find(BSONDocument.empty).sort(BSONDocument("display_name" -> 1)).cursor[Tag]().
+    tagCollection.find(BSONDocument.empty, noProjection).sort(BSONDocument("display_name" -> 1)).cursor[Tag]().
       collect[List](maxDocs = AllDocuments, err = Cursor.FailOnError[List[Tag]]())
   }
 
   def getAllResourceIds()(implicit ec: ExecutionContext): Future[Seq[BSONObjectID]] = {
-    val projection = BSONDocument("_id" -> 1)
-    resourceCollection.find(BSONDocument.empty, projection).cursor[BSONDocument]().
+    resourceCollection.find(BSONDocument.empty, Some(idOnlyProjection)).cursor[BSONDocument]().
       collect[List](maxDocs = AllDocuments, err = Cursor.FailOnError[List[BSONDocument]]()).map { r =>
       r.flatMap(i => i.getAs[BSONObjectID]("_id"))
     }
   }
 
   def getNotCheckedSince(lastScanned: DateTime, maxItems: Int)(implicit ec: ExecutionContext): Future[Seq[BSONObjectID]] = {
-    val projection = BSONDocument("_id" -> 1)
-
     val selector = BSONDocument(
       "last_scanned" -> BSONDocument(
         "$lt" -> BSONDateTime(lastScanned.getMillis)
       )
     )
-    resourceCollection.find(selector, projection).cursor[BSONDocument]().
+    resourceCollection.find(selector, Some(idOnlyProjection)).cursor[BSONDocument]().
       collect[List](maxDocs = maxItems, err = Cursor.FailOnError[List[BSONDocument]]()).map { r =>
       r.flatMap(i => i.getAs[BSONObjectID]("_id"))
     }
@@ -305,14 +302,14 @@ class MongoRepository @Autowired()(@Value("${mongo.uri}") mongoUri: String) exte
   }
 
   def getAllFeeds()(implicit ec: ExecutionContext): Future[Seq[Feed]] = {
-    resourceCollection.find(BSONDocument("type" -> "F")).
+    resourceCollection.find(BSONDocument("type" -> "F"), noProjection).
       cursor[Feed]().
       collect[List](maxDocs = AllDocuments, Cursor.FailOnError[List[Feed]]())
   }
 
   def getAllNewsitemsForFeed(feed: Feed)(implicit ec: ExecutionContext): Future[Seq[Newsitem]] = {
     val newsitemsFromFeed = BSONDocument("type" -> "N", "feed" -> feed._id.stringify)
-    resourceCollection.find(newsitemsFromFeed).
+    resourceCollection.find(newsitemsFromFeed, noProjection).
       cursor[Newsitem]().
       collect[List](maxDocs = AllDocuments, err = Cursor.FailOnError[List[Newsitem]]())
   }
@@ -323,19 +320,17 @@ class MongoRepository @Autowired()(@Value("${mongo.uri}") mongoUri: String) exte
   }
 
   def getNewsitemIdsForPublisher(publisher: Website)(implicit ec: ExecutionContext): Future[Seq[BSONObjectID]] = {
-    val selector = BSONDocument("publisher" -> publisher._id)
-    allResourceIdsFor(selector)
+    val byPublisher = BSONDocument("publisher" -> publisher._id)
+    allResourceIdsFor(byPublisher)
   }
 
   def getResourceIdsByTaggingUser(user: User)(implicit ec: ExecutionContext): Future[Seq[BSONObjectID]] = {
-    val selector = BSONDocument(
-      "resource_tags.user_id" -> user._id
-    )
-    allResourceIdsFor(selector)
+    val byTaggingUser = BSONDocument("resource_tags.user_id" -> user._id)
+    allResourceIdsFor(byTaggingUser)
   }
 
   private def allResourceIdsFor(selector: BSONDocument)(implicit ec: ExecutionContext): Future[Seq[BSONObjectID]] = {
-    resourceCollection.find(selector).
+    resourceCollection.find(selector, noProjection).
       cursor[BSONDocument]().
       collect[List](maxDocs = AllDocuments, err = Cursor.FailOnError[List[BSONDocument]]()).map { d =>
       d.flatMap { i =>
@@ -345,7 +340,7 @@ class MongoRepository @Autowired()(@Value("${mongo.uri}") mongoUri: String) exte
   }
 
   def getAllDiscoveredFeeds()(implicit ec: ExecutionContext): Future[Seq[DiscoveredFeed]] = {
-    discoveredFeedCollection.find(BSONDocument.empty).
+    discoveredFeedCollection.find(BSONDocument.empty, noProjection).
       sort(BSONDocument("seen" -> -1)).
       cursor[DiscoveredFeed]().
       collect[List](maxDocs = AllDocuments, err = Cursor.FailOnError[List[DiscoveredFeed]]())
@@ -353,36 +348,36 @@ class MongoRepository @Autowired()(@Value("${mongo.uri}") mongoUri: String) exte
 
   def getDiscoveredFeedByUrlAndReference(url: String, referencedFrom: String)(implicit ec: ExecutionContext): Future[Option[DiscoveredFeed]] = {
     val selector = BSONDocument("url" -> url, "referencedFrom" -> referencedFrom)
-    discoveredFeedCollection.find(selector).one[DiscoveredFeed]
+    discoveredFeedCollection.find(selector, noProjection).one[DiscoveredFeed]
   }
 
   def saveDiscoveredFeed(discoveredFeed: DiscoveredFeed)(implicit ec: ExecutionContext): Future[UpdateWriteResult] = {
-    val id = BSONDocument("_id" -> discoveredFeed._id)
-    discoveredFeedCollection.update(id, discoveredFeed, upsert = true)
+    val byId = BSONDocument("_id" -> discoveredFeed._id)
+    discoveredFeedCollection.update.one(byId, discoveredFeed, upsert = true)
   }
 
   def getAllWatchlists()(implicit ec: ExecutionContext): Future[Seq[Watchlist]] = {
-    resourceCollection.find(BSONDocument("type" -> "L")).cursor[Watchlist]().collect[List](AllDocuments, Cursor.FailOnError[List[Watchlist]]())
+    resourceCollection.find(BSONDocument("type" -> "L"), noProjection).cursor[Watchlist]().collect[List](AllDocuments, Cursor.FailOnError[List[Watchlist]]())
   }
 
   def getAllUsers()(implicit ec: ExecutionContext): Future[Seq[User]] = {
-    userCollection.find(BSONDocument.empty).cursor[User]().collect[List](AllDocuments, Cursor.FailOnError[List[User]]())
+    userCollection.find(BSONDocument.empty, noProjection).cursor[User]().collect[List](AllDocuments, Cursor.FailOnError[List[User]]())
   }
 
   def getUserByObjectId(objectId: BSONObjectID)(implicit ec: ExecutionContext): Future[Option[User]] = {
-    userCollection.find(BSONDocument("_id" -> objectId)).one[User]
+    userCollection.find(BSONDocument("_id" -> objectId), noProjection).one[User]
   }
 
   def getUserByProfilename(profileName: String)(implicit ec: ExecutionContext): Future[Option[User]] = {
-    userCollection.find(BSONDocument("profilename" -> profileName)).one[User]
+    userCollection.find(BSONDocument("profilename" -> profileName), noProjection).one[User]
   }
 
   def getUserByTwitterId(twitterId: Long)(implicit ec: ExecutionContext): Future[Option[User]] = {
-    userCollection.find(BSONDocument("twitterid" -> twitterId)).one[User]
+    userCollection.find(BSONDocument("twitterid" -> twitterId), noProjection).one[User]
   }
 
   private def getResourceBy(selector: BSONDocument)(implicit ec: ExecutionContext): Future[Option[Resource]] = {
-    resourceCollection.find(selector).one[BSONDocument].map { bo =>
+    resourceCollection.find(selector, noProjection).one[BSONDocument].map { bo =>
       bo.flatMap { b =>
         b.get("type").get match {
           case BSONString("N") => Some(b.as[Newsitem])
@@ -399,7 +394,6 @@ class MongoRepository @Autowired()(@Value("${mongo.uri}") mongoUri: String) exte
     Future.successful(Seq.empty) // TODO implement
   }
 
-  case class MongoUser(id: Int, profilename: Option[String], twitterid: Option[Long]) {
-  }
-
+  private val noProjection: Option[BSONDocument] = None
+  private val idOnlyProjection = BSONDocument("_id" -> 1)
 }
