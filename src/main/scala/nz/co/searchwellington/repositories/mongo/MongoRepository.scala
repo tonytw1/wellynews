@@ -172,39 +172,39 @@ class MongoRepository @Autowired()(@Value("${mongo.uri}") mongoUri: String) exte
   implicit def discoveredFeedWriter: BSONDocumentWriter[DiscoveredFeed] = Macros.writer[DiscoveredFeed]
 
   def saveResource(resource: Resource)(implicit ec: ExecutionContext): Future[UpdateWriteResult] = {
-    val id = BSONDocument("_id" -> resource._id)
     log.info("Updating resource: " + resource._id + " / " + resource.last_scanned + " / " + resource.resource_tags)
+    val byId = BSONDocument("_id" -> resource._id)
     resource match { // TODO sick of dealing with Scala implicits and just want to write features so this hack
-      case n: Newsitem => resourceCollection.update(id, n, upsert = true)
-      case w: Website => resourceCollection.update(id, w, upsert = true)
-      case f: Feed => resourceCollection.update(id, f, upsert = true)
-      case l: Watchlist => resourceCollection.update(id, l, upsert = true)
+      case n: Newsitem => resourceCollection.update.one(byId, n, upsert = true)
+      case w: Website => resourceCollection.update.one(byId, w, upsert = true)
+      case f: Feed => resourceCollection.update.one(byId, f, upsert = true)
+      case l: Watchlist => resourceCollection.update.one(byId, l, upsert = true)
     }
   }
 
   def saveSupression(suppression: Supression)(implicit ec: ExecutionContext): Future[UpdateWriteResult] = {
-    val id = BSONDocument("_id" -> suppression._id)
-    suppressionCollection.update(id, suppression, upsert = true)
+    val byId = BSONDocument("_id" -> suppression._id)
+    suppressionCollection.update.one(byId, suppression, upsert = true)
   }
 
   def removeSupressionFor(url: String)(implicit ec: ExecutionContext): Future[WriteResult] = {
     val byUrl = BSONDocument("url" -> url)
-    suppressionCollection.remove(byUrl)
+    suppressionCollection.delete.one(byUrl)
   }
 
   def removeResource(resource: Resource)(implicit ec: ExecutionContext): Future[WriteResult] = {
-    val id = BSONDocument("_id" -> resource._id)
-    resourceCollection.remove(id)
+    val byId = BSONDocument("_id" -> resource._id)
+    resourceCollection.delete.one(byId)
   }
 
   def removeUser(user: User)(implicit ec: ExecutionContext): Future[WriteResult] = {
-    val id = BSONDocument("_id" -> user._id)
-    userCollection.remove(id)
+    val byId = BSONDocument("_id" -> user._id)
+    userCollection.delete.one(byId)
   }
 
   def saveUser(user: User)(implicit ec: ExecutionContext): Future[UpdateWriteResult] = {
-    val id = BSONDocument("_id" -> user._id)
-    userCollection.update(id, user, upsert = true)
+    val byId = BSONDocument("_id" -> user._id)
+    userCollection.update.one(byId, user, upsert = true)
   }
 
   def getSupressionByUrl(url: String)(implicit ec: ExecutionContext): Future[Option[Supression]] = {
@@ -268,8 +268,8 @@ class MongoRepository @Autowired()(@Value("${mongo.uri}") mongoUri: String) exte
   }
 
   def saveTag(tag: Tag)(implicit ec: ExecutionContext): Future[UpdateWriteResult] = {
-    val id = BSONDocument("_id" -> tag._id)
-    tagCollection.update(id, tag, upsert = true)
+    val byId = BSONDocument("_id" -> tag._id)
+    tagCollection.update.one(byId, tag, upsert = true)
   }
 
   def getAllTags()(implicit ec: ExecutionContext): Future[Seq[Tag]] = {
@@ -318,17 +318,12 @@ class MongoRepository @Autowired()(@Value("${mongo.uri}") mongoUri: String) exte
   }
 
   def getResourceIdsByTag(tag: Tag)(implicit ec: ExecutionContext): Future[Seq[BSONObjectID]] = {
-    val selector = BSONDocument(
-      "resource_tags.tag_id" -> tag._id
-    )
+    val selector = BSONDocument("resource_tags.tag_id" -> tag._id)
     allResourceIdsFor(selector)
   }
 
-
   def getNewsitemIdsForPublisher(publisher: Website)(implicit ec: ExecutionContext): Future[Seq[BSONObjectID]] = {
-    val selector = BSONDocument(
-      "publisher" -> publisher._id
-    )
+    val selector = BSONDocument("publisher" -> publisher._id)
     allResourceIdsFor(selector)
   }
 
