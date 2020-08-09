@@ -76,13 +76,12 @@ import scala.concurrent.Future
   def getViewName(mv: ModelAndView): String = "archivePage"
 
   private def populateNextAndPreviousLinks(mv: ModelAndView, currentMonth: Interval, archiveLinks: Seq[ArchiveLink]) {
-    val previousMonth = currentMonth.withStart(currentMonth.getStart.minusMonths(1))
-    val nextMonth = currentMonth.withStart(currentMonth.getStart.plusMonths(1))
-
+    val previousMonth = currentMonth.withStart(currentMonth.getStart.minusMonths(1)).withEnd(currentMonth.getStart)
+    val nextMonth = currentMonth.withStart(currentMonth.getStart.plusMonths(1)).withEnd(currentMonth.getStart.plusMonths(2))
     archiveLinks.find { link =>
       link.interval == previousMonth
     }.map { l =>
-      mv.addObject("previous_page", l)
+      mv.addObject("previous_month", l)
     }
     archiveLinks.find { link =>
       link.interval == nextMonth

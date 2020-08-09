@@ -6,7 +6,7 @@ import nz.co.searchwellington.model.frontend.FrontendNewsitem
 import nz.co.searchwellington.model.helpers.ArchiveLinksService
 import nz.co.searchwellington.repositories.ContentRetrievalService
 import org.joda.time.{DateTime, Interval}
-import org.junit.Assert.{assertEquals, assertTrue}
+import org.junit.Assert.{assertEquals, assertTrue, assertNotNull}
 import org.junit.{Before, Test}
 import org.mockito.Mockito.{mock, when}
 import org.springframework.mock.web.MockHttpServletRequest
@@ -51,21 +51,45 @@ class ArchiveModelBuilderTest extends ReasonableWaits with ContentFields {
 
   @Test
   def extraContentIncludesLinksToArchiveMonths(): Unit = {
-    val mv = new ModelAndView()
     val july = new DateTime(2020, 7, 1, 0, 0)
     val monthOfJuly = new Interval(july, july.plusMonths(1))
 
-    val archiveLinks: Seq[ArchiveLink] = Seq(ArchiveLink(monthOfJuly, 3))
+    val archiveLinks = Seq(ArchiveLink(monthOfJuly, 3))
 
     when(contentRetrievalService.getArchiveMonths(None)).thenReturn(Future.successful(archiveLinks))
     when(contentRetrievalService.getArchiveCounts(None)).thenReturn(Future.successful(Map[String, Long]()))
     when(contentRetrievalService.getPublishersForInterval(monthOfJuly, None)).thenReturn(Future.successful(Seq.empty))
     when(contentRetrievalService.getLatestNewsitems(maxItems = 5, loggedInUser = None)).thenReturn(Future.successful(Seq.empty))
 
+    val mv = new ModelAndView()
     val withExtras = Await.result(modelBuilder.populateExtraModelContent(request, mv, None), TenSeconds)
 
     import scala.collection.JavaConverters._
     assertEquals(archiveLinks.asJava, withExtras.getModel.get("archive_links"))
+  }
+
+  @Test
+  def shouldIncludePreviousAndNextMonthLinks(): Unit = {
+    val june = new DateTime(2020, 6, 1, 0, 0)
+    val july = june.plusMonths(1)
+    val august = july.plusMonths(1)
+
+    val monthOfJune = new Interval(june, june.plusMonths(1))
+    val monthOfJuly = new Interval(july, july.plusMonths(1))
+    val monthOfAugust = new Interval(august, august.plusMonths(1))
+
+    val archiveLinks = Seq(ArchiveLink(monthOfJune, 1), ArchiveLink(monthOfJuly, 3), ArchiveLink(monthOfAugust, 4))
+
+    when(contentRetrievalService.getArchiveMonths(None)).thenReturn(Future.successful(archiveLinks))
+    when(contentRetrievalService.getArchiveCounts(None)).thenReturn(Future.successful(Map[String, Long]()))
+    when(contentRetrievalService.getPublishersForInterval(monthOfJuly, None)).thenReturn(Future.successful(Seq.empty))
+    when(contentRetrievalService.getLatestNewsitems(maxItems = 5, loggedInUser = None)).thenReturn(Future.successful(Seq.empty))
+
+    val mv = new ModelAndView()
+    val withExtras = Await.result(modelBuilder.populateExtraModelContent(request, mv, None), TenSeconds)
+
+    assertEquals(ArchiveLink(monthOfJune, 1), withExtras.getModel.get("previous_month"))
+    assertEquals(ArchiveLink(monthOfAugust, 4), withExtras.getModel.get("next_month"))
   }
 
 }
