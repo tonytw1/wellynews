@@ -16,15 +16,15 @@ import org.springframework.context.annotation.{Scope, ScopedProxyMode}
 import org.springframework.stereotype.Component
 
 import scala.concurrent.{Await, ExecutionContext}
-  
+
 @Component
 @Scope(value = "request", proxyMode = ScopedProxyMode.TARGET_CLASS)
-class AdminRequestFilter @Autowired() (mongoRepository: MongoRepository, tagDAO: TagDAO, resourceParameterFilter: ResourceParameterFilter, tagsParameterFilter: TagsParameterFilter) extends ReasonableWaits {
+class AdminRequestFilter @Autowired()(mongoRepository: MongoRepository, resourceParameterFilter: ResourceParameterFilter, tagsParameterFilter: TagsParameterFilter) extends ReasonableWaits {
 
   private val log = Logger.getLogger(classOf[AdminRequestFilter])
   private val DATE_FIELD = "date"
   private val EMBARGO_DATE_FIELD = "embargo_date"
-  
+
   def loadAttributesOntoRequest(request: HttpServletRequest)(implicit ec: ExecutionContext) {
 
     log.debug("Looking for tag parameter")

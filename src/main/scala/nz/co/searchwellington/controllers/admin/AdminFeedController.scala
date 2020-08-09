@@ -1,6 +1,6 @@
 package nz.co.searchwellington.controllers.admin
 
-import javax.servlet.http.{HttpServletRequest, HttpServletResponse}
+import javax.servlet.http.HttpServletRequest
 import nz.co.searchwellington.controllers.{LoggedInUserFilter, RequiringLoggedInUser}
 import nz.co.searchwellington.feeds.FeedReader
 import nz.co.searchwellington.filters.AdminRequestFilter
@@ -23,7 +23,7 @@ import scala.concurrent.ExecutionContext.Implicits.global
   private val log = Logger.getLogger(classOf[AdminFeedController])
 
   @RequestMapping(Array("/admin/feed/accept-all"))
-  def acceptAllFrom(request: HttpServletRequest, response: HttpServletResponse): ModelAndView = {
+  def acceptAllFrom(request: HttpServletRequest): ModelAndView = {
     def accept(loggedInUser: User): ModelAndView = {
       requestFilter.loadAttributesOntoRequest(request)
       if (request.getAttribute("feedAttribute") == null) throw new RuntimeException("Not found") // TODO

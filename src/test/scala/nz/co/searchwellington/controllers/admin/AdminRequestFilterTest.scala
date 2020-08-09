@@ -23,7 +23,7 @@ class AdminRequestFilterTest {
   val tagDAO = mock(classOf[TagDAO])
   val request = new MockHttpServletRequest
 
-  val filter = new AdminRequestFilter(mongoRepository, tagDAO, new ResourceParameterFilter(mongoRepository),
+  val filter = new AdminRequestFilter(mongoRepository, new ResourceParameterFilter(mongoRepository),
     new TagsParameterFilter(tagDAO, mongoRepository))
 
   @Before
