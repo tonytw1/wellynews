@@ -1,11 +1,11 @@
 package nz.co.searchwellington.controllers.models.helpers
 
 import nz.co.searchwellington.ReasonableWaits
-import nz.co.searchwellington.controllers.{LoggedInUserFilter, RelatedTagsService, RssUrlBuilder}
+import nz.co.searchwellington.controllers.{RelatedTagsService, RssUrlBuilder}
 import nz.co.searchwellington.feeds.{FeedItemLocalCopyDecorator, RssfeedNewsitemService}
-import nz.co.searchwellington.model.{Geocode, Tag}
 import nz.co.searchwellington.model.frontend.{FrontendNewsitem, FrontendResource}
 import nz.co.searchwellington.model.mappers.FrontendResourceMapper
+import nz.co.searchwellington.model.{Geocode, SiteInformation, Tag, UrlWordsGenerator}
 import nz.co.searchwellington.repositories.{ContentRetrievalService, TagDAO}
 import nz.co.searchwellington.urls.UrlBuilder
 import org.junit.Assert.{assertEquals, assertFalse, assertTrue}
@@ -18,16 +18,17 @@ import scala.concurrent.{Await, Future}
 
 class TagModelBuilderTest extends ReasonableWaits with ContentFields {
 
+  private val siteInformation = new SiteInformation("", "", "", "", "")
+  private val urlBuilder = new UrlBuilder(siteInformation, new UrlWordsGenerator)
+  private val rssUrlBuilder = new RssUrlBuilder(siteInformation)
+
   private val contentRetrievalService = mock(classOf[ContentRetrievalService])
-  private val rssUrlBuilder = mock(classOf[RssUrlBuilder])
-  private val urlBuilder = mock(classOf[UrlBuilder])
   private val relatedTagsService = mock(classOf[RelatedTagsService])
   private val rssfeedNewsitemService = mock(classOf[RssfeedNewsitemService])
   private val feedItemLocalCopyDecorator = mock(classOf[FeedItemLocalCopyDecorator])
   private val commonAttributesModelBuilder = mock(classOf[CommonAttributesModelBuilder])
   private val tagDAO = mock(classOf[TagDAO])
   private val frontendResourceMapper = mock(classOf[FrontendResourceMapper])
-  private val loggedInUserFilter = mock(classOf[LoggedInUserFilter])
 
   private val newsitem1 = mock(classOf[FrontendResource])
   private val newsitem2 = mock(classOf[FrontendResource])
