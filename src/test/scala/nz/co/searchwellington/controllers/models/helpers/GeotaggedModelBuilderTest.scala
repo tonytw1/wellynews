@@ -1,7 +1,7 @@
 package nz.co.searchwellington.controllers.models.helpers
 
 import nz.co.searchwellington.ReasonableWaits
-import nz.co.searchwellington.controllers.{LoggedInUserFilter, RelatedTagsService, RssUrlBuilder}
+import nz.co.searchwellington.controllers.{RelatedTagsService, RssUrlBuilder}
 import nz.co.searchwellington.filters.LocationParameterFilter
 import nz.co.searchwellington.model.frontend.FrontendResource
 import nz.co.searchwellington.repositories.ContentRetrievalService
@@ -21,7 +21,6 @@ class GeotaggedModelBuilderTest extends ReasonableWaits with ContentFields {
   val rssUrlBuilder = mock(classOf[RssUrlBuilder])
   val relatedTagsService = mock(classOf[RelatedTagsService])
   val commonAttributesModelBuilder = mock(classOf[CommonAttributesModelBuilder])
-  val loggedInUserFilter = mock(classOf[LoggedInUserFilter])
   val newsitemsNearPetoneStationFirstPage: Seq[FrontendResource] = Seq.empty  // TODO Not realistic
   val newsitemsNearPetoneStationSecondPage: Seq[FrontendResource] = null
 
