@@ -74,6 +74,23 @@ class FrontendResourceMapperTest extends ReasonableWaits {
   }
 
   @Test
+  def shouldApplyActionsToFrontendNewsitemsViewedByAdmins(): Unit = {
+    val website = Newsitem(id = "456")
+    val adminUser = User(admin = true)
+
+    when(taggingReturnsOfficerService.getHandTagsForResource(website)).thenReturn(Future.successful(Seq.empty))
+    when(taggingReturnsOfficerService.getIndexTagsForResource(website)).thenReturn(Future.successful(Seq.empty))
+    when(taggingReturnsOfficerService.getIndexGeocodeForResource(website)).thenReturn(Future.successful(None))
+
+    val frontendWebsite = Await.result(mapper.createFrontendResourceFrom(website, loggedInUser = Some(adminUser)), TenSeconds)
+
+    assertTrue(frontendWebsite.actions.nonEmpty)
+    val editAction = frontendWebsite.actions.head
+    assertEquals("Edit", editAction.label)
+    assertEquals("/edit-newsitem/456", editAction.link)
+  }
+
+  @Test
   def shouldNotApplyActionIfUserIsNotLoggedIn(): Unit = {
     val website = Website(id = "123")
     when(taggingReturnsOfficerService.getHandTagsForResource(website)).thenReturn(Future.successful(Seq.empty))
