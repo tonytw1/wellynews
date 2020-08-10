@@ -2,7 +2,7 @@ package nz.co.searchwellington.model
 
 import java.util.{Date, UUID}
 
-import reactivemongo.bson.BSONObjectID
+import reactivemongo.api.bson.BSONObjectID
 
 case class Website(override val _id: BSONObjectID = BSONObjectID.generate,
                    override val id: String = UUID.randomUUID().toString,

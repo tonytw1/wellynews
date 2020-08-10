@@ -11,7 +11,7 @@ import org.junit.Test
 import org.mockito.Mockito.{mock, verify, when}
 import org.mockito.{ArgumentCaptor, Matchers}
 import org.springframework.validation.BindingResult
-import reactivemongo.bson.BSONObjectID
+import reactivemongo.api.bson.BSONObjectID
 
 import scala.concurrent.Future
 

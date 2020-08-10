@@ -1,18 +1,21 @@
 package nz.co.searchwellington.repositories.mongo
 
+import java.util.Date
+
 import nz.co.searchwellington.ReasonableWaits
 import nz.co.searchwellington.model._
 import org.apache.log4j.Logger
 import org.joda.time.DateTime
 import org.springframework.beans.factory.annotation.{Autowired, Value}
 import org.springframework.stereotype.Component
-import reactivemongo.api.collections.bson.BSONCollection
+import reactivemongo.api.bson.collection.BSONCollection
+import reactivemongo.api.bson.{BSONDateTime, BSONDocument, BSONDocumentReader, BSONDocumentWriter, BSONHandler, BSONObjectID, BSONReader, BSONString, BSONValue, BSONWriter, Macros}
 import reactivemongo.api.commands.{UpdateWriteResult, WriteResult}
 import reactivemongo.api.indexes.{Index, IndexType}
 import reactivemongo.api.{Cursor, DB, MongoConnection, MongoDriver}
-import reactivemongo.bson.{BSONDateTime, BSONDocument, BSONDocumentReader, BSONDocumentWriter, BSONObjectID, BSONReader, BSONString, BSONValue, BSONWriter, Macros}
 
 import scala.concurrent.{Await, ExecutionContext, Future}
+import scala.util.Try
 
 @Component
 class MongoRepository @Autowired()(@Value("${mongo.uri}") mongoUri: String) extends ReasonableWaits {
@@ -84,10 +87,25 @@ class MongoRepository @Autowired()(@Value("${mongo.uri}") mongoUri: String) exte
     log.info("Ensured index result for " + suppressedUrls.name + ": " + discoveredFeedsSeenResult)
   }
 
-  implicit object feedAcceptanceReader extends BSONReader[BSONValue, FeedAcceptancePolicy] {
-    override def read(bson: BSONValue): FeedAcceptancePolicy = bson match {
-      case s: BSONString => FeedAcceptancePolicy.valueOf(s.value)
-      case _ => throw new RuntimeException("Could not map FeedAcceptancePolicy from: " + bson)
+  // TODO This feels wrong; why is the reactive mongo supplied one private?
+  implicit object DateHandler extends BSONHandler[Date] {
+    override def readTry(bson: BSONValue): Try[Date] = {
+      bson match {
+        case d: BSONDateTime =>
+          scala.util.Success(new DateTime(d.value).toDate)
+        case _ => scala.util.Failure(new RuntimeException)
+      }
+    }
+
+    override def writeTry(d: Date): Try[BSONValue] = {
+      scala.util.Success(BSONDateTime(d.getTime))
+    }
+  }
+
+  implicit object feedAcceptanceReader extends BSONReader[FeedAcceptancePolicy] {
+     def readTry(bson: BSONValue): Try[FeedAcceptancePolicy] = bson match {
+      case s: BSONString => scala.util.Success(FeedAcceptancePolicy.valueOf(s.value))
+      case _ => scala.util.Failure(throw new RuntimeException("Could not map FeedAcceptancePolicy from: " + bson))
     }
   }
 
@@ -95,19 +113,21 @@ class MongoRepository @Autowired()(@Value("${mongo.uri}") mongoUri: String) exte
 
   // TODO This can be removed if we migrate the osm fields to a nested object in Mongo
   implicit object GeocodeReader extends BSONDocumentReader[Geocode] {
-    override def read(bson: BSONDocument): Geocode = {
+    override def readDocument(bson: BSONDocument): Try[Geocode] = {
       val osmId = for {
-        i <- bson.getAs[Long]("osm_id")
-        t <- bson.getAs[String]("osm_type")
+        i <- bson.getAsOpt[Long]("osm_id")
+        t <- bson.getAsOpt[String]("osm_type")
       } yield {
         OsmId(id = i, `type` = t)
       }
-      Geocode(
-        address = bson.getAs[String]("address"),
-        latitude = bson.getAs[Double]("latitude"),
-        longitude = bson.getAs[Double]("longitude"),
-        osmId = osmId
-      )
+      scala.util.Success {
+        Geocode(
+          address = bson.getAsOpt[String]("address"),
+          latitude = bson.getAsOpt[Double]("latitude"),
+          longitude = bson.getAsOpt[Double]("longitude"),
+          osmId = osmId
+        )
+      }
     }
   }
 
@@ -135,23 +155,25 @@ class MongoRepository @Autowired()(@Value("${mongo.uri}") mongoUri: String) exte
     getResourceBy(BSONDocument("_id" -> id))
   }
 
-  implicit object feedAcceptanceWriter extends BSONWriter[FeedAcceptancePolicy, BSONValue] {
-    override def write(t: FeedAcceptancePolicy): BSONValue = {
-      BSONString(t.name())
+  implicit object feedAcceptanceWriter extends BSONWriter[FeedAcceptancePolicy] {
+    override def writeTry(t: FeedAcceptancePolicy): Try[BSONValue] = {
+      scala.util.Success(BSONString(t.name()))
     }
   }
 
   implicit def taggingWriter: BSONDocumentWriter[Tagging] = Macros.writer[Tagging]
 
   implicit object FormResponseWriter extends BSONDocumentWriter[Geocode] {
-    override def write(t: Geocode): BSONDocument = {
-      BSONDocument(
-        "address" -> t.address,
-        "latitude" -> t.latitude,
-        "longitude" -> t.longitude,
-        "osm_id" -> t.osmId.map(_.id),
-        "osm_type" -> t.osmId.map(_.`type`)
-      )
+    override def writeTry(t: Geocode): Try[BSONDocument] = {
+      scala.util.Success {
+        BSONDocument(
+          "address" -> t.address,
+          "latitude" -> t.latitude,
+          "longitude" -> t.longitude,
+          "osm_id" -> t.osmId.map(_.id),
+          "osm_type" -> t.osmId.map(_.`type`)
+        )
+      }
     }
   }
 
@@ -280,7 +302,7 @@ class MongoRepository @Autowired()(@Value("${mongo.uri}") mongoUri: String) exte
   def getAllResourceIds()(implicit ec: ExecutionContext): Future[Seq[BSONObjectID]] = {
     resourceCollection.find(BSONDocument.empty, Some(idOnlyProjection)).cursor[BSONDocument]().
       collect[List](maxDocs = AllDocuments, err = Cursor.FailOnError[List[BSONDocument]]()).map { r =>
-      r.flatMap(i => i.getAs[BSONObjectID]("_id"))
+      r.flatMap(i => i.getAsOpt[BSONObjectID]("_id"))
     }
   }
 
@@ -292,7 +314,7 @@ class MongoRepository @Autowired()(@Value("${mongo.uri}") mongoUri: String) exte
     )
     resourceCollection.find(selector, Some(idOnlyProjection)).cursor[BSONDocument]().
       collect[List](maxDocs = maxItems, err = Cursor.FailOnError[List[BSONDocument]]()).map { r =>
-      r.flatMap(i => i.getAs[BSONObjectID]("_id"))
+      r.flatMap(i => i.getAsOpt[BSONObjectID]("_id"))
     }
 
     //return sessionFactory.getCurrentSession.createCriteria(classOf[Resource]).
@@ -334,7 +356,7 @@ class MongoRepository @Autowired()(@Value("${mongo.uri}") mongoUri: String) exte
       cursor[BSONDocument]().
       collect[List](maxDocs = AllDocuments, err = Cursor.FailOnError[List[BSONDocument]]()).map { d =>
       d.flatMap { i =>
-        i.getAs[BSONObjectID]("_id")
+        i.getAsOpt[BSONObjectID]("_id")
       }
     }
   }
@@ -380,10 +402,10 @@ class MongoRepository @Autowired()(@Value("${mongo.uri}") mongoUri: String) exte
     resourceCollection.find(selector, noProjection).one[BSONDocument].map { bo =>
       bo.flatMap { b =>
         b.get("type").get match {
-          case BSONString("N") => Some(b.as[Newsitem])
-          case BSONString("W") => Some(b.as[Website])
-          case BSONString("F") => Some(b.as[Feed])
-          case BSONString("L") => Some(b.as[Watchlist])
+          case BSONString("N") => b.asOpt[Newsitem]
+          case BSONString("W") => b.asOpt[Website]
+          case BSONString("F") => b.asOpt[Feed]
+          case BSONString("L") => b.asOpt[Watchlist]
           case _ => None
         }
       }

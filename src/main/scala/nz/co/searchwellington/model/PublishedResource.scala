@@ -1,6 +1,6 @@
 package nz.co.searchwellington.model
 
-import reactivemongo.bson.BSONObjectID
+import reactivemongo.api.bson.BSONObjectID
 
 trait PublishedResource extends Resource {
   var publisher: Option[BSONObjectID]

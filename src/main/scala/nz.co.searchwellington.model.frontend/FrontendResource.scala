@@ -4,7 +4,7 @@ import java.io.Serializable
 import java.util.{Date, List}
 
 import nz.co.searchwellington.model.{Geocode, Tag}
-import reactivemongo.bson.BSONObjectID
+import reactivemongo.api.bson.BSONObjectID
 import uk.co.eelpieconsulting.common.views.rss.RssFeedable
 
 trait FrontendResource extends RssFeedable with Serializable {

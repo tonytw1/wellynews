@@ -6,7 +6,7 @@ import nz.co.searchwellington.repositories.mongo.MongoRepository
 import org.apache.log4j.Logger
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
-import reactivemongo.bson.BSONObjectID
+import reactivemongo.api.bson.BSONObjectID
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.{Await, Future}

@@ -5,7 +5,7 @@ import nz.co.searchwellington.model.{Feed, User}
 import org.joda.time.DateTime
 import org.junit.Assert.{assertEquals, assertFalse, assertTrue}
 import org.junit.Test
-import reactivemongo.bson.BSONObjectID
+import reactivemongo.api.bson.BSONObjectID
 
 class FeedItemAcceptorTest {
 

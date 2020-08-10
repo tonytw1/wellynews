@@ -2,7 +2,7 @@ package nz.co.searchwellington.model
 
 import java.util.Date
 
-import reactivemongo.bson.BSONObjectID
+import reactivemongo.api.bson.BSONObjectID
 
 trait Resource extends Tagged {
   val _id: BSONObjectID

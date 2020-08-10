@@ -10,7 +10,7 @@ import nz.co.searchwellington.repositories.mongo.MongoRepository
 import nz.co.searchwellington.tagging.TagAncestors
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
-import reactivemongo.bson.BSONObjectID
+import reactivemongo.api.bson.BSONObjectID
 import uk.co.eelpieconsulting.common.geo.model.{LatLong, Place}
 
 import scala.concurrent.ExecutionContext.Implicits.global

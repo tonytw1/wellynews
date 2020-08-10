@@ -1,6 +1,6 @@
 package nz.co.searchwellington.model
 
-import reactivemongo.bson.BSONObjectID
+import reactivemongo.api.bson.BSONObjectID
 
 case class Supression(_id: BSONObjectID = BSONObjectID.generate, url: String) {
 

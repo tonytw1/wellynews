@@ -2,7 +2,7 @@ package nz.co.searchwellington.model
 
 import java.util.Date
 
-import reactivemongo.bson.BSONObjectID
+import reactivemongo.api.bson.BSONObjectID
 
 case class DiscoveredFeed(_id: BSONObjectID = BSONObjectID.generate, url: String, referencedFrom: String, seen: Date) {
 

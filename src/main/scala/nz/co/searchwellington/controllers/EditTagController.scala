@@ -18,7 +18,7 @@ import org.springframework.validation.BindingResult
 import org.springframework.web.bind.annotation.{ModelAttribute, PathVariable, RequestMapping, RequestMethod}
 import org.springframework.web.servlet.ModelAndView
 import org.springframework.web.servlet.view.RedirectView
-import reactivemongo.bson.BSONObjectID
+import reactivemongo.api.bson.BSONObjectID
 
 import scala.concurrent.Await
 import scala.concurrent.ExecutionContext.Implicits.global

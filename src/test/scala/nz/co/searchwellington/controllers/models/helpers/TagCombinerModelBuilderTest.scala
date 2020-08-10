@@ -12,7 +12,7 @@ import org.junit.Assert.{assertEquals, assertFalse, assertTrue}
 import org.junit.{Before, Test}
 import org.mockito.Mockito.{mock, when}
 import org.springframework.mock.web.MockHttpServletRequest
-import reactivemongo.bson.BSONObjectID
+import reactivemongo.api.bson.BSONObjectID
 
 import scala.concurrent.{Await, Future}
 

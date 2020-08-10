@@ -7,7 +7,7 @@ import nz.co.searchwellington.tagging.TaggingReturnsOfficerService
 import org.apache.log4j.Logger
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
-import reactivemongo.bson.BSONObjectID
+import reactivemongo.api.bson.BSONObjectID
 
 import scala.concurrent.{ExecutionContext, Future}
 

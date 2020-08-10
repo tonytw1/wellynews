@@ -18,7 +18,7 @@ import org.joda.time.format.ISODateTimeFormat
 import org.joda.time.{DateTime, Interval}
 import org.springframework.beans.factory.annotation.{Autowired, Value}
 import org.springframework.stereotype.Component
-import reactivemongo.bson.BSONObjectID
+import reactivemongo.api.bson.BSONObjectID
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.duration._

@@ -9,7 +9,7 @@ import nz.co.searchwellington.repositories.mongo.MongoRepository
 import org.junit.Assert._
 import org.junit.{Before, Test}
 import org.mockito.Mockito.{mock, when}
-import reactivemongo.bson.BSONObjectID
+import reactivemongo.api.bson.BSONObjectID
 
 import scala.concurrent.{Await, Future}
 import scala.concurrent.ExecutionContext.Implicits.global

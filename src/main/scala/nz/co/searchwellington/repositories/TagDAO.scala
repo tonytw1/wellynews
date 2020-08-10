@@ -7,7 +7,7 @@ import nz.co.searchwellington.model.Tag
 import nz.co.searchwellington.repositories.mongo.MongoRepository
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
-import reactivemongo.bson.BSONObjectID
+import reactivemongo.api.bson.BSONObjectID
 
 import scala.concurrent.Future
 import scala.concurrent.ExecutionContext.Implicits.global

@@ -2,7 +2,7 @@ package nz.co.searchwellington.model
 
 import java.util.UUID
 
-import reactivemongo.bson.BSONObjectID
+import reactivemongo.api.bson.BSONObjectID
 
 case class Tag(_id: BSONObjectID = BSONObjectID.generate,
                id: String = UUID.randomUUID.toString,
