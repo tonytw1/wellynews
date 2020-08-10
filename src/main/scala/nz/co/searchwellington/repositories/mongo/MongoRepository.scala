@@ -163,7 +163,7 @@ class MongoRepository @Autowired()(@Value("${mongo.uri}") mongoUri: String) exte
 
   implicit def taggingWriter: BSONDocumentWriter[Tagging] = Macros.writer[Tagging]
 
-  implicit object FormResponseWriter extends BSONDocumentWriter[Geocode] {
+  implicit object GeocodeWriter extends BSONDocumentWriter[Geocode] {
     override def writeTry(t: Geocode): Try[BSONDocument] = {
       scala.util.Success {
         BSONDocument(
