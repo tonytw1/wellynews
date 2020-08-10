@@ -5,11 +5,8 @@ db.tag.find({}).forEach(
     function(doc) {
         if (doc.geocode) {
             if (doc.geocode.osm_id && doc.geocode.osm_type) {
-                print(doc.name);
-                print(doc.geocode.osm_id);
-                print(doc.geocode.osm_type);
                 var osm = {
-                    id: doc.geocode.osm_id,
+                    id: NumberLong(doc.geocode.osm_id),
                     type: doc.geocode.osm_type
                 };
                 doc.geocode.osmId = osm;
@@ -23,11 +20,8 @@ db.resource.find({}).forEach(
     function(doc) {
         if (doc.geocode) {
             if (doc.geocode.osm_id && doc.geocode.osm_type) {
-                print(doc.name);
-                print(doc.geocode.osm_id);
-                print(doc.geocode.osm_type);
                 var osm = {
-                    id: doc.geocode.osm_id,
+                    id: NumberLong(doc.geocode.osm_id),
                     type: doc.geocode.osm_type
                 };
                 doc.geocode.osmId = osm;
