@@ -111,25 +111,8 @@ class MongoRepository @Autowired()(@Value("${mongo.uri}") mongoUri: String) exte
 
   implicit def taggingReader: BSONDocumentReader[Tagging] = Macros.reader[Tagging]
 
-  // TODO This can be removed if we migrate the osm fields to a nested object in Mongo
-  implicit object GeocodeReader extends BSONDocumentReader[Geocode] {
-    override def readDocument(bson: BSONDocument): Try[Geocode] = {
-      val osmId = for {
-        i <- bson.getAsOpt[Long]("osm_id")
-        t <- bson.getAsOpt[String]("osm_type")
-      } yield {
-        OsmId(id = i, `type` = t)
-      }
-      scala.util.Success {
-        Geocode(
-          address = bson.getAsOpt[String]("address"),
-          latitude = bson.getAsOpt[Double]("latitude"),
-          longitude = bson.getAsOpt[Double]("longitude"),
-          osmId = osmId
-        )
-      }
-    }
-  }
+  implicit def osmIdReader: BSONDocumentReader[OsmId] = Macros.reader[OsmId]
+  implicit def geocodeReader: BSONDocumentReader[Geocode] = Macros.reader[Geocode]
 
   implicit def feedReader: BSONDocumentReader[Feed] = Macros.reader[Feed]
 
@@ -163,19 +146,8 @@ class MongoRepository @Autowired()(@Value("${mongo.uri}") mongoUri: String) exte
 
   implicit def taggingWriter: BSONDocumentWriter[Tagging] = Macros.writer[Tagging]
 
-  implicit object GeocodeWriter extends BSONDocumentWriter[Geocode] {
-    override def writeTry(t: Geocode): Try[BSONDocument] = {
-      scala.util.Success {
-        BSONDocument(
-          "address" -> t.address,
-          "latitude" -> t.latitude,
-          "longitude" -> t.longitude,
-          "osm_id" -> t.osmId.map(_.id),
-          "osm_type" -> t.osmId.map(_.`type`)
-        )
-      }
-    }
-  }
+  implicit def osmIdWriter: BSONDocumentWriter[OsmId] = Macros.writer[OsmId]
+  implicit def geocodeWriter: BSONDocumentWriter[Geocode] = Macros.writer[Geocode]
 
   implicit def feedWriter: BSONDocumentWriter[Feed] = Macros.writer[Feed]
 

@@ -3,12 +3,11 @@ package nz.co.searchwellington.repositories.mongo
 import java.util.{Date, UUID}
 
 import nz.co.searchwellington.ReasonableWaits
-import nz.co.searchwellington.model.Geocode
 import org.joda.time.DateTime
 import org.junit.Assert.assertEquals
 import org.junit.Test
 import reactivemongo.api.bson.collection.BSONCollection
-import reactivemongo.api.bson.{BSONDateTime, BSONDocument, BSONDocumentWriter, BSONHandler, BSONValue, Macros}
+import reactivemongo.api.bson.{BSONDateTime, BSONDocument, BSONHandler, BSONValue, Macros}
 import reactivemongo.api.{MongoConnection, MongoDriver}
 import reactivemongo.bson.DefaultBSONHandlers
 

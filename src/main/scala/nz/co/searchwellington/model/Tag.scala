@@ -41,5 +41,4 @@ case class Tag(_id: BSONObjectID = BSONObjectID.generate,
 
   def getPlace: Geocode = geocode.orNull
 
-
 }
