@@ -6,11 +6,11 @@ import nz.co.searchwellington.forms.EditNewsitem
 import nz.co.searchwellington.geocoding.osm.CachingNominatimResolveOsmIdService
 import nz.co.searchwellington.model._
 import nz.co.searchwellington.modification.ContentUpdateService
-import nz.co.searchwellington.repositories.{HandTaggingService, TagDAO}
 import nz.co.searchwellington.repositories.mongo.MongoRepository
-import nz.co.searchwellington.urls.UrlBuilder
+import nz.co.searchwellington.repositories.{HandTaggingService, TagDAO}
 import nz.co.searchwellington.views.Errors
 import org.apache.log4j.Logger
+import org.joda.time.format.ISODateTimeFormat
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Controller
 import org.springframework.validation.BindingResult
@@ -24,7 +24,6 @@ import scala.concurrent.ExecutionContext.Implicits.global
 @Controller
 class EditNewsitemController @Autowired()(contentUpdateService: ContentUpdateService,
                                           mongoRepository: MongoRepository,
-                                          urlBuilder: UrlBuilder,
                                           val loggedInUserFilter: LoggedInUserFilter,
                                           tagDAO: TagDAO,
                                           val cachingNominatimResolveOsmIdService: CachingNominatimResolveOsmIdService,
@@ -32,6 +31,8 @@ class EditNewsitemController @Autowired()(contentUpdateService: ContentUpdateSer
   extends ReasonableWaits with AcceptancePolicyOptions with Errors with GeotagParsing with RequiringLoggedInUser {
 
   private val log = Logger.getLogger(classOf[EditNewsitemController])
+
+  private val formDateFormat = ISODateTimeFormat.basicDate
 
   @RequestMapping(value = Array("/edit-newsitem/{id}"), method = Array(RequestMethod.GET))
   def prompt(@PathVariable id: String): ModelAndView = {
@@ -64,6 +65,8 @@ class EditNewsitemController @Autowired()(contentUpdateService: ContentUpdateSer
             }
           }
 
+          val date = formDateFormat.parseLocalDate(formObject.getDate).toDate
+
           import scala.collection.JavaConverters._
           val submittedTags = Await.result(tagDAO.loadTagsById(formObject.getTags.asScala), TenSeconds).toSet
 
@@ -71,6 +74,7 @@ class EditNewsitemController @Autowired()(contentUpdateService: ContentUpdateSer
             title = Some(formObject.getTitle),
             page = formObject.getUrl,
             description = Some(formObject.getDescription),
+            date = Some(date),
             geocode = geocode,
             held = submissionShouldBeHeld(loggedInUser)
           ))
@@ -111,6 +115,10 @@ class EditNewsitemController @Autowired()(contentUpdateService: ContentUpdateSer
         i.id + i.`type`
       }
       formObject.setSelectedGeocode(osmId.getOrElse(""))
+    }
+
+    n.date.map { d =>
+      formObject.setDate(formDateFormat.print(d.getTime))
     }
 
     val usersTags = n.resource_tags.filter(_.user_id == loggedInUser._id)

@@ -27,6 +27,11 @@
                 <input name="${status.expression}" class="title" value="$!{status.value}" />
                 <br />
 
+                #springBind("formObject.date")
+                <label for="${status.expression}">Date:</label>
+                <input name="${status.expression}" class="title" value="$!{status.value}" />
+                <br />
+
                 #springBind("formObject.geocode")
                 <label for="${status.expression}">Geocode:</label>
                 <input id="geocode" name="${status.expression}" class="title" value="$!{status.value}" />

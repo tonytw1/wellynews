@@ -12,6 +12,9 @@ public class EditNewsitem {
 
     private String description;
 
+    @NotBlank
+    private String date;
+
     private String geocode, selectedGeocode;
 
     private List<String> tags = Lists.newArrayList();
@@ -38,6 +41,14 @@ public class EditNewsitem {
 
     public void setDescription(String description) {
         this.description = description;
+    }
+
+    public String getDate() {
+        return date;
+    }
+
+    public void setDate(String date) {
+        this.date = date;
     }
 
     public String getGeocode() {
@@ -70,10 +81,10 @@ public class EditNewsitem {
                 "title='" + title + '\'' +
                 ", url='" + url + '\'' +
                 ", description='" + description + '\'' +
+                ", date='" + date + '\'' +
                 ", geocode='" + geocode + '\'' +
                 ", selectedGeocode='" + selectedGeocode + '\'' +
                 ", tags=" + tags +
                 '}';
     }
-
 }

@@ -6,6 +6,7 @@ import nz.co.searchwellington.model.{Newsitem, User}
 import nz.co.searchwellington.modification.ContentUpdateService
 import nz.co.searchwellington.repositories.mongo.MongoRepository
 import nz.co.searchwellington.repositories.{FrontendContentUpdater, HandTaggingService, TagDAO}
+import org.joda.time.DateTime
 import org.junit.Assert.assertEquals
 import org.junit.Test
 import org.mockito.Mockito.{mock, verify, when}
@@ -37,6 +38,7 @@ class EditNewsitemControllerTest {
 
     val editFormSubmission: EditNewsitem = new EditNewsitem()
     editFormSubmission.setTitle("New title")
+    editFormSubmission.setDate("20200617")
     import scala.collection.JavaConverters._
     editFormSubmission.setTags(Seq.empty.asJava)
 
@@ -47,6 +49,7 @@ class EditNewsitemControllerTest {
     verify(contentUpdateService).update(updatedNewsitem.capture)(Matchers.eq(ec))
 
     assertEquals(Some("New title"), updatedNewsitem.getValue.title)
+    assertEquals(Some(new DateTime(2020, 6, 17, 0, 0, 0).toDate), updatedNewsitem.getValue.date)
   }
 
 }
