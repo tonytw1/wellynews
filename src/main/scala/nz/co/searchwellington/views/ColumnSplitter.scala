@@ -1,6 +1,6 @@
 package nz.co.searchwellington.views
 
-import java.math.BigDecimal
+import java.math.{BigDecimal, RoundingMode}
 import java.util
 import java.util.List
 
@@ -20,7 +20,7 @@ class ColumnSplitter[T <: Object] {
   }
 
   private def splitPointFor(source: util.List[T]): Int = {
-    new BigDecimal(source.size).divide(NUMBER_OF_COLUMNS, BigDecimal.ROUND_UP).intValue
+    new BigDecimal(source.size).divide(NUMBER_OF_COLUMNS, RoundingMode.UP).intValue
   }
 
 }
