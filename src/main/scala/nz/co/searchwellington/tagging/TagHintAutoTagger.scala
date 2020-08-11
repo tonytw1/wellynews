@@ -10,15 +10,13 @@ import scala.collection.JavaConversions._
 import scala.concurrent.{ExecutionContext, Future}
 
 @Component
-class TagHintAutoTagger @Autowired() (tagDAO: TagDAO) {
+class TagHintAutoTagger @Autowired()(tagDAO: TagDAO) {
 
   private val commaSplitter = Splitter.on(",")
 
   def suggestTags(resource: Resource)(implicit ec: ExecutionContext): Future[Set[Tag]] = {
 
-    val resourceContent = (resource.title + " " + resource.description).toLowerCase
-
-    def matches(resource: Resource, tag: Tag) : Boolean = {
+    def matches(resourceContent: String, tag: Tag): Boolean = {
       val autotagHints = tag.autotag_hints.map { autotagHints =>
         commaSplitter.split(autotagHints).map(_.trim).toSeq
       }.getOrElse(Seq.empty)
@@ -28,8 +26,9 @@ class TagHintAutoTagger @Autowired() (tagDAO: TagDAO) {
       keywordsForTags.exists(keyword => resourceContent.contains(keyword.toLowerCase))
     }
 
+    val resourceContent = (resource.title + " " + resource.description).toLowerCase
     tagDAO.getAllTags.map { allTags =>
-      allTags.filter(tag => matches(resource, tag)).toSet
+      allTags.filter(tag => matches(resourceContent, tag)).toSet
     }
   }
 
