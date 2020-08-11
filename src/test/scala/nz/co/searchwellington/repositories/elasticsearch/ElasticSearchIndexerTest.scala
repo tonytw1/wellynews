@@ -218,8 +218,8 @@ class ElasticSearchIndexerTest extends ReasonableWaits {
     Await.result(elasticSearchIndexer.updateMultipleContentItems(resources.map(indexWithHandTaggings)), TenSeconds)
   }
 
-  private def queryForResources(query: ResourceQuery): Seq[Resource] = {
-    Await.result(elasticSearchIndexer.getResources(query, loggedInUser = Some(loggedInUser)).flatMap { rs =>
+  private def queryForResources(query: ResourceQuery, user: User = loggedInUser): Seq[Resource] = {
+    Await.result(elasticSearchIndexer.getResources(query, loggedInUser = Some(user)).flatMap { rs =>
       Future.sequence(rs._1.map(mongoRepository.getResourceByObjectId)).map(_.flatten)
     }, TenSeconds)
   }

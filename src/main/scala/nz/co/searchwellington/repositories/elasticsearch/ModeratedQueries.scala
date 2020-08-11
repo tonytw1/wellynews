@@ -1,7 +1,7 @@
 package nz.co.searchwellington.repositories.elasticsearch
 
-import com.sksamuel.elastic4s.http.ElasticDsl.{bool, must, termQuery}
-import com.sksamuel.elastic4s.searches.queries.Query
+import com.sksamuel.elastic4s.ElasticDsl.{must, termQuery}
+import com.sksamuel.elastic4s.requests.searches.queries.Query
 import nz.co.searchwellington.controllers.ShowBrokenDecisionService
 import nz.co.searchwellington.model.User
 
@@ -26,13 +26,10 @@ trait ModeratedQueries extends ElasticFields {
       */
       val contentIsOk = termQuery(HttpStatus, 200)
       val contentIsApproved = termQuery(Held, false)
-      val contentIsPublic = bool {
-        must(contentIsOk, contentIsApproved)
-      }
+      val contentIsPublic = must(contentIsOk, contentIsApproved)
       // val isContentOwner = ???
-      bool {
-        must(query, contentIsPublic)
-      }
+      must(query, contentIsPublic)
+
     } else {
       query
     }

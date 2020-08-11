@@ -1,14 +1,16 @@
 package nz.co.searchwellington.repositories.elasticsearch
 
-import com.sksamuel.elastic4s.DistanceUnit
-import com.sksamuel.elastic4s.analyzers.StandardAnalyzer
-import com.sksamuel.elastic4s.http.ElasticDsl._
-import com.sksamuel.elastic4s.http.bulk.BulkResponse
-import com.sksamuel.elastic4s.http.delete.DeleteResponse
-import com.sksamuel.elastic4s.http.{bulk => _, delete => _, search => _, _}
-import com.sksamuel.elastic4s.indexes.IndexRequest
-import com.sksamuel.elastic4s.searches.queries.Query
-import com.sksamuel.elastic4s.searches.{DateHistogramInterval, SearchRequest}
+import com.sksamuel.elastic4s.ElasticDsl._
+import com.sksamuel.elastic4s.http.JavaClient
+import com.sksamuel.elastic4s.requests.analyzers.StandardAnalyzer
+import com.sksamuel.elastic4s.requests.bulk.BulkResponse
+import com.sksamuel.elastic4s.requests.common.DistanceUnit
+import com.sksamuel.elastic4s.requests.delete.DeleteResponse
+import com.sksamuel.elastic4s.requests.indexes.IndexRequest
+import com.sksamuel.elastic4s.requests.searches.queries.Query
+import com.sksamuel.elastic4s.requests.searches.{DateHistogramInterval, SearchRequest}
+import com.sksamuel.elastic4s.requests.{bulk => _, delete => _, searches => _}
+import com.sksamuel.elastic4s.{ElasticClient, Response}
 import nz.co.searchwellington.ReasonableWaits
 import nz.co.searchwellington.controllers.ShowBrokenDecisionService
 import nz.co.searchwellington.model._
@@ -42,7 +44,6 @@ class ElasticSearchIndexer @Autowired()(val showBrokenDecisionService: ShowBroke
   private val log = Logger.getLogger(classOf[ElasticSearchIndexer])
 
   private val Index = elasticsearchIndex
-  private val Resources = "resources"
 
   private val client = {
     def ensureIndexes(client: ElasticClient): Unit = {
@@ -63,7 +64,7 @@ class ElasticSearchIndexer @Autowired()(val showBrokenDecisionService: ShowBroke
     def createIndexes(client: ElasticClient): Unit = {
       try {
         val eventualCreateIndexResult = client.execute {
-          createIndex(Index) mappings mapping(Resources).fields(
+          createIndex(Index).mapping(properties(
             textField(Title) analyzer StandardAnalyzer,
             keywordField(TitleSort),
             keywordField(Type),
@@ -78,7 +79,7 @@ class ElasticSearchIndexer @Autowired()(val showBrokenDecisionService: ShowBroke
             keywordField(FeedAcceptancePolicy),
             dateField(FeedLatestItemDate),
             dateField(LastChanged)
-          )
+          ))
         }
 
         val result = Await.result(eventualCreateIndexResult, Duration(10, SECONDS))
@@ -90,7 +91,7 @@ class ElasticSearchIndexer @Autowired()(val showBrokenDecisionService: ShowBroke
     }
 
     log.info("Connecting to Elasticsearch url: " + elasticsearchUrl)
-    val client = ElasticClient(ElasticProperties(elasticsearchUrl))
+    val client = ElasticClient(JavaClient(elasticsearchUrl))
     ensureIndexes(client)
     client
   }
@@ -144,7 +145,7 @@ class ElasticSearchIndexer @Autowired()(val showBrokenDecisionService: ShowBroke
           r._1.last_changed.map(lc => LastChanged -> new DateTime(lc))
         )
 
-        indexInto(Index / Resources).fields(fields.flatten) id r._1._id.stringify
+        indexInto(Index).fields(fields.flatten) id r._1._id.stringify
       }
     }
 
@@ -155,7 +156,7 @@ class ElasticSearchIndexer @Autowired()(val showBrokenDecisionService: ShowBroke
 
   def deleteResource(id: BSONObjectID): Future[Response[DeleteResponse]] = {
     client execute (
-      delete(id.stringify) from Index / Resources
+      delete(id.stringify) from Index
       )
   }
 
@@ -169,7 +170,7 @@ class ElasticSearchIndexer @Autowired()(val showBrokenDecisionService: ShowBroke
 
   def getAggregationFor(query: ResourceQuery, aggName: String, loggedInUser: Option[User]): Future[Seq[(String, Long)]] = {
     val aggs = Seq(termsAgg(aggName, aggName) size Integer.MAX_VALUE)
-    val request = (search(Index / Resources) query composeQueryFor(query, loggedInUser)) limit 0 aggregations aggs
+    val request = (search(Index) query composeQueryFor(query, loggedInUser)) limit 0 aggregations aggs
     client.execute(request).map { r =>
       r.result.aggregations.terms(aggName).buckets.map(b => (b.key, b.docCount))
     }
@@ -178,7 +179,7 @@ class ElasticSearchIndexer @Autowired()(val showBrokenDecisionService: ShowBroke
   def getArchiveCounts(loggedInUser: Option[User]): Future[Map[String, Long]] = {
     val everyThing = matchAllQuery
     val aggs = Seq(termsAgg("type", "type"))
-    val request = search(Index / Resources) query withModeration(everyThing, loggedInUser) limit 0 aggregations aggs
+    val request = search(Index) query withModeration(everyThing, loggedInUser) limit 0 aggregations aggs
 
     client.execute(request).map { r =>
       val typeAgg = r.result.aggregations.terms("type")
@@ -189,7 +190,7 @@ class ElasticSearchIndexer @Autowired()(val showBrokenDecisionService: ShowBroke
   }
 
   private def executeResourceQuery(query: ResourceQuery, order: SearchRequest => SearchRequest, loggedInUser: Option[User]): Future[(Seq[BSONObjectID], Long)] = {
-    val request = order(search(Index / Resources) query composeQueryFor(query, loggedInUser)) start query.startIndex limit query.maxItems
+    val request = order(search(Index) query composeQueryFor(query, loggedInUser)) start query.startIndex limit query.maxItems
 
     val start = DateTime.now()
     val eventualTuple: Future[(Seq[BSONObjectID], Long)] = client.execute(request).map { r =>
@@ -263,7 +264,7 @@ class ElasticSearchIndexer @Autowired()(val showBrokenDecisionService: ShowBroke
 
   def createdMonthAggregationFor(query: ResourceQuery, loggedInUser: Option[User]): Future[Seq[(Interval, Long)]] = {
     val aggs = Seq(dateHistogramAgg("date", "date").interval(DateHistogramInterval.Month))
-    val request = search(Index / Resources) query composeQueryFor(query, loggedInUser) limit 0 aggregations aggs
+    val request = search(Index) query composeQueryFor(query, loggedInUser) limit 0 aggregations aggs
 
     client.execute(request).map { r =>
       val dateAgg = r.result.aggregations.dateHistogram("date")

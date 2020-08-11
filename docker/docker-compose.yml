@@ -1,7 +1,7 @@
 version: '3'
 services:
-  elasticsearch6:
-    image: docker.elastic.co/elasticsearch/elasticsearch:6.5.4
+  elasticsearch7:
+    image: docker.elastic.co/elasticsearch/elasticsearch:7.8.1
     volumes:
     - "./elasticsearch.yml:/usr/share/elasticsearch/config/elasticsearch.yml"
     ports:
@@ -18,4 +18,3 @@ services:
     image: rabbitmq:3
     ports:
     - "5672:5672"
-
