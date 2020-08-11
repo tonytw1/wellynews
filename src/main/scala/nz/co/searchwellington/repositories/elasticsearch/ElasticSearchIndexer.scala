@@ -49,11 +49,12 @@ class ElasticSearchIndexer @Autowired()(val showBrokenDecisionService: ShowBroke
     def ensureIndexes(client: ElasticClient): Unit = {
       val exists = Await.result((client execute indexExists(Index)).map { r =>
         if (r.isSuccess) {
+          log.info("Elastic index exists")
           r.result.exists
         } else {
           throw new RuntimeException("Could not determine if index exists")
         }
-      }, TenSeconds)
+      }, OneMinute)
 
       if (!exists) {
         log.info("Index does not exist; creating")
@@ -82,7 +83,7 @@ class ElasticSearchIndexer @Autowired()(val showBrokenDecisionService: ShowBroke
           ))
         }
 
-        val result = Await.result(eventualCreateIndexResult, Duration(10, SECONDS))
+        val result = Await.result(eventualCreateIndexResult, OneMinute)
         log.info("Create indexes result: " + result)
 
       } catch {
