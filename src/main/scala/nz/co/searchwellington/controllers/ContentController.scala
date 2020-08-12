@@ -13,7 +13,7 @@ import org.springframework.web.servlet.ModelAndView
 import scala.concurrent.Await
 import scala.concurrent.duration.{Duration, SECONDS}
 
-@Order(4)
+@Order(5)
 @Controller
 class ContentController @Autowired()(contentModelBuilderServiceFactory: ContentModelBuilderServiceFactory, urlStack: UrlStack, loggedInUserFilter: LoggedInUserFilter) {
 
