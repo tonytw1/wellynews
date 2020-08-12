@@ -1,17 +1,26 @@
 # wellynews
 
-Source code for https://wellington.gen.nz/
+Source code for https://wellington.gen.nz/ and [@wellynews](https://twitter.com/wellynews).
 
-Aggregates content from my hometown and attempts to automagically tag it.
+Aggregates community news from my hometown Wellington, New Zealand.
+Content is curated from community group websites and RSS feeds.
 
-A long running code base where new ideas are tried out. Mileage may vary.
+This a long running project (> 10 years of continuous operation).
 
-Currently Scala controllers behind Spring framework built with Maven :grimace:
+The code base has changed alot over the years as development practises have evolved.
+Currently implemented as Scala controllers served from Spring Boot and built with Maven :grimace:
+
+## Related services
+
+Specific details of RSS and Twitter have been pushed into these potentially reusable services:
+
+- [Whakaoko](https://github.com/tonytw1/whakaoko) for RSS feed polling and aggregation.
+- [RSS to Twitter](https://github.com/tonytw1/rsstotwitter) for automatic publishing to the @wellynews Twitter account.
 
 
 ## Local dev
 
-Use docker to provide local MongoDB, Elasticsearch, Memcached andRabbitMQ dependencies.
+Use docker to provide local copies of the MongoDB, Elasticsearch, Memcached andRabbitMQ dependencies.
 
 ```
 docker-compose -f docker/docker-compose.yml up
@@ -32,21 +41,26 @@ Some slightly interesting things happen to automatically calculate the index tag
 
 #### Hand tagging
 
-Represents a tag applied directly by a user
+Represents a tag applied directly by a user.
 
 #### Publisher tags
 
-News items inherit the tags their publisher have
+News items inherit tags from their publisher.
+
+For well categorised publishers such as transport operators or sports clubs this approach places their newsitems with a
+high level of confidence.
 
 #### Feed tags
 
 News items accepted from a feed inherit the hand taggings applied to the feed.
 
-#### Ancestor
+When a publisher has multiple feeds each feed generally has a very specific topic (such as a city council's planning applications).
+In this case a feed tagging can be be very accurate.
+
+#### Ancestor tags
 
 Includes the ancestors of applied tags.
-ie. Trains implies Transport.
-
+Been tagged as Trains implies that this newsitem is related to Transport.
 
 ## Autotagger
 
