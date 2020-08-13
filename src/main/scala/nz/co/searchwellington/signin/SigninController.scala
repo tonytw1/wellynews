@@ -45,7 +45,7 @@ import scala.concurrent.ExecutionContext.Implicits.global
 
       loggedInUserFilter.getLoggedInUser.map { alreadyLoggedInUser =>
         if (alreadyLoggedInUser.isUnlinkedAccount && !(userToSignIn == alreadyLoggedInUser)) {
-          log.info("Reassigning resource ownership from " + alreadyLoggedInUser.getProfilename + " to " + userToSignIn.getProfilename)
+          log.info("Reassigning resource ownership from unlinked user" + alreadyLoggedInUser.getProfilename + " to " + userToSignIn.getProfilename)
           loginResourceOwnershipService.reassignOwnership(alreadyLoggedInUser, userToSignIn)
         }
       }
