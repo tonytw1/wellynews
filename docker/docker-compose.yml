@@ -11,7 +11,7 @@ services:
     ports:
     - "11211:11211"
   mongo:
-    image: mongo:3.2
+    image: mongo:3.4
     ports:
     - "27017:27017"
   rabbit:
