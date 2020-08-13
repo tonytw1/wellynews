@@ -179,8 +179,8 @@ import scala.concurrent.{Await, Future}
     ).flatMap(i => fetchByIds(i._1, loggedInUser))
   }
 
-  def getKeywordSearchFacets(keywords: String): Seq[TagContentCount] = {
-    relatedTagsService.getKeywordSearchFacets(keywords, null) // TODO This is abit odd - it's the only facet one which comes through here.
+  def getKeywordSearchRelatedTags(keywords: String): Seq[TagContentCount] = {
+    relatedTagsService.getKeywordSearchRelatedTags(keywords) // TODO This is abit odd - it's the only facet one which comes through here.
   }
 
   def getWebsitesMatchingKeywords(keywords: String, tag: Tag, startIndex: Int, maxItems: Int, loggedInUser: Option[User]): Seq[FrontendResource] = {

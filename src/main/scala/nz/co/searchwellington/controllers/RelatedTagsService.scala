@@ -56,7 +56,7 @@ import scala.concurrent.{Await, Future}
     }
   }
 
-  def getKeywordSearchFacets(keywords: String, tag: Tag): Seq[TagContentCount] = {
+  def getKeywordSearchRelatedTags(keywords: String): Seq[TagContentCount] = {
     Seq() // TODO implement
   }
 

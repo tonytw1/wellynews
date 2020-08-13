@@ -9,7 +9,7 @@ import nz.co.searchwellington.model.mappers.FrontendResourceMapper
 import nz.co.searchwellington.model.{Tag, Website}
 import nz.co.searchwellington.repositories.ContentRetrievalService
 import nz.co.searchwellington.urls.UrlBuilder
-import org.junit.Assert.{assertEquals, assertFalse, assertTrue}
+import org.junit.Assert.{assertEquals, assertFalse, assertTrue, fail}
 import org.junit.{Before, Test}
 import org.mockito.Mockito.{mock, when}
 import org.springframework.mock.web.MockHttpServletRequest
@@ -54,7 +54,7 @@ class SearchModelBuilderTest extends ReasonableWaits with ContentFields {
   def pageHeadingShouldBeSearchKeyword() {
     request.setParameter("keywords", "widgets")
     when(contentRetrievalService.getNewsitemsMatchingKeywords("widgets", 0, 30, loggedInUser, tag = None, publisher = None)).thenReturn(Future.successful(keywordNewsitemResults))
-    when(contentRetrievalService.getKeywordSearchFacets("widgets")).thenReturn(Seq.empty)
+    when(contentRetrievalService.getKeywordSearchRelatedTags("widgets")).thenReturn(Seq.empty)
 
     val mv = Await.result(modelBuilder.populateContentModel(request), TenSeconds).get
 
@@ -62,7 +62,12 @@ class SearchModelBuilderTest extends ReasonableWaits with ContentFields {
   }
 
   @Test
-  def canSearchSpecificPublishersNewsitems(): Unit = {
+  def shouldShowTagAndPublisherRefinements(): Unit = {
+    fail()
+  }
+
+  @Test
+  def canSearchSpecificPublishersNewsitems() = {
     val publisher = Website(id = "123", title = Some("A publisher with lots of newsitems"))
     request.setParameter("keywords", "sausages")
     request.setAttribute("publisher", publisher)
@@ -70,7 +75,7 @@ class SearchModelBuilderTest extends ReasonableWaits with ContentFields {
     val publisherNewsitemSearchResults = (Seq(tagNewsitem, anotherTagNewsitem), 2L)
     when(contentRetrievalService.getNewsitemsMatchingKeywords("sausages", 0, 30, loggedInUser, tag = None, publisher = Some(publisher))).
       thenReturn(Future.successful(publisherNewsitemSearchResults))
-    when(contentRetrievalService.getKeywordSearchFacets("sausages")).thenReturn(Seq.empty)
+    when(contentRetrievalService.getKeywordSearchRelatedTags("sausages")).thenReturn(Seq.empty)
     when(frontendResourceMapper.createFrontendResourceFrom(publisher, None)).thenReturn(Future.successful(FrontendWebsite(id = "123")))
 
     val mv = Await.result(modelBuilder.populateContentModel(request), TenSeconds).get
