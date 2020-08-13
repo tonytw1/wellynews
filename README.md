@@ -11,12 +11,13 @@ For example:
 
 - Transport related newsitems (a tag feed)
 - Consultation newsitems relating to the Central Library (a tag combiner feed)
-- Newsitems Wellington City Council has published about the airport runway extenstion (a publisher tag combinder feed).
+- Newsitems Wellington City Council has published about the airport runway extension (a publisher tag combiner feed).
 
 This a long running project (> 10 years of continuous operation).
 
 The code base has changed alot over the years as development practises have evolved.
 Currently implemented as Scala controllers served from Spring Boot and built with Maven :grimace:
+MongoDB for persistence and Elasticsearch for indexing.
 
 
 ## Local dev
