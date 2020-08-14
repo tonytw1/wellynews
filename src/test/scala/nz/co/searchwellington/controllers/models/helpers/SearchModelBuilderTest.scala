@@ -6,7 +6,7 @@ import nz.co.searchwellington.ReasonableWaits
 import nz.co.searchwellington.controllers.models.SearchModelBuilder
 import nz.co.searchwellington.model.frontend.{FrontendResource, FrontendWebsite}
 import nz.co.searchwellington.model.mappers.FrontendResourceMapper
-import nz.co.searchwellington.model.{Tag, TagContentCount, Website}
+import nz.co.searchwellington.model.{PublisherContentCount, Tag, TagContentCount, Website}
 import nz.co.searchwellington.repositories.ContentRetrievalService
 import nz.co.searchwellington.urls.UrlBuilder
 import org.junit.Assert.{assertEquals, assertFalse, assertTrue}
@@ -55,6 +55,7 @@ class SearchModelBuilderTest extends ReasonableWaits with ContentFields {
     request.setParameter("keywords", "widgets")
     when(contentRetrievalService.getNewsitemsMatchingKeywords("widgets", 0, 30, loggedInUser, tag = None, publisher = None)).thenReturn(Future.successful(keywordNewsitemResults))
     when(contentRetrievalService.getNewsitemKeywordSearchRelatedTags("widgets", loggedInUser)).thenReturn(Seq.empty)
+    when(contentRetrievalService.getNewsitemKeywordSearchRelatedPublishers("widgets", loggedInUser)).thenReturn(Seq.empty)
 
     val mv = Await.result(modelBuilder.populateContentModel(request), TenSeconds).get
 
@@ -63,20 +64,26 @@ class SearchModelBuilderTest extends ReasonableWaits with ContentFields {
 
   @Test
   def shouldShowTagAndPublisherRefinements(): Unit = {
+    val q = "widgets"
+
     val tag = Tag()
     val anotherTag = Tag()
-
     val tagRefinements = Seq[TagContentCount](TagContentCount(tag, 1L), TagContentCount(anotherTag, 2L))
 
-    val q = "widgets"
+    val publisher = Website()
+    val anotherPublisher = Website()
+    val publisherRefinements = Seq[PublisherContentCount](PublisherContentCount(publisher, 1L), PublisherContentCount(anotherPublisher, 2L))
+
     request.setParameter("keywords", q)
     when(contentRetrievalService.getNewsitemsMatchingKeywords(q, 0, 30, loggedInUser, tag = None, publisher = None)).thenReturn(Future.successful(keywordNewsitemResults))
     when(contentRetrievalService.getNewsitemKeywordSearchRelatedTags(q, loggedInUser)).thenReturn(tagRefinements)
+    when(contentRetrievalService.getNewsitemKeywordSearchRelatedPublishers(q, loggedInUser)).thenReturn(publisherRefinements)
 
     val mv = Await.result(modelBuilder.populateContentModel(request), TenSeconds).get
 
     import scala.collection.JavaConverters._
     assertEquals(tagRefinements.asJava, mv.getModel.get("related_tags"))
+    assertEquals(publisherRefinements.asJava, mv.getModel.get("related_publishers"))
   }
 
   @Test
@@ -89,6 +96,7 @@ class SearchModelBuilderTest extends ReasonableWaits with ContentFields {
     when(contentRetrievalService.getNewsitemsMatchingKeywords("sausages", 0, 30, loggedInUser, tag = None, publisher = Some(publisher))).
       thenReturn(Future.successful(publisherNewsitemSearchResults))
     when(contentRetrievalService.getNewsitemKeywordSearchRelatedTags("sausages", loggedInUser)).thenReturn(Seq.empty)
+    when(contentRetrievalService.getNewsitemKeywordSearchRelatedPublishers("sausages", loggedInUser)).thenReturn(Seq.empty)
     when(frontendResourceMapper.createFrontendResourceFrom(publisher, None)).thenReturn(Future.successful(FrontendWebsite(id = "123")))
 
     val mv = Await.result(modelBuilder.populateContentModel(request), TenSeconds).get
@@ -103,6 +111,7 @@ class SearchModelBuilderTest extends ReasonableWaits with ContentFields {
     request.setAttribute("tags", tags)
     when(contentRetrievalService.getNewsitemsMatchingKeywords("widgets", 0, 30, loggedInUser, tag = Some(tag), publisher = None)).
       thenReturn(Future.successful(tagKeywordNewsitemResults))
+    when(contentRetrievalService.getNewsitemKeywordSearchRelatedPublishers("widgets", loggedInUser)).thenReturn(Seq.empty)
 
     val mv = Await.result(modelBuilder.populateContentModel(request), TenSeconds).get
 
@@ -115,6 +124,7 @@ class SearchModelBuilderTest extends ReasonableWaits with ContentFields {
     request.setAttribute("tags", tags)
     when(contentRetrievalService.getNewsitemsMatchingKeywords("widgets", 0, 30, loggedInUser, tag = Some(tag), publisher = None)).
       thenReturn(Future.successful(tagKeywordNewsitemResults))
+    when(contentRetrievalService.getNewsitemKeywordSearchRelatedPublishers("widgets", loggedInUser)).thenReturn(Seq.empty)
 
     val mv = Await.result(modelBuilder.populateContentModel(request), TenSeconds).get
 

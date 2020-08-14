@@ -90,7 +90,7 @@ import scala.concurrent.{Await, Future}
 
     val tagAggregation = elasticSearchIndexer.getAggregationFor(newsitemsByKeywords, elasticSearchIndexer.Tags, loggedInUser);
 
-    // TODO deplication
+    // TODO duplication
     def toTagContentCount(facet: (String, Long)): Future[Option[TagContentCount]] = {
       mongoRepository.getTagByObjectId(BSONObjectID.parse(facet._1).get).map { to =>
         to.map { tag =>
@@ -102,8 +102,31 @@ import scala.concurrent.{Await, Future}
     val eventualTagContentCounts: Future[Seq[TagContentCount]] = tagAggregation.flatMap { ts =>
       Future.sequence(ts.map(toTagContentCount)).map(_.flatten)
     }
-
     Await.result(eventualTagContentCounts, TenSeconds)
+  }
+  def getNewsitemKeywordSearchRelatedPublishers(keywords: String, loggedInUser: Option[User]): Seq[PublisherContentCount] = {
+    val newsitemsByKeywords = ResourceQuery(`type` = newsitems, q = Some(keywords), publisher = None, tags = None)
+
+    val publisherAggregation = elasticSearchIndexer.getAggregationFor(newsitemsByKeywords, elasticSearchIndexer.Publisher, loggedInUser);
+
+    // TODO duplication
+    def toPublisherContentCount(facet: (String, Long)): Future[Option[PublisherContentCount]] = {
+      mongoRepository.getResourceByObjectId(BSONObjectID.parse(facet._1).get).map { to =>
+        to.flatMap { resource =>
+          resource match {
+            case publisher: Website =>
+              Some(PublisherContentCount(publisher, facet._2))
+            case _ =>
+              None
+          }
+        }
+      }
+    }
+
+    val eventualPublisherContentCounts = publisherAggregation.flatMap { ts =>
+      Future.sequence(ts.map(toPublisherContentCount)).map(_.flatten)
+    }
+    Await.result(eventualPublisherContentCounts, TenSeconds)
   }
 
   def getTagWatchlist(tag: Tag, loggedInUser: Option[User]): Future[Seq[FrontendResource]] = {

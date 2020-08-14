@@ -60,13 +60,18 @@ import scala.concurrent.Future
       maybeTag.map { tag =>
         mv.addObject("tag", tag)
       }
-      val tagRefinements: Seq[TagContentCount] = maybeTag.fold {
+      val tagRefinements = maybeTag.fold {
         contentRetrievalService.getNewsitemKeywordSearchRelatedTags(keywords, loggedInUser)
       }{ _ =>
         Seq.empty
       }
       if (tagRefinements.nonEmpty) {
         mv.addObject("related_tags", tagRefinements.asJava)
+      }
+
+      val publisherRefinements = contentRetrievalService.getNewsitemKeywordSearchRelatedPublishers(keywords, loggedInUser)
+      if (publisherRefinements.nonEmpty) {
+        mv.addObject("related_publishers", publisherRefinements.asJava)
       }
 
       /*

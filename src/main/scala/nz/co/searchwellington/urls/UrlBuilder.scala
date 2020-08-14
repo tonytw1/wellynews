@@ -81,6 +81,10 @@ class UrlBuilder @Autowired()(siteInformation: SiteInformation, urlWordsGenerato
     getTagUrl(tag) + "?keywords=" + UrlParameterEncoder.encode(keywords)
   }
 
+  def getPublisherSearchUrl(publisher: Website, keywords: String): String = {
+    getSearchUrlFor(keywords) // TODO
+  }
+
   def getLocalPageUrl(resource: FrontendResource): String = {
     resource match {
       case n: FrontendNewsitem =>
