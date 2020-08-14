@@ -6,16 +6,16 @@ import nz.co.searchwellington.ReasonableWaits
 import nz.co.searchwellington.controllers.models.SearchModelBuilder
 import nz.co.searchwellington.model.frontend.{FrontendResource, FrontendWebsite}
 import nz.co.searchwellington.model.mappers.FrontendResourceMapper
-import nz.co.searchwellington.model.{Tag, Website}
+import nz.co.searchwellington.model.{Tag, TagContentCount, Website}
 import nz.co.searchwellington.repositories.ContentRetrievalService
 import nz.co.searchwellington.urls.UrlBuilder
-import org.junit.Assert.{assertEquals, assertFalse, assertTrue, fail}
+import org.junit.Assert.{assertEquals, assertFalse, assertTrue}
 import org.junit.{Before, Test}
 import org.mockito.Mockito.{mock, when}
 import org.springframework.mock.web.MockHttpServletRequest
 
-import scala.concurrent.{Await, Future}
 import scala.concurrent.ExecutionContext.Implicits.global
+import scala.concurrent.{Await, Future}
 
 class SearchModelBuilderTest extends ReasonableWaits with ContentFields {
   private val contentRetrievalService = mock(classOf[ContentRetrievalService])
@@ -63,7 +63,20 @@ class SearchModelBuilderTest extends ReasonableWaits with ContentFields {
 
   @Test
   def shouldShowTagAndPublisherRefinements(): Unit = {
-    fail()
+    val tag = Tag()
+    val anotherTag = Tag()
+
+    val tagRefinements = Seq[TagContentCount](TagContentCount(tag, 1L), TagContentCount(anotherTag, 2L))
+
+    val q = "widgets"
+    request.setParameter("keywords", q)
+    when(contentRetrievalService.getNewsitemsMatchingKeywords(q, 0, 30, loggedInUser, tag = None, publisher = None)).thenReturn(Future.successful(keywordNewsitemResults))
+    when(contentRetrievalService.getKeywordSearchRelatedTags(q)).thenReturn(tagRefinements)
+
+    val mv = Await.result(modelBuilder.populateContentModel(request), TenSeconds).get
+
+    import scala.collection.JavaConverters._
+    assertEquals(tagRefinements.asJava, mv.getModel.get("related_tags"))
   }
 
   @Test
