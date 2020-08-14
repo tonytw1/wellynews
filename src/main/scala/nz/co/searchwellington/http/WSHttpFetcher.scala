@@ -3,6 +3,7 @@ package nz.co.searchwellington.http
 import akka.actor.ActorSystem
 import akka.stream.ActorMaterializer
 import nz.co.searchwellington.ReasonableWaits
+import nz.co.searchwellington.model.SiteInformation
 import org.apache.log4j.Logger
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.core.task.TaskExecutor
@@ -12,7 +13,7 @@ import play.api.libs.ws.ahc._
 import scala.concurrent.{ExecutionContext, Future}
 
 @Component
-class WSHttpFetcher @Autowired()(feedReaderTaskExecutor: TaskExecutor) extends HttpFetcher with ReasonableWaits { // TODO seperate executor
+class WSHttpFetcher @Autowired()(feedReaderTaskExecutor: TaskExecutor, siteInformation: SiteInformation) extends HttpFetcher with ReasonableWaits { // TODO seperate executor
 
   private val log = Logger.getLogger(classOf[WSHttpFetcher])
 
@@ -30,6 +31,6 @@ class WSHttpFetcher @Autowired()(feedReaderTaskExecutor: TaskExecutor) extends H
     eventualResult
   }
 
-  override def getUserAgent(): String = "TODO"
+  override def getUserAgent(): String = siteInformation.getUserAgent
 
 }

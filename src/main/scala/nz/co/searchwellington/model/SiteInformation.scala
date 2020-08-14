@@ -10,9 +10,12 @@ class SiteInformation @Autowired()(@Value("${areaname}") areaname: String = "",
                                    @Value("${imageroot}") imageRoot: String = "",
                                    @Value("${staticroot}") staticRoot: String = "") {
 
+
   def getAreaname: String = areaname
 
   def getSitename: String = "Search " + this.areaname
+
+  def getUserAgent: String = "wellynews (" + url + "/about)"
 
   def getTagline: String = areaname + " in a box"
 

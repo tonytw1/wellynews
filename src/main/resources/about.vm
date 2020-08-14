@@ -28,7 +28,7 @@ Organisations can indicate in their robots.txt that Search Wellington should not
 <p>The following lines in your robots.txt file will result in your content been removed from the index:</p>
 
 <ul>
-	<li><code>User-agent: wellynews<br />
+	<li><code>User-agent: $user_agent<br />
 	Disallow: *</code></li>
 </ul>
 

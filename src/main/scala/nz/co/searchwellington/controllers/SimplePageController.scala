@@ -2,6 +2,7 @@ package nz.co.searchwellington.controllers
 
 import javax.servlet.http.{HttpServletRequest, HttpServletResponse}
 import nz.co.searchwellington.ReasonableWaits
+import nz.co.searchwellington.model.SiteInformation
 import nz.co.searchwellington.repositories.ContentRetrievalService
 import nz.co.searchwellington.repositories.mongo.MongoRepository
 import org.springframework.beans.factory.annotation.Autowired
@@ -14,7 +15,7 @@ import scala.concurrent.Await
 import scala.concurrent.ExecutionContext.Implicits.global
 
 @Order(1)
-@Controller class SimplePageController @Autowired()(
+@Controller class SimplePageController @Autowired()( siteInformation: SiteInformation,
                                                      urlStack: UrlStack,
                                                      val contentRetrievalService: ContentRetrievalService,
                                                      mongoRepository: MongoRepository, loggedInUserFilter: LoggedInUserFilter)
@@ -29,6 +30,7 @@ import scala.concurrent.ExecutionContext.Implicits.global
     } yield {
       new ModelAndView("about").
         addObject("heading", "About").
+        addObject("user_agent", siteInformation.getUserAgent).
         addObject("latest_newsitems", latestNewsitems.asJava)
     }).flatMap(withCommonLocal), TenSeconds)
   }
