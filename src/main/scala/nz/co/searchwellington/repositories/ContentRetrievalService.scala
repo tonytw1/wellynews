@@ -85,6 +85,26 @@ import scala.concurrent.{Await, Future}
     toFrontendResourcesWithTotalCount(elasticSearchIndexer.getResources(newsitemsByKeywords, loggedInUser = loggedInUser), loggedInUser)
   }
 
+  def getNewsitemKeywordSearchRelatedTags(keywords: String, loggedInUser: Option[User]): Seq[TagContentCount] = {
+    val newsitemsByKeywords = ResourceQuery(`type` = newsitems, q = Some(keywords), publisher = None, tags = None)
+
+    val tagAggregation = elasticSearchIndexer.getAggregationFor(newsitemsByKeywords, elasticSearchIndexer.Tags, loggedInUser);
+
+    // TODO deplication
+    def toTagContentCount(facet: (String, Long)): Future[Option[TagContentCount]] = {
+      mongoRepository.getTagByObjectId(BSONObjectID.parse(facet._1).get).map { to =>
+        to.map { tag =>
+          TagContentCount(tag, facet._2)
+        }
+      }
+    }
+
+    val eventualTagContentCounts: Future[Seq[TagContentCount]] = tagAggregation.flatMap { ts =>
+      Future.sequence(ts.map(toTagContentCount)).map(_.flatten)
+    }
+
+    Await.result(eventualTagContentCounts, TenSeconds)
+  }
 
   def getTagWatchlist(tag: Tag, loggedInUser: Option[User]): Future[Seq[FrontendResource]] = {
     val taggedWebsites = ResourceQuery(`type` = watchlists, tags = Some(Set(tag)))
@@ -177,10 +197,6 @@ import scala.concurrent.{Await, Future}
       ),
       loggedInUser = loggedInUser
     ).flatMap(i => fetchByIds(i._1, loggedInUser))
-  }
-
-  def getKeywordSearchRelatedTags(keywords: String): Seq[TagContentCount] = {
-    relatedTagsService.getKeywordSearchRelatedTags(keywords) // TODO This is abit odd - it's the only facet one which comes through here.
   }
 
   def getWebsitesMatchingKeywords(keywords: String, tag: Tag, startIndex: Int, maxItems: Int, loggedInUser: Option[User]): Seq[FrontendResource] = {

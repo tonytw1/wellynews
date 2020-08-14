@@ -56,10 +56,6 @@ import scala.concurrent.{Await, Future}
     }
   }
 
-  def getKeywordSearchRelatedTags(keywords: String): Seq[TagContentCount] = {
-    Seq() // TODO implement
-  }
-
   def getRelatedPublishersForTag(tag: Tag, maxItems: Int, loggedInUser: Option[User]): Future[Seq[PublisherContentCount]] = {
 
     def getPublishersForTag(tag: Tag, loggedInUser: Option[User]): Future[Seq[(String, Long)]] = {

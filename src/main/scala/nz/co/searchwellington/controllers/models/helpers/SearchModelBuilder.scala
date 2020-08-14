@@ -61,7 +61,7 @@ import scala.concurrent.Future
         mv.addObject("tag", tag)
       }
       val tagRefinements: Seq[TagContentCount] = maybeTag.fold {
-        contentRetrievalService.getKeywordSearchRelatedTags(keywords)
+        contentRetrievalService.getNewsitemKeywordSearchRelatedTags(keywords, loggedInUser)
       }{ _ =>
         Seq.empty
       }

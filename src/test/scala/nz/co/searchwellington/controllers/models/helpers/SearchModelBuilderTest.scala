@@ -54,7 +54,7 @@ class SearchModelBuilderTest extends ReasonableWaits with ContentFields {
   def pageHeadingShouldBeSearchKeyword() {
     request.setParameter("keywords", "widgets")
     when(contentRetrievalService.getNewsitemsMatchingKeywords("widgets", 0, 30, loggedInUser, tag = None, publisher = None)).thenReturn(Future.successful(keywordNewsitemResults))
-    when(contentRetrievalService.getKeywordSearchRelatedTags("widgets")).thenReturn(Seq.empty)
+    when(contentRetrievalService.getNewsitemKeywordSearchRelatedTags("widgets", loggedInUser)).thenReturn(Seq.empty)
 
     val mv = Await.result(modelBuilder.populateContentModel(request), TenSeconds).get
 
@@ -71,7 +71,7 @@ class SearchModelBuilderTest extends ReasonableWaits with ContentFields {
     val q = "widgets"
     request.setParameter("keywords", q)
     when(contentRetrievalService.getNewsitemsMatchingKeywords(q, 0, 30, loggedInUser, tag = None, publisher = None)).thenReturn(Future.successful(keywordNewsitemResults))
-    when(contentRetrievalService.getKeywordSearchRelatedTags(q)).thenReturn(tagRefinements)
+    when(contentRetrievalService.getNewsitemKeywordSearchRelatedTags(q, loggedInUser)).thenReturn(tagRefinements)
 
     val mv = Await.result(modelBuilder.populateContentModel(request), TenSeconds).get
 
@@ -88,7 +88,7 @@ class SearchModelBuilderTest extends ReasonableWaits with ContentFields {
     val publisherNewsitemSearchResults = (Seq(tagNewsitem, anotherTagNewsitem), 2L)
     when(contentRetrievalService.getNewsitemsMatchingKeywords("sausages", 0, 30, loggedInUser, tag = None, publisher = Some(publisher))).
       thenReturn(Future.successful(publisherNewsitemSearchResults))
-    when(contentRetrievalService.getKeywordSearchRelatedTags("sausages")).thenReturn(Seq.empty)
+    when(contentRetrievalService.getNewsitemKeywordSearchRelatedTags("sausages", loggedInUser)).thenReturn(Seq.empty)
     when(frontendResourceMapper.createFrontendResourceFrom(publisher, None)).thenReturn(Future.successful(FrontendWebsite(id = "123")))
 
     val mv = Await.result(modelBuilder.populateContentModel(request), TenSeconds).get
