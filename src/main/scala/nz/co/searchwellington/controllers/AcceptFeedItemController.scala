@@ -34,7 +34,7 @@ class AcceptFeedItemController @Autowired()(mongoRepository: MongoRepository,
               log.warn("Could not read feed items: " + l)
               None
             }, { r =>
-              r._1.find(fi => fi.url == url)
+              r._1._1.find(fi => fi.url == url)
             })
           }
 

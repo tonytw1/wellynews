@@ -49,7 +49,7 @@
 		</ul>
 					
 		#if ($main_content) 
-			<p>This feed currently contains the following newsitems:</p>
+			<p>This feed currently contains the following newsitems (total count $feed_total_count):</p>
 			
 			#if($geocoded)
 				<div id="map" style="width: 520px; height: 520px"></div>

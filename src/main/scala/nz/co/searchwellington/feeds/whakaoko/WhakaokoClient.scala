@@ -83,13 +83,16 @@ class WhakaokoClient @Autowired()(@Value("${whakaoko.url}") whakaokoUrl: String,
     }
   }
 
-  def getSubscriptionFeedItems(subscriptionId: String)(implicit ec: ExecutionContext): Future[Seq[FeedItem]] = {
+  def getSubscriptionFeedItems(subscriptionId: String)(implicit ec: ExecutionContext): Future[(Seq[FeedItem], Long)] = {
     val subscriptionItemsUrl = whakaokoUrl + "/" + whakaokoUsername + "/subscriptions/" + subscriptionId + "/items"
     wsClient.url(subscriptionItemsUrl).get.map { r =>
       if (r.status == HttpStatus.SC_OK) {
-        Json.parse(r.body).as[Seq[FeedItem]]
+        val feedItems: Seq[FeedItem] = Json.parse(r.body).as[Seq[FeedItem]]
+        val totalCount: Long = r.header("x-total-count").map(c => c.toLong).getOrElse(feedItems.size)
+        val z: (Seq[FeedItem], Long) = (feedItems, totalCount)
+        z
       } else {
-        Seq.empty
+        (Seq.empty, 0L)
       }
     }
   }

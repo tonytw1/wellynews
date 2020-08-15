@@ -26,7 +26,7 @@ import scala.concurrent.{ExecutionContext, Future}
     }
   }
 
-  def getSubscriptionFeedItems(subscriptionId: String)(implicit ec: ExecutionContext): Future[Either[String, Seq[FeedItem]]] = {
+  def getSubscriptionFeedItems(subscriptionId: String)(implicit ec: ExecutionContext): Future[Either[String, (Seq[FeedItem], Long)]] = {
     client.getSubscriptionFeedItems(subscriptionId).map { r =>
       Right(r)
     }

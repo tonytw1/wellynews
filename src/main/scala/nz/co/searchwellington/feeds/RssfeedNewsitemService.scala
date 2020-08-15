@@ -60,14 +60,14 @@ import scala.concurrent.{Await, ExecutionContext, Future}
 
   }
 
-  def getFeedItemsAndDetailsFor(feed: Feed)(implicit ec: ExecutionContext): Future[Either[String, (Seq[FeedItem], Subscription)]] = {
+  def getFeedItemsAndDetailsFor(feed: Feed)(implicit ec: ExecutionContext): Future[Either[String, ((Seq[FeedItem], Long), Subscription)]] = {
     whakaokoFeedReader.fetchFeedItems(feed)
   }
 
   def getLatestPublicationDate(feed: Feed)(implicit ec: ExecutionContext): Future[Option[Date]] = {
     getFeedItemsAndDetailsFor(feed).map { r =>
       r.toOption.flatMap { right =>
-        latestPublicationDateOf(right._1)
+        latestPublicationDateOf(right._1._1)
       }
     }
   }
@@ -84,7 +84,7 @@ import scala.concurrent.{Await, ExecutionContext, Future}
   // TODO this is interesting but always suppressing when deleting a newsitem which came from a feed would be simpler
   def isUrlInAcceptedFeeds(url: String)(implicit ec: ExecutionContext): Future[Boolean] = { // TODO should be option
     @Deprecated() // Should really use the Either return
-    def getFeedItemsFor(feed: Feed)(implicit ec: ExecutionContext): Future[Option[Seq[FeedItem]]] = {
+    def getFeedItemsFor(feed: Feed)(implicit ec: ExecutionContext): Future[Option[(Seq[FeedItem], Long)]] = {
       whakaokoFeedReader.fetchFeedItems(feed).map { feedItems =>
         feedItems.fold(
           { l =>
@@ -104,7 +104,7 @@ import scala.concurrent.{Await, ExecutionContext, Future}
     }
     eventualAutoAcceptingFeeds.map { autoAcceptFeeds =>
       autoAcceptFeeds.exists { feed =>
-        Await.result(getFeedItemsFor(feed), TenSeconds).getOrElse(Seq.empty).exists(ni => ni.url == url)
+        Await.result(getFeedItemsFor(feed), TenSeconds).getOrElse((Seq.empty, 0))._1.exists(ni => ni.url == url)
       }
     }
   }

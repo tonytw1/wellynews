@@ -45,14 +45,15 @@ import scala.concurrent.Future
       }
     }
 
-    def feedItemsFor(feed: Feed): Future[Either[String, Seq[FrontendResource]]] = {
+    def feedItemsFor(feed: Feed): Future[Either[String, (Seq[FrontendResource], Long)]] = {
       rssfeedNewsitemService.getFeedItemsAndDetailsFor(feed).flatMap { feedItemsForFeed =>
         feedItemsForFeed.fold({ l =>
           Future.successful(Left(l))
         }, {
           result =>
             val feedItems = result._1
-            val feedNewsitems = feedItems.map(i => feeditemToNewsitemService.makeNewsitemFromFeedItem(i, feed))
+            val feedNewsitems = feedItems._1.map(i => feeditemToNewsitemService.makeNewsitemFromFeedItem(i, feed))
+            val totalCount = feedItems._2
 
             val eventualFrontendFeedNewitems = Future.sequence {
               feedNewsitems.map { r =>
@@ -65,21 +66,22 @@ import scala.concurrent.Future
             }
 
             eventualWithSuppressionAndLocalCopyInformation.map { i =>
-              Right(i)
+              Right((i, totalCount))
             }
         })
       }
     }
 
-    def populateFeedItems(mv: ModelAndView, feedItems: Either[String, Seq[FrontendResource]]): ModelAndView = {
+    def populateFeedItems(mv: ModelAndView, feedItems: Either[String, (Seq[FrontendResource], Long)]): ModelAndView = {
       feedItems.fold({
         l =>
           mv.addObject("feed_error", l)
           mv
       }, { result =>
         import scala.collection.JavaConverters._
-        mv.addObject(MAIN_CONTENT, result.asJava)
-        populateGeotaggedFeedItems(mv, result)
+        mv.addObject(MAIN_CONTENT, result._1.asJava)
+        populateGeotaggedFeedItems(mv, result._1)
+        mv.addObject("feed_total_count", result._2)
         mv
       })
     }

@@ -35,11 +35,11 @@ import scala.concurrent.{ExecutionContext, Future}
 
         }, { r =>
           val feedNewsitems = r._1
-          log.debug("Feed contains " + feedNewsitems.size + " items")
-          val inferredHttpStatus = if (feedNewsitems.nonEmpty) 200 else -3
+          log.debug("Feed contains " + feedNewsitems._1.size + " items from " + feedNewsitems._2 + " total items")
+          val inferredHttpStatus = if (feedNewsitems._1.nonEmpty) 200 else -3
 
           val eventuallyAcceptedNewsitems = if (acceptancePolicy.shouldReadFeed) {
-            processFeedItems(feed, readingUser, acceptancePolicy, feedNewsitems)
+            processFeedItems(feed, readingUser, acceptancePolicy, feedNewsitems._1)
           } else {
             Future.successful(Seq.empty)
           }
@@ -50,7 +50,7 @@ import scala.concurrent.{ExecutionContext, Future}
             }
             contentUpdateService.update(feed.copy(
               last_read = Some(DateTime.now.toDate),
-              latestItemDate = rssfeedNewsitemService.latestPublicationDateOf(feedNewsitems),
+              latestItemDate = rssfeedNewsitemService.latestPublicationDateOf(feedNewsitems._1),
               http_status = inferredHttpStatus
             )).map { _ =>
               Unit
