@@ -1,7 +1,8 @@
 package nz.co.searchwellington.controllers
 
-import javax.servlet.http.{HttpServletRequest, HttpServletResponse}
+import javax.servlet.http.HttpServletRequest
 import nz.co.searchwellington.ReasonableWaits
+import nz.co.searchwellington.controllers.models.helpers.CommonAttributesModelBuilder
 import nz.co.searchwellington.model.SiteInformation
 import nz.co.searchwellington.repositories.ContentRetrievalService
 import nz.co.searchwellington.repositories.mongo.MongoRepository
@@ -20,10 +21,11 @@ import scala.concurrent.ExecutionContext.Implicits.global
                                                      val contentRetrievalService: ContentRetrievalService,
                                                      mongoRepository: MongoRepository,
                                                      loggedInUserFilter: LoggedInUserFilter,
-                                                     rssUrlBuilder: RssUrlBuilder)
+                                                     rssUrlBuilder: RssUrlBuilder,
+                                                     commonAttributesModelBuilder: CommonAttributesModelBuilder)
   extends ReasonableWaits with CommonModelObjectsService {
 
-  @RequestMapping(value = Array("/about"), method = Array(RequestMethod.GET)) def about(request: HttpServletRequest, response: HttpServletResponse): ModelAndView = {
+  @RequestMapping(value = Array("/about"), method = Array(RequestMethod.GET)) def about(request: HttpServletRequest): ModelAndView = {
     urlStack.setUrlStack(request)
 
     import scala.collection.JavaConverters._
@@ -38,7 +40,7 @@ import scala.concurrent.ExecutionContext.Implicits.global
   }
 
   @RequestMapping(Array("/archive"))
-  def archive(request: HttpServletRequest, response: HttpServletResponse): ModelAndView = {
+  def archive(request: HttpServletRequest): ModelAndView = {
     urlStack.setUrlStack(request)
     val loggedInUser = loggedInUserFilter.getLoggedInUser
 
@@ -53,7 +55,7 @@ import scala.concurrent.ExecutionContext.Implicits.global
   }
 
   @RequestMapping(Array("/api"))
-  def api(request: HttpServletRequest, response: HttpServletResponse): ModelAndView = {
+  def api(request: HttpServletRequest): ModelAndView = {
     urlStack.setUrlStack(request)
 
     Await.result(withCommonLocal(new ModelAndView("api").
@@ -64,17 +66,21 @@ import scala.concurrent.ExecutionContext.Implicits.global
   }
 
   @RequestMapping(Array("/rssfeeds"))
-  def rssfeeds(request: HttpServletRequest, response: HttpServletResponse): ModelAndView = {
+  def rssfeeds(request: HttpServletRequest): ModelAndView = {
     urlStack.setUrlStack(request)
 
-    Await.result(withCommonLocal(new ModelAndView("rssfeeds").
-      addObject("heading", "RSS feeds").
-      addObject("rss_url", rssUrlBuilder.getBaseRssUrl)
-      addObject("feedable_tags", contentRetrievalService.getFeedworthyTags(loggedInUserFilter.getLoggedInUser))), TenSeconds)
+    Await.result(withCommonLocal{
+      val mv  = new ModelAndView("rssfeeds").
+        addObject("heading", "RSS feeds").
+        addObject("feedable_tags", contentRetrievalService.getFeedworthyTags(loggedInUserFilter.getLoggedInUser))
+
+      commonAttributesModelBuilder.setRss(mv, rssUrlBuilder.getBaseRssTitle, rssUrlBuilder.getBaseRssUrl)
+      mv
+    }, TenSeconds)
   }
 
   @RequestMapping(Array("/feeds/discovered"))
-  def discovered(request: HttpServletRequest, response: HttpServletResponse): ModelAndView = {
+  def discovered(request: HttpServletRequest): ModelAndView = {
     urlStack.setUrlStack(request)
 
     import scala.collection.JavaConverters._
