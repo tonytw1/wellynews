@@ -27,4 +27,9 @@ trait GeotagParsing {
       None
     }
   }
+
+  def osmToString(osmId: OsmId): String = {
+    osmId.id + osmId.`type`
+  }
+
 }

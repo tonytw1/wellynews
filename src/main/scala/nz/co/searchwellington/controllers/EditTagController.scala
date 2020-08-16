@@ -49,9 +49,7 @@ class EditTagController @Autowired()(contentUpdateService: ContentUpdateService,
         )
         tag.geocode.map { g =>
           editTag.setGeocode(g.getAddress)
-          val osmId = g.osmId.map { i =>
-            i.id + i.`type`
-          }
+          val osmId = g.osmId.map(osmToString)
           editTag.setSelectedGeocode(osmId.getOrElse(""))
         }
 

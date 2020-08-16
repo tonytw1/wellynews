@@ -44,9 +44,7 @@ class EditWebsiteController @Autowired()(contentUpdateService: ContentUpdateServ
 
         w.geocode.map { g =>
           editWebsite.setGeocode(g.getAddress)
-          val osmId = g.osmId.map { i =>
-            i.id + i.`type`
-          }
+          val osmId = g.osmId.map(osmToString)
           editWebsite.setSelectedGeocode(osmId.getOrElse(""))
         }
 

@@ -111,9 +111,7 @@ class EditNewsitemController @Autowired()(contentUpdateService: ContentUpdateSer
 
     n.geocode.map { g =>
       formObject.setGeocode(g.getAddress)
-      val osmId = g.osmId.map { i =>
-        i.id + i.`type`
-      }
+      val osmId = g.osmId.map(osmToString)
       formObject.setSelectedGeocode(osmId.getOrElse(""))
     }
 
