@@ -15,7 +15,7 @@
 
         #parse("includes/search_widget.vm")
 
-§        <ul class="childtags">
+        <ul class="childtags">
             #foreach ($related_tag in $related_tags)
                 <li><a href="$urlBuilder.getTagSearchUrl($related_tag.tag, $query)">$related_tag.tag.displayName.toLowerCase()</a> ($related_tag.count)</li>
             #end
