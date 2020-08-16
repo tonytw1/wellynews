@@ -155,10 +155,12 @@ class ElasticSearchIndexer @Autowired()(val showBrokenDecisionService: ShowBroke
     }
   }
 
-  def deleteResource(id: BSONObjectID): Future[Response[DeleteResponse]] = {
-    client execute (
+  def deleteResource(id: BSONObjectID): Future[Boolean] = {
+    (client execute (
       delete(id.stringify) from Index
-      )
+      )).map { response =>
+      response.isSuccess
+    }
   }
 
   def getResources(query: ResourceQuery, order: SearchRequest => SearchRequest = byDateDescending, loggedInUser: Option[User]): Future[(Seq[BSONObjectID], Long)] = {

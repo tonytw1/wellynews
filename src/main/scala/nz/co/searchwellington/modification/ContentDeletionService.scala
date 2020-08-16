@@ -13,10 +13,10 @@ import org.springframework.stereotype.Component
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.{Await, Future}
 
-@Component class ContentDeletionService @Autowired()(suppressionService: SuppressionDAO,
-                                                     rssfeedNewsitemService: RssfeedNewsitemService,
-                                                     mongoRepository: MongoRepository, handTaggingDAO: HandTaggingDAO,
-                                                     tagDAO: TagDAO, elasticSearchIndexer: ElasticSearchIndexer,
+@Component class ContentDeletionService @Autowired()(suppressionDAO: SuppressionDAO,
+                                                     mongoRepository: MongoRepository,
+                                                     handTaggingDAO: HandTaggingDAO,
+                                                     elasticSearchIndexer: ElasticSearchIndexer,
                                                      contentUpdateService: ContentUpdateService)
   extends ReasonableWaits {
 
@@ -32,14 +32,8 @@ import scala.concurrent.{Await, Future}
         case feed: Feed =>
           Await.result(removeFeedFromFeedNewsitems(feed), OneMinute)
         case newsitem: Newsitem =>
-          log.info("Deleted item is a newsitem; checking if it's in an accepted feed.")
-          if (Await.result(rssfeedNewsitemService.isUrlInAcceptedFeeds(newsitem.page), TenSeconds)) {
-            log.info("Supressing deleted newsitem url as it still visible in an automatically accepted feed: " + newsitem.page)
-            suppressUrl(newsitem.page)
-          } else {
-            log.info("Not found in live feeds; not suppressing")
-          }
-
+          log.info("Supressing deleted newsitem url to prevent it been reaccepted from a feed: " + newsitem.page)
+          suppressionDAO.addSuppression(newsitem.page)
       }
 
       Await.result(elasticSearchIndexer.deleteResource(resource._id).flatMap { dr =>
@@ -51,11 +45,6 @@ import scala.concurrent.{Await, Future}
       case e: Exception =>
         log.error("Delete error: " + e.getMessage, e)
     }
-  }
-
-  private def suppressUrl(p: String) {
-    log.info("Deleting a newsitem whose url still appears in a feed; suppressing the url: " + p)
-    suppressionService.addSuppression(p)
   }
 
   private def removePublisherFromPublishersContent(publisher: Website) {

@@ -3,18 +3,18 @@ package nz.co.searchwellington.feeds
 import java.util.Date
 
 import nz.co.searchwellington.ReasonableWaits
+import nz.co.searchwellington.feeds.whakaoko.WhakaokoFeedReader
 import nz.co.searchwellington.feeds.whakaoko.model.{FeedItem, Subscription}
-import nz.co.searchwellington.feeds.whakaoko.{WhakaokoFeedReader, WhakaokoService}
-import nz.co.searchwellington.model.{Feed, FeedAcceptancePolicy}
+import nz.co.searchwellington.model.Feed
 import nz.co.searchwellington.repositories.mongo.MongoRepository
 import org.apache.log4j.Logger
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
 
-import scala.concurrent.{Await, ExecutionContext, Future}
+import scala.concurrent.{ExecutionContext, Future}
 
 @Component class RssfeedNewsitemService @Autowired()(whakaokoFeedReader: WhakaokoFeedReader,
-                                                     mongoRepository: MongoRepository, whakaokoService: WhakaokoService)
+                                                     mongoRepository: MongoRepository)
   extends ReasonableWaits {
 
   private val log = Logger.getLogger(classOf[FeedReaderRunner])
@@ -80,34 +80,5 @@ import scala.concurrent.{Await, ExecutionContext, Future}
       None
     }
   }
-
-  // TODO this is interesting but always suppressing when deleting a newsitem which came from a feed would be simpler
-  def isUrlInAcceptedFeeds(url: String)(implicit ec: ExecutionContext): Future[Boolean] = { // TODO should be option
-    @Deprecated() // Should really use the Either return
-    def getFeedItemsFor(feed: Feed)(implicit ec: ExecutionContext): Future[Option[(Seq[FeedItem], Long)]] = {
-      whakaokoFeedReader.fetchFeedItems(feed).map { feedItems =>
-        feedItems.fold(
-          { l =>
-            log.warn("Fetch feed items failed for " + feed.title + ": " + l)
-            None
-          }, { r =>
-            Some(r._1)
-          }
-        )
-      }
-    }
-
-    val eventualAutoAcceptingFeeds = mongoRepository.getAllFeeds.map { autoAcceptFeeds =>
-      autoAcceptFeeds.filter { f =>
-        f.acceptance == FeedAcceptancePolicy.ACCEPT || f.getAcceptancePolicy == FeedAcceptancePolicy.ACCEPT_EVEN_WITHOUT_DATES
-      }
-    }
-    eventualAutoAcceptingFeeds.map { autoAcceptFeeds =>
-      autoAcceptFeeds.exists { feed =>
-        Await.result(getFeedItemsFor(feed), TenSeconds).getOrElse((Seq.empty, 0))._1.exists(ni => ni.url == url)
-      }
-    }
-  }
-
 
 }
