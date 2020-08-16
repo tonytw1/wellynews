@@ -18,7 +18,9 @@ import scala.concurrent.ExecutionContext.Implicits.global
 @Controller class SimplePageController @Autowired()( siteInformation: SiteInformation,
                                                      urlStack: UrlStack,
                                                      val contentRetrievalService: ContentRetrievalService,
-                                                     mongoRepository: MongoRepository, loggedInUserFilter: LoggedInUserFilter)
+                                                     mongoRepository: MongoRepository,
+                                                     loggedInUserFilter: LoggedInUserFilter,
+                                                     rssUrlBuilder: RssUrlBuilder)
   extends ReasonableWaits with CommonModelObjectsService {
 
   @RequestMapping(value = Array("/about"), method = Array(RequestMethod.GET)) def about(request: HttpServletRequest, response: HttpServletResponse): ModelAndView = {
@@ -67,6 +69,7 @@ import scala.concurrent.ExecutionContext.Implicits.global
 
     Await.result(withCommonLocal(new ModelAndView("rssfeeds").
       addObject("heading", "RSS feeds").
+      addObject("rss_url", rssUrlBuilder.getBaseRssUrl)
       addObject("feedable_tags", contentRetrievalService.getFeedworthyTags(loggedInUserFilter.getLoggedInUser))), TenSeconds)
   }
 
