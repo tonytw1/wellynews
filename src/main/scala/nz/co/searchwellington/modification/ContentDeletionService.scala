@@ -53,7 +53,7 @@ import scala.concurrent.{Await, Future}
         mongoRepository.getResourceByObjectId(publishedResource).map {
           case published: PublishedResource =>
             log.info("Clearing publisher from: " + published.title)
-            published.setPublisher(null)
+            published.setPublisher(null)  // TODO executes a Some(None)
             contentUpdateService.update(published)
         }
       }
