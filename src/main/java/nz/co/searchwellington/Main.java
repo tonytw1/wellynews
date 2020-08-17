@@ -1,8 +1,7 @@
 package nz.co.searchwellington;
 
 import com.google.common.collect.Maps;
-import nz.co.searchwellington.commentfeeds.detectors.CommentFeedDetector;
-import nz.co.searchwellington.commentfeeds.detectors.GenericCommentFeedDetector;
+import nz.co.searchwellington.commentfeeds.detectors.*;
 import nz.co.searchwellington.controllers.LoggedInUserFilter;
 import nz.co.searchwellington.controllers.RssUrlBuilder;
 import nz.co.searchwellington.controllers.admin.AdminUrlBuilder;
@@ -69,10 +68,54 @@ public class Main {
     }
 
     @Bean
-    public CommentFeedDetector newswiresCommentFeedDetector() {
+    public CommentFeedDetector newswireCommentFeedDetector() {
         GenericCommentFeedDetector detector = new GenericCommentFeedDetector();
         detector.setRegex("^http://www.newswire.co.nz/\\d{4}/\\d{2}/.*?/feed/$");
         return detector;
+    }
+    @Bean
+    public CommentFeedDetector aucklandTrainsCommentFeedDetector() {
+        GenericCommentFeedDetector detector = new GenericCommentFeedDetector();
+        detector.setRegex("^http://www.aucklandtrains.co.nz/\\d{4}/\\d{2}/\\d{2}/.*?/feed/$");
+        return detector;
+    }
+    @Bean
+    public CommentFeedDetector blogspotCommentFeedDetector() {
+        return new BlogspotCommentFeedDetector();
+    }
+    @Bean
+    public CommentFeedDetector eyeOfTheFishCommentFeedDetector() {
+        return new EyeOfTheFishCommentFeedDetector();
+    }
+    @Bean
+    public CommentFeedDetector tepapaBlogCommentFeedDetector() {
+        GenericCommentFeedDetector detector = new GenericCommentFeedDetector();
+        detector.setRegex("^http://blog.tepapa.govt.nz/\\d{4}/\\d{2}/\\d{2}/.*?/feed/$");
+        return detector;
+    }
+    @Bean
+    public CommentFeedDetector textureCommentFeedDetector() {
+        return new TextureCommentFeedDetector();
+    }
+    @Bean
+    public CommentFeedDetector wellingtonistaCommentFeedDetector() {
+        GenericCommentFeedDetector detector = new GenericCommentFeedDetector();
+        detector.setRegex("^http://wellingtonista.com/crss/node/\\d+$");
+        return detector;
+    }
+    @Bean
+    public CommentFeedDetector wellingtonScoopCommentFeedDetector() {
+        return new WellingtonScoopCommentFeedDetector();
+    }
+    @Bean
+    public CommentFeedDetector yearMonthCommentFeedDetector() {
+        GenericCommentFeedDetector detector = new GenericCommentFeedDetector();
+        detector.setRegex("^http://.*?/\\d{4}/\\d{2}/.*?$");
+        return detector;
+    }
+    @Bean
+    public CommentFeedDetector dateRegexCommentFeedDetector() {
+        return new DateRegexCommentFeedDetector();
     }
 
     @Bean
