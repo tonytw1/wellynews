@@ -7,26 +7,11 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
 
 import scala.concurrent.{Await, ExecutionContext}
-import scala.concurrent.duration._
 
 @Component class HibernateResourceDAO @Autowired() (mongoRepository: MongoRepository) extends ReasonableWaits {
 
   def loadFeedByUrlWords(urlWords: String)(implicit ec: ExecutionContext): Option[Feed] = {
     Await.result(mongoRepository.getFeedByUrlwords(urlWords), TenSeconds)
-  }
-
-  @SuppressWarnings(Array("unchecked")) def getAllPublishersMatchingStem(stem: String, showBroken: Boolean): Seq[Resource] = {
-    /*
-    if (showBroken) {
-      sessionFactory.getCurrentSession.createCriteria(classOf[Website]).
-        add(Restrictions.sqlRestriction(" page like \"%" + stem + "%\" ")).addOrder(Order.asc("name")).list.asInstanceOf[List[Resource]]
-    }
-    else {
-      sessionFactory.getCurrentSession.createCriteria(classOf[Website]).
-        add(Restrictions.sqlRestriction(" page like \"%" + stem + "%\" ")).add(Restrictions.eq("httpStatus", 200)).addOrder(Order.asc("name")).list.asInstanceOf[List[Resource]]
-    }
-    */
-    Seq() // TODO
   }
 
   @SuppressWarnings(Array("unchecked")) def getNewsitemsMatchingStem(stem: String): Seq[Resource] = {

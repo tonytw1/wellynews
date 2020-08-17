@@ -27,8 +27,27 @@ $(function() {
 	if ($('#editForm').length) {
 		$("#editForm").submit(function() {
 			$('#tags option').attr('selected', 'selected');
-		});	 
-	}
+		});
+
+        // When a URL is entered, if the publisher is currently empty when should try to auto complete it based on the user
+        $("[name='url']").change(function() {
+            var url = $(this).val();
+            // Is the publisher field blank?
+            var publisherField = $("[name='publisher']");
+            if (publisherField && publisherField.val() == "") {
+                $.ajax({
+                    url: "/ajax/publisher-guess",
+                    data: { url: url},
+                    success: function (data, status, xhr) {
+                        if (data.length > 0) {
+                            var p = data[0];
+                            publisherField.val(p);
+                        }
+                    },
+                });
+            }
+        });
+    }
 
 	if ($('#geocode').length) {
 

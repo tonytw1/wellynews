@@ -212,6 +212,37 @@ class ElasticSearchIndexerTest extends ReasonableWaits {
     eventually(timeout(TenSeconds), interval(TenMilliSeconds), Set("W", "N", "F", "L").equals(typesFound))
   }
 
+  @Test
+  def canFilterResourcesByHostname: Unit = {
+    val fooWebsite = Website(page = "http://foo.local")
+    val barWebsite = Website(page = "http://bar.local")
+    val fooNewsitem = Website(page = "http://foo.local/123")
+
+    Await.result(mongoRepository.saveResource(fooWebsite), TenSeconds)
+    Await.result(mongoRepository.saveResource(barWebsite), TenSeconds)
+    Await.result(mongoRepository.saveResource(fooNewsitem), TenSeconds)
+
+    eventually(timeout(TenSeconds), interval(TenMilliSeconds), Await.result(mongoRepository.getResourceByObjectId(fooWebsite._id), TenSeconds).nonEmpty)
+    eventually(timeout(TenSeconds), interval(TenMilliSeconds), Await.result(mongoRepository.getResourceByObjectId(barWebsite._id), TenSeconds).nonEmpty)
+    eventually(timeout(TenSeconds), interval(TenMilliSeconds), Await.result(mongoRepository.getResourceByObjectId(fooNewsitem._id), TenSeconds).nonEmpty)
+
+    indexResources(Seq(fooWebsite, barWebsite, fooNewsitem))
+
+    def fooResources = queryForResources(ResourceQuery(hostname = Some("foo.local")))
+    def barResources = queryForResources(ResourceQuery(hostname = Some("bar.local")))
+
+    eventually(timeout(TenSeconds), interval(TenMilliSeconds), fooResources.contains(fooWebsite))
+    eventually(timeout(TenSeconds), interval(TenMilliSeconds), fooResources.contains(fooNewsitem))
+    eventually(timeout(TenSeconds), interval(TenMilliSeconds), barResources.contains(barResources))
+
+    eventually(timeout(TenSeconds), interval(TenMilliSeconds), fooResources.size == 2)
+    eventually(timeout(TenSeconds), interval(TenMilliSeconds), barResources.size == 1)
+
+    Thread.sleep(1000)  // TODO Something is not fixed after eventually passes for the first time
+    assertFalse(fooResources.contains(barWebsite))
+    assertFalse(barResources.contains(fooWebsite))
+  }
+
   private def indexResources(resources: Seq[Resource]) = {
     def indexWithHandTaggings(resource: Resource) = (resource, resource.resource_tags.map(_.tag_id.stringify))
 

@@ -5,7 +5,6 @@ import com.sksamuel.elastic4s.http.JavaClient
 import com.sksamuel.elastic4s.requests.analyzers.StandardAnalyzer
 import com.sksamuel.elastic4s.requests.bulk.BulkResponse
 import com.sksamuel.elastic4s.requests.common.DistanceUnit
-import com.sksamuel.elastic4s.requests.delete.DeleteResponse
 import com.sksamuel.elastic4s.requests.indexes.IndexRequest
 import com.sksamuel.elastic4s.requests.searches.queries.Query
 import com.sksamuel.elastic4s.requests.searches.{DateHistogramInterval, SearchRequest}
@@ -23,8 +22,8 @@ import org.springframework.stereotype.Component
 import reactivemongo.api.bson.BSONObjectID
 
 import scala.concurrent.ExecutionContext.Implicits.global
-import scala.concurrent.duration._
 import scala.concurrent.{Await, Future}
+import scala.util.Try
 
 @Component
 class ElasticSearchIndexer @Autowired()(val showBrokenDecisionService: ShowBrokenDecisionService,
@@ -79,7 +78,8 @@ class ElasticSearchIndexer @Autowired()(val showBrokenDecisionService: ShowBroke
             geopointField(LatLong),
             keywordField(FeedAcceptancePolicy),
             dateField(FeedLatestItemDate),
-            dateField(LastChanged)
+            dateField(LastChanged),
+            keywordField(Hostname),
           ))
         }
 
@@ -126,6 +126,11 @@ class ElasticSearchIndexer @Autowired()(val showBrokenDecisionService: ShowBroke
           case _ => None
         }
 
+        val hostname = Try {
+          new java.net.URL(r._1.page)
+        }.toOption.map { url =>
+          url.getHost
+        }
 
         // TODO This is silly; just pass in the whole domain object as JSON
         val fields = Seq(
@@ -143,7 +148,8 @@ class ElasticSearchIndexer @Autowired()(val showBrokenDecisionService: ShowBroke
           Some(TaggingUsers, r._1.resource_tags.map(_.user_id.stringify)),
           feedAcceptancePolicy.map(ap => FeedAcceptancePolicy -> ap.toString),
           feedLatestItemDate.map(fid => FeedLatestItemDate -> new DateTime(fid)),
-          r._1.last_changed.map(lc => LastChanged -> new DateTime(lc))
+          r._1.last_changed.map(lc => LastChanged -> new DateTime(lc)),
+          hostname.map(u => Hostname -> u)
         )
 
         indexInto(Index).fields(fields.flatten) id r._1._id.stringify
@@ -203,12 +209,11 @@ class ElasticSearchIndexer @Autowired()(val showBrokenDecisionService: ShowBroke
       (ids, total)
     }
 
-    val x: Future[(Seq[BSONObjectID], Long)] = eventualTuple.map { r =>
+    eventualTuple.map { r =>
       val duration = new org.joda.time.Duration(start, DateTime.now)
       log.info("Elastic query " + query + " took: " + duration.getMillis + " ms")
       r
     }
-    x
   }
 
   private def composeQueryFor(query: ResourceQuery, loggedInUser: Option[User]): Query = {
@@ -259,6 +264,9 @@ class ElasticSearchIndexer @Autowired()(val showBrokenDecisionService: ShowBroke
       },
       query.held.map { h =>
         matchQuery(Held, h)
+      },
+      query.hostname.map { h =>
+        matchQuery(Hostname, h)
       }
     ).flatten
 

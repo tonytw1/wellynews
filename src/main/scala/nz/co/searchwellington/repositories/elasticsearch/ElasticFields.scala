@@ -17,5 +17,6 @@ trait ElasticFields {
   val FeedAcceptancePolicy = "feed_acceptance_policy"
   val FeedLatestItemDate = "feed_latest_item_date"
   val LastChanged = "last_changed"
+  val Hostname = "hostname"
 
 }
