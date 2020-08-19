@@ -97,6 +97,9 @@ class EditFeedController @Autowired()(contentUpdateService: ContentUpdateService
           contentUpdateService.update(updated)
           log.info("Updated feed: " + updated)
 
+          // TODO is the feed url has changed we will need to update Whakaoko
+          // This would be easier of the feed knew it's whakaoko subscription id
+
           new ModelAndView(new RedirectView(urlBuilder.getFeedUrl(updatedFeed)))
         }
       }.getOrElse(NotFound)
