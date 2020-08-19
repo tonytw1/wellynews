@@ -9,7 +9,7 @@ import com.sksamuel.elastic4s.requests.indexes.IndexRequest
 import com.sksamuel.elastic4s.requests.searches.queries.Query
 import com.sksamuel.elastic4s.requests.searches.{DateHistogramInterval, SearchRequest}
 import com.sksamuel.elastic4s.requests.{bulk => _, delete => _, searches => _}
-import com.sksamuel.elastic4s.{ElasticClient, Response}
+import com.sksamuel.elastic4s.{ElasticClient, ElasticProperties, Response}
 import nz.co.searchwellington.ReasonableWaits
 import nz.co.searchwellington.controllers.ShowBrokenDecisionService
 import nz.co.searchwellington.model._
@@ -92,7 +92,8 @@ class ElasticSearchIndexer @Autowired()(val showBrokenDecisionService: ShowBroke
     }
 
     log.info("Connecting to Elasticsearch url: " + elasticsearchUrl)
-    val client = ElasticClient(JavaClient(elasticsearchUrl))
+    val props = ElasticProperties(elasticsearchUrl)
+    val client = ElasticClient(JavaClient(props))
     ensureIndexes(client)
     client
   }

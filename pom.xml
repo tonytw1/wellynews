@@ -9,7 +9,7 @@
     <description>Wellynews website</description>
 
     <properties>
-        <elastic4s.version>7.1.4</elastic4s.version>
+        <elastic4s.version>7.3.6</elastic4s.version>
         <jackson.version>2.10.5</jackson.version>
     </properties>
 
