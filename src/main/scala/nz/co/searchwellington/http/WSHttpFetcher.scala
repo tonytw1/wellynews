@@ -13,7 +13,7 @@ import play.api.libs.ws.ahc._
 import scala.concurrent.{ExecutionContext, Future}
 
 @Component
-class WSHttpFetcher @Autowired()(feedReaderTaskExecutor: TaskExecutor, siteInformation: SiteInformation) extends HttpFetcher with ReasonableWaits { // TODO seperate executor
+class WSHttpFetcher @Autowired()(taskExecutor: TaskExecutor, siteInformation: SiteInformation) extends HttpFetcher with ReasonableWaits { // TODO seperate executor
 
   private val log = Logger.getLogger(classOf[WSHttpFetcher])
 

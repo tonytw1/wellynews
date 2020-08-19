@@ -1,6 +1,8 @@
 package nz.co.searchwellington;
 
 import com.google.common.collect.Maps;
+import nz.co.searchwellington.backports.VelocityConfigurer;
+import nz.co.searchwellington.backports.VelocityViewResolver;
 import nz.co.searchwellington.commentfeeds.detectors.*;
 import nz.co.searchwellington.controllers.LoggedInUserFilter;
 import nz.co.searchwellington.controllers.RssUrlBuilder;
@@ -9,8 +11,8 @@ import nz.co.searchwellington.filters.RequestObjectLoadingFilter;
 import nz.co.searchwellington.model.SiteInformation;
 import nz.co.searchwellington.permissions.EditPermissionService;
 import nz.co.searchwellington.urls.UrlBuilder;
-import nz.co.searchwellington.views.ColumnSplitter;
 import nz.co.searchwellington.utils.EscapeTools;
+import nz.co.searchwellington.views.ColumnSplitter;
 import nz.co.searchwellington.views.GoogleMapsDisplayCleaner;
 import org.apache.log4j.Logger;
 import org.apache.velocity.app.Velocity;
@@ -21,17 +23,14 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
-import org.springframework.boot.autoconfigure.velocity.VelocityAutoConfiguration;
-import org.springframework.boot.context.embedded.FilterRegistrationBean;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Primary;
 import org.springframework.core.task.TaskExecutor;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
-import org.springframework.web.servlet.view.velocity.VelocityConfigurer;
-import org.springframework.web.servlet.view.velocity.VelocityViewResolver;
 import uk.co.eelpieconsulting.common.caching.MemcachedCache;
 import uk.co.eelpieconsulting.common.dates.DateFormatter;
 
@@ -39,7 +38,7 @@ import java.io.IOException;
 import java.util.Map;
 
 @SpringBootApplication
-@EnableAutoConfiguration(exclude = {DataSourceAutoConfiguration.class, VelocityAutoConfiguration.class})
+@EnableAutoConfiguration(exclude = {DataSourceAutoConfiguration.class})
 @EnableScheduling
 @ComponentScan("nz.co.searchwellington,uk.co.eelpieconsulting.common")
 @Configuration
@@ -53,19 +52,8 @@ public class Main {
         ctx = SpringApplication.run(Main.class, args);
     }
 
-
     @Autowired
     private RequestObjectLoadingFilter requestObjectLoadingFilter;
-
-    @Bean
-    public FilterRegistrationBean filterRegistration() {
-        FilterRegistrationBean registration = new FilterRegistrationBean();
-        registration.setFilter(requestObjectLoadingFilter);
-        registration.addUrlPatterns("/*");
-        registration.setName("requestObjectLoadingFilter");
-        registration.setOrder(1);
-        return registration;
-    }
 
     @Bean
     public CommentFeedDetector newswireCommentFeedDetector() {
@@ -119,6 +107,7 @@ public class Main {
     }
 
     @Bean
+    @Primary    // TODO work out why this is needed
     public TaskExecutor taskExecutor() {
         ThreadPoolTaskExecutor threadPoolTaskExecutor = new ThreadPoolTaskExecutor();
         threadPoolTaskExecutor.setCorePoolSize(4);

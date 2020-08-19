@@ -11,7 +11,7 @@ import java.io.IOException;
 
 @Component("requestObjectLoadingFilter")
 public class RequestObjectLoadingFilter implements Filter {
-    
+
     private RequestFilter requestFilter;
     private LoggedInUserFilter loggedInUserFilter;
 
