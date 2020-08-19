@@ -24,7 +24,9 @@ case class Feed(override val _id: BSONObjectID = BSONObjectID.generate,
                 override var publisher: Option[BSONObjectID] = None,
                 var acceptance: FeedAcceptancePolicy = FeedAcceptancePolicy.IGNORE,
                 var latestItemDate: Option[Date] = None,
-                var last_read: Option[Date] = None) extends PublishedResource {
+                var last_read: Option[Date] = None,
+                var whakaokoSubscription: Option[String] = None
+               ) extends PublishedResource {
 
   def getId: String = id
 

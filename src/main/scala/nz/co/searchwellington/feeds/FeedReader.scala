@@ -48,10 +48,12 @@ import scala.concurrent.{ExecutionContext, Future}
             if (accepted.nonEmpty) {
               log.info("Accepted " + accepted.size + " newsitems from " + feed.title)
             }
+
             contentUpdateService.update(feed.copy(
               last_read = Some(DateTime.now.toDate),
               latestItemDate = rssfeedNewsitemService.latestPublicationDateOf(feedNewsitems._1),
-              http_status = inferredHttpStatus
+              http_status = inferredHttpStatus,
+              whakaokoSubscription = Some(r._2.id)
             )).map { _ =>
               Unit
             }

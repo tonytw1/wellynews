@@ -40,6 +40,7 @@ import scala.concurrent.{ExecutionContext, Future}
         }
 
       }.getOrElse {
+        log.warn("No whakaoko subscription found for feed url: " + feed)
         Future.successful(Left("No whakaoko subscription found for feed url"))
       }
     }
