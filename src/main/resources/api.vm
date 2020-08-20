@@ -27,7 +27,7 @@
 		<p>A number of large news organisations have begun providing <a href="http://www.guardian.co.uk/open-platform">APIs to their content</a>. 
 		These services allow content to be queried programmatically for use in mash ups and the like.</p>
 
-		<p>The Wellynews API lets you do something simular with the local newsitems indexed by Search Wellington.</p>
+		<p>The Wellynews API lets you do something simular with the local newsitems.</p>
 
 		<p>For example, the API can provide a feed of local newsitems related to <a href="$siteInformation.url/consultation/rss">consultation</a>;
 		or maybe <a href="$siteInformation.url/zebras/rss">zebras</a>. It can also handle potentially interesting combinations,

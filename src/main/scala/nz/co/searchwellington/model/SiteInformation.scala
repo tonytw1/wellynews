@@ -8,12 +8,12 @@ class SiteInformation @Autowired()(@Value("${areaname}") areaname: String = "",
                                    @Value("${installed}") url: String = "",
                                    @Value("${twitter.username}") twitterUsername: String = "",
                                    @Value("${imageroot}") imageRoot: String = "",
-                                   @Value("${staticroot}") staticRoot: String = "") {
-
+                                   @Value("${staticroot}") staticRoot: String = "",
+                                   @Value("${sitename}") sitename: String = "") {
 
   def getAreaname: String = areaname
 
-  def getSitename: String = "Search " + this.areaname
+  def getSitename: String = sitename
 
   def getUserAgent: String = "wellynews (" + url + "/about)"
 
