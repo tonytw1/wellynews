@@ -1,7 +1,6 @@
 package nz.co.searchwellington.controllers
 
 import javax.servlet.http.{HttpServletRequest, HttpServletResponse}
-import nz.co.searchwellington.annotations.Timed
 import nz.co.searchwellington.controllers.models.ContentModelBuilderServiceFactory
 import org.apache.log4j.Logger
 import org.springframework.beans.factory.annotation.Autowired
@@ -22,7 +21,6 @@ class ContentController @Autowired()(contentModelBuilderServiceFactory: ContentM
   private val contentModelBuilderService = contentModelBuilderServiceFactory.makeContentModelBuilderService()
 
   @RequestMapping(value = Array("/", "/*", "/search", "/archive/*", "/(?!static-assets)*/*", "/*/comment", "/*/geotagged", "/feed/*", "/feeds/inbox", "/publishers", "/publishers/json", "/tags", "/tags/json", "/*/json", "/*/rss", "/newsitem/*", "/*/*/*/*/*"))
-  @Timed(timingNotes = "")
   def normal(request: HttpServletRequest, response: HttpServletResponse): ModelAndView = {
     val TenSeconds = Duration(10, SECONDS)
 
