@@ -26,7 +26,7 @@ import scala.concurrent.{ExecutionContext, Future}
     log.info("Fetching feed items for feed with url: " + feed.page)
     whakaokoService.getWhakaokoSubscriptionFor(feed).flatMap { mayBeSubscription =>
       mayBeSubscription.map { subscription =>
-        log.debug("Feed url mapped to whakaoko subscription: " + subscription.id)
+        log.debug("Feed mapped to whakaoko subscription: " + subscription.id)
         whakaokoService.getSubscriptionFeedItems(subscription.id).map { result =>
           result.fold(
             { l =>

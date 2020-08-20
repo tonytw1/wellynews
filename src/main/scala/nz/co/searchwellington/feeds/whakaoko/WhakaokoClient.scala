@@ -52,9 +52,13 @@ class WhakaokoClient @Autowired()(@Value("${whakaoko.url}") whakaokoUrl: String,
     }
   }
 
-  def getSubscription(id: String)(implicit ec: ExecutionContext): Future[Option[Subscription]] = {
-    getChannelSubscriptions().map { subscriptions =>
-        subscriptions.find(s => s.id == id) // TODO optimise into a by id call
+  def getSubscription(subscriptionId: String)(implicit ec: ExecutionContext): Future[Option[Subscription]] = {
+    wsClient.url(subscriptionUrl(subscriptionId)).get.map { r =>
+      if (r.status == HttpStatus.SC_OK) {
+        Some(Json.parse(r.body).as[Subscription])
+      } else {
+        None
+      }
     }
   }
 
@@ -72,28 +76,23 @@ class WhakaokoClient @Autowired()(@Value("${whakaoko.url}") whakaokoUrl: String,
     }
   }
 
-  def getChannelSubscriptions(url: Option[String] = None)(implicit ec: ExecutionContext): Future[Seq[Subscription]] = {
-    val channelSubscriptionsRequest = wsClient.url(whakaokoUrl + "/" + whakaokoUsername + "/channels/" + whakaokoChannel + "/subscriptions")
-    val withUrl = url.map { u =>
-      channelSubscriptionsRequest.addQueryStringParameters(("url", u))
-    }.getOrElse(channelSubscriptionsRequest)
-
-    log.info("Fetching channel subscriptions from: " + (whakaokoUrl + "/" + whakaokoUsername + "/channels/" + whakaokoChannel + "/subscriptions"))
+  def getChannelSubscriptions()(implicit ec: ExecutionContext): Future[Seq[Subscription]] = {
+    val channelSubscriptionsUrl = whakaokoUrl + "/" + whakaokoUsername + "/channels/" + whakaokoChannel + "/subscriptions"
+    log.info("Fetching channel subscriptions from: " + (channelSubscriptionsUrl))
     val start = DateTime.now()
-    withUrl.get.map { r =>
+    wsClient.url(channelSubscriptionsUrl).get.map { r =>
       log.info("Channel subscriptions returned after: " + new Duration(start, DateTime.now).getMillis)
       if (r.status == HttpStatus.SC_OK) {
         Json.parse(r.body).as[Seq[Subscription]]
       } else {
-        log.warn("Get channel subscriptions failed (" + (whakaokoUrl + "/" + whakaokoUsername + "/channels/" + whakaokoChannel + "/subscriptions") + "): " + r.status + " / " + r.body)
+        log.warn("Get channel subscriptions failed (" + (channelSubscriptionsUrl) + "): " + r.status + " / " + r.body)
         Seq.empty
       }
     }
   }
 
   def getSubscriptionFeedItems(subscriptionId: String)(implicit ec: ExecutionContext): Future[(Seq[FeedItem], Long)] = {
-    val subscriptionItemsUrl = whakaokoUrl + "/" + whakaokoUsername + "/subscriptions/" + subscriptionId + "/items"
-    wsClient.url(subscriptionItemsUrl).get.map { r =>
+    wsClient.url(subscriptionUrl(subscriptionId) + "/items").get.map { r =>
       if (r.status == HttpStatus.SC_OK) {
         val feedItems: Seq[FeedItem] = Json.parse(r.body).as[Seq[FeedItem]]
         val totalCount: Long = r.header("x-total-count").map(c => c.toLong).getOrElse(feedItems.size)
@@ -103,5 +102,7 @@ class WhakaokoClient @Autowired()(@Value("${whakaoko.url}") whakaokoUrl: String,
       }
     }
   }
+
+  private def subscriptionUrl(subscriptionId: String) = whakaokoUrl + "/" + whakaokoUsername + "/subscriptions/" + subscriptionId
 
 }
