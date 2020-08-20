@@ -8,7 +8,8 @@ import org.apache.log4j.Logger
 import org.joda.time.{DateTime, Duration}
 import org.springframework.beans.factory.annotation.{Autowired, Value}
 import org.springframework.stereotype.Component
-import play.api.libs.json.{JodaReads, Json}
+import play.api.libs.json.Json
+import play.api.libs.json.Reads.DefaultJodaDateReads
 import play.api.libs.ws.DefaultBodyWritables._
 import play.api.libs.ws.ahc.StandaloneAhcWSClient
 
@@ -17,7 +18,7 @@ import scala.concurrent.{ExecutionContext, Future}
 @Component
 class WhakaokoClient @Autowired()(@Value("${whakaoko.url}") whakaokoUrl: String,
                                   @Value("${whakaoko.username}") whakaokoUsername: String,
-                                  @Value("${whakaoko.channel}") whakaokoChannel: String) extends JodaReads {
+                                  @Value("${whakaoko.channel}") whakaokoChannel: String) {
 
   private val log = Logger.getLogger(classOf[WhakaokoClient])
 
@@ -26,6 +27,7 @@ class WhakaokoClient @Autowired()(@Value("${whakaoko.url}") whakaokoUrl: String,
 
   private val wsClient = StandaloneAhcWSClient()
 
+  private implicit val dr = DefaultJodaDateReads
   private implicit val llr = Json.reads[LatLong]
   private implicit val pr = Json.reads[Place]
   private implicit val fir = Json.reads[FeedItem]
@@ -89,8 +91,7 @@ class WhakaokoClient @Autowired()(@Value("${whakaoko.url}") whakaokoUrl: String,
       if (r.status == HttpStatus.SC_OK) {
         val feedItems: Seq[FeedItem] = Json.parse(r.body).as[Seq[FeedItem]]
         val totalCount: Long = r.header("x-total-count").map(c => c.toLong).getOrElse(feedItems.size)
-        val z: (Seq[FeedItem], Long) = (feedItems, totalCount)
-        z
+        (feedItems, totalCount)
       } else {
         (Seq.empty, 0L)
       }
