@@ -16,7 +16,6 @@ import nz.co.searchwellington.queues.LinkCheckerQueue
 import nz.co.searchwellington.repositories.{ContentRetrievalService, HandTaggingDAO}
 import nz.co.searchwellington.spam.SpamFilter
 import nz.co.searchwellington.tagging.AutoTaggingService
-import nz.co.searchwellington.widgets.{AcceptanceWidgetFactory, TagsWidgetFactory}
 import org.apache.log4j.Logger
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Controller
@@ -28,7 +27,7 @@ import scala.concurrent.Await
 import scala.concurrent.ExecutionContext.Implicits.global
 
 @Controller class ResourceEditController @Autowired()(rssfeedNewsitemService: RssfeedNewsitemService, adminRequestFilter: AdminRequestFilter,
-                                                      tagWidgetFactory: TagsWidgetFactory, autoTagger: AutoTaggingService, acceptanceWidgetFactory: AcceptanceWidgetFactory,
+                                                      autoTagger: AutoTaggingService,
                                                       val loggedInUserFilter: LoggedInUserFilter, editPermissionService: EditPermissionService, urlStack: UrlStack,
                                                       submissionProcessingService: SubmissionProcessingService, contentUpdateService: ContentUpdateService,
                                                       contentDeletionService: ContentDeletionService, snapBodyExtractor: SnapshotBodyExtractor, anonUserService: AnonUserService,
@@ -62,7 +61,7 @@ import scala.concurrent.ExecutionContext.Implicits.global
       val mv = new ModelAndView("editResource").
         addObject("heading", "Editing a Resource").
         addObject("resource", resource).
-        addObject("tag_select", tagWidgetFactory.createMultipleTagSelect(tagVoteDAO.getHandpickedTagsForThisResourceByUser(loggedInUser.get, resource))).
+        //addObject("tag_select", tagWidgetFactory.createMultipleTagSelect(tagVoteDAO.getHandpickedTagsForThisResourceByUser(loggedInUser.get, resource))).
         addObject("show_additional_tags", 1)
 
       val userIsLoggedIn = loggedInUser != null
@@ -95,7 +94,7 @@ import scala.concurrent.ExecutionContext.Implicits.global
         addObject("heading", "Resource snapshot").
         addObject("resource", editResource).
         addObject("body", snapBodyExtractor.extractLatestSnapshotBodyTextFor(editResource)).
-        addObject("tag_select", tagWidgetFactory.createMultipleTagSelect(tagVoteDAO.getHandpickedTagsForThisResourceByUser(loggedInUser.get, editResource))).
+        //addObject("tag_select", tagWidgetFactory.createMultipleTagSelect(tagVoteDAO.getHandpickedTagsForThisResourceByUser(loggedInUser.get, editResource))).
         addObject("show_additional_tags", 1)
 
       Await.result(withCommonLocal(mv), TenSeconds)
@@ -173,7 +172,7 @@ import scala.concurrent.ExecutionContext.Implicits.global
     modelAndView.addObject("heading", "Submitting a Feed")
     val editResource = Feed(id = UUID.randomUUID().toString)
     modelAndView.addObject("resource", editResource)
-    modelAndView.addObject("acceptance_select", acceptanceWidgetFactory.createAcceptanceSelect(null))
+    //modelAndView.addObject("acceptance_select", acceptanceWidgetFactory.createAcceptanceSelect(null))
     populateSubmitCommonElements(request, modelAndView)
     modelAndView
   }
@@ -345,7 +344,7 @@ import scala.concurrent.ExecutionContext.Implicits.global
   }
 
   private def populateSubmitCommonElements(request: HttpServletRequest, mv: ModelAndView) {
-    mv.addObject("tag_select", tagWidgetFactory.createMultipleTagSelect(Set()))
+    // mv.addObject("tag_select", tagWidgetFactory.createMultipleTagSelect(Set()))
     val loggedInUser = loggedInUserFilter.getLoggedInUser
     val userIsLoggedIn = loggedInUser != null
     mv.addObject("publisher_select", "1")

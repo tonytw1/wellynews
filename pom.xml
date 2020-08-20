@@ -291,12 +291,6 @@
         </dependency>
 
         <dependency>
-            <groupId>ecs</groupId>
-            <artifactId>ecs</artifactId>
-            <version>1.4.2</version>
-        </dependency>
-
-        <dependency>
             <groupId>javax.servlet</groupId>
             <artifactId>javax.servlet-api</artifactId>
             <version>3.1.0</version>

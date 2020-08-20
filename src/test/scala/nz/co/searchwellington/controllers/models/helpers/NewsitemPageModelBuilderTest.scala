@@ -10,8 +10,7 @@ import nz.co.searchwellington.model.{Geocode, Newsitem, Tag, User}
 import nz.co.searchwellington.repositories.mongo.MongoRepository
 import nz.co.searchwellington.repositories.{ContentRetrievalService, HandTaggingDAO}
 import nz.co.searchwellington.tagging.TaggingReturnsOfficerService
-import nz.co.searchwellington.widgets.TagsWidgetFactory
-import org.junit.Assert.{assertEquals, assertTrue, assertNotNull, assertNull}
+import org.junit.Assert.{assertEquals, assertNotNull, assertNull, assertTrue}
 import org.junit.Test
 import org.mockito.Mockito.{mock, when}
 import org.springframework.mock.web.MockHttpServletRequest
@@ -23,13 +22,12 @@ class NewsitemPageModelBuilderTest extends ReasonableWaits {
 
   private val contentRetrievalService = mock(classOf[ContentRetrievalService])
   private val taggingReturnsOfficerService = mock(classOf[TaggingReturnsOfficerService])
-  private val tagWidgetFactory = mock(classOf[TagsWidgetFactory])
   private val handTaggingDAO = mock(classOf[HandTaggingDAO])
   private val mongoRepository = mock(classOf[MongoRepository])
   private val frontendResourceMapper = mock(classOf[FrontendResourceMapper])
 
   private val modelBuilder = new NewsitemPageModelBuilder(contentRetrievalService, taggingReturnsOfficerService,
-    tagWidgetFactory, handTaggingDAO, mongoRepository, frontendResourceMapper)
+    handTaggingDAO, mongoRepository, frontendResourceMapper)
 
   @Test
   def isValidForSingleNewsitemPath() {

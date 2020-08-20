@@ -11,7 +11,6 @@ import nz.co.searchwellington.model.mappers.FrontendResourceMapper
 import nz.co.searchwellington.repositories.mongo.MongoRepository
 import nz.co.searchwellington.repositories.{ContentRetrievalService, HandTaggingDAO}
 import nz.co.searchwellington.tagging.TaggingReturnsOfficerService
-import nz.co.searchwellington.widgets.TagsWidgetFactory
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
 import org.springframework.web.servlet.ModelAndView
@@ -21,7 +20,6 @@ import scala.concurrent.Future
 
 @Component class NewsitemPageModelBuilder @Autowired()(val contentRetrievalService: ContentRetrievalService,
                                                        taggingReturnsOfficerService: TaggingReturnsOfficerService,
-                                                       tagWidgetFactory: TagsWidgetFactory,
                                                        tagVoteDAO: HandTaggingDAO,
                                                        mongoRepository: MongoRepository,
                                                        frontendResourceMapper: FrontendResourceMapper) extends ModelBuilder with ReasonableWaits {

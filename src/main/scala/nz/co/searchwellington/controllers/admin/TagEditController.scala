@@ -7,22 +7,21 @@ import javax.servlet.http.{HttpServletRequest, HttpServletResponse}
 import nz.co.searchwellington.ReasonableWaits
 import nz.co.searchwellington.controllers.{CommonModelObjectsService, LoggedInUserFilter, SubmissionProcessingService, UrlStack}
 import nz.co.searchwellington.filters.{AdminRequestFilter, RequestPath}
-import nz.co.searchwellington.model.{Feed, Tag, UrlWordsGenerator, User}
+import nz.co.searchwellington.model.{Feed, Tag, UrlWordsGenerator}
 import nz.co.searchwellington.modification.TagModificationService
 import nz.co.searchwellington.permissions.EditPermissionService
 import nz.co.searchwellington.repositories.mongo.MongoRepository
 import nz.co.searchwellington.repositories.{ContentRetrievalService, TagDAO}
-import nz.co.searchwellington.widgets.TagsWidgetFactory
 import org.apache.log4j.Logger
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Controller
-import org.springframework.web.bind.annotation.{RequestMapping, RequestMethod}
 import org.springframework.web.servlet.ModelAndView
 
 import scala.concurrent.Await
 import scala.concurrent.ExecutionContext.Implicits.global
 
-@Controller class TagEditController @Autowired()(requestFilter: AdminRequestFilter, tagWidgetFactory: TagsWidgetFactory,
+@Controller class TagEditController @Autowired()(requestFilter: AdminRequestFilter,
+                                                 // tagWidgetFactory: TagsWidgetFactory,
                                                  urlStack: UrlStack, tagDAO: TagDAO, tagModifcationService: TagModificationService,
                                                  loggedInUserFilter: LoggedInUserFilter, editPermissionService: EditPermissionService,
                                                  submissionProcessingService: SubmissionProcessingService,
