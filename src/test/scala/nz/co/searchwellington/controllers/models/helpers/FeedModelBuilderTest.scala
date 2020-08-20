@@ -85,7 +85,7 @@ class FeedModelBuilderTest extends ReasonableWaits with ContentFields {
   @Test
   def shouldPopulateFrontendFeedFromRequestAttribute {
     when(frontendResourceMapper.createFrontendResourceFrom(feed, None)).thenReturn(Future.successful(frontendFeed))
-    when(whakaokoService.getWhakaokoSubscriptionByUrl(Matchers.any())(Matchers.any())).thenReturn(Future.successful(None))
+    when(whakaokoService.getWhakaokoSubscriptionFor(Matchers.any())(Matchers.any())).thenReturn(Future.successful(None))
 
     val mv = Await.result(modelBuilder.populateContentModel(request), TenSeconds).get
 
@@ -96,7 +96,7 @@ class FeedModelBuilderTest extends ReasonableWaits with ContentFields {
   def shouldPopulateMainContentWithFeedItemsDecoratedWithLocalCopySuppressionInformation {
     when(frontendResourceMapper.createFrontendResourceFrom(feed, None)).thenReturn(Future.successful(frontendFeed))
     when(rssfeedNewsitemService.getFeedItemsAndDetailsFor(feed)).thenReturn(Future.successful(Right(((feeditems, feeditems.size.toLong), subscription))))
-    when(whakaokoService.getWhakaokoSubscriptionByUrl(Matchers.any())(Matchers.any())).thenReturn(Future.successful(None))
+    when(whakaokoService.getWhakaokoSubscriptionFor(Matchers.any())(Matchers.any())).thenReturn(Future.successful(None))
 
     val mv = Await.result(modelBuilder.populateContentModel(request), TenSeconds).get
 
@@ -110,7 +110,7 @@ class FeedModelBuilderTest extends ReasonableWaits with ContentFields {
 
     when(frontendResourceMapper.createFrontendResourceFrom(feed, None)).thenReturn(Future.successful(frontendFeed))
     when(contentRetrievalService.getAllFeedsOrderedByLatestItemDate(loggedInUser)).thenReturn(Future.successful(Seq()))
-    when(whakaokoService.getWhakaokoSubscriptionByUrl(Matchers.any())(Matchers.any())).thenReturn(Future.successful(Some(whakaokoSubscription)))
+    when(whakaokoService.getWhakaokoSubscriptionFor(Matchers.any())(Matchers.any())).thenReturn(Future.successful(Some(whakaokoSubscription)))
 
     val mv = Await.result(modelBuilder.populateContentModel(request), TenSeconds).get
 

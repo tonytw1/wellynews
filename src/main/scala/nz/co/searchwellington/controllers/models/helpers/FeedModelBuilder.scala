@@ -94,7 +94,7 @@ import scala.concurrent.Future
       for {
         frontendFeed <- eventualFrontendFeed
         feedItems <- eventualFeedItems
-        maybeSubscription <- whakaokoService.getWhakaokoSubscriptionByUrl(feed.page)
+        maybeSubscription <- whakaokoService.getWhakaokoSubscriptionFor(feed)
       } yield {
         val mv = new ModelAndView().
           addObject("feed", frontendFeed).

@@ -52,6 +52,12 @@ class WhakaokoClient @Autowired()(@Value("${whakaoko.url}") whakaokoUrl: String,
     }
   }
 
+  def getSubscription(id: String)(implicit ec: ExecutionContext): Future[Option[Subscription]] = {
+    getChannelSubscriptions().map { subscriptions =>
+        subscriptions.find(s => s.id == id) // TODO optimise into a by id call
+    }
+  }
+
   def getChannelFeedItems(page: Int)(implicit ec: ExecutionContext): Future[Seq[FeedItem]] = {
     log.info("Fetching channel items page: " + page)
     val channelItemsUrl = whakaokoUrl + "/" + whakaokoUsername + "/channels/" + whakaokoChannel + "/items"

@@ -1,6 +1,7 @@
 package nz.co.searchwellington.feeds.whakaoko
 
 import nz.co.searchwellington.feeds.whakaoko.model.{FeedItem, Subscription}
+import nz.co.searchwellington.model.Feed
 import org.apache.log4j.Logger
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
@@ -20,9 +21,11 @@ import scala.concurrent.{ExecutionContext, Future}
 
   def getSubscriptions()(implicit ec: ExecutionContext): Future[Seq[Subscription]] = client.getChannelSubscriptions()
 
-  def getWhakaokoSubscriptionByUrl(url: String)(implicit ec: ExecutionContext): Future[Option[Subscription]] = {
-    client.getChannelSubscriptions(url = Some(url)).map { subscriptionsByUrl =>
-      subscriptionsByUrl.headOption
+  def getWhakaokoSubscriptionFor(feed: Feed)(implicit ec: ExecutionContext): Future[Option[Subscription]] = {
+    feed.whakaokoSubscription.map { sid =>
+      client.getSubscription(sid)
+    }.getOrElse{
+      Future.successful(None)
     }
   }
 

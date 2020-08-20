@@ -24,10 +24,9 @@ import scala.concurrent.{ExecutionContext, Future}
 
   def fetchFeedItems(feed: Feed)(implicit ec: ExecutionContext): Future[Either[String, ((Seq[FeedItem], Long), Subscription)]] = {
     log.info("Fetching feed items for feed with url: " + feed.page)
-    whakaokoService.getWhakaokoSubscriptionByUrl(feed.page).flatMap { mayBeSubscription =>
+    whakaokoService.getWhakaokoSubscriptionFor(feed).flatMap { mayBeSubscription =>
       mayBeSubscription.map { subscription =>
         log.debug("Feed url mapped to whakaoko subscription: " + subscription.id)
-
         whakaokoService.getSubscriptionFeedItems(subscription.id).map { result =>
           result.fold(
             { l =>
