@@ -4,7 +4,7 @@ import javax.validation.Valid
 import nz.co.searchwellington.ReasonableWaits
 import nz.co.searchwellington.feeds.whakaoko.WhakaokoService
 import nz.co.searchwellington.forms.NewFeed
-import nz.co.searchwellington.model.{Feed, UrlWordsGenerator, User}
+import nz.co.searchwellington.model.{Feed, Resource, UrlWordsGenerator, User}
 import nz.co.searchwellington.modification.ContentUpdateService
 import nz.co.searchwellington.repositories.mongo.MongoRepository
 import nz.co.searchwellington.urls.UrlBuilder
@@ -17,7 +17,7 @@ import org.springframework.web.bind.annotation.{ModelAttribute, RequestMapping, 
 import org.springframework.web.servlet.ModelAndView
 import org.springframework.web.servlet.view.RedirectView
 
-import scala.concurrent.Await
+import scala.concurrent.{Await, Future}
 import scala.concurrent.ExecutionContext.Implicits.global
 
 @Controller
@@ -87,10 +87,16 @@ class NewFeedController @Autowired()(contentUpdateService: ContentUpdateService,
         }
 
         if (!result.hasErrors) {
-          contentUpdateService.create(feed)
-          log.info("Created feed: " + feed)
 
-          whakaokoService.createFeedSubscription(feed.page)
+          val eventuallyCreated = whakaokoService.createFeedSubscription(feed.page).map { maybeSubscription =>
+            feed.whakaokoSubscription = maybeSubscription
+            feed
+          }.flatMap { withWhakaokoSubscription =>
+            contentUpdateService.create(withWhakaokoSubscription)
+          }
+
+          val created = Await.result(eventuallyCreated, TenSeconds)
+          log.info("Created feed: " + created)
 
           new ModelAndView(new RedirectView(urlBuilder.getFeedUrl(feed)))
 
