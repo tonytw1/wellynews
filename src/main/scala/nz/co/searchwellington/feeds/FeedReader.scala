@@ -1,6 +1,7 @@
 package nz.co.searchwellington.feeds
 
 import nz.co.searchwellington.ReasonableWaits
+import nz.co.searchwellington.feeds.whakaoko.WhakaokoService
 import nz.co.searchwellington.feeds.whakaoko.model.FeedItem
 import nz.co.searchwellington.model.{Feed, FeedAcceptancePolicy, Resource, User}
 import nz.co.searchwellington.modification.ContentUpdateService
@@ -10,13 +11,14 @@ import org.joda.time.DateTime
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
 
-import scala.concurrent.{ExecutionContext, Future}
+import scala.concurrent.{Await, ExecutionContext, Future}
 
 @Component class FeedReader @Autowired()(rssfeedNewsitemService: RssfeedNewsitemService,
                                          feedItemAcceptanceDecider: FeedItemAcceptanceDecider,
                                          urlCleaner: UrlCleaner,
                                          contentUpdateService: ContentUpdateService,
-                                         feedReaderUpdateService: FeedReaderUpdateService)
+                                         feedReaderUpdateService: FeedReaderUpdateService,
+                                        whakaokoService: WhakaokoService)
   extends ReasonableWaits {
 
   private val log = Logger.getLogger(classOf[FeedReader])
@@ -28,6 +30,22 @@ import scala.concurrent.{ExecutionContext, Future}
   def processFeed(feed: Feed, readingUser: User, acceptancePolicy: FeedAcceptancePolicy)(implicit ec: ExecutionContext): Future[Unit] = {
     try {
       log.info("Processing feed: " + feed.title.getOrElse(feed.page) + " using acceptance policy '" + acceptancePolicy + ". Last read: " + feed.last_read)
+
+      // Attempt to back fill missing whakaoko subscriptions
+      if (feed.whakaokoSubscription.isEmpty) {
+        val eventualMaybeEventualBoolean: Future[Boolean] = whakaokoService.getSubscriptions().flatMap { subscriptions =>
+          subscriptions.find(s => s.url == feed.page).map { s =>
+            log.info("Found subscription to attached to feed: " + s);
+            feed.whakaokoSubscription = Some(s.id)
+            contentUpdateService.update(feed)
+          }.getOrElse {
+            Future.successful(false)
+          }
+        }
+        val bool = Await.result(eventualMaybeEventualBoolean, TenSeconds)
+        log.warn("Feed backfill outcome: " + bool)
+      }
+
       rssfeedNewsitemService.getFeedItemsAndDetailsFor(feed).flatMap { feedItemsFetch =>
         feedItemsFetch.fold({ l =>
           log.warn("Could new get feed items for feed + '" + feed.title + "':" + l)
