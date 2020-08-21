@@ -23,12 +23,10 @@ class WSHttpFetcher @Autowired()(taskExecutor: TaskExecutor, siteInformation: Si
   private val wsClient = StandaloneAhcWSClient()
 
   override def httpFetch(url: String)(implicit ec: ExecutionContext): Future[HttpFetchResult] = {
-    val eventualResult = wsClient.url(url).withRequestTimeout(TenSeconds).get.map { r =>
-      val result = HttpFetchResult(r.status, r.body)
-      log.info("Got HTTP fetch result from WS: " + result.status)
-      result
+    wsClient.url(url).withRequestTimeout(TenSeconds).get.map { r =>
+      log.info("Got HTTP response code " + r.status + " for url: " + url)
+      HttpFetchResult(r.status, r.body)
     }
-    eventualResult
   }
 
   override def getUserAgent(): String = siteInformation.getUserAgent
