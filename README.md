@@ -62,6 +62,7 @@ An RSS feed published by a given website. Newsitems accepted from this feed will
 A page on a publishers website which is known to contain links to new newsitems. This might be a homepage or a news page.
 For publishers with interesting content who do not provide a feed watchlist page can be regularly polled to detect changes which might
 indicate new newsitems.
+See detecting page changes below.
 
 
 ## Tagging
@@ -94,3 +95,14 @@ Been tagged as Trains implies that this newsitem is related to Transport.
 
 ### Autotagging
 
+
+
+
+### Detecting page changes
+
+Changes in pages can be detected by periodally downloading and checksuming them. Changes in checksums indicate potential new content.
+
+Pages often contain elements such as timestamps which mean a pages checksum changes even if contains no new content.
+This should be filtered out before checksum pages.
+
+TODO - where is the package containing these filters?
