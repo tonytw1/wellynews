@@ -3,7 +3,7 @@ package nz.co.searchwellington.linkchecking
 import java.util.UUID
 
 import nz.co.searchwellington.ReasonableWaits
-import nz.co.searchwellington.commentfeeds.{CommentFeedDetectorService, CommentFeedGuesserService}
+import nz.co.searchwellington.commentfeeds.CommentFeedDetectorService
 import nz.co.searchwellington.htmlparsing.RssLinkExtractor
 import nz.co.searchwellington.model.{DiscoveredFeed, Feed, Newsitem}
 import nz.co.searchwellington.repositories.mongo.MongoRepository
@@ -26,12 +26,11 @@ class FeedAutodiscoveryProcesserTest extends ReasonableWaits {
   private val mongoRepository = mock(classOf[MongoRepository])
   private val rssLinkExtractor = mock(classOf[RssLinkExtractor])
   private val commentFeedDetector = mock(classOf[CommentFeedDetectorService])
-  private val commentFeedGuesser = mock(classOf[CommentFeedGuesserService])
 
   private val resource = Newsitem(id = UUID.randomUUID().toString, page = "https://localhost/test")
   private val pageContent = "Meh"
 
-  private val feedAutodiscoveryProcesser = new FeedAutodiscoveryProcesser(mongoRepository, rssLinkExtractor, commentFeedDetector, commentFeedGuesser)
+  private val feedAutodiscoveryProcesser = new FeedAutodiscoveryProcesser(mongoRepository, rssLinkExtractor, commentFeedDetector)
 
   @Test
   def newlyDiscoveredFeedsUrlsShouldBeRecordedAsDiscoveredFeeds(): Unit = {

@@ -3,7 +3,7 @@ package nz.co.searchwellington.linkchecking
 import java.net.{MalformedURLException, URL}
 
 import nz.co.searchwellington.ReasonableWaits
-import nz.co.searchwellington.commentfeeds.{CommentFeedDetectorService, CommentFeedGuesserService}
+import nz.co.searchwellington.commentfeeds.CommentFeedDetectorService
 import nz.co.searchwellington.htmlparsing.RssLinkExtractor
 import nz.co.searchwellington.model.{DiscoveredFeed, Resource}
 import nz.co.searchwellington.repositories.mongo.MongoRepository
@@ -16,8 +16,7 @@ import scala.concurrent.{ExecutionContext, Future}
 
 @Component class FeedAutodiscoveryProcesser @Autowired()(mongoRepository: MongoRepository,
                                                          rssLinkExtractor: RssLinkExtractor,
-                                                         commentFeedDetector: CommentFeedDetectorService,
-                                                         commentFeedGuesser: CommentFeedGuesserService)
+                                                         commentFeedDetector: CommentFeedDetectorService)
   extends LinkCheckerProcessor with ReasonableWaits {
 
   private val log = Logger.getLogger(classOf[FeedAutodiscoveryProcesser])
