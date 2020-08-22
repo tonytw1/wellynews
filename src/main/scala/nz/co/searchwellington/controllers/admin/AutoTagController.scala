@@ -6,6 +6,7 @@ import nz.co.searchwellington.ReasonableWaits
 import nz.co.searchwellington.controllers.{CommonModelObjectsService, LoggedInUserFilter, RequiringLoggedInUser}
 import nz.co.searchwellington.filters.AdminRequestFilter
 import nz.co.searchwellington.model.frontend.FrontendResource
+import nz.co.searchwellington.model.mappers.FrontendResourceMapper
 import nz.co.searchwellington.model.{Resource, Tag, User}
 import nz.co.searchwellington.modification.ContentUpdateService
 import nz.co.searchwellington.repositories.mongo.MongoRepository
@@ -26,7 +27,8 @@ import scala.concurrent.{Await, Future}
                                                  contentUpdateService: ContentUpdateService,
                                                  val loggedInUserFilter: LoggedInUserFilter,
                                                  handTaggingService: HandTaggingService,
-                                                 val contentRetrievalService: ContentRetrievalService)
+                                                 val contentRetrievalService: ContentRetrievalService,
+                                                 frontendResourceMapper: FrontendResourceMapper)
   extends ReasonableWaits with CommonModelObjectsService with RequiringLoggedInUser {
 
   private val log = Logger.getLogger(classOf[AutoTagController])
@@ -86,11 +88,14 @@ import scala.concurrent.{Await, Future}
           }
         }
 
+        val results = Await.result(eventuallyAutoTaggedResources, ThirtySeconds).flatten
+        val frontendResults = Await.result(Future.sequence(results.map(r => frontendResourceMapper.createFrontendResourceFrom(r, None))), TenSeconds)
+
         import scala.collection.JavaConverters._
         val mv = new ModelAndView("autoTagApply").
           addObject("heading", "Autotagging").
           addObject("tag", tag).
-          addObject("resources_to_tag", Await.result(eventuallyAutoTaggedResources, ThirtySeconds).flatten.asJava)
+          addObject("resources_to_tag", frontendResults.asJava)
 
         Await.result(withCommonLocal(mv), TenSeconds)
 
