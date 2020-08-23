@@ -305,13 +305,8 @@ import scala.concurrent.{Await, Future}
     elasticSearchIndexer.getResources(publisherTagCombiner, loggedInUser = loggedInUser).flatMap(i => fetchByIds(i._1, loggedInUser))
   }
 
-  def getFeedworthyTags(loggedInUser: Option[User]): Seq[Tag] = {
-    var feedworthTags: Seq[Tag] = Seq()
-    import scala.collection.JavaConversions._
-    for (tagContentCount <- relatedTagsService.getFeedworthyTags(showBrokenDecisionService.shouldShowBroken(loggedInUser))) {
-      feedworthTags.add(tagContentCount.getTag)
-    }
-    feedworthTags
+  def getFeedworthyTags(): Future[Seq[Tag]] = {
+    getFeaturedTags
   }
 
   def getDiscoveredFeeds: Future[Seq[DiscoveredFeed]] = {
