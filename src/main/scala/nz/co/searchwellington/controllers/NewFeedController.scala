@@ -108,7 +108,6 @@ class NewFeedController @Autowired()(contentUpdateService: ContentUpdateService,
       } else {
         log.warn("New feed submission has errors: " + result)
         renderForm(newFeed)
-
       }
 
     } else {

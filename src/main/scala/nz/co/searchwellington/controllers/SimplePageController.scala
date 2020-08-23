@@ -72,7 +72,7 @@ import scala.concurrent.ExecutionContext.Implicits.global
     Await.result(withCommonLocal{
       val mv  = new ModelAndView("rssfeeds").
         addObject("heading", "RSS feeds").
-        addObject("feedable_tags", contentRetrievalService.getFeedworthyTags(loggedInUserFilter.getLoggedInUser))
+        addObject("feedable_tags", Await.result(contentRetrievalService.getFeedworthyTags(), TenSeconds))
 
       commonAttributesModelBuilder.setRss(mv, rssUrlBuilder.getBaseRssTitle, rssUrlBuilder.getBaseRssUrl)
       mv

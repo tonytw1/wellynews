@@ -106,10 +106,6 @@ import scala.concurrent.{Await, Future}
     }
   }
 
-  def getFeedworthyTags(shouldShowBroken: Boolean): Seq[TagContentCount] = {
-    Seq()
-  }
-
   private def toPublisherContentCount(facet: (String, Long)): Future[Option[PublisherContentCount]] = {
     val eventualMaybePublisher = mongoRepository.getResourceByObjectId(BSONObjectID.parse(facet._1).get)
     eventualMaybePublisher.map { maybePublisher =>
