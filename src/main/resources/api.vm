@@ -124,40 +124,6 @@
 
 		<p>Credit: The combination url scheme was inspired by the Guardian newspapers' tag combiners.</p>
 
-
-
-		<h5><b>Commented newsitems</b></h5>
-		
-		<p>Returns newsitems which have been commented on.</p>
-		<ul>
-			<li><code>$siteInformation.url/comment/[rss/json]</code></li>
-		</ul>
-
-		<p>ie. Commented newsitesm in JSON format.</p>
-
-		<ul>
-			<li><code><a href="$siteInformation.url/comment/json">$siteInformation.url/waterfront/comment/json</a></code></li>
-		</ul>
-
-		<p>Commented newsitems also specifiy the newsitems'comment feed url on the <code>commentFeed</code> field on the JSON results.</p>
-
-
-
-
-		<h5><b>Commented newsitems for a tag</b></h5>
-
-		<p>Returns commented newsitems for a given tag.</p>	
-		<ul>
-			<li><code>$siteInformation.url/[tag url snippet]/comment/[rss|json]</code>
-		</ul>
-
-		<p>ie. Commented newsitems tagged with waterfront in JSON format.</p>
-		<ul>
-			<li><code><a href="$siteInformation.url/waterfront/comment/json">$siteInformation.url/waterfront/comment/json</a></code></li>
-		</ul>
-
-
-
 		<h5><b>Geotagged newsitems</b></h5>
 		
 		<p>Returns newsitems which have been geotagged.</p>
