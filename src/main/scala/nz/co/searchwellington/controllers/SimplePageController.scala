@@ -61,7 +61,7 @@ import scala.concurrent.ExecutionContext.Implicits.global
     Await.result(withCommonLocal(new ModelAndView("api").
       addObject("heading", "The Wellynews API").
       addObject("feeds", contentRetrievalService.getFeeds(loggedInUser = loggedInUserFilter.getLoggedInUser)).
-      addObject("publishers", contentRetrievalService.getAllPublishers(loggedInUserFilter.getLoggedInUser)).
+      addObject("publishers", contentRetrievalService.getAllPublishers(loggedInUserFilter.getLoggedInUser)).  // TODO Future!?
       addObject("api_tags", contentRetrievalService.getTopLevelTags)), TenSeconds)
   }
 
@@ -70,9 +70,10 @@ import scala.concurrent.ExecutionContext.Implicits.global
     urlStack.setUrlStack(request)
 
     Await.result(withCommonLocal{
+      import scala.collection.JavaConverters._
       val mv  = new ModelAndView("rssfeeds").
         addObject("heading", "RSS feeds").
-        addObject("feedable_tags", Await.result(contentRetrievalService.getFeedworthyTags(), TenSeconds))
+        addObject("feedable_tags", Await.result(contentRetrievalService.getFeedworthyTags(), TenSeconds).asJava)
 
       commonAttributesModelBuilder.setRss(mv, rssUrlBuilder.getBaseRssTitle, rssUrlBuilder.getBaseRssUrl)
       mv

@@ -24,12 +24,11 @@
 </ul>
 
 
-<p>The latest newsitems for individual tags are also available as RSS feeds.</p>
-
-<p>Some of these feeds are shown below:</p>
+<p>The latest newsitems for individual tags are also available as RSS feeds.<br/>
+Some of these feeds are shown below:</p>
 
 <ul>
-#foreach ($tag in $feedable_tags) 
+#foreach ($tag in $feedable_tags)
 	#if ($tag.isHidden()) 
 	#else 
 		<li>#rssIcon($rssUrlBuilder.getRssUrlForTag($tag) '') $tag.displayName - <code>$rssUrlBuilder.getRssUrlForTag($tag)</code></li>
@@ -37,9 +36,7 @@
 #end
 </ul>
 
-<p>A complete description of all other
-available feeds is provided in the <a href="api">API instructions</a>.</p>
-
+<p>A complete list of all other available feeds is available in the <a href="api">API instructions</a>.</p>
 
 </div>
 
