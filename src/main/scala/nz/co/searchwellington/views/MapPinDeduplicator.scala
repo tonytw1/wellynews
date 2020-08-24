@@ -6,10 +6,10 @@ import org.springframework.stereotype.Component
 import uk.co.eelpieconsulting.common.geo.DistanceMeasuringService
 import uk.co.eelpieconsulting.common.geo.model.LatLong
 
-@Component class GoogleMapsDisplayCleaner() {
+@Component class MapPinDeduplicator() {
 
   private val ONE_HUNDRED_METERS = 0.1
-  private val log = Logger.getLogger(classOf[GoogleMapsDisplayCleaner])
+  private val log = Logger.getLogger(classOf[MapPinDeduplicator])
 
   private val distanceMeasuringService = new DistanceMeasuringService
 

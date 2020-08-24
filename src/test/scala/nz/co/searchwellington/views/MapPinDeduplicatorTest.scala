@@ -4,7 +4,7 @@ import nz.co.searchwellington.model.{Geocode, Newsitem}
 import org.junit.Assert.{assertEquals, assertFalse, assertTrue}
 import org.junit.Test
 
-class GoogleMapsDisplayCleanerTest {
+class MapPinDeduplicatorTest {
   private val here = Geocode(Some("here"), Some(1.1), Some(1.1))
   private val there = Geocode(Some("there"), Some(2.2), Some(2.2))
   private val alsoHere = Geocode(Some("here"), Some(1.1), Some(1.1))
@@ -13,7 +13,7 @@ class GoogleMapsDisplayCleanerTest {
   private val thirdNewsitem = Newsitem(title = Some("Third"), geocode = Some(alsoHere))
   private val geocoded = Seq(firstNewsitem, secondNewsitem, thirdNewsitem)
 
-  private val cleaner = new GoogleMapsDisplayCleaner()
+  private val cleaner = new MapPinDeduplicator()
 
   @Test
   def shouldDedupeListByGeocodeSoThatLowerItemsDoNotOverlayEarlierOnes(): Unit = {

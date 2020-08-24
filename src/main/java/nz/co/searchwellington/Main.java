@@ -13,7 +13,6 @@ import nz.co.searchwellington.permissions.EditPermissionService;
 import nz.co.searchwellington.urls.UrlBuilder;
 import nz.co.searchwellington.utils.EscapeTools;
 import nz.co.searchwellington.views.ColumnSplitter;
-import nz.co.searchwellington.views.GoogleMapsDisplayCleaner;
 import org.apache.log4j.Logger;
 import org.apache.velocity.app.Velocity;
 import org.apache.velocity.runtime.RuntimeConstants;
@@ -132,7 +131,6 @@ public class Main {
             ColumnSplitter columnSplitter,
             DateFormatter dateFormatter,
             EditPermissionService editPermissionService,
-            GoogleMapsDisplayCleaner googleMapsDisplayCleaner,
             LoggedInUserFilter loggedInUserFilter,
             RssUrlBuilder rssUrlBuilder,
             SiteInformation siteInformation,
@@ -149,7 +147,6 @@ public class Main {
         attributes.put("dateFormatter", dateFormatter);
         attributes.put("editPermissionService", editPermissionService);
         attributes.put("escape", new EscapeTools());
-        attributes.put("googleMapCleaner", googleMapsDisplayCleaner);
         attributes.put("loggedInUserFilter", loggedInUserFilter);   // TODO not very functional
         attributes.put("rssUrlBuilder", rssUrlBuilder);
         attributes.put("siteInformation", siteInformation);
