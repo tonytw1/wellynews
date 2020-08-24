@@ -202,9 +202,14 @@ class UrlBuilder @Autowired()(siteInformation: SiteInformation, urlWordsGenerato
     }
   }
 
-  def getSearchUrlFor(keywords: String, page: Option[Int] = None): String = {
-    "/search?keywords=" + UrlParameterEncoder.encode(keywords) +
-      page.map("&page=" + _).getOrElse("")
+  def getSearchUrlFor(keywords: String, page: Option[Int] = None, tag: Option[Tag] = None, publisher: Option[Website] = None): String = {
+    val ps = Seq(
+      page.map(p => "page" -> p.toString),
+      tag.map(t => "tag" -> t.name),
+      publisher.map(p => "publisher" -> p.url_words.get)  // TODO naked get
+    ).flatten
+
+    io.lemonlabs.uri.Url(path = "/search").addParam("q", keywords).addParams(ps).toRelativeUrl.toString()
   }
 
   def getTagSearchUrlFor(keywords: String, tag: Tag): String = {

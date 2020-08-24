@@ -193,6 +193,13 @@
         </dependency>
 
         <dependency>
+            <groupId>io.lemonlabs</groupId>
+            <artifactId>scala-uri_2.12</artifactId>
+            <version>2.3.0</version>
+            <type>jar</type>
+        </dependency>
+
+        <dependency>
             <groupId>com.rabbitmq</groupId>
             <artifactId>amqp-client</artifactId>
             <version>4.8.0</version>

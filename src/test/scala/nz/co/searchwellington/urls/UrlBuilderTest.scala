@@ -23,6 +23,17 @@ class UrlBuilderTest {
   @Test
   def testTagSearchRefinementsShouldBeOnTheTagPages(): Unit = assertEquals("/atag?keywords=something", urlBuilder.getTagSearchUrl(tag, "something"))
 
+
+  @Test
+  def canBuildPublisherKeywordSearchUrl(): Unit = {
+    val publisher = Website(title = Some("Wellington City Council"), url_words = Some("wellington-city-council"))
+
+    val url = urlBuilder.getSearchUrlFor("something", Some(2), None, Some(publisher))
+
+    assertEquals("/search?q=something&page=2&publisher=wellington-city-council", url)
+  }
+
+
   @Test
   def canCreatePublisherAndTagCombinerLinkBasedOnPublisherUrlWordsAndTagName(): Unit = {
     val publisher = Website(title = Some("Wellington City Council"), url_words = Some("wellington-city-council"))
