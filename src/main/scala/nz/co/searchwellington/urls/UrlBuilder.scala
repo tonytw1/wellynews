@@ -77,14 +77,6 @@ class UrlBuilder @Autowired()(siteInformation: SiteInformation, urlWordsGenerato
     getTagCombinerUrl(firstTag, secondTag) + "?page=" + page
   }
 
-  def getTagSearchUrl(tag: Tag, keywords: String): String = {
-    getTagUrl(tag) + "?keywords=" + UrlParameterEncoder.encode(keywords)
-  }
-
-  def getPublisherSearchUrl(publisher: Website, keywords: String): String = {
-    getSearchUrlFor(keywords) // TODO
-  }
-
   def getLocalPageUrl(resource: FrontendResource): String = {
     resource match {
       case n: FrontendNewsitem =>
@@ -212,8 +204,12 @@ class UrlBuilder @Autowired()(siteInformation: SiteInformation, urlWordsGenerato
     io.lemonlabs.uri.Url(path = "/search").addParam("q", keywords).addParams(ps).toRelativeUrl.toString()
   }
 
-  def getTagSearchUrlFor(keywords: String, tag: Tag): String = {
-    getTagUrl(tag) + "?keywords=" + UrlParameterEncoder.encode(keywords)
+  def getTagSearchUrl(tag: Tag, keywords: String): String = {
+    getSearchUrlFor(keywords, tag = Some(tag))
+  }
+
+  def getPublisherSearchUrl(publisher: Website, keywords: String): String = {
+    getSearchUrlFor(keywords, publisher = Some(publisher))
   }
 
   def getSubmitFeedUrl: String = {
