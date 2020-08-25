@@ -2,7 +2,7 @@ package nz.co.searchwellington.repositories
 
 import nz.co.searchwellington.ReasonableWaits
 import nz.co.searchwellington.controllers.models.helpers.CommonSizes
-import nz.co.searchwellington.controllers.{LoggedInUserFilter, RelatedTagsService, ShowBrokenDecisionService}
+import nz.co.searchwellington.controllers.{RelatedTagsService, ShowBrokenDecisionService}
 import nz.co.searchwellington.model._
 import nz.co.searchwellington.model.frontend.FrontendResource
 import nz.co.searchwellington.model.mappers.FrontendResourceMapper
@@ -85,7 +85,7 @@ import scala.concurrent.{Await, Future}
     toFrontendResourcesWithTotalCount(elasticSearchIndexer.getResources(newsitemsByKeywords, loggedInUser = loggedInUser), loggedInUser)
   }
 
-  def getNewsitemKeywordSearchRelatedTags(keywords: String, loggedInUser: Option[User]): Seq[TagContentCount] = {
+  def getNewsitemKeywordSearchRelatedTags(keywords: String, loggedInUser: Option[User]): Future[Seq[TagContentCount]] = {
     val newsitemsByKeywords = ResourceQuery(`type` = newsitems, q = Some(keywords), publisher = None, tags = None)
 
     val tagAggregation = elasticSearchIndexer.getAggregationFor(newsitemsByKeywords, elasticSearchIndexer.Tags, loggedInUser);
@@ -99,12 +99,11 @@ import scala.concurrent.{Await, Future}
       }
     }
 
-    val eventualTagContentCounts: Future[Seq[TagContentCount]] = tagAggregation.flatMap { ts =>
+    tagAggregation.flatMap { ts =>
       Future.sequence(ts.map(toTagContentCount)).map(_.flatten)
     }
-    Await.result(eventualTagContentCounts, TenSeconds)
   }
-  def getNewsitemKeywordSearchRelatedPublishers(keywords: String, loggedInUser: Option[User]): Seq[PublisherContentCount] = {
+  def getNewsitemKeywordSearchRelatedPublishers(keywords: String, loggedInUser: Option[User]): Future[Seq[PublisherContentCount]] = {
     val newsitemsByKeywords = ResourceQuery(`type` = newsitems, q = Some(keywords), publisher = None, tags = None)
 
     val publisherAggregation = elasticSearchIndexer.getAggregationFor(newsitemsByKeywords, elasticSearchIndexer.Publisher, loggedInUser);
@@ -123,10 +122,9 @@ import scala.concurrent.{Await, Future}
       }
     }
 
-    val eventualPublisherContentCounts = publisherAggregation.flatMap { ts =>
+    publisherAggregation.flatMap { ts =>
       Future.sequence(ts.map(toPublisherContentCount)).map(_.flatten)
     }
-    Await.result(eventualPublisherContentCounts, TenSeconds)
   }
 
   def getTagWatchlist(tag: Tag, loggedInUser: Option[User]): Future[Seq[FrontendResource]] = {

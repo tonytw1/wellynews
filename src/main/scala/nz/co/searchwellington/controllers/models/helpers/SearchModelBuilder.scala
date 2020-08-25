@@ -37,9 +37,6 @@ import scala.concurrent.Future
 
     log.info("Search parameters: ", keywords, maybeTag, maybePublisher)
 
-    val mv = new ModelAndView()
-    mv.addObject("page", page)
-
     val eventualMaybeFrontendPublisher = maybePublisher.map { publisher =>
       val eventualResource = frontendResourceMapper.createFrontendResourceFrom(publisher, loggedInUser)
       eventualResource.map(Some(_))
@@ -47,32 +44,37 @@ import scala.concurrent.Future
       Future.successful(None)
     }
 
+    val eventualTagRefinements = contentRetrievalService.getNewsitemKeywordSearchRelatedTags(keywords, loggedInUser)
+    val eventualPublisherRefinements = contentRetrievalService.getNewsitemKeywordSearchRelatedPublishers(keywords, loggedInUser)
+
     for {
-      maybeFrontendPublisher <- eventualMaybeFrontendPublisher
       contentWithCount <- contentRetrievalService.getNewsitemsMatchingKeywords(keywords, startIndex, MAX_NEWSITEMS, loggedInUser, maybeTag, maybePublisher)
+      maybeFrontendPublisher <- eventualMaybeFrontendPublisher
+      tagRefinements <- eventualTagRefinements
+      publisherRefinements <- eventualPublisherRefinements
+
     } yield {
       import scala.collection.JavaConverters._
-      mv.addObject(MAIN_CONTENT, contentWithCount._1.asJava)
 
-      val contentCount = contentWithCount._2
-      def paginationLinks(page: Int) = urlBuilder.getSearchUrlFor(keywords, Some(page))
-      populatePagination(mv, startIndex, contentCount, MAX_NEWSITEMS, paginationLinks)
-
-      mv.addObject("publisher", maybeFrontendPublisher.orNull)
-
-      maybeTag.map { tag =>
-        mv.addObject("tag", tag)
-      }
-      val tagRefinements = contentRetrievalService.getNewsitemKeywordSearchRelatedTags(keywords, loggedInUser)  // TODO pull up Await
+      val mv = new ModelAndView().
+        addObject("page", page).
+        addObject("heading", "Search results - " + keywords).
+        addObject(MAIN_CONTENT, contentWithCount._1.asJava).
+        addObject("main_heading", "Matching Newsitems").
+        addObject("query", keywords).
+        addObject("tag", maybeTag.orNull).
+        addObject("publisher", maybeFrontendPublisher.orNull)
 
       if (tagRefinements.nonEmpty) {
         mv.addObject("related_tags", tagRefinements.asJava)
       }
-
-      val publisherRefinements = contentRetrievalService.getNewsitemKeywordSearchRelatedPublishers(keywords, loggedInUser)
       if (publisherRefinements.nonEmpty) {
         mv.addObject("related_publishers", publisherRefinements.asJava)
       }
+
+      val contentCount = contentWithCount._2
+      def paginationLinks(page: Int) = urlBuilder.getSearchUrlFor(keywords, Some(page))
+      populatePagination(mv, startIndex, contentCount, MAX_NEWSITEMS, paginationLinks)
 
       /*
     if (startIndex > contentCount) {
@@ -80,10 +82,6 @@ import scala.concurrent.Future
     }
     */
 
-      mv.addObject("query", keywords)
-      mv.addObject("heading", "Search results - " + keywords)
-
-      mv.addObject("main_heading", "Matching Newsitems")
       mv.addObject("main_description", "Found " + contentCount + " matching newsitems")
       mv.addObject("description", "Search results for '" + keywords + "'")
       mv.addObject("link", urlBuilder.getSearchUrlFor(keywords))
