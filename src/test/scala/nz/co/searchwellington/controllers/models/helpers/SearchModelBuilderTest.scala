@@ -10,7 +10,7 @@ import nz.co.searchwellington.model.{PublisherContentCount, Tag, TagContentCount
 import nz.co.searchwellington.repositories.ContentRetrievalService
 import nz.co.searchwellington.urls.UrlBuilder
 import org.junit.Assert.{assertEquals, assertFalse, assertTrue}
-import org.junit.{Before, Test}
+import org.junit.Test
 import org.mockito.Mockito.{mock, when}
 import org.springframework.mock.web.MockHttpServletRequest
 
@@ -23,10 +23,6 @@ class SearchModelBuilderTest extends ReasonableWaits with ContentFields {
   private val frontendResourceMapper = mock(classOf[FrontendResourceMapper])
 
   private val tag = Tag(id = UUID.randomUUID().toString, name = "A tag")
-  private val tags = Seq(tag)
-
-  private var request: MockHttpServletRequest = _
-  private var modelBuilder: SearchModelBuilder = _
 
   private val tagNewsitem = mock(classOf[FrontendResource])
   private val anotherTagNewsitem = mock(classOf[FrontendResource])
@@ -36,23 +32,23 @@ class SearchModelBuilderTest extends ReasonableWaits with ContentFields {
 
   private val loggedInUser = None
 
-  @Before def setup() {
-    request = new MockHttpServletRequest
-    modelBuilder = new SearchModelBuilder(contentRetrievalService, urlBuilder, frontendResourceMapper)
-  }
+  private val modelBuilder = new SearchModelBuilder(contentRetrievalService, urlBuilder, frontendResourceMapper)
+
 
   @Test
   def keywordShouldBeSetToIndicateASearch() {
+    val request = new MockHttpServletRequest
     request.setRequestURI("")
     assertFalse(modelBuilder.isValid(request))
 
-    request.setParameter("keywords", "widgets")
+    request.setParameter("q", "widgets")
     assertTrue(modelBuilder.isValid(request))
   }
 
   @Test
   def pageHeadingShouldBeSearchKeyword() {
-    request.setParameter("keywords", "widgets")
+    val request = new MockHttpServletRequest
+    request.setParameter("q", "widgets")
     when(contentRetrievalService.getNewsitemsMatchingKeywords("widgets", 0, 30, loggedInUser, tag = None, publisher = None)).thenReturn(Future.successful(keywordNewsitemResults))
     when(contentRetrievalService.getNewsitemKeywordSearchRelatedTags("widgets", loggedInUser)).thenReturn(Seq.empty)
     when(contentRetrievalService.getNewsitemKeywordSearchRelatedPublishers("widgets", loggedInUser)).thenReturn(Seq.empty)
@@ -74,7 +70,8 @@ class SearchModelBuilderTest extends ReasonableWaits with ContentFields {
     val anotherPublisher = Website()
     val publisherRefinements = Seq[PublisherContentCount](PublisherContentCount(publisher, 1L), PublisherContentCount(anotherPublisher, 2L))
 
-    request.setParameter("keywords", q)
+    val request = new MockHttpServletRequest
+    request.setParameter("q", q)
     when(contentRetrievalService.getNewsitemsMatchingKeywords(q, 0, 30, loggedInUser, tag = None, publisher = None)).thenReturn(Future.successful(keywordNewsitemResults))
     when(contentRetrievalService.getNewsitemKeywordSearchRelatedTags(q, loggedInUser)).thenReturn(tagRefinements)
     when(contentRetrievalService.getNewsitemKeywordSearchRelatedPublishers(q, loggedInUser)).thenReturn(publisherRefinements)
@@ -89,7 +86,9 @@ class SearchModelBuilderTest extends ReasonableWaits with ContentFields {
   @Test
   def canSearchSpecificPublishersNewsitems() = {
     val publisher = Website(id = "123", title = Some("A publisher with lots of newsitems"))
-    request.setParameter("keywords", "sausages")
+
+    val request = new MockHttpServletRequest
+    request.setParameter("q", "sausages")
     request.setAttribute("publisher", publisher)
 
     val publisherNewsitemSearchResults = (Seq(tagNewsitem, anotherTagNewsitem), 2L)
@@ -107,11 +106,13 @@ class SearchModelBuilderTest extends ReasonableWaits with ContentFields {
 
   @Test
   def shouldShowTagIfTagFilterIsSet() {
-    request.setParameter("keywords", "widgets")
-    request.setAttribute("tags", tags)
+    val request = new MockHttpServletRequest
+    request.setParameter("q", "widgets")
+    request.setAttribute("tag", tag)
     when(contentRetrievalService.getNewsitemsMatchingKeywords("widgets", 0, 30, loggedInUser, tag = Some(tag), publisher = None)).
       thenReturn(Future.successful(tagKeywordNewsitemResults))
     when(contentRetrievalService.getNewsitemKeywordSearchRelatedPublishers("widgets", loggedInUser)).thenReturn(Seq.empty)
+    when(contentRetrievalService.getNewsitemKeywordSearchRelatedTags("widgets", loggedInUser)).thenReturn(Seq.empty)
 
     val mv = Await.result(modelBuilder.populateContentModel(request), TenSeconds).get
 
@@ -120,10 +121,12 @@ class SearchModelBuilderTest extends ReasonableWaits with ContentFields {
 
   @Test
   def shouldShowTagResultsIfTagFilterIsSet() {
-    request.setParameter("keywords", "widgets")
-    request.setAttribute("tags", tags)
+    val request = new MockHttpServletRequest
+    request.setParameter("q", "widgets")
+    request.setAttribute("tag", tag)
     when(contentRetrievalService.getNewsitemsMatchingKeywords("widgets", 0, 30, loggedInUser, tag = Some(tag), publisher = None)).
       thenReturn(Future.successful(tagKeywordNewsitemResults))
+    when(contentRetrievalService.getNewsitemKeywordSearchRelatedTags("widgets", loggedInUser)).thenReturn(Seq.empty)
     when(contentRetrievalService.getNewsitemKeywordSearchRelatedPublishers("widgets", loggedInUser)).thenReturn(Seq.empty)
 
     val mv = Await.result(modelBuilder.populateContentModel(request), TenSeconds).get

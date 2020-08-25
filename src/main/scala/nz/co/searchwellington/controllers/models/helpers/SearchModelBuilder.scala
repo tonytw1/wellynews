@@ -4,9 +4,10 @@ import javax.servlet.http.HttpServletRequest
 import nz.co.searchwellington.ReasonableWaits
 import nz.co.searchwellington.controllers.models.helpers.{CommonSizes, Pagination}
 import nz.co.searchwellington.model.mappers.FrontendResourceMapper
-import nz.co.searchwellington.model.{Tag, TagContentCount, User, Website}
+import nz.co.searchwellington.model.{Tag, User, Website}
 import nz.co.searchwellington.repositories.ContentRetrievalService
 import nz.co.searchwellington.urls.UrlBuilder
+import org.apache.log4j.Logger
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
 import org.springframework.web.servlet.ModelAndView
@@ -18,7 +19,8 @@ import scala.concurrent.Future
                                                  val urlBuilder: UrlBuilder, frontendResourceMapper: FrontendResourceMapper)
   extends ModelBuilder with CommonSizes with Pagination with ReasonableWaits {
 
-  private val KEYWORDS_PARAMETER = "keywords"
+  private val log = Logger.getLogger(classOf[SearchModelBuilder])
+  private val KEYWORDS_PARAMETER = "q"
 
   def isValid(request: HttpServletRequest): Boolean = {
     request.getParameter(KEYWORDS_PARAMETER) != null
@@ -30,14 +32,15 @@ import scala.concurrent.Future
 
     val startIndex = getStartIndex(page, MAX_NEWSITEMS)
 
-    val maybeTag = Option(request.getAttribute("tags")).flatMap { t =>
-      t.asInstanceOf[Seq[Tag]].headOption
-    }
+    val maybeTag = Option(request.getAttribute("tag")).map(_.asInstanceOf[Tag])
     val maybePublisher = Option(request.getAttribute("publisher").asInstanceOf[Website])
+
+    log.info("Search parameters: ", keywords, maybeTag, maybePublisher)
+
     val mv = new ModelAndView()
     mv.addObject("page", page)
 
-    val eventualMaybePublisher = maybePublisher.map { publisher =>
+    val eventualMaybeFrontendPublisher = maybePublisher.map { publisher =>
       val eventualResource = frontendResourceMapper.createFrontendResourceFrom(publisher, loggedInUser)
       eventualResource.map(Some(_))
     }.getOrElse{
@@ -45,7 +48,7 @@ import scala.concurrent.Future
     }
 
     for {
-      maybeFrontendPublisher <- eventualMaybePublisher
+      maybeFrontendPublisher <- eventualMaybeFrontendPublisher
       contentWithCount <- contentRetrievalService.getNewsitemsMatchingKeywords(keywords, startIndex, MAX_NEWSITEMS, loggedInUser, maybeTag, maybePublisher)
     } yield {
       import scala.collection.JavaConverters._
@@ -60,11 +63,8 @@ import scala.concurrent.Future
       maybeTag.map { tag =>
         mv.addObject("tag", tag)
       }
-      val tagRefinements = maybeTag.fold {
-        contentRetrievalService.getNewsitemKeywordSearchRelatedTags(keywords, loggedInUser)
-      }{ _ =>
-        Seq.empty
-      }
+      val tagRefinements = contentRetrievalService.getNewsitemKeywordSearchRelatedTags(keywords, loggedInUser)  // TODO pull up Await
+
       if (tagRefinements.nonEmpty) {
         mv.addObject("related_tags", tagRefinements.asJava)
       }
