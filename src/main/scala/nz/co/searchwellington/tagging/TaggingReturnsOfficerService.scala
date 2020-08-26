@@ -20,12 +20,8 @@ import scala.concurrent.Future
   // TODO These are a different responsibility to tagging votes
   def getHandTagsForResource(resource: Tagged): Future[Seq[Tag]] = {
     handTaggingDAO.getHandTaggingsForResource(resource).map { handTaggings =>
-      handTaggings.map(_.tag)
+      handTaggings.map(_.tag).distinct
     }
-  }
-
-  def getHandTaggingsForResource(resource: Tagged): Future[Seq[taggingvotes.HandTagging]] = {
-    handTaggingDAO.getHandTaggingsForResource(resource)
   }
 
   // TODO These are a different responsibility to tagging votes
@@ -33,6 +29,10 @@ import scala.concurrent.Future
     compileTaggingVotes(resource).map { taggingVotes =>
       taggingVotes.map(_.tag).distinct
     }
+  }
+
+  def getHandTaggingsForResource(resource: Tagged): Future[Seq[taggingvotes.HandTagging]] = {
+    handTaggingDAO.getHandTaggingsForResource(resource)
   }
 
   def getIndexTaggingsForResource(resource: Resource): Future[Seq[TaggingVote]] = {
