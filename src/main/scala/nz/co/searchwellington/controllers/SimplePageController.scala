@@ -30,7 +30,7 @@ import scala.concurrent.ExecutionContext.Implicits.global
 
     import scala.collection.JavaConverters._
     Await.result((for {
-      latestNewsitems <- contentRetrievalService.getLatestNewsitems(5, loggedInUser = loggedInUserFilter.getLoggedInUser)
+      latestNewsitems <- eventualLatestNewsitems
     } yield {
       new ModelAndView("about").
         addObject("heading", "About").
@@ -69,15 +69,15 @@ import scala.concurrent.ExecutionContext.Implicits.global
   def rssfeeds(request: HttpServletRequest): ModelAndView = {
     urlStack.setUrlStack(request)
 
-    Await.result(withCommonLocal{
+    Await.result(withLatestNewsitems(Await.result(withCommonLocal {
       import scala.collection.JavaConverters._
-      val mv  = new ModelAndView("rssfeeds").
+      val mv = new ModelAndView("rssfeeds").
         addObject("heading", "RSS feeds").
         addObject("feedable_tags", Await.result(contentRetrievalService.getFeedworthyTags(), TenSeconds).asJava)
 
       commonAttributesModelBuilder.setRss(mv, rssUrlBuilder.getBaseRssTitle, rssUrlBuilder.getBaseRssUrl)
       mv
-    }, TenSeconds)
+    }, TenSeconds), loggedInUserFilter.getLoggedInUser), TenSeconds)
   }
 
   @RequestMapping(Array("/feeds/discovered"))
@@ -89,5 +89,7 @@ import scala.concurrent.ExecutionContext.Implicits.global
       addObject("heading", "Discovered Feeds").
       addObject("discovered_feeds", Await.result(mongoRepository.getAllDiscoveredFeeds, TenSeconds).asJava)), TenSeconds)
   }
+
+  private def eventualLatestNewsitems = contentRetrievalService.getLatestNewsitems(5, loggedInUser = loggedInUserFilter.getLoggedInUser)
 
 }

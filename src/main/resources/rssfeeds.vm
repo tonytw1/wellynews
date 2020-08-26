@@ -3,15 +3,9 @@
 <div class="page">
 #parse("includes/topbar.vm")
 
-
-
 <div class="left">
 #parse("includes/tag_tree.vm")
 </div>
-
-
-
-
 
 <div class="main">
 
@@ -22,7 +16,6 @@
 <ul>
 	<li>#parse("includes/rss_icon.vm") <code>$rss_url</code></li>
 </ul>
-
 
 <p>The latest newsitems for individual tags are also available as RSS feeds.<br/>
 Some of these feeds are shown below:</p>
@@ -40,25 +33,11 @@ Some of these feeds are shown below:</p>
 
 </div>
 
-
-
-
-
-
-
-
-
-
-
-
 <div class="right">
 
 <div class="box">
-#parse("includes/latest_newsitems.vm")
-<br clear="all"/>
-
+    #parse("includes/latest_newsitems.vm")
 </div>
-
 
 </div>
 
