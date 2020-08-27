@@ -60,16 +60,6 @@
 		</ul>
 
 
-		<h5>Specifying tags and publishers</h5>
-
-		<p>When querying for newsitems (below) you have the option of filtering by tag or publisher. 
-		Tags and publishers are specified by substituting the appropriate url snippet into your request.</p>
-
-		<p>ie. The url snippet for Wellington City Council is <code>wellington-city-council</code>.</p>
-
-		<p>A complete list of available tag and publisher url snippets is provided <a href="#urlsnippets">below</a>.</p>
-
-
 		<a name="newsitemqueries"></a>
 		<h2>Newsitem queries</h2>
 
@@ -166,7 +156,7 @@
 		<h2>Geotagging</h2>
 		
 		<p> Where applicable, geotags are also embedded in our RSS feeds using the
-		<a href="http://georss.org/">GeoRSS</a> standard. A GeoRSS tagged feed item has this format:</p>
+		<a href="https://en.wikipedia.org/wiki/GeoRSS">GeoRSS</a> standard. A GeoRSS tagged feed item has this format:</p>
 		<code>
 	        &lt;item&gt;<br/>
 	          &lt;title&gt;Can you replace the Hilton?&lt;/title&gt; <br/>
