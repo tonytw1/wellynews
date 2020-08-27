@@ -98,31 +98,30 @@
 			<li><code>$siteInformation.url/[publisher url snippet]/[rss|json]</code>
 		</ul>
 
-		<p>ie. newsitems published by the Capital Times, in JSON format.</p>
+		<p>ie. newsitems published by the Wellington City Council, in JSON format.</p>
 
 		<ul>
-			<li><code><a href="$siteInformation.url/capital-times/json">$siteInformation.url/capital-times/json</a></code></li>
+			<li><code><a href="$siteInformation.url/capital-times/json">$siteInformation.url/wellington-city-council/json</a></code></li>
 		</ul>
-
-
 
 		<h5><b>Combinations</b></h5>
 
-		<p>Returns newsitems tagged with a combination of two tags, or a publisher and a tag.</p>
-		<p> The tags are seperated with a plus character. For combinations involving a publisher, the publisher must always appear on the left hand side of the plus.</p> 
+		<p>List newsitems tagged with a combination of two tags or a publisher and a tag.</p>
+		<p> The tags are separated with a plus character. For publisher and tag combinations the publisher must always appear on the left hand side of the plus.</p>
 
 		<ul>
 			<li><code>$siteInformation.url/[tag|publisher]+[tag]/[rss|json]</code>
 		</ul>
 
-		<p>ie. newsitems tagged with transport and consultation and Wellington City Council media releases tagged with indoor sports centre</a>.</p>
+		<p>ie. newsitems tagged with transport and consultation and Wellington City Council media releases tagged with runway extension:</a>.</p>
 
 		<ul>
 			<li><code><a href="$siteInformation.url/transport+consultation/rss">$siteInformation.url/transport+consultation/rss</a></code></li>
-			<li><code><a href="$siteInformation.url/wellington-city-council+indoorsportscentre/rss">$siteInformation.url/wellington-city-council+indoorsportscentre/rss</a></code></li>
+			<li><code><a href="$siteInformation.url/wellington-city-council+runway-extension/rss">$siteInformation.url/wellington-city-council+runway-extension/rss</a></code></li>
 		</ul>
 
-		<p>Credit: The combination url scheme was inspired by the Guardian newspapers' tag combiners.</p>
+		<p>Credit: This url scheme was inspired by the Guardian newspapers' tag combiners.</p>
+
 
 		<h5><b>Geotagged newsitems</b></h5>
 		
