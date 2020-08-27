@@ -3,11 +3,10 @@ package nz.co.searchwellington.controllers.models.helpers
 import java.util.UUID
 
 import nz.co.searchwellington.ReasonableWaits
-import nz.co.searchwellington.controllers.LoggedInUserFilter
 import nz.co.searchwellington.controllers.models.GeotaggedNewsitemExtractor
 import nz.co.searchwellington.feeds.whakaoko.WhakaokoService
 import nz.co.searchwellington.feeds.whakaoko.model.{FeedItem, Subscription}
-import nz.co.searchwellington.feeds.{FeedItemLocalCopyDecorator, FeeditemToNewsitemService, RssfeedNewsitemService}
+import nz.co.searchwellington.feeds.{FeedItemActionDecorator, FeeditemToNewsitemService, RssfeedNewsitemService}
 import nz.co.searchwellington.model.frontend.{FrontendFeed, FrontendNewsitem}
 import nz.co.searchwellington.model.mappers.FrontendResourceMapper
 import nz.co.searchwellington.model.{Feed, Geocode, Newsitem}
@@ -25,7 +24,7 @@ class FeedModelBuilderTest extends ReasonableWaits with ContentFields {
   private val rssfeedNewsitemService = mock(classOf[RssfeedNewsitemService])
   private val contentRetrievalService = mock(classOf[ContentRetrievalService])
   private val geotaggedNewsitemExtractor = new GeotaggedNewsitemExtractor()
-  private val feedItemLocalCopyDecorator = mock(classOf[FeedItemLocalCopyDecorator])
+  private val feedItemActionDecorator = mock(classOf[FeedItemActionDecorator])
   private val frontendResourceMapper = mock(classOf[FrontendResourceMapper])
   private val feeditemToNewsitemService = mock(classOf[FeeditemToNewsitemService])
   private val commonAttributesModelBuilder = mock(classOf[CommonAttributesModelBuilder])
@@ -57,7 +56,7 @@ class FeedModelBuilderTest extends ReasonableWaits with ContentFields {
   var request: MockHttpServletRequest = null
 
   val modelBuilder = new FeedModelBuilder(rssfeedNewsitemService, contentRetrievalService, geotaggedNewsitemExtractor,
-    feedItemLocalCopyDecorator, frontendResourceMapper, commonAttributesModelBuilder, feeditemToNewsitemService, whakaokoService)
+    feedItemActionDecorator, frontendResourceMapper, commonAttributesModelBuilder, feeditemToNewsitemService, whakaokoService)
 
   @Before
   def setUp {
@@ -69,7 +68,7 @@ class FeedModelBuilderTest extends ReasonableWaits with ContentFields {
     when(frontendResourceMapper.mapFrontendResource(newsItem, newsItem.geocode)).thenReturn(Future.successful(frontendNewsitem))
     when(frontendResourceMapper.mapFrontendResource(anotherNewsitem, newsItem.geocode)).thenReturn(Future.successful(anotherFrontendNewsitem))
 
-    when(feedItemLocalCopyDecorator.withFeedItemSpecificActions(Seq(frontendNewsitem, anotherFrontendNewsitem), None)).
+    when(feedItemActionDecorator.withFeedItemSpecificActions(Seq(frontendNewsitem, anotherFrontendNewsitem), None)).
       thenReturn(Future.successful(Seq(frontendNewsitemWithActions, anotherFrontendNewsitemWithActions)))
 
     request = new MockHttpServletRequest

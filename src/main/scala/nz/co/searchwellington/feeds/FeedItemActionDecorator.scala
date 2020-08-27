@@ -12,8 +12,8 @@ import org.springframework.stereotype.Component
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
-@Component class FeedItemLocalCopyDecorator @Autowired()(mongoRepository: MongoRepository, suppressionDAO: SuppressionDAO,
-                                                         adminUrlBuilder: AdminUrlBuilder) extends ReasonableWaits {
+@Component class FeedItemActionDecorator @Autowired()(mongoRepository: MongoRepository, suppressionDAO: SuppressionDAO,
+                                                      adminUrlBuilder: AdminUrlBuilder) extends ReasonableWaits {
 
   def withFeedItemSpecificActions(feedNewsitems: Seq[FrontendResource], loggedInUser: Option[User]): Future[Seq[FrontendResource]] = {
     def addFeedItemsActions(feedNewsitem: FrontendResource): Future[FrontendResource] = {
@@ -36,7 +36,7 @@ import scala.concurrent.Future
               val feedItemActions = Seq(acceptOrEditAction)
               n.copy(actions = feedItemActions)
 
-            }.getOrElse{
+            }.getOrElse {
               feedNewsitem
             }
 

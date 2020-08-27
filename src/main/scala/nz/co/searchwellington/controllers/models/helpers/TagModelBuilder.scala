@@ -6,7 +6,7 @@ import javax.servlet.http.HttpServletRequest
 import nz.co.searchwellington.ReasonableWaits
 import nz.co.searchwellington.controllers.models.ModelBuilder
 import nz.co.searchwellington.controllers.{RelatedTagsService, RssUrlBuilder}
-import nz.co.searchwellington.feeds.{FeedItemLocalCopyDecorator, RssfeedNewsitemService}
+import nz.co.searchwellington.feeds.{FeedItemActionDecorator, RssfeedNewsitemService}
 import nz.co.searchwellington.model.mappers.FrontendResourceMapper
 import nz.co.searchwellington.model.{Resource, Tag, User}
 import nz.co.searchwellington.repositories.{ContentRetrievalService, TagDAO}
@@ -20,7 +20,7 @@ import scala.concurrent.Future
 
 @Component class TagModelBuilder @Autowired()(rssUrlBuilder: RssUrlBuilder, val urlBuilder: UrlBuilder,
                                               relatedTagsService: RelatedTagsService, rssfeedNewsitemService: RssfeedNewsitemService,
-                                              val contentRetrievalService: ContentRetrievalService, feedItemLocalCopyDecorator: FeedItemLocalCopyDecorator,
+                                              val contentRetrievalService: ContentRetrievalService, feedItemLocalCopyDecorator: FeedItemActionDecorator,
                                               commonAttributesModelBuilder: CommonAttributesModelBuilder, tagDAO: TagDAO,
                                               frontendResourceMapper: FrontendResourceMapper) extends ModelBuilder
   with CommonSizes with Pagination with ReasonableWaits {

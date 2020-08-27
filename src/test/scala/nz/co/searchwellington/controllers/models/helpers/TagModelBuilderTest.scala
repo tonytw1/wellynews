@@ -2,7 +2,7 @@ package nz.co.searchwellington.controllers.models.helpers
 
 import nz.co.searchwellington.ReasonableWaits
 import nz.co.searchwellington.controllers.{RelatedTagsService, RssUrlBuilder}
-import nz.co.searchwellington.feeds.{FeedItemLocalCopyDecorator, RssfeedNewsitemService}
+import nz.co.searchwellington.feeds.{FeedItemActionDecorator, RssfeedNewsitemService}
 import nz.co.searchwellington.model.frontend.{FrontendNewsitem, FrontendResource}
 import nz.co.searchwellington.model.mappers.FrontendResourceMapper
 import nz.co.searchwellington.model.{Geocode, SiteInformation, Tag, UrlWordsGenerator}
@@ -25,7 +25,7 @@ class TagModelBuilderTest extends ReasonableWaits with ContentFields {
   private val contentRetrievalService = mock(classOf[ContentRetrievalService])
   private val relatedTagsService = mock(classOf[RelatedTagsService])
   private val rssfeedNewsitemService = mock(classOf[RssfeedNewsitemService])
-  private val feedItemLocalCopyDecorator = mock(classOf[FeedItemLocalCopyDecorator])
+  private val feedItemActionDecorator = mock(classOf[FeedItemActionDecorator])
   private val commonAttributesModelBuilder = mock(classOf[CommonAttributesModelBuilder])
   private val tagDAO = mock(classOf[TagDAO])
   private val frontendResourceMapper = mock(classOf[FrontendResourceMapper])
@@ -45,7 +45,7 @@ class TagModelBuilderTest extends ReasonableWaits with ContentFields {
   val request = new MockHttpServletRequest()
 
   private val modelBuilder = new TagModelBuilder(rssUrlBuilder, urlBuilder, relatedTagsService, rssfeedNewsitemService,
-    contentRetrievalService, feedItemLocalCopyDecorator, commonAttributesModelBuilder, tagDAO, frontendResourceMapper)
+    contentRetrievalService, feedItemActionDecorator, commonAttributesModelBuilder, tagDAO, frontendResourceMapper)
 
   @Before
   def setup {
