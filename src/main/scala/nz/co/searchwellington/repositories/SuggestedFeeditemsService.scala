@@ -3,9 +3,9 @@ package nz.co.searchwellington.repositories
 import nz.co.searchwellington.ReasonableWaits
 import nz.co.searchwellington.feeds.whakaoko.WhakaokoService
 import nz.co.searchwellington.feeds.{FeedItemLocalCopyDecorator, FeeditemToNewsitemService, RssfeedNewsitemService}
-import nz.co.searchwellington.model.{Newsitem, User}
 import nz.co.searchwellington.model.frontend.FrontendResource
 import nz.co.searchwellington.model.mappers.FrontendResourceMapper
+import nz.co.searchwellington.model.{FeedAcceptancePolicy, User}
 import nz.co.searchwellington.repositories.mongo.MongoRepository
 import org.apache.log4j.Logger
 import org.springframework.beans.factory.annotation.Autowired
@@ -25,18 +25,28 @@ import scala.concurrent.{ExecutionContext, Future}
 
   private val MaximumChannelPagesToScan = 5
 
+  /*
+    Return a list of feed newsitems which an editor may wish to accept after reviewing them.
+    This list should exclude feeds items which are going to be automatically accepted anyway.
+    It should exclude items from ignored feeds.
+    Items which have suppressed URLs should be excluded.
+   */
   def getSuggestionFeednewsitems(maxItems: Int, loggedInUser: Option[User])(implicit ec: ExecutionContext): Future[Seq[FrontendResource]] = {
 
     whakaokoService.getSubscriptions.flatMap { subscriptions =>
-
       def paginateChannelFeedItems(page: Int = 1, output: Seq[FrontendResource] = Seq.empty): Future[Seq[FrontendResource]] = {
         log.info("Fetching filter page: " + page + "/" + output.size)
         rssfeedNewsitemService.getChannelFeedItems(page, subscriptions).flatMap { channelFeedItems =>
           log.info("Found " + channelFeedItems.size + " channel newsitems on page " + page)
 
-          val channelNewsitems = channelFeedItems.map(i => feeditemToNewsitemService.makeNewsitemFromFeedItem(i._1, i._2))
+          // Filter by feed acceptance policy
+          val fromSuggestedFeeds = channelFeedItems.filter{ fi =>
+            fi._2.acceptance == FeedAcceptancePolicy.SUGGEST
+          }
 
-          val eventuallyFiltered = channelNewsitems.map { newsitem =>
+          val suggestedChannelNewsitems = fromSuggestedFeeds.map(i => feeditemToNewsitemService.makeNewsitemFromFeedItem(i._1, i._2))
+
+          val eventuallyFiltered = suggestedChannelNewsitems.map { newsitem =>
             val eventuallyLocalCopy = mongoRepository.getResourceByUrl(newsitem.page)
             val eventuallyIsSuppressed = suppressionDAO.isSupressed(newsitem.page)
             for {
@@ -51,6 +61,7 @@ import scala.concurrent.{ExecutionContext, Future}
             }
           }
 
+          // TODO we should split this mapping out
           Future.sequence(eventuallyFiltered).flatMap { filterResults =>
             val eventualFrontendChannelResources: Future[Seq[FrontendResource]] = Future.sequence {
               val filtered = filterResults.flatten
