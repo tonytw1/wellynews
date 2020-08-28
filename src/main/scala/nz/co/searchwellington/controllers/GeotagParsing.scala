@@ -9,10 +9,7 @@ trait GeotagParsing {
 
   def parseGeotag(address: String, osmId: String): Option[Geocode] = {
     if (osmId.nonEmpty) {
-      val id = osmId.split("/")(0).toLong // TODO push to OSM object
-      val `type` = osmId.split("/")(1)
-      val osm = OsmId(id = id, `type` = `type`)
-
+      val osm = parseOsmId(osmId)
       val commonOsm = new uk.co.eelpieconsulting.common.geo.model.OsmId(
         osm.id, uk.co.eelpieconsulting.common.geo.model.OsmType.valueOf(osm.`type`)
       )
@@ -26,6 +23,12 @@ trait GeotagParsing {
     } else {
       None
     }
+  }
+
+  def parseOsmId(osmIdString: String): OsmId = {
+    val id = osmIdString.split("/")(0).toLong
+    val `type` = osmIdString.split("/")(1)
+    OsmId(id = id, `type` = `type`)
   }
 
   def osmToString(osmId: OsmId): String = {
