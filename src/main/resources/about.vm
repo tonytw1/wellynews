@@ -28,10 +28,10 @@ It's therefore important that we've transparent about what we're doing. To this 
 
 <h3>RSS and JSON feeds</h3>
 
-<p>All of the main page types are available as an RSS or JSON feed. Appending /rss or /json to a site url
-will in most cases provide the underlying data in the desired format. (credit - this url scheme is inspired by the Guardian newspaper's site)</p>
+<p>The main content of each page is available as an RSS feed or JSON.
+Appending /rss or /json to a page url to access these feeds (credit - this url scheme is inspired by the Guardian newspaper's site)</p>
 
-<p>The complete range of available feeds is documented in the <a href="/api">API instructions</a>.</p>
+<p>The complete set of available feeds is documented in the <a href="/api">API instructions</a>.</p>
 
 
 <a name="contact"></a>
