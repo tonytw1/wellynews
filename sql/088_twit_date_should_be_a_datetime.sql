@@ -1,1 +1,0 @@
-alter table twits change column date date datetime;

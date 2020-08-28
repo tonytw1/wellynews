@@ -1,1 +1,0 @@
-alter table user add column admin tinyint(1) default 0;

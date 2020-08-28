@@ -1,1 +1,0 @@
-alter table user change column profilename profilename varchar(255) NOT NULL; 

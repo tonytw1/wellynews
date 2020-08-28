@@ -1,1 +1,0 @@
-create table comment (id int primary key auto_increment, title varchar(255) not null, comment_feed int not null) CHARSET=UTF8;

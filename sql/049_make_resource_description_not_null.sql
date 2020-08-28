@@ -1,1 +1,0 @@
-alter table resource change column description description text not null;

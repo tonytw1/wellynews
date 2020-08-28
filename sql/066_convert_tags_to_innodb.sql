@@ -1,1 +1,0 @@
-ALTER TABLE tag ENGINE = InnoDB;

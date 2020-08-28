@@ -1,1 +1,0 @@
-create table comment_feed (id int primary key auto_increment, url varchar(255) not null) CHARSET=UTF8;

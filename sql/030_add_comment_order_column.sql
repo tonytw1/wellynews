@@ -1,1 +1,0 @@
-alter table comment add comment_order int not null;

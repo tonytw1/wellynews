@@ -1,1 +1,0 @@
-alter table config add column flickr_pool_group_id varchar(255);

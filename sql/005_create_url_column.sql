@@ -1,1 +1,0 @@
-alter table resource add column http_status int(11) NOT NULL default 0;

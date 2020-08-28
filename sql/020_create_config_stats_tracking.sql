@@ -1,1 +1,0 @@
-alter table config add column stats_tracking varchar(1000);

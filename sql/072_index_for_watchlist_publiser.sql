@@ -1,1 +1,0 @@
-alter table resource add index watchlist_publisher_index (watchlist_publisher);
