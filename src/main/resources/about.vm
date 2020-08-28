@@ -18,19 +18,20 @@ half the attraction.</p>
 
 <p>The Newslog is also available as an <a href="rssfeeds">RSS feed</a>.</p>
 
-<h3>I do not want my content indexed</h3>
 
-<p>${siteInformation.sitename} honours the <a href="http://en.wikipedia.org/wiki/Robots_Exclusion_Standard">robots exclusion standard</a>.
-Organisations can indicate in their robots.txt that ${siteInformation.sitename} should not index their content.</p>
+<h3>Getting content out of the system</h3>
 
-<p>The following lines in your robots.txt file will result in your content been removed from the index:</p>
+<p>By running an aggregator, we're taking a slight liberty with other people's content.
+It's therefore important that we've transparent about what we're doing. To this end, our index is available in a machine readable for for reuse by other members of the community.
 
-<ul>
-	<li><code>User-agent: $user_agent<br />
-	Disallow: *</code></li>
-</ul>
+<p>Our ethos is if we use a piece of data to render one of our own pages, then generally that data should also be available as a feed.</p>
 
-<p>You can also <a href="#contact">contact us directly</a> to request exclusion.</p>
+<h3>RSS and JSON feeds</h3>
+
+<p>All of the main page types are available as an RSS or JSON feed. Appending /rss or /json to a site url
+will in most cases provide the underlying data in the desired format. (credit - this url scheme is inspired by the Guardian newspaper's site)</p>
+
+<p>The complete range of available feeds is documented in the <a href="/api">API instructions</a>.</p>
 
 
 <a name="contact"></a>
@@ -66,19 +67,6 @@ settlers.
 <p>
 <br />
 
-<h3>Getting content out of the system</h3>
-
-<p>By running an aggregator, we're taking a slight liberty with other people's content.
-It's therefore important that we've transparent about what we're doing. To this end, our index is available in a machine readable for for reuse by other members of the community.
-
-<p>Our ethos is if we use a piece of data to render one of our own pages, then generally that data should also be available as a feed.</p>
-
-<h3>RSS and JSON feeds</h3>
-
-<p>All of the main page types are available as an RSS or JSON feed. Appending /rss or /json to a site url
-will in most cases provide the underlying data in the desired format. (credit - this url scheme is inspired by the Guardian newspaper's site)</p>
-
-<p>The complete range of available feeds is documented in the <a href="/api">API instructions</a>.</p>
 
 <a name="geotagged" />
 <h3>Geotagged newsitems</h3>
@@ -97,6 +85,22 @@ makes the following possible:</p>
 	Click the near me link on the <a href="geotagged">geotagged newsitems page</a> to experiment with this feature
 	</p>
 </ul>
+
+
+<h3>I do not want my content indexed</h3>
+
+<p>${siteInformation.sitename} honours the <a href="http://en.wikipedia.org/wiki/Robots_Exclusion_Standard">robots exclusion standard</a>.
+Organisations can indicate in their robots.txt that ${siteInformation.sitename} should not index their content.</p>
+
+<p>The following lines in your robots.txt file will result in your content been removed from the index:</p>
+
+<ul>
+	<li><code>User-agent: $user_agent<br />
+	Disallow: *</code></li>
+</ul>
+
+<p>You can also <a href="#contact">contact us directly</a> to request exclusion.</p>
+
 
 <h3>Source code</h3>
 <p>A Java application which uses and MondoDB and Elastic search.
