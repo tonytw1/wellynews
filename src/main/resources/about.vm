@@ -25,7 +25,7 @@ half the attraction.</p>
 It's therefore important that we've transparent about what we're doing.
 To this end our index is available in machine readable formats for reuse by other members of the community.</p>
 
-<p>Our ethos is if we use a piece of data to render one of our own pages, then generally that data should also be available as a feed.</p>
+<p>Our ethos is that if we use a piece of data to render one of our own pages, that data should also be available in a feed.</p>
 
 <h3>RSS and JSON feeds</h3>
 
@@ -38,7 +38,7 @@ Appending /rss or /json to a page url to access these feeds (credit - this url s
 <a name="contact"></a>
 <h3>Contact</h3>
 
-<p>Any enquires should be directed to <code>enquires (at) wellington.gen.nz</code></p>
+<p>Any enquires can be directed to <code>enquires (at) wellington.gen.nz</code></p>
 
 <a name="nikau"></a>
 <h3>Nikau Palms</h3>
