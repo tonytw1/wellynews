@@ -6,8 +6,12 @@ public class GenericCommentFeedDetector implements CommentFeedDetector {
 	
 	public GenericCommentFeedDetector() {		
 	}
-	
-	public boolean isValid(String url) {		
+
+	public GenericCommentFeedDetector(String regex) {
+		this.regex = regex;
+	}
+
+	public boolean isValid(String url) {
 		return url != null && url.matches(regex);				
 	}
 	
