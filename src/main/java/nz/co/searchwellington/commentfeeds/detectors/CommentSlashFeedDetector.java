@@ -7,7 +7,6 @@ public class CommentSlashFeedDetector implements CommentFeedDetector {
 
     @Override
     public boolean isValid(String url) {
-        System.out.println("dksjdkjs: " + url);
         return new GenericCommentFeedDetector("^.*\\/comments/feed\\/$").isValid(url);
     }
 }
