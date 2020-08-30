@@ -10,6 +10,8 @@ public class EditNewsitem {
     @NotBlank
     private String title, url;
 
+    private String publisher;
+
     private String description;
 
     @NotBlank
@@ -33,6 +35,14 @@ public class EditNewsitem {
 
     public void setUrl(String url) {
         this.url = url;
+    }
+
+    public String getPublisher() {
+        return publisher;
+    }
+
+    public void setPublisher(String publisher) {
+        this.publisher = publisher;
     }
 
     public String getDescription() {
@@ -80,6 +90,7 @@ public class EditNewsitem {
         return "EditNewsitem{" +
                 "title='" + title + '\'' +
                 ", url='" + url + '\'' +
+                ", publisher='" + publisher + '\'' +
                 ", description='" + description + '\'' +
                 ", date='" + date + '\'' +
                 ", geocode='" + geocode + '\'' +

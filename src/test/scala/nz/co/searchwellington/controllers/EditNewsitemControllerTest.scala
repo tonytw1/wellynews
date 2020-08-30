@@ -2,7 +2,7 @@ package nz.co.searchwellington.controllers
 
 import nz.co.searchwellington.forms.EditNewsitem
 import nz.co.searchwellington.geocoding.osm.CachingNominatimResolveOsmIdService
-import nz.co.searchwellington.model.{Newsitem, User}
+import nz.co.searchwellington.model.{Newsitem, User, Website}
 import nz.co.searchwellington.modification.ContentUpdateService
 import nz.co.searchwellington.repositories.mongo.MongoRepository
 import nz.co.searchwellington.repositories.{FrontendContentUpdater, HandTaggingService, TagDAO}
@@ -36,9 +36,14 @@ class EditNewsitemControllerTest {
     when(mongoRepository.getResourceById(existingNewsitem.id)).thenReturn(Future.successful(Some(existingNewsitem)))
     when(tagDAO.loadTagsById(Seq.empty)).thenReturn(Future.successful(Seq.empty))
 
-    val editFormSubmission: EditNewsitem = new EditNewsitem()
+    val anotherPublisher = Website(title = Some("Another publisher"))
+    when(mongoRepository.getWebsiteByName("Another publisher")).thenReturn(Future.successful(Some(anotherPublisher)))
+
+    val editFormSubmission = new EditNewsitem()
     editFormSubmission.setTitle("New title")
     editFormSubmission.setDate("20200617")
+    editFormSubmission.setPublisher("Another publisher")
+
     import scala.collection.JavaConverters._
     editFormSubmission.setTags(Seq.empty.asJava)
 
@@ -50,6 +55,7 @@ class EditNewsitemControllerTest {
 
     assertEquals(Some("New title"), updatedNewsitem.getValue.title)
     assertEquals(Some(new DateTime(2020, 6, 17, 0, 0, 0).toDate), updatedNewsitem.getValue.date)
+    assertEquals(Some(anotherPublisher._id), updatedNewsitem.getValue.getPublisher)
   }
 
 }

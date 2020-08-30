@@ -70,9 +70,19 @@ class EditNewsitemController @Autowired()(contentUpdateService: ContentUpdateSer
           import scala.collection.JavaConverters._
           val submittedTags = Await.result(tagDAO.loadTagsById(formObject.getTags.asScala), TenSeconds).toSet
 
+          val publisherName = if (formObject.getPublisher.trim.nonEmpty) {
+            Some(formObject.getPublisher.trim)
+          } else {
+            None
+          }
+          val publisher: Option[Website] = publisherName.flatMap { publisherName =>
+            Await.result(mongoRepository.getWebsiteByName(publisherName), TenSeconds)
+          }
+
           val updated = handTaggingService.setUsersTagging(loggedInUser, submittedTags.map(_._id), newsitem.copy(
             title = Some(formObject.getTitle),
             page = formObject.getUrl,
+            publisher = publisher.map(_._id),
             description = Some(formObject.getDescription),
             date = Some(date),
             geocode = geocode,
@@ -128,9 +138,14 @@ class EditNewsitemController @Autowired()(contentUpdateService: ContentUpdateSer
 
 
   private def renderEditForm(n: Newsitem, formObject: EditNewsitem): ModelAndView = {
+    val publisherName = n.publisher.map { pid =>
+      mongoRepository.getResourceByObjectId(pid).asInstanceOf[Website] // TODO naked cast
+    }.flatMap(p => p.title).getOrElse("")
+
     import scala.collection.JavaConverters._
     new ModelAndView("editNewsitem").
       addObject("title", "Editing a newsitem").
+      addObject("publisher", publisherName).
       addObject("newsitem", n).
       addObject("formObject", formObject).
       addObject("tags", Await.result(tagDAO.getAllTags, TenSeconds).asJava)
