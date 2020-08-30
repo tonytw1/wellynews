@@ -10,7 +10,7 @@ import org.springframework.web.servlet.ModelAndView
 import uk.co.eelpieconsulting.common.views.ViewFactory
 
 @Controller
-class PublisherGuessController  @Autowired()(publisherGuessingService: PublisherGuessingService, viewFactory: ViewFactory, loggedInUserFilter: LoggedInUserFilter) {
+class PublisherGuessController @Autowired()(publisherGuessingService: PublisherGuessingService, viewFactory: ViewFactory, loggedInUserFilter: LoggedInUserFilter) {
 
   @RequestMapping(Array("/ajax/publisher-guess"))
   def handleRequest(request: HttpServletRequest, response: HttpServletResponse): ModelAndView = {

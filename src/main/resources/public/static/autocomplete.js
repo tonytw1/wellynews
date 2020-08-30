@@ -29,10 +29,10 @@ $(function() {
 			$('#tags option').attr('selected', 'selected');
 		});
 
-        // When a URL is entered, if the publisher is currently empty when should try to auto complete it based on the user
+        // When a URL is entered we can potentially autofill the publisher and page title.
         $("[name='url']").change(function() {
             var url = $(this).val();
-            // Is the publisher field blank?
+            // If the publisher is blank we should try to auto fill it based on the publisher url
             var publisherField = $("[name='publisher']");
             if (publisherField && publisherField.val() == "") {
                 $.ajax({
@@ -46,11 +46,24 @@ $(function() {
                     },
                 });
             }
+
+            // If the title is blank we should try to auto fill it based on the pages HTML title.
+            var titleField = $("[name='title']");
+            if (titleField && titleField.val() == "") {
+                $.ajax({
+                    url: "/ajax/title-autofill",
+                    data: { url: url},
+                    success: function (data, status, xhr) {
+                        if (data.length > 0) {
+                            titleField.val(data);
+                        }
+                    },
+                });
+            }
         });
     }
 
 	if ($('#geocode').length) {
-
        itemTypes={
                 'N': 'NODE',
                 'W': 'WAY',
