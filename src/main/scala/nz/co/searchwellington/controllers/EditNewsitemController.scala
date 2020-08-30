@@ -18,8 +18,8 @@ import org.springframework.web.bind.annotation.{ModelAttribute, PathVariable, Re
 import org.springframework.web.servlet.ModelAndView
 import org.springframework.web.servlet.view.RedirectView
 
-import scala.concurrent.Await
 import scala.concurrent.ExecutionContext.Implicits.global
+import scala.concurrent.{Await, Future}
 
 @Controller
 class EditNewsitemController @Autowired()(contentUpdateService: ContentUpdateService,
@@ -138,14 +138,24 @@ class EditNewsitemController @Autowired()(contentUpdateService: ContentUpdateSer
 
 
   private def renderEditForm(n: Newsitem, formObject: EditNewsitem): ModelAndView = {
-    val publisherName = n.publisher.map { pid =>
-      mongoRepository.getResourceByObjectId(pid).asInstanceOf[Website] // TODO naked cast
-    }.flatMap(p => p.title).getOrElse("")
+    val eventualPublisher = n.publisher.map { pid =>
+      mongoRepository.getResourceByObjectId(pid).map { ro =>
+        ro.flatMap { r =>
+          r match {
+            case w: Website => Some(w)
+            case _ => None
+          }
+        }
+      }
+
+    }.getOrElse(Future.successful(None))
+
+    val publisher = Await.result(eventualPublisher, TenSeconds).map(p => p.title).getOrElse("")
 
     import scala.collection.JavaConverters._
     new ModelAndView("editNewsitem").
       addObject("title", "Editing a newsitem").
-      addObject("publisher", publisherName).
+      addObject("publisher", publisher).
       addObject("newsitem", n).
       addObject("formObject", formObject).
       addObject("tags", Await.result(tagDAO.getAllTags, TenSeconds).asJava)
