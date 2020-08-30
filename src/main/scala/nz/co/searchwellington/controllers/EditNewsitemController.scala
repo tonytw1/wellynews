@@ -150,7 +150,7 @@ class EditNewsitemController @Autowired()(contentUpdateService: ContentUpdateSer
 
     }.getOrElse(Future.successful(None))
 
-    val publisher = Await.result(eventualPublisher, TenSeconds).map(p => p.title).getOrElse("")
+    val publisher = Await.result(eventualPublisher, TenSeconds).flatMap(p => p.title).getOrElse("")
 
     import scala.collection.JavaConverters._
     new ModelAndView("editNewsitem").
