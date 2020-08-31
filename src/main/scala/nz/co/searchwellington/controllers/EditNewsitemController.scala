@@ -114,9 +114,23 @@ class EditNewsitemController @Autowired()(contentUpdateService: ContentUpdateSer
   }
 
   private def mapToForm(n: Newsitem, loggedInUser: User): EditNewsitem = {
+    val eventualPublisher = n.publisher.map { pid =>
+      mongoRepository.getResourceByObjectId(pid).map { ro =>
+        ro.flatMap { r =>
+          r match {
+            case w: Website => Some(w)
+            case _ => None
+          }
+        }
+      }
+
+    }.getOrElse(Future.successful(None))
+    val publisher = Await.result(eventualPublisher, TenSeconds).flatMap(p => p.title).getOrElse("")
+
     val formObject = new EditNewsitem()
     formObject.setTitle(n.title.getOrElse(""))
     formObject.setUrl(n.page)
+    formObject.setPublisher(publisher)
     formObject.setDescription(n.description.getOrElse(""))
 
     n.geocode.map { g =>
@@ -138,24 +152,9 @@ class EditNewsitemController @Autowired()(contentUpdateService: ContentUpdateSer
 
 
   private def renderEditForm(n: Newsitem, formObject: EditNewsitem): ModelAndView = {
-    val eventualPublisher = n.publisher.map { pid =>
-      mongoRepository.getResourceByObjectId(pid).map { ro =>
-        ro.flatMap { r =>
-          r match {
-            case w: Website => Some(w)
-            case _ => None
-          }
-        }
-      }
-
-    }.getOrElse(Future.successful(None))
-
-    val publisher = Await.result(eventualPublisher, TenSeconds).flatMap(p => p.title).getOrElse("")
-
     import scala.collection.JavaConverters._
     new ModelAndView("editNewsitem").
       addObject("title", "Editing a newsitem").
-      addObject("publisher", publisher).
       addObject("newsitem", n).
       addObject("formObject", formObject).
       addObject("tags", Await.result(tagDAO.getAllTags, TenSeconds).asJava)
