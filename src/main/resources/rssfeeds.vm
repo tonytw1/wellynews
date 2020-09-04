@@ -17,8 +17,7 @@
 	<li>#parse("includes/rss_icon.vm") <code>$rss_url</code></li>
 </ul>
 
-<p>The latest newsitems for individual tags are also available as RSS feeds.<br/>
-Some of these feeds are shown below:</p>
+<p>Feeds are also available for individual tags. For example:</p>
 
 <ul>
 #foreach ($tag in $feedable_tags)
