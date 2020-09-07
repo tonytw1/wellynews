@@ -104,7 +104,7 @@ Organisations can indicate in their robots.txt that ${siteInformation.sitename} 
 
 
 <h3>Source code</h3>
-<p>A Java application which uses and MondoDB and Elastic search.
+<p>A Java application which uses and MongoDB and Elastic search.
 The source code is available for review on <a href="http://www.github.com/tonytw1/wellynews">Github</a>.</p>
 </div>
 
