@@ -5,6 +5,7 @@ import nz.co.searchwellington.ReasonableWaits
 import nz.co.searchwellington.controllers.LoggedInUserFilter
 import nz.co.searchwellington.htmlparsing.SnapshotBodyExtractor
 import nz.co.searchwellington.http.WSHttpFetcher
+import nz.co.searchwellington.repositories.elasticsearch.PublisherGuessingService
 import org.apache.log4j.Logger
 import org.htmlparser.Parser
 import org.htmlparser.filters.TagNameFilter
@@ -19,7 +20,9 @@ import scala.concurrent.{Await, Future}
 import scala.concurrent.ExecutionContext.Implicits.global
 
 @Controller
-class TitleAutocompleteAjaxController @Autowired()(viewFactory: ViewFactory, loggedInUserFilter: LoggedInUserFilter, httpFetcher: WSHttpFetcher) extends ReasonableWaits {
+class TitleAutocompleteAjaxController @Autowired()(viewFactory: ViewFactory, loggedInUserFilter: LoggedInUserFilter,
+                                                   httpFetcher: WSHttpFetcher, titleTrimmer: TitleTrimmer,
+                                                   publisherGuessingService: PublisherGuessingService) extends ReasonableWaits {
 
   private val log = Logger.getLogger(classOf[SnapshotBodyExtractor])
 
@@ -37,7 +40,18 @@ class TitleAutocompleteAjaxController @Autowired()(viewFactory: ViewFactory, log
 
         httpFetcher.httpFetch(uri.toString).map { r =>
           if (r.status == HttpServletResponse.SC_OK) {
-            extractTitle(r.body)
+            val maybePageTitle = extractTitle(r.body)
+
+            val maybeTrimmedTitle = maybePageTitle.map { pageTitle =>
+              // Attempt to trim common seo publisher name suffix from title
+              val maybePublisher = Option(request.getParameter("url")).flatMap { url =>
+                publisherGuessingService.guessPublisherBasedOnUrl(url, loggedInUserFilter.getLoggedInUser)
+              }
+              titleTrimmer.trimTitle(pageTitle, maybePublisher);
+            }
+
+            Seq(maybeTrimmedTitle, maybePageTitle).flatten.headOption
+
           } else {
             None
           }
