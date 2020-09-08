@@ -28,13 +28,14 @@ class TitleAutocompleteAjaxController @Autowired()(viewFactory: ViewFactory, log
 
   @RequestMapping(Array("/ajax/title-autofill"))
   def handleRequest(request: HttpServletRequest, response: HttpServletResponse): ModelAndView = {
+    val loggedInUser = loggedInUserFilter.getLoggedInUser
+
     /* Given the url of a new page fetch it and try to extract the HTML title.
     This can be used to prefill the title field with submitted a new resource.
     Restrict to admin users to prevent abuse.
     */
-
     val eventualTitle: Future[Option[String]] = Option(request.getParameter("url")).map { url =>
-      val isAdmin = loggedInUserFilter.getLoggedInUser.exists(_.isAdmin)
+      val isAdmin = loggedInUser.exists(_.isAdmin)
       if (isAdmin) {
         val uri = java.net.URI.create(url) // TODO exception check
 
@@ -45,7 +46,7 @@ class TitleAutocompleteAjaxController @Autowired()(viewFactory: ViewFactory, log
             val maybeTrimmedTitle = maybePageTitle.map { pageTitle =>
               // Attempt to trim common seo publisher name suffix from title
               val maybePublisher = Option(request.getParameter("url")).flatMap { url =>
-                publisherGuessingService.guessPublisherBasedOnUrl(url, loggedInUserFilter.getLoggedInUser)
+                publisherGuessingService.guessPublisherBasedOnUrl(url, loggedInUser)
               }
               titleTrimmer.trimTitle(pageTitle, maybePublisher);
             }
