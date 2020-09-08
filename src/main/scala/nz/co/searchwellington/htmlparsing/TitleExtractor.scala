@@ -9,7 +9,7 @@ import org.springframework.stereotype.Component
 @Component
 class TitleExtractor {
 
-  private val log = Logger.getLogger(classOf[SnapshotBodyExtractor])
+  private val log = Logger.getLogger(classOf[TitleExtractor])
 
   def extractTitle(htmlPage: String): Option[String] = {
     log.info("Extracting title")

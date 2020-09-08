@@ -22,7 +22,7 @@ class TitleAutocompleteAjaxController @Autowired()(viewFactory: ViewFactory, log
                                                    publisherGuessingService: PublisherGuessingService,
                                                    titleExtractor: TitleExtractor) extends ReasonableWaits {
 
-  private val log = Logger.getLogger(classOf[SnapshotBodyExtractor])
+  private val log = Logger.getLogger(classOf[TitleAutocompleteAjaxController])
 
   @RequestMapping(Array("/ajax/title-autofill"))
   def handleRequest(request: HttpServletRequest, response: HttpServletResponse): ModelAndView = {
