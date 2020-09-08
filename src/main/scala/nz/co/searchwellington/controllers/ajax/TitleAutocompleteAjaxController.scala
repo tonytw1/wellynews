@@ -3,26 +3,24 @@ package nz.co.searchwellington.controllers.ajax
 import javax.servlet.http.{HttpServletRequest, HttpServletResponse}
 import nz.co.searchwellington.ReasonableWaits
 import nz.co.searchwellington.controllers.LoggedInUserFilter
-import nz.co.searchwellington.htmlparsing.SnapshotBodyExtractor
+import nz.co.searchwellington.htmlparsing.{SnapshotBodyExtractor, TitleExtractor}
 import nz.co.searchwellington.http.WSHttpFetcher
 import nz.co.searchwellington.repositories.elasticsearch.PublisherGuessingService
 import org.apache.log4j.Logger
-import org.htmlparser.Parser
-import org.htmlparser.filters.TagNameFilter
-import org.htmlparser.util.ParserException
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Controller
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.servlet.ModelAndView
 import uk.co.eelpieconsulting.common.views.ViewFactory
 
-import scala.concurrent.{Await, Future}
 import scala.concurrent.ExecutionContext.Implicits.global
+import scala.concurrent.{Await, Future}
 
 @Controller
 class TitleAutocompleteAjaxController @Autowired()(viewFactory: ViewFactory, loggedInUserFilter: LoggedInUserFilter,
                                                    httpFetcher: WSHttpFetcher, titleTrimmer: TitleTrimmer,
-                                                   publisherGuessingService: PublisherGuessingService) extends ReasonableWaits {
+                                                   publisherGuessingService: PublisherGuessingService,
+                                                   titleExtractor: TitleExtractor) extends ReasonableWaits {
 
   private val log = Logger.getLogger(classOf[SnapshotBodyExtractor])
 
@@ -41,7 +39,7 @@ class TitleAutocompleteAjaxController @Autowired()(viewFactory: ViewFactory, log
 
         httpFetcher.httpFetch(uri.toString).map { r =>
           if (r.status == HttpServletResponse.SC_OK) {
-            val maybePageTitle = extractTitle(r.body)
+            val maybePageTitle = titleExtractor.extractTitle(r.body)
 
             val maybeTrimmedTitle = maybePageTitle.map { pageTitle =>
               // Attempt to trim common seo publisher name suffix from title
@@ -65,34 +63,6 @@ class TitleAutocompleteAjaxController @Autowired()(viewFactory: ViewFactory, log
     val title = Await.result(eventualTitle, TenSeconds).getOrElse("")
     log.info("Returning title: " + title)
     new ModelAndView(viewFactory.getJsonView).addObject("data", title)
-  }
-
-  def extractTitle(htmlPage: String): Option[String] = {
-    log.info("Extracting title")
-    try {
-      val parser = new Parser
-      parser.setInputHTML(htmlPage)
-
-      val titleTagFilter = new TagNameFilter("TITLE")
-      val list = parser.extractAllNodesThatMatch(titleTagFilter)
-      log.info("Found matching nodes: " + list.size())
-      if (list.size > 0) {
-        val title = list.elementAt(0)
-        log.info("Found title: " + title)
-        Some(title.toPlainTextString)
-      } else {
-        log.info("No title found")
-        None
-      }
-
-    } catch {
-      case e: ParserException =>
-        log.warn("Parser exception while extracting title", e)
-        None
-      case e: Exception =>
-        log.error("Exception while extracting title", e)
-        None
-    }
   }
 
 }

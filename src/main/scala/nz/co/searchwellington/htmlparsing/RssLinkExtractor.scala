@@ -12,7 +12,7 @@ import scala.util.{Failure, Success, Try}
 
   private val log = Logger.getLogger(classOf[RssLinkExtractor])
 
-  def extractLinks(html: String): Seq[String] = {
+  def extractFeedLinks(html: String): Seq[String] = {
     parserFor(html).flatMap { parser =>
       Try {
         parser.setInputHTML(html)

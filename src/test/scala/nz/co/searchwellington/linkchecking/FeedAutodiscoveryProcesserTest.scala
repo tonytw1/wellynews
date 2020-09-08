@@ -37,7 +37,7 @@ class FeedAutodiscoveryProcesserTest extends ReasonableWaits {
     implicit val ec = ExecutionContext.Implicits.global
     val now = DateTime.now
 
-    when(rssLinkExtractor.extractLinks(pageContent)).thenReturn(Seq(UNSEEN_FEED_URL))
+    when(rssLinkExtractor.extractFeedLinks(pageContent)).thenReturn(Seq(UNSEEN_FEED_URL))
 
     when(commentFeedDetector.isCommentFeedUrl(UNSEEN_FEED_URL)).thenReturn(false)
     when(mongoRepository.getDiscoveredFeedByUrlAndReference(UNSEEN_FEED_URL, resource.page)).thenReturn(Future.successful(None))
@@ -58,7 +58,7 @@ class FeedAutodiscoveryProcesserTest extends ReasonableWaits {
   def relativeFeedUrlsShouldBeExpandedIntoFullyQualifiedUrls(): Unit = {
     implicit val ec = ExecutionContext.Implicits.global
 
-    when(rssLinkExtractor.extractLinks(pageContent)).thenReturn(Seq(RELATIVE_FEED_URL))
+    when(rssLinkExtractor.extractFeedLinks(pageContent)).thenReturn(Seq(RELATIVE_FEED_URL))
 
     when(commentFeedDetector.isCommentFeedUrl("https://localhost/feed.xml")).thenReturn(false)
     when(mongoRepository.getDiscoveredFeedByUrlAndReference("https://localhost/feed.xml", resource.page)).thenReturn(Future.successful(None))
@@ -78,7 +78,7 @@ class FeedAutodiscoveryProcesserTest extends ReasonableWaits {
     implicit val ec = ExecutionContext.Implicits.global
 
     val autoDiscoveredLinks = Seq(EXISTING_FEED_URL)
-    when(rssLinkExtractor.extractLinks(pageContent)).thenReturn(autoDiscoveredLinks)
+    when(rssLinkExtractor.extractFeedLinks(pageContent)).thenReturn(autoDiscoveredLinks)
     when(commentFeedDetector.isCommentFeedUrl(EXISTING_FEED_URL)).thenReturn(false)
     when(mongoRepository.getDiscoveredFeedByUrlAndReference(EXISTING_FEED_URL, resource.page)).thenReturn(Future.successful(None))
     when(mongoRepository.getFeedByUrl(EXISTING_FEED_URL)).thenReturn(Future.successful(Some(mock(classOf[Feed]))))

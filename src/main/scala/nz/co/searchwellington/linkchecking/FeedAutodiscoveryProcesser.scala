@@ -49,7 +49,7 @@ import scala.concurrent.{ExecutionContext, Future}
       }
 
       val newlyDiscovered: Future[Seq[String]] = Future.sequence {
-        rssLinkExtractor.extractLinks(pageContent).map(expandUrl).map { discoveredUrl =>
+        rssLinkExtractor.extractFeedLinks(pageContent).map(expandUrl).map { discoveredUrl =>
           log.info("Processing discovered url: " + discoveredUrl)
 
           if (commentFeedDetector.isCommentFeedUrl(discoveredUrl)) {
