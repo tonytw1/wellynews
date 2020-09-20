@@ -220,6 +220,8 @@ class UrlBuilder @Autowired()(siteInformation: SiteInformation, urlWordsGenerato
     "/new-newsitem"
   }
 
+  def getSubmitWatchlistUrl: String = "/new-watchlist"
+
   def getSubmitWebsiteUrl: String = {
     "/new-website"
   }

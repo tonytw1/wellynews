@@ -59,7 +59,7 @@
 			
 			#if ($editPermissionService.canAddWatchlistAndTag() ) 
 				<ul>
-					<li><a href="edit/submit/watchlist">Submit Watchlist item</a></li>
+					<li><a href="$urlBuilder.getSubmitWatchlistUrl()">Submit Watchlist item</a></li>
 					<li><a href="edit/tag/submit">Submit Tag</a></li>
 				</ul>
 			#end
