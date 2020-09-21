@@ -5,14 +5,13 @@ import org.apache.log4j.Logger
 import org.htmlparser.Parser
 import org.htmlparser.filters.TagNameFilter
 import org.htmlparser.util.ParserException
+import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
-import uk.co.eelpieconsulting.archiving.FilesystemSnapshotArchive
+import uk.co.eelpieconsulting.archiving.SnapshotArchive
 
-@Component class SnapshotBodyExtractor() {
+@Component class SnapshotBodyExtractor @Autowired()(snapshotArchive: SnapshotArchive) {
 
   private val log = Logger.getLogger(classOf[SnapshotBodyExtractor])
-
-  private val snapshotArchive = new FilesystemSnapshotArchive("/home/tony/snapshots")
 
   def extractLatestSnapshotBodyTextFor(resource: Resource): Option[String] = {
     val latestFor = snapshotArchive.getLatestFor(resource.page)

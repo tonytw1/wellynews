@@ -32,6 +32,7 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import uk.co.eelpieconsulting.common.caching.MemcachedCache;
 import uk.co.eelpieconsulting.common.dates.DateFormatter;
+import uk.co.eelpieconsulting.archiving.FilesystemSnapshotArchive;
 
 import java.io.IOException;
 import java.util.Map;
@@ -53,6 +54,11 @@ public class Main {
 
     @Autowired
     private RequestObjectLoadingFilter requestObjectLoadingFilter;
+
+    @Bean
+    public FilesystemSnapshotArchive snapshotArchive() {
+        return new FilesystemSnapshotArchive("/home/tony/snapshots");
+    }
 
     @Bean
     public CommentFeedDetector newswireCommentFeedDetector() {

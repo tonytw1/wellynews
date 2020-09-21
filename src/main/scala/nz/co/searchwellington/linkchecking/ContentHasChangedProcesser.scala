@@ -4,16 +4,15 @@ import nz.co.searchwellington.model.Resource
 import nz.co.searchwellington.utils.UrlFilters
 import org.apache.log4j.Logger
 import org.joda.time.DateTime
+import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
-import uk.co.eelpieconsulting.archiving.FilesystemSnapshotArchive
+import uk.co.eelpieconsulting.archiving.SnapshotArchive
 
 import scala.concurrent.{ExecutionContext, Future}
 
-@Component class ContentHasChangedProcesser() extends LinkCheckerProcessor {
+@Component class ContentHasChangedProcesser @Autowired()(snapshotArchive: SnapshotArchive) extends LinkCheckerProcessor {
 
   private val log = Logger.getLogger(classOf[ContentHasChangedProcesser])
-
-  private val snapshotArchive = new FilesystemSnapshotArchive("/home/tony/snapshots")
 
   override def process(checkResource: Resource, pageContent: String, seen: DateTime)(implicit ec: ExecutionContext): Future[Boolean] = {
     checkForChangeUsingSnapshots(checkResource, pageContent)
