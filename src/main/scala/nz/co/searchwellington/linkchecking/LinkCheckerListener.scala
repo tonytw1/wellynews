@@ -16,11 +16,14 @@ import scala.concurrent.ExecutionContext
 @Component class LinkCheckerListener @Autowired() (linkChecker: LinkChecker, rabbitConnectionFactory: RabbitConnectionFactory,
                                                    linkCheckerTaskExecutor: TaskExecutor) {
 
+  private val log = Logger.getLogger(classOf[LinkCheckerListener])
+
   val QUEUE_NAME = LinkCheckerQueue.QUEUE_NAME
 
   implicit val executionContext = ExecutionContext.fromExecutor(linkCheckerTaskExecutor)
 
   {
+    log.info("Starting link check listener")
     val connection = rabbitConnectionFactory.connect
     val channel = connection.createChannel
     channel.queueDeclare (QUEUE_NAME, false, false, false, null)
