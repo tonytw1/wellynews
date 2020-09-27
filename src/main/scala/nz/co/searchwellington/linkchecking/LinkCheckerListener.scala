@@ -24,11 +24,16 @@ import scala.concurrent.ExecutionContext
 
   {
     log.info("Starting link check listener")
-    val connection = rabbitConnectionFactory.connect
-    val channel = connection.createChannel
-    channel.queueDeclare (QUEUE_NAME, false, false, false, null)
-    val consumerThread = new Thread (new ConsumerThread(channel, linkChecker))
-    consumerThread.start()
+    try {
+      val connection = rabbitConnectionFactory.connect
+      val channel = connection.createChannel
+      channel.queueDeclare(QUEUE_NAME, false, false, false, null)
+      val consumerThread = new Thread(new ConsumerThread(channel, linkChecker))
+      consumerThread.start()
+    } catch {
+      case e: Exception =>
+        log.error(e)
+    }
   }
 
   private[linkchecking] class ConsumerThread(channel: Channel, linkChecker: LinkChecker) extends Runnable {
@@ -40,7 +45,7 @@ import scala.concurrent.ExecutionContext
       val consumer = new QueueingConsumer(channel)
       try channel.basicConsume(QUEUE_NAME, true, consumer)
       catch {
-        case e: IOException =>
+        case e: Exception =>
           log.error(e)
       }
       while ( {
