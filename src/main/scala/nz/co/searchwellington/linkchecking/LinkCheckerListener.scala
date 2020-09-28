@@ -30,6 +30,8 @@ import scala.concurrent.ExecutionContext
       channel.queueDeclare(QUEUE_NAME, false, false, false, null)
       val consumerThread = new Thread(new ConsumerThread(channel, linkChecker))
       consumerThread.start()
+      log.info("Link checker consumer thread started")
+
     } catch {
       case e: Exception =>
         log.error(e)
@@ -42,6 +44,8 @@ import scala.concurrent.ExecutionContext
     private val log = Logger.getLogger(classOf[LinkCheckerListener])
 
     override def run(): Unit = {
+      log.info("Link checker consumer thread running")
+
       val consumer = new QueueingConsumer(channel)
       try channel.basicConsume(QUEUE_NAME, true, consumer)
       catch {
@@ -50,11 +54,14 @@ import scala.concurrent.ExecutionContext
       }
       while ( {
         true
+
       }) try {
+        log.info("Link checker consumer awaiting delivery ")
         val delivery = consumer.nextDelivery
         val message = new String(delivery.getBody)
         log.info("Received: " + message)
         linkChecker.scanResource(message)
+
       } catch {
         case e: Exception =>
           log.error(e)
