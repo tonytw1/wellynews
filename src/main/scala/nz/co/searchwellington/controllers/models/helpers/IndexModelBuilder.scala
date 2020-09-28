@@ -44,7 +44,7 @@ import scala.concurrent.Future
     }
 
     for {
-      latestNewsitems <- contentRetrievalService.getLatestNewsitems(MAX_NEWSITEMS, getPage(request), loggedInUser = loggedInUser)
+      latestNewsitems <- contentRetrievalService.getLatestNewsitems(100, getPage(request), loggedInUser = loggedInUser)
     } yield {
       val mv = new ModelAndView().
         addObject("heading", "Wellynews").
