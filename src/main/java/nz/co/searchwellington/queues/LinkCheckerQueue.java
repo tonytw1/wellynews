@@ -28,6 +28,7 @@ public class LinkCheckerQueue {
         log.info("Adding resource id to queue: " + id);
         try {
             channel.basicPublish("", QUEUE_NAME, null, id.getBytes());
+            channel.basicPublish("", "meh", null, id.getBytes());   // TODO testing
         } catch (Exception e) {
             log.error(e);
         }
