@@ -14,7 +14,7 @@ public class LinkCheckerQueue {
 
     private final static Logger log = Logger.getLogger(LinkCheckerQueue.class);
 
-    public static final String QUEUE_NAME = "linkchecker";
+    public static final String QUEUE_NAME = "wellynewslinkchecker";
 
     private final Channel channel;
 
@@ -28,7 +28,7 @@ public class LinkCheckerQueue {
         log.info("Adding resource id to queue: " + id);
         try {
             channel.basicPublish("", QUEUE_NAME, null, id.getBytes());
-        } catch (IOException e) {
+        } catch (Exception e) {
             log.error(e);
         }
     }
