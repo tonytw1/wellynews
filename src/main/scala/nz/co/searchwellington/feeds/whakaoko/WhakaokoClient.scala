@@ -2,6 +2,7 @@ package nz.co.searchwellington.feeds.whakaoko
 
 import akka.actor.ActorSystem
 import akka.stream.ActorMaterializer
+import nz.co.searchwellington.ReasonableWaits
 import nz.co.searchwellington.feeds.whakaoko.model.{FeedItem, LatLong, Place, Subscription}
 import org.apache.http.HttpStatus
 import org.apache.log4j.Logger
@@ -18,7 +19,7 @@ import scala.concurrent.{ExecutionContext, Future}
 @Component
 class WhakaokoClient @Autowired()(@Value("${whakaoko.url}") whakaokoUrl: String,
                                   @Value("${whakaoko.username}") whakaokoUsername: String,
-                                  @Value("${whakaoko.channel}") whakaokoChannel: String) {
+                                  @Value("${whakaoko.channel}") whakaokoChannel: String) extends ReasonableWaits {
 
   private val log = Logger.getLogger(classOf[WhakaokoClient])
 
@@ -42,7 +43,9 @@ class WhakaokoClient @Autowired()(@Value("${whakaoko.url}") whakaokoUrl: String,
       "url" -> Seq(feedUrl)
     )
 
-    wsClient.url(createFeedSubscriptionUrl).post(params).map { r =>
+    wsClient.url(createFeedSubscriptionUrl).
+      withRequestTimeout(TenSeconds).
+      post(params).map { r =>
       log.debug("New feed result: " + r.status + " / " + r.body)
       if (r.status == HttpStatus.SC_OK) {
         Some(Json.parse(r.body).as[Subscription])
@@ -53,7 +56,9 @@ class WhakaokoClient @Autowired()(@Value("${whakaoko.url}") whakaokoUrl: String,
   }
 
   def getSubscription(subscriptionId: String)(implicit ec: ExecutionContext): Future[Option[Subscription]] = {
-    wsClient.url(subscriptionUrl(subscriptionId)).get.map { r =>
+    wsClient.url(subscriptionUrl(subscriptionId)).
+      withRequestTimeout(TenSeconds).
+      get.map { r =>
       if (r.status == HttpStatus.SC_OK) {
         Some(Json.parse(r.body).as[Subscription])
       } else {
@@ -66,7 +71,9 @@ class WhakaokoClient @Autowired()(@Value("${whakaoko.url}") whakaokoUrl: String,
     log.info("Fetching channel items page: " + page)
     val channelItemsUrl = whakaokoUrl + "/" + whakaokoUsername + "/channels/" + whakaokoChannel + "/items"
     val start = DateTime.now()
-    wsClient.url(channelItemsUrl).addQueryStringParameters("page" -> page.toString).get.map { r =>
+    wsClient.url(channelItemsUrl).addQueryStringParameters("page" -> page.toString).
+      withRequestTimeout(TenSeconds).
+      get.map { r =>
       log.info("Channel channel items returned after: " + new Duration(start, DateTime.now).getMillis)
       if (r.status == HttpStatus.SC_OK) {
         Json.parse(r.body).as[Seq[FeedItem]]
@@ -80,7 +87,9 @@ class WhakaokoClient @Autowired()(@Value("${whakaoko.url}") whakaokoUrl: String,
     val channelSubscriptionsUrl = whakaokoUrl + "/" + whakaokoUsername + "/channels/" + whakaokoChannel + "/subscriptions"
     log.info("Fetching channel subscriptions from: " + (channelSubscriptionsUrl))
     val start = DateTime.now()
-    wsClient.url(channelSubscriptionsUrl).get.map { r =>
+    wsClient.url(channelSubscriptionsUrl).
+      withRequestTimeout(TenSeconds).
+      get.map { r =>
       log.info("Channel subscriptions returned after: " + new Duration(start, DateTime.now).getMillis)
       if (r.status == HttpStatus.SC_OK) {
         Json.parse(r.body).as[Seq[Subscription]]
@@ -92,7 +101,9 @@ class WhakaokoClient @Autowired()(@Value("${whakaoko.url}") whakaokoUrl: String,
   }
 
   def getSubscriptionFeedItems(subscriptionId: String)(implicit ec: ExecutionContext): Future[(Seq[FeedItem], Long)] = {
-    wsClient.url(subscriptionUrl(subscriptionId) + "/items").get.map { r =>
+    wsClient.url(subscriptionUrl(subscriptionId) + "/items").
+      withRequestTimeout(TenSeconds).
+      get.map { r =>
       if (r.status == HttpStatus.SC_OK) {
         val feedItems: Seq[FeedItem] = Json.parse(r.body).as[Seq[FeedItem]]
         val totalCount: Long = r.header("x-total-count").map(c => c.toLong).getOrElse(feedItems.size)
