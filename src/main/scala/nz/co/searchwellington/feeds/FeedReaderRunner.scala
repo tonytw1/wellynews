@@ -27,7 +27,12 @@ import scala.concurrent.{Await, ExecutionContext, Future}
         maybyFeedUser.map { feedReaderUser =>
           log.info("Reading " + feeds.size + " feeds as user " + feedReaderUser.name)
           feeds.foreach { feed =>
-            Await.result(feedReader.processFeed(feed, feedReaderUser), TenSeconds)
+            try {
+              Await.result(feedReader.processFeed(feed, feedReaderUser), TenSeconds)
+            } catch {
+              case e: Exception =>
+                log.error("Error reading feed: " + feed, e)
+            }
           }
           true
 
