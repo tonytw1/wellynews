@@ -69,7 +69,7 @@ class WhakaokoClient @Autowired()(@Value("${whakaoko.url}") whakaokoUrl: String,
 
   def getChannelFeedItems(page: Int)(implicit ec: ExecutionContext): Future[Seq[FeedItem]] = {
     log.info("Fetching channel items page: " + page)
-    val channelItemsUrl = whakaokoUrl + "/" + whakaokoUsername + "/channels/" + whakaokoChannel + "/items"
+    val channelItemsUrl = whakaokoUrl + "/" + "/channels/" + whakaokoChannel + "/items"
     val start = DateTime.now()
     wsClient.url(channelItemsUrl).addQueryStringParameters("page" -> page.toString).
       withRequestTimeout(TenSeconds).
@@ -84,7 +84,7 @@ class WhakaokoClient @Autowired()(@Value("${whakaoko.url}") whakaokoUrl: String,
   }
 
   def getChannelSubscriptions()(implicit ec: ExecutionContext): Future[Seq[Subscription]] = {
-    val channelSubscriptionsUrl = whakaokoUrl + "/" + whakaokoUsername + "/channels/" + whakaokoChannel + "/subscriptions"
+    val channelSubscriptionsUrl = whakaokoUrl + "/" + "/channels/" + whakaokoChannel + "/subscriptions"
     log.info("Fetching channel subscriptions from: " + (channelSubscriptionsUrl))
     val start = DateTime.now()
     wsClient.url(channelSubscriptionsUrl).
@@ -114,6 +114,6 @@ class WhakaokoClient @Autowired()(@Value("${whakaoko.url}") whakaokoUrl: String,
     }
   }
 
-  private def subscriptionUrl(subscriptionId: String) = whakaokoUrl + "/" + whakaokoUsername + "/subscriptions/" + subscriptionId
+  private def subscriptionUrl(subscriptionId: String) = whakaokoUrl + "/subscriptions/" + subscriptionId
 
 }
