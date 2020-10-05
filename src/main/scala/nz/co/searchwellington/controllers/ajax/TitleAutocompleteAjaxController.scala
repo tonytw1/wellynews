@@ -6,6 +6,7 @@ import nz.co.searchwellington.controllers.LoggedInUserFilter
 import nz.co.searchwellington.htmlparsing.{SnapshotBodyExtractor, TitleExtractor}
 import nz.co.searchwellington.http.WSHttpFetcher
 import nz.co.searchwellington.repositories.elasticsearch.PublisherGuessingService
+import org.apache.commons.lang.StringEscapeUtils
 import org.apache.log4j.Logger
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Controller
@@ -42,11 +43,14 @@ class TitleAutocompleteAjaxController @Autowired()(viewFactory: ViewFactory, log
             val maybePageTitle = titleExtractor.extractTitle(r.body)
 
             val maybeTrimmedTitle = maybePageTitle.map { pageTitle =>
+              // HTML unescape
+              val unescaped = StringEscapeUtils.unescapeHtml(pageTitle)
+
               // Attempt to trim common seo publisher name suffix from title
               val maybePublisher = Option(request.getParameter("url")).flatMap { url =>
                 publisherGuessingService.guessPublisherBasedOnUrl(url, loggedInUser)
               }
-              titleTrimmer.trimTitle(pageTitle, maybePublisher);
+              titleTrimmer.trimTitle(unescaped, maybePublisher)
             }
 
             Seq(maybeTrimmedTitle, maybePageTitle).flatten.headOption
