@@ -36,29 +36,40 @@ class TitleAutocompleteAjaxController @Autowired()(viewFactory: ViewFactory, log
     val eventualTitle: Future[Option[String]] = Option(request.getParameter("url")).map { url =>
       val isAdmin = loggedInUser.exists(_.isAdmin)
       if (isAdmin) {
-        val uri = java.net.URI.create(url) // TODO exception check
 
-        httpFetcher.httpFetch(uri.toString).map { r =>
-          if (r.status == HttpServletResponse.SC_OK) {
-            val maybePageTitle = titleExtractor.extractTitle(r.body)
+        try {
+          val uri = java.net.URI.create(url)  // TODO use a Try instead
 
-            val maybeTrimmedTitle = maybePageTitle.map { pageTitle =>
-              // HTML unescape
-              val unescaped = StringEscapeUtils.unescapeHtml(pageTitle)
+          httpFetcher.httpFetch(uri.toString).map { r =>
+            if (r.status == HttpServletResponse.SC_OK) {
+              val maybePageTitle = titleExtractor.extractTitle(r.body)
 
-              // Attempt to trim common seo publisher name suffix from title
-              val maybePublisher = Option(request.getParameter("url")).flatMap { url =>
-                publisherGuessingService.guessPublisherBasedOnUrl(url, loggedInUser)
+              val maybeTrimmedTitle = maybePageTitle.map { pageTitle =>
+                // HTML unescape
+                val unescaped = StringEscapeUtils.unescapeHtml(pageTitle)
+                
+                // Attempt to trim common seo publisher name suffix from title
+                val maybePublisher = Option(request.getParameter("url")).flatMap { url =>
+                  publisherGuessingService.guessPublisherBasedOnUrl(url, loggedInUser)
+                }
+                titleTrimmer.trimTitle(unescaped, maybePublisher)
               }
-              titleTrimmer.trimTitle(unescaped, maybePublisher)
+
+              Seq(maybeTrimmedTitle, maybePageTitle).flatten.headOption
+
+            } else {
+              None
             }
-
-            Seq(maybeTrimmedTitle, maybePageTitle).flatten.headOption
-
-          } else {
-            None
           }
+
+        } catch {
+          case _: IllegalArgumentException =>
+            log.warn("Likely invalid url; ignoring: " + url);
+            Future.successful(None)
+          case _ =>
+            Future.successful(None)
         }
+
       } else {
         Future.successful(None)
       }
