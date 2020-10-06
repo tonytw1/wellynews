@@ -1,7 +1,7 @@
 package nz.co.searchwellington.feeds
 
 import nz.co.searchwellington.feeds.whakaoko.model.FeedItem
-import nz.co.searchwellington.model.{Feed, User}
+import nz.co.searchwellington.model.{Feed, FeedAcceptancePolicy, User}
 import org.joda.time.DateTime
 import org.junit.Assert.{assertEquals, assertFalse, assertTrue}
 import org.junit.Test
@@ -43,6 +43,18 @@ class FeedItemAcceptorTest {
     val accepted = feedItemAcceptor.acceptFeedItem(feedReadingUser, (feedItemWithLoudCapsHeadline, feed))
 
     assertEquals("Headline", accepted.title.get)
+  }
+
+  @Test
+  def shouldOverrideTheFeedItemDateIfFeedAcceptancePolicyIsToIgnoreFeedItemsDates(): Unit = {
+    // Some feed item dates refer to event dates in int future rather than news item publication dates.
+    // These items can clog up the head of the main feed so we should set their dates to the acceptance time rather than the state date.
+    val feedItemWithFutureDate = FeedItem(id = "", title = Some("HEADLINE"), url ="",  subscriptionId = "", body = None, date = Some(DateTime.now.plusMonths(1).toDateTime()))
+    val feedWithIgnoreDatesAcceptancePolicy = Feed(publisher = Some(BSONObjectID.generate), acceptance = FeedAcceptancePolicy.ACCEPT_IGNORING_DATE)
+
+    val accepted = feedItemAcceptor.acceptFeedItem(feedReadingUser, (feedItemWithFutureDate, feedWithIgnoreDatesAcceptancePolicy))
+
+    assertEquals(accepted.accepted, accepted.date)
   }
 
 }
