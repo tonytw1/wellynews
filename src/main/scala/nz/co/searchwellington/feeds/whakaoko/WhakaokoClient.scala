@@ -12,6 +12,7 @@ import org.springframework.stereotype.Component
 import play.api.libs.json.Json
 import play.api.libs.json.Reads.DefaultJodaDateReads
 import play.api.libs.ws.DefaultBodyWritables._
+import play.api.libs.ws.JsonBodyWritables.writeableOf_JsValue
 import play.api.libs.ws.ahc.StandaloneAhcWSClient
 
 import scala.concurrent.{ExecutionContext, Future}
@@ -22,6 +23,8 @@ class WhakaokoClient @Autowired()(@Value("${whakaoko.url}") whakaokoUrl: String,
                                   @Value("${whakaoko.channel}") whakaokoChannel: String) extends ReasonableWaits {
 
   private val log = Logger.getLogger(classOf[WhakaokoClient])
+
+  private val ApplicationJsonHeader = "Content-Type" -> "application/json; charset=UTF8"
 
   implicit val system = ActorSystem()
   implicit val materializer = ActorMaterializer()
@@ -114,6 +117,19 @@ class WhakaokoClient @Autowired()(@Value("${whakaoko.url}") whakaokoUrl: String,
     }
   }
 
+  def updateSubscriptionName(subscriptionId: String, title: String)(implicit ec: ExecutionContext): Future[Unit] = {
+    implicit val supw = Json.writes[SubscriptionUpdateRequest]
+    wsClient.url(subscriptionUrl(subscriptionId)).
+      withHttpHeaders(ApplicationJsonHeader).
+      withRequestTimeout(TenSeconds).
+      put(Json.toJson(SubscriptionUpdateRequest(name = title))).map { r =>
+      log.info("Update subscription name result: " + r.status + "/" + r.body)
+      Unit
+    }
+  }
+
   private def subscriptionUrl(subscriptionId: String) = whakaokoUrl + "/subscriptions/" + subscriptionId
+
+  case class SubscriptionUpdateRequest(name: String)
 
 }

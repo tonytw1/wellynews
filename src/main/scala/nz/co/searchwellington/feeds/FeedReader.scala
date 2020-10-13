@@ -18,7 +18,7 @@ import scala.concurrent.{Await, ExecutionContext, Future}
                                          urlCleaner: UrlCleaner,
                                          contentUpdateService: ContentUpdateService,
                                          feedReaderUpdateService: FeedReaderUpdateService,
-                                        whakaokoService: WhakaokoService)
+                                         whakaokoService: WhakaokoService)
   extends ReasonableWaits {
 
   private val log = Logger.getLogger(classOf[FeedReader])
@@ -42,9 +42,17 @@ import scala.concurrent.{Await, ExecutionContext, Future}
             Future.successful(false)
           }
         }
-        val bool = Await.result(eventualMaybeEventualBoolean, TenSeconds)
-        log.warn("Feed backfill outcome: " + bool)
+        val backfillOutcome = Await.result(eventualMaybeEventualBoolean, TenSeconds)
+        log.warn("Feed backfill outcome: " + backfillOutcome)
       }
+
+      // Sync feed names
+      val eventualSubscriptionNameSync = feed.whakaokoSubscription.flatMap { subscriptionId =>
+        feed.title.map { title =>
+          whakaokoService.updateSubscriptionName(subscriptionId, title)
+        }
+      }.getOrElse(Future.successful(Unit))
+      Await.result(eventualSubscriptionNameSync, TenSeconds)
 
       rssfeedNewsitemService.getFeedItemsAndDetailsFor(feed).flatMap { feedItemsFetch =>
         feedItemsFetch.fold({ l =>
