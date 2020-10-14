@@ -123,7 +123,7 @@ class WhakaokoClient @Autowired()(@Value("${whakaoko.url}") whakaokoUrl: String,
       withHttpHeaders(ApplicationJsonHeader).
       withRequestTimeout(TenSeconds).
       put(Json.toJson(SubscriptionUpdateRequest(name = title))).map { r =>
-      log.info("Update subscription name result: " + r.status + "/" + r.body)
+      log.debug("Update subscription name result: " + r.status + "/" + r.body)
       Unit
     }
   }
