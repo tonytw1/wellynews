@@ -8,11 +8,12 @@ import org.apache.log4j.Logger
 import org.joda.time.DateTime
 import org.springframework.beans.factory.annotation.{Autowired, Value}
 import org.springframework.stereotype.Component
+import reactivemongo.api.MongoConnection.ParsedURIWithDB
 import reactivemongo.api.bson.collection.BSONCollection
 import reactivemongo.api.bson.{BSONDateTime, BSONDocument, BSONDocumentReader, BSONDocumentWriter, BSONHandler, BSONObjectID, BSONReader, BSONString, BSONValue, BSONWriter, Macros}
-import reactivemongo.api.commands.{UpdateWriteResult, WriteResult}
+import reactivemongo.api.commands.WriteResult
 import reactivemongo.api.indexes.{Index, IndexType}
-import reactivemongo.api.{Cursor, DB, MongoConnection, MongoDriver}
+import reactivemongo.api.{AsyncDriver, Cursor, DB, MongoConnection}
 
 import scala.concurrent.{Await, ExecutionContext, Future}
 import scala.util.Try
@@ -27,22 +28,17 @@ class MongoRepository @Autowired()(@Value("${mongo.uri}") mongoUri: String) exte
   def connect()(implicit ec: ExecutionContext): DB = {
     log.info("Connecting to Mongo: " + mongoUri)
 
-    val driver = MongoDriver()
+    val driver = AsyncDriver()
 
-    val parsedUri = MongoConnection.parseURI(mongoUri)
-
-    val eventualDatabase = Future.fromTry {
-      parsedUri.map { uri =>
-        uri.db.map { db =>
-          driver.connection(uri).database(db)
-        }.getOrElse {
-          Future.failed(new RuntimeException("No database given in Mongo URI"))
-        }
+    val eventualParsedUri: Future[ParsedURIWithDB] = MongoConnection.fromStringWithDB(mongoUri)
+    val eventualDatabase = eventualParsedUri.flatMap { parsedUri =>
+      val eventualConnection: Future[MongoConnection] = driver.connect(parsedUri)
+      eventualConnection.flatMap { connection =>
+          connection.database(parsedUri.db)
       }
-    }.flatten
+    }
 
-    val db: DB = Await.result(eventualDatabase, OneMinute)
-    db
+    Await.result(eventualDatabase, OneMinute)
   }
 
   private val db = {
@@ -165,7 +161,7 @@ class MongoRepository @Autowired()(@Value("${mongo.uri}") mongoUri: String) exte
 
   implicit def discoveredFeedWriter: BSONDocumentWriter[DiscoveredFeed] = Macros.writer[DiscoveredFeed]
 
-  def saveResource(resource: Resource)(implicit ec: ExecutionContext): Future[UpdateWriteResult] = {
+  def saveResource(resource: Resource)(implicit ec: ExecutionContext): Future[WriteResult] = {
     log.info("Updating resource: " + resource._id + " / " + resource.last_scanned + " / " + resource.resource_tags)
     val byId = BSONDocument("_id" -> resource._id)
     resource match { // TODO sick of dealing with Scala implicits and just want to write features so this hack
@@ -176,7 +172,7 @@ class MongoRepository @Autowired()(@Value("${mongo.uri}") mongoUri: String) exte
     }
   }
 
-  def saveSupression(suppression: Supression)(implicit ec: ExecutionContext): Future[UpdateWriteResult] = {
+  def saveSupression(suppression: Supression)(implicit ec: ExecutionContext): Future[WriteResult] = {
     val byId = BSONDocument("_id" -> suppression._id)
     suppressionCollection.update.one(byId, suppression, upsert = true)
   }
@@ -196,7 +192,7 @@ class MongoRepository @Autowired()(@Value("${mongo.uri}") mongoUri: String) exte
     userCollection.delete.one(byId)
   }
 
-  def saveUser(user: User)(implicit ec: ExecutionContext): Future[UpdateWriteResult] = {
+  def saveUser(user: User)(implicit ec: ExecutionContext): Future[WriteResult] = {
     val byId = BSONDocument("_id" -> user._id)
     userCollection.update.one(byId, user, upsert = true)
   }
@@ -261,7 +257,7 @@ class MongoRepository @Autowired()(@Value("${mongo.uri}") mongoUri: String) exte
       collect[List](maxDocs = Integer.MAX_VALUE, err = Cursor.FailOnError[List[Tag]]())
   }
 
-  def saveTag(tag: Tag)(implicit ec: ExecutionContext): Future[UpdateWriteResult] = {
+  def saveTag(tag: Tag)(implicit ec: ExecutionContext): Future[WriteResult] = {
     val byId = BSONDocument("_id" -> tag._id)
     tagCollection.update.one(byId, tag, upsert = true)
   }
@@ -345,7 +341,7 @@ class MongoRepository @Autowired()(@Value("${mongo.uri}") mongoUri: String) exte
     discoveredFeedCollection.find(selector, noProjection).one[DiscoveredFeed]
   }
 
-  def saveDiscoveredFeed(discoveredFeed: DiscoveredFeed)(implicit ec: ExecutionContext): Future[UpdateWriteResult] = {
+  def saveDiscoveredFeed(discoveredFeed: DiscoveredFeed)(implicit ec: ExecutionContext): Future[WriteResult] = {
     val byId = BSONDocument("_id" -> discoveredFeed._id)
     discoveredFeedCollection.update.one(byId, discoveredFeed, upsert = true)
   }

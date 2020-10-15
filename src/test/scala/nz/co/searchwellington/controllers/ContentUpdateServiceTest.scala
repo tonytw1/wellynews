@@ -10,7 +10,7 @@ import nz.co.searchwellington.repositories.FrontendContentUpdater
 import nz.co.searchwellington.repositories.mongo.MongoRepository
 import org.junit.Test
 import org.mockito.Mockito.{mock, verify, when}
-import reactivemongo.api.commands.UpdateWriteResult
+import reactivemongo.api.commands.WriteResult
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.{Await, Future}
@@ -25,7 +25,7 @@ class ContentUpdateServiceTest extends ReasonableWaits {
   private val updatedResource = Newsitem(id = resourceId, page = "http://test/123")
 
   private val service = new ContentUpdateService(mongoRepository, frontendContentUpdater, linkCheckerQueue)
-  private val successfulUpdateResult = mock(classOf[UpdateWriteResult])
+  private val successfulUpdateResult = mock(classOf[WriteResult])
 
   @Test
   def shouldPersistUpdatesInMongo() {

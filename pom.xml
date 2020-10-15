@@ -95,7 +95,7 @@
         <dependency>
             <groupId>org.reactivemongo</groupId>
             <artifactId>reactivemongo_2.12</artifactId>
-            <version>0.19.7</version>
+            <version>1.0.0</version>
         </dependency>
 
         <dependency>

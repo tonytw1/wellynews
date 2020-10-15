@@ -86,7 +86,7 @@ import scala.concurrent.{ExecutionContext, Future}
     val eventualMaybeExistingDiscoveredFeed = mongoRepository.getDiscoveredFeedByUrlAndReference(discoveredFeedUrl, checkResource.page)
     eventualMaybeExistingDiscoveredFeed.flatMap { maybeExistingDiscoveredFeed =>
       if (maybeExistingDiscoveredFeed.isEmpty) {
-        mongoRepository.saveDiscoveredFeed(DiscoveredFeed(url = discoveredFeedUrl, referencedFrom = checkResource.page, seen = seen.toDate)).map(_.ok)
+        mongoRepository.saveDiscoveredFeed(DiscoveredFeed(url = discoveredFeedUrl, referencedFrom = checkResource.page, seen = seen.toDate)).map(_.writeErrors.isEmpty)
       } else {
         Future.successful(false)
       }

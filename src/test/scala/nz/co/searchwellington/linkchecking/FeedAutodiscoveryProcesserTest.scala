@@ -13,7 +13,7 @@ import org.junit.Test
 import org.mockito.Matchers.any
 import org.mockito.Mockito.{mock, never, verify, when}
 import org.mockito.{ArgumentCaptor, Matchers}
-import reactivemongo.api.commands.UpdateWriteResult
+import reactivemongo.api.commands.WriteResult
 
 import scala.concurrent.{Await, ExecutionContext, Future}
 
@@ -32,6 +32,9 @@ class FeedAutodiscoveryProcesserTest extends ReasonableWaits {
 
   private val feedAutodiscoveryProcesser = new FeedAutodiscoveryProcesser(mongoRepository, rssLinkExtractor, commentFeedDetector)
 
+  private val successfulWrite: WriteResult = mock(classOf[WriteResult])
+  when(successfulWrite.writeErrors).thenReturn(Seq.empty)
+
   @Test
   def newlyDiscoveredFeedsUrlsShouldBeRecordedAsDiscoveredFeeds(): Unit = {
     implicit val ec = ExecutionContext.Implicits.global
@@ -42,7 +45,7 @@ class FeedAutodiscoveryProcesserTest extends ReasonableWaits {
     when(commentFeedDetector.isCommentFeedUrl(UNSEEN_FEED_URL)).thenReturn(false)
     when(mongoRepository.getDiscoveredFeedByUrlAndReference(UNSEEN_FEED_URL, resource.page)).thenReturn(Future.successful(None))
     when(mongoRepository.getFeedByUrl(UNSEEN_FEED_URL)).thenReturn(Future.successful(None))
-    when(mongoRepository.saveDiscoveredFeed(Matchers.any(classOf[DiscoveredFeed]))(Matchers.eq(ec))).thenReturn(Future.successful(mock(classOf[UpdateWriteResult])))
+    when(mongoRepository.saveDiscoveredFeed(Matchers.any(classOf[DiscoveredFeed]))(Matchers.eq(ec))).thenReturn(Future.successful(successfulWrite))
 
     val saved = ArgumentCaptor.forClass(classOf[DiscoveredFeed])
 
@@ -63,7 +66,7 @@ class FeedAutodiscoveryProcesserTest extends ReasonableWaits {
     when(commentFeedDetector.isCommentFeedUrl("https://localhost/feed.xml")).thenReturn(false)
     when(mongoRepository.getDiscoveredFeedByUrlAndReference("https://localhost/feed.xml", resource.page)).thenReturn(Future.successful(None))
     when(mongoRepository.getFeedByUrl("https://localhost/feed.xml")).thenReturn(Future.successful(None))
-    when(mongoRepository.saveDiscoveredFeed(Matchers.any(classOf[DiscoveredFeed]))(Matchers.eq(ec))).thenReturn(Future.successful(mock(classOf[UpdateWriteResult])))
+    when(mongoRepository.saveDiscoveredFeed(Matchers.any(classOf[DiscoveredFeed]))(Matchers.eq(ec))).thenReturn(Future.successful(successfulWrite))
 
     val saved = ArgumentCaptor.forClass(classOf[DiscoveredFeed])
 
