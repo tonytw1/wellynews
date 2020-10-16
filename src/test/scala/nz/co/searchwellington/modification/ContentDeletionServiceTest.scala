@@ -1,13 +1,15 @@
 package nz.co.searchwellington.modification
 
-import nz.co.searchwellington.model.Newsitem
+import nz.co.searchwellington.model.{Newsitem, Watchlist}
 import nz.co.searchwellington.repositories.elasticsearch.ElasticSearchIndexer
 import nz.co.searchwellington.repositories.mongo.MongoRepository
 import nz.co.searchwellington.repositories.{HandTaggingDAO, SuppressionDAO}
+import org.junit.Assert.assertTrue
 import org.junit.Test
 import org.mockito.Mockito.{mock, verify, when}
+import reactivemongo.api.commands.WriteResult
 
-import scala.concurrent.Future
+import scala.concurrent.{ExecutionContext, Future}
 
 class ContentDeletionServiceTest {
 
@@ -18,6 +20,23 @@ class ContentDeletionServiceTest {
   private val contentUpdateService = mock(classOf[ContentUpdateService])
 
   private val contentDeletionService = new ContentDeletionService(suppressionDAO, mongoRepository, handTaggingDAO, elasticSearchIndexer, contentUpdateService)
+
+
+
+  @Test
+  def canDeleteResources() = {
+    implicit val ec = ExecutionContext.Implicits.global
+    val successfulWrite = mock(classOf[WriteResult])
+
+    val watchlist = Watchlist(page = "http://localhost/some-page")
+    when(elasticSearchIndexer.deleteResource(watchlist._id)).thenReturn(Future.successful(true))
+    when(mongoRepository.removeResource(watchlist)).thenReturn(Future.successful(successfulWrite))
+
+    val result = contentDeletionService.performDelete(watchlist)
+
+    assertTrue(result)
+  }
+
 
   @Test
   def shouldSuppressNewsitemUrlsWhenDeletingToStopThemFromBeenReaccepted() = {

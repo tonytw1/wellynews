@@ -22,11 +22,12 @@ import scala.concurrent.{Await, Future}
 
   private val log = Logger.getLogger(classOf[ContentDeletionService])
 
-  def performDelete(resource: Resource): Unit = {
+  def performDelete(resource: Resource): Boolean = {
     try {
       log.info("Deleting resource: " + resource)
       handTaggingDAO.clearTags(resource) // TODO does nothing
 
+      // Resource type specific actions
       resource match {
         case website: Website =>
           removePublisherFromPublishersContent(website)
@@ -35,16 +36,19 @@ import scala.concurrent.{Await, Future}
         case newsitem: Newsitem =>
           log.info("Suppressing deleted newsitem url to prevent it been reaccepted from a feed: " + newsitem.page)
           suppressionDAO.addSuppression(newsitem.page)
+        case _ =>
       }
 
       Await.result(elasticSearchIndexer.deleteResource(resource._id).flatMap { dr =>
         log.info("Elastic delete result: " + dr)
         mongoRepository.removeResource(resource)
       }, TenSeconds)
+      true
 
     } catch {
       case e: Exception =>
         log.error("Delete error: " + e.getMessage, e)
+        false
     }
   }
 
