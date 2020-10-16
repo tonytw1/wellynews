@@ -22,8 +22,8 @@ class EditPermissionService @Autowired()(loggedInUserFilter: LoggedInUserFilter)
     isAdminOrOwner(resource, loggedInUserFilter.getLoggedInUser)
   }
 
-  def canDelete(resource: Resource): Boolean = {
-    isAdminOrOwner(resource, loggedInUserFilter.getLoggedInUser)
+  def canDelete(resource: Resource, loggedinUser: Option[User]): Boolean = {
+    isAdminOrOwner(resource, loggedinUser)
   }
 
   def canAcceptAll: Boolean = {

@@ -24,6 +24,7 @@ import scala.concurrent.{Await, Future}
 
   def performDelete(resource: Resource): Unit = {
     try {
+      log.info("Deleting resource: " + resource)
       handTaggingDAO.clearTags(resource) // TODO does nothing
 
       resource match {
@@ -32,7 +33,7 @@ import scala.concurrent.{Await, Future}
         case feed: Feed =>
           Await.result(removeFeedFromFeedNewsitems(feed), OneMinute)
         case newsitem: Newsitem =>
-          log.info("Supressing deleted newsitem url to prevent it been reaccepted from a feed: " + newsitem.page)
+          log.info("Suppressing deleted newsitem url to prevent it been reaccepted from a feed: " + newsitem.page)
           suppressionDAO.addSuppression(newsitem.page)
       }
 
