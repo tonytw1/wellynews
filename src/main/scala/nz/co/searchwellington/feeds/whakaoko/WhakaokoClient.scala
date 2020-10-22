@@ -21,7 +21,8 @@ import scala.concurrent.{ExecutionContext, Future}
 @Component
 class WhakaokoClient @Autowired()(@Value("${whakaoko.url}") whakaokoUrl: String,
                                   @Value("${whakaoko.username}") whakaokoUsername: String,
-                                  @Value("${whakaoko.channel}") whakaokoChannel: String) extends ReasonableWaits {
+                                  @Value("${whakaoko.channel}") whakaokoChannel: String,
+                                  @Value("${whakaoko.token}") whakaokoToken: String) extends ReasonableWaits {
 
   private val log = Logger.getLogger(classOf[WhakaokoClient])
 
@@ -135,7 +136,7 @@ class WhakaokoClient @Autowired()(@Value("${whakaoko.url}") whakaokoUrl: String,
   private def subscriptionUrl(subscriptionId: String) = whakaokoUrl + "/subscriptions/" + subscriptionId
 
   private def withWhakaokoAuth(request: StandaloneWSRequest): StandaloneWSRequest = {
-    request.addHttpHeaders("signedInUser" -> whakaokoUsername)
+    request.addHttpHeaders("Authorization" -> ("Bearer " + whakaokoToken))
   }
 
   case class SubscriptionUpdateRequest(name: String)
