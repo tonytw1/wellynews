@@ -111,6 +111,13 @@ class UrlBuilderTest {
   }
 
   @Test
+  def taggedAsLinksShouldClickThroughToNewsitemPage(): Unit = {
+    val taggedAsLink = urlBuilder.getTaggingUrl(frontendNewsitem)
+
+    assertEquals("/newsitem/" + frontendNewsitem.getId, taggedAsLink)
+  }
+
+  @Test
   def taggedAsLinksShouldClickThroughToPublisherPage(): Unit = {
     val publisher = FrontendWebsite(id = "123", urlWords = "a-publisher")
 
