@@ -138,10 +138,6 @@ class UrlBuilder @Autowired()(siteInformation: SiteInformation, urlWordsGenerato
     "/tagging/submit"
   }
 
-  @deprecated def getTaggingUrl(resource: FrontendResource): String = {
-    this.getLocalPageUrl(resource)
-  }
-
   def getArchiveUrl: String = {
     "/archive"
   }
