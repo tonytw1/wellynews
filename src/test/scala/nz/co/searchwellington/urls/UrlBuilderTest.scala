@@ -110,4 +110,13 @@ class UrlBuilderTest {
     assertEquals("https://wellynews.local/twitter/callback", urlBuilder.getTwitterCallbackUrl)
   }
 
+  @Test
+  def taggedAsLinksShouldClickThroughToPublisherPage(): Unit = {
+    val publisher = FrontendWebsite(id = "123", urlWords = "a-publisher")
+
+    val taggedAsLink = urlBuilder.getTaggingUrl(publisher)
+
+    assertEquals("/a-publisher", taggedAsLink)
+  }
+
 }
