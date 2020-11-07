@@ -11,12 +11,12 @@
 
 <h2>$heading</h2>
 
-<p>The <i><a href="/#newslog">${siteInformation.areaname} Newslog</a></i>
+<p>The <i><a href="/#newslog">${siteInformation.areaname} newslog</a></i>
 draws in notices and newsitems published by local organisations. The resulting 
 content isn't going to be what you'll find in a newspaper but we think that's 
 half the attraction.</p>
 
-<p>The Newslog is also available as an <a href="rssfeeds">RSS feed</a>.</p>
+<p>The newslog is also available as an <a href="rssfeeds">RSS feed</a>.</p>
 
 
 <h3>Getting content out of the system</h3>

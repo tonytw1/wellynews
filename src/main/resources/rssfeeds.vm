@@ -11,7 +11,7 @@
 
 <h2>$heading</h2>
 
-<p>The $siteInformation.areaname Newslog is available as an <a href="http://news.bbc.co.uk/1/hi/help/3223484.stm">RSS feed</a>.</p>
+<p>The $siteInformation.areaname newslog is available as an <a href="http://news.bbc.co.uk/1/hi/help/3223484.stm">RSS feed</a>.</p>
 <p>To subscribe load the following link into your feed reader:</p>
 <ul>
 	<li>#parse("includes/rss_icon.vm") <code>$rss_url</code></li>
