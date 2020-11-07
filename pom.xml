@@ -130,7 +130,7 @@
         <dependency>
             <groupId>uk.co.eelpieconsulting.common</groupId>
             <artifactId>common-shorturls</artifactId>
-            <version>1.0.1</version>
+            <version>1.0.2</version>
         </dependency>
 
         <dependency>
@@ -142,7 +142,7 @@
         <dependency>
             <groupId>uk.co.eelpieconsulting.common</groupId>
             <artifactId>common-dates</artifactId>
-            <version>1.0.10</version>
+            <version>1.0.11</version>
         </dependency>
 
         <dependency>
