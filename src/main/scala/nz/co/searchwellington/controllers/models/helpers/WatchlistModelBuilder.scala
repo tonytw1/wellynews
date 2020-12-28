@@ -34,7 +34,7 @@ import scala.concurrent.Future
       val mv = new ModelAndView().
         addObject("heading", "News watchlist").
         addObject("description", "The news watchlist").
-        addObject("link", urlBuilder.getWatchlistUrl).
+        addObject("link", urlBuilder.fullyQualified(urlBuilder.getWatchlistUrl)).
         addObject(MAIN_CONTENT, watchlists._1.asJava)
       commonAttributesModelBuilder.setRss(mv, rssUrlBuilder.getRssTitleForJustin, rssUrlBuilder.getRssUrlForWatchlist)
 

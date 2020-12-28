@@ -35,7 +35,7 @@ import scala.concurrent.Future
       val mv = new ModelAndView().
         addObject("heading", "Feeds").
         addObject("description", "Incoming feeds").
-        addObject("link", urlBuilder.getFeedsUrl)
+        addObject("link", urlBuilder.fullyQualified(urlBuilder.getFeedsUrl))
       import scala.collection.JavaConverters._
       mv.addObject(MAIN_CONTENT, feeds.asJava)
       Some(mv)

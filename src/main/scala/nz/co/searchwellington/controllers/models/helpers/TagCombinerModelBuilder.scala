@@ -52,7 +52,7 @@ import scala.concurrent.Future
               addObject("tags", tags.asJava).
               addObject("heading", firstTag.getDisplayName + " and " + secondTag.getDisplayName).
               addObject("description", "Items tagged with " + firstTag.getDisplayName + " and " + secondTag.getDisplayName + ".").
-              addObject("link", urlBuilder.getTagCombinerUrl(firstTag, secondTag)).
+              addObject("link", urlBuilder.fullyQualified(urlBuilder.getTagCombinerUrl(firstTag, secondTag))).
               addObject(MAIN_CONTENT, taggedNewsitemsAndCount._1.asJava)
 
             def paginationLinks(page: Int): String = urlBuilder.getTagCombinerUrl(firstTag, secondTag, page)

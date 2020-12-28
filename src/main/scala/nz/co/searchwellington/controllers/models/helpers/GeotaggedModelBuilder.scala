@@ -36,7 +36,7 @@ import scala.concurrent.Future
   def populateContentModel(request: HttpServletRequest, loggedInUser: Option[User]): Future[Option[ModelAndView]] = {
     val mv = new ModelAndView
     mv.addObject("description", "Geotagged newsitems")
-    mv.addObject("link", urlBuilder.getGeotaggedUrl)
+    mv.addObject("link", urlBuilder.fullyQualified(urlBuilder.getGeotaggedUrl))
 
     val userSuppliedPlace = request.getAttribute(LocationParameterFilter.LOCATION).asInstanceOf[Place]
     val hasUserSuppliedALocation = userSuppliedPlace != null && userSuppliedPlace.getLatLong != null

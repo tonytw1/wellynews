@@ -36,8 +36,8 @@ import scala.concurrent.Future
       val mv = new ModelAndView().
         addObject(MAIN_CONTENT, suggestions.asJava).
         addObject("heading", "Inbox").
-        addObject("link", urlBuilder.getFeedsInboxUrl).
-        addObject("description", "Suggested newsitems from local feeds.")
+        addObject("link", urlBuilder.fullyQualified(urlBuilder.getFeedsInboxUrl)).
+        addObject("description", "Suggested news items from local feeds.")
       commonAttributesModelBuilder.setRss(mv, rssUrlBuilder.getTitleForSuggestions, rssUrlBuilder.getRssUrlForFeedSuggestions)
       Some(mv)
     }

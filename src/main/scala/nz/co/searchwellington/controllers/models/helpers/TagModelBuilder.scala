@@ -66,7 +66,7 @@ import scala.concurrent.Future
             addObject(TAG, tag).
             addObject("heading", tag.display_name).
             addObject("description", rssUrlBuilder.getRssDescriptionForTag(tag)).
-            addObject("link", urlBuilder.getTagUrl(tag)).
+            addObject("link", urlBuilder.fullyQualified(urlBuilder.getTagUrl(tag))).
             addObject("parent", maybeParent.orNull)
 
           val taggedNewsitems = taggedNewsitemsAndTotalCount._1

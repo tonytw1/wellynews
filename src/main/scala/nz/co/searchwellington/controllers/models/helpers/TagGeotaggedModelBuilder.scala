@@ -41,9 +41,10 @@ import scala.concurrent.Future
           addObject("tag", tag).
           addObject("heading", tag.getDisplayName + " geotagged").
           addObject("description", "Geotagged " + tag.getDisplayName + " newsitems").
-          addObject("link", urlBuilder.getTagCommentUrl(tag)).
+          addObject("link", urlBuilder.fullyQualified(urlBuilder.getTagGeocodedUrl(tag))).
           addObject(MAIN_CONTENT, newsitems)
-        if (newsitems.size > 0) {
+
+        if (newsitems.nonEmpty) {
           commonAttributesModelBuilder.setRss(mv, rssUrlBuilder.getRssTitleForTagGeotagged(tag), rssUrlBuilder.getRssUrlForTagGeotagged(tag))
         }
         Some(mv)

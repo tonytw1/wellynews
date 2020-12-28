@@ -38,7 +38,7 @@ import scala.concurrent.Future
       val mv = new ModelAndView().
         addObject("heading", "Latest additions").
         addObject("description", "The most recently submitted website listings.").
-        addObject("link", urlBuilder.getJustinUrl).
+        addObject("link", urlBuilder.fullyQualified(urlBuilder.getJustinUrl)).
         addObject(MAIN_CONTENT, websites._1.asJava)
 
       val startIndex = getStartIndex(page, MAX_NEWSITEMS)

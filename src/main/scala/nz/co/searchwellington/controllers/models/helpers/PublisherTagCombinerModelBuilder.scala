@@ -43,8 +43,8 @@ import scala.concurrent.Future
         addObject("publisher", frontendPublisher).
         addObject("tag", tag).
         addObject("heading", publisher.title.getOrElse("") + " and " + tag.getDisplayName).
-        addObject("description", "").
-        addObject("link", urlBuilder.getPublisherCombinerUrl(publisher, tag)).
+        addObject("description", "Items tagged with " + publisher.getTitle + " and " + tag.getDisplayName + ".").
+        addObject("link", urlBuilder.fullyQualified(urlBuilder.getPublisherCombinerUrl(publisher, tag))).
         addObject(MAIN_CONTENT, publisherTagNewsitems.asJava)
 
       if (publisherTagNewsitems.nonEmpty) {

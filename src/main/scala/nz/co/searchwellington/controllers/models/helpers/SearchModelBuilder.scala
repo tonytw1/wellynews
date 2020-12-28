@@ -84,7 +84,7 @@ import scala.concurrent.Future
 
       mv.addObject("main_description", "Found " + contentCount + " matching newsitems")
       mv.addObject("description", "Search results for '" + keywords + "'")
-      mv.addObject("link", urlBuilder.getSearchUrlFor(keywords))
+      mv.addObject("link", urlBuilder.fullyQualified(urlBuilder.getSearchUrlFor(keywords)))
 
       Some(mv)
     }

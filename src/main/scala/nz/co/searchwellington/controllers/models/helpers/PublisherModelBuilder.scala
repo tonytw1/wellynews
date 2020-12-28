@@ -53,9 +53,8 @@ import scala.concurrent.Future
         val mv = new ModelAndView().addObject("heading", publisher.title.getOrElse("")).
           addObject("description", publisher.title.getOrElse("") + " newsitems").
           addObject("publisher", frontendWebsite).
-          addObject("location", frontendWebsite.getPlace)
-
-        publisher.title.map(t => mv.addObject("link", urlBuilder.getPublisherUrl(t)))
+          addObject("location", frontendWebsite.getPlace).
+          addObject("link", urlBuilder.fullyQualified(urlBuilder.getPublisherUrl(publisher)))
 
         val totalPublisherNewsitems = publisherNewsitems._2
         if (publisherNewsitems._1.nonEmpty) {
