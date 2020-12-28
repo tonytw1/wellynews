@@ -274,7 +274,7 @@ class ElasticSearchIndexer @Autowired()(val showBrokenDecisionService: ShowBroke
   }
 
   def createdMonthAggregationFor(query: ResourceQuery, loggedInUser: Option[User]): Future[Seq[(Interval, Long)]] = {
-    val aggs = Seq(dateHistogramAgg("date", "date").interval(DateHistogramInterval.Month))
+    val aggs = Seq(dateHistogramAgg("date", "date").calendarInterval(DateHistogramInterval.Month))
     val request = search(Index) query composeQueryFor(query, loggedInUser) limit 0 aggregations aggs
 
     client.execute(request).map { r =>
