@@ -10,8 +10,7 @@ import uk.co.eelpieconsulting.common.dates.DateFormatter
 import uk.co.eelpieconsulting.common.geo.model.Place
 
 @Component
-class UrlBuilder @Autowired()(siteInformation: SiteInformation, urlWordsGenerator: UrlWordsGenerator)
-  extends ArchiveMonth {
+class UrlBuilder @Autowired()(siteInformation: SiteInformation, urlWordsGenerator: UrlWordsGenerator) extends ArchiveMonth {
 
   def fullyQualified(uri: String): String = {
     siteInformation.getUrl + uri
@@ -158,8 +157,8 @@ class UrlBuilder @Autowired()(siteInformation: SiteInformation, urlWordsGenerato
     "/openid/callback"
   }
 
-  @deprecated def getProfileUrl(user: User): String = {
-    "/profiles/" + user.getProfilename
+  def getProfileUrl(user: User): String = {
+    getProfileUrlFromProfileName(user.getProfilename)
   }
 
   def getProfileUrlFromProfileName(username: String): String = {
