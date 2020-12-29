@@ -254,7 +254,7 @@ class ElasticSearchIndexer @Autowired()(val showBrokenDecisionService: ShowBroke
         }
       },
       query.circle.map { c =>
-        geoDistanceQuery(LatLong).point(c.centre.getLatitude, c.centre.getLongitude).distance(c.radius, DistanceUnit.KILOMETERS)
+        geoDistanceQuery(LatLong, c.centre.getLatitude, c.centre.getLongitude).distance(c.radius, DistanceUnit.KILOMETERS)
       },
       query.taggingUser.map { tu =>
         matchQuery(TaggingUsers, tu.stringify)
