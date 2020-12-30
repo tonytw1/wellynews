@@ -19,7 +19,6 @@ import scala.concurrent.{ExecutionContext, Future}
 
 @Component
 class WhakaokoClient @Autowired()(@Value("${whakaoko.url}") whakaokoUrl: String,
-                                  @Value("${whakaoko.username}") whakaokoUsername: String,
                                   @Value("${whakaoko.channel}") whakaokoChannel: String,
                                   @Value("${whakaoko.token}") whakaokoToken: String) extends ReasonableWaits {
 
