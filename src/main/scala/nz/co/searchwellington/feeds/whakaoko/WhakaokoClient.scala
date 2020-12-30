@@ -50,11 +50,12 @@ class WhakaokoClient @Autowired()(@Value("${whakaoko.url}") whakaokoUrl: String,
     withWhakaokoAuth(wsClient.url(createFeedSubscriptionUrl)).
       withRequestTimeout(TenSeconds).
       post(Json.toJson(createSubscriptionRequest)).map { r =>
-      if (r.status == HttpStatus.SC_OK) {
-        Some(Json.parse(r.body).as[Subscription])
-      } else {
-        None
-      }
+        r.status match {
+          case HttpStatus.SC_OK =>
+            Some(Json.parse(r.body).as[Subscription])
+          case _ =>
+            None
+        }
     }
   }
 
@@ -62,11 +63,12 @@ class WhakaokoClient @Autowired()(@Value("${whakaoko.url}") whakaokoUrl: String,
     withWhakaokoAuth(wsClient.url(subscriptionUrl(subscriptionId))).
       withRequestTimeout(TenSeconds).
       get.map { r =>
-      if (r.status == HttpStatus.SC_OK) {
-        Some(Json.parse(r.body).as[Subscription])
-      } else {
-        None
-      }
+        r.status match {
+          case HttpStatus.SC_OK =>
+            Some(Json.parse(r.body).as[Subscription])
+          case _ =>
+            None
+        }
     }
   }
 
@@ -79,12 +81,11 @@ class WhakaokoClient @Autowired()(@Value("${whakaoko.url}") whakaokoUrl: String,
       addQueryStringParameters("page" -> page.toString).
       withRequestTimeout(TenSeconds).
       get.map { r =>
-      log.info("Channel channel items returned after: " + new Duration(start, DateTime.now).getMillis)
-      if (r.status == HttpStatus.SC_OK) {
-        Json.parse(r.body).as[Seq[FeedItem]]
-      } else {
-        Seq.empty
-      }
+        log.info("Channel channel items returned after: " + new Duration(start, DateTime.now).getMillis)
+        r.status match {
+          case HttpStatus.SC_OK => Json.parse(r.body).as[Seq[FeedItem]]
+          case _ => Seq.empty
+        }
     }
   }
 
@@ -96,13 +97,13 @@ class WhakaokoClient @Autowired()(@Value("${whakaoko.url}") whakaokoUrl: String,
     withWhakaokoAuth(wsClient.url(channelSubscriptionsUrl)).
       withRequestTimeout(TenSeconds).
       get.map { r =>
-      log.info("Channel subscriptions returned after: " + new Duration(start, DateTime.now).getMillis)
-      if (r.status == HttpStatus.SC_OK) {
-        Json.parse(r.body).as[Seq[Subscription]]
-      } else {
-        log.warn("Get channel subscriptions failed (" + channelSubscriptionsUrl + "): " + r.status + " / " + r.body)
-        Seq.empty
-      }
+        log.info("Channel subscriptions returned after: " + new Duration(start, DateTime.now).getMillis)
+        r.status match {
+          case HttpStatus.SC_OK => Json.parse(r.body).as[Seq[Subscription]]
+          case _ =>
+            log.warn("Get channel subscriptions failed (" + channelSubscriptionsUrl + "): " + r.status + " / " + r.body)
+            Seq.empty
+        }
     }
   }
 
@@ -110,13 +111,14 @@ class WhakaokoClient @Autowired()(@Value("${whakaoko.url}") whakaokoUrl: String,
     withWhakaokoAuth(wsClient.url(subscriptionUrl(subscriptionId) + "/items")).
       withRequestTimeout(TenSeconds).
       get.map { r =>
-      if (r.status == HttpStatus.SC_OK) {
-        val feedItems = Json.parse(r.body).as[Seq[FeedItem]]
-        val totalCount = r.header("x-total-count").map(c => c.toLong).getOrElse(feedItems.size)
-        (feedItems, totalCount)
-      } else {
-        (Seq.empty, 0L)
-      }
+        r.status match {
+          case HttpStatus.SC_OK =>
+            val feedItems = Json.parse(r.body).as[Seq[FeedItem]]
+            val totalCount = r.header("x-total-count").map(c => c.toLong).getOrElse(feedItems.size.toLong)
+            (feedItems, totalCount)
+          case _ =>
+            (Seq.empty, 0L)
+        }
     }
   }
 
@@ -138,6 +140,7 @@ class WhakaokoClient @Autowired()(@Value("${whakaoko.url}") whakaokoUrl: String,
   }
 
   case class CreateSubscriptionRequest(url: String, channel: String, name: Option[String] = None)
+
   case class SubscriptionUpdateRequest(name: String)
 
 }
