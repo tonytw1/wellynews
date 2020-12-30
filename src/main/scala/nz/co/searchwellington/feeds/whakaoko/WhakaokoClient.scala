@@ -111,8 +111,8 @@ class WhakaokoClient @Autowired()(@Value("${whakaoko.url}") whakaokoUrl: String,
       withRequestTimeout(TenSeconds).
       get.map { r =>
       if (r.status == HttpStatus.SC_OK) {
-        val feedItems: Seq[FeedItem] = Json.parse(r.body).as[Seq[FeedItem]]
-        val totalCount: Long = r.header("x-total-count").map(c => c.toLong).getOrElse(feedItems.size)
+        val feedItems = Json.parse(r.body).as[Seq[FeedItem]]
+        val totalCount = r.header("x-total-count").map(c => c.toLong).getOrElse(feedItems.size)
         (feedItems, totalCount)
       } else {
         (Seq.empty, 0L)
