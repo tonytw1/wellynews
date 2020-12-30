@@ -11,7 +11,6 @@ import org.springframework.beans.factory.annotation.{Autowired, Value}
 import org.springframework.stereotype.Component
 import play.api.libs.json.Json
 import play.api.libs.json.Reads.DefaultJodaDateReads
-import play.api.libs.ws.DefaultBodyWritables._
 import play.api.libs.ws.JsonBodyWritables.writeableOf_JsValue
 import play.api.libs.ws.StandaloneWSRequest
 import play.api.libs.ws.ahc.StandaloneAhcWSClient
@@ -40,18 +39,17 @@ class WhakaokoClient @Autowired()(@Value("${whakaoko.url}") whakaokoUrl: String,
   private implicit val sr = Json.reads[Subscription]
 
   def createFeedSubscription(feedUrl: String)(implicit ec: ExecutionContext): Future[Option[Subscription]] = {
-    val createFeedSubscriptionUrl = whakaokoUrl + "/" + whakaokoUsername + "/subscriptions/feeds"
+    val createFeedSubscriptionUrl = whakaokoUrl + "/subscriptions"
     log.debug("Posting new feed to: " + createFeedSubscriptionUrl)
-
-    val params: Map[String, Seq[String]] = Map(
-      "channel" -> Seq(whakaokoChannel),
-      "url" -> Seq(feedUrl)
+    val createSubscriptionRequest = CreateSubscriptionRequest(
+      url = feedUrl,
+      channel = whakaokoChannel
     )
 
+    implicit val csrw = Json.writes[CreateSubscriptionRequest]
     withWhakaokoAuth(wsClient.url(createFeedSubscriptionUrl)).
       withRequestTimeout(TenSeconds).
-      post(params).map { r =>
-      log.debug("New feed result: " + r.status + " / " + r.body)
+      post(Json.toJson(createSubscriptionRequest)).map { r =>
       if (r.status == HttpStatus.SC_OK) {
         Some(Json.parse(r.body).as[Subscription])
       } else {
@@ -92,7 +90,7 @@ class WhakaokoClient @Autowired()(@Value("${whakaoko.url}") whakaokoUrl: String,
 
   def getChannelSubscriptions()(implicit ec: ExecutionContext): Future[Seq[Subscription]] = {
     val channelSubscriptionsUrl = whakaokoUrl + "/" + "/channels/" + whakaokoChannel + "/subscriptions"
-    log.info("Fetching channel subscriptions from: " + (channelSubscriptionsUrl))
+    log.info("Fetching channel subscriptions from: " + channelSubscriptionsUrl)
     val start = DateTime.now()
 
     withWhakaokoAuth(wsClient.url(channelSubscriptionsUrl)).
@@ -102,7 +100,7 @@ class WhakaokoClient @Autowired()(@Value("${whakaoko.url}") whakaokoUrl: String,
       if (r.status == HttpStatus.SC_OK) {
         Json.parse(r.body).as[Seq[Subscription]]
       } else {
-        log.warn("Get channel subscriptions failed (" + (channelSubscriptionsUrl) + "): " + r.status + " / " + r.body)
+        log.warn("Get channel subscriptions failed (" + channelSubscriptionsUrl + "): " + r.status + " / " + r.body)
         Seq.empty
       }
     }
@@ -139,6 +137,7 @@ class WhakaokoClient @Autowired()(@Value("${whakaoko.url}") whakaokoUrl: String,
     request.addHttpHeaders("Authorization" -> ("Bearer " + whakaokoToken))
   }
 
+  case class CreateSubscriptionRequest(url: String, channel: String, name: Option[String] = None)
   case class SubscriptionUpdateRequest(name: String)
 
 }
