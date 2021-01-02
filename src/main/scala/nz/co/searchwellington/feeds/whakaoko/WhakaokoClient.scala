@@ -123,10 +123,11 @@ class WhakaokoClient @Autowired()(@Value("${whakaoko.url}") whakaokoUrl: String,
 
   def updateSubscriptionName(subscriptionId: String, title: String)(implicit ec: ExecutionContext): Future[Unit] = {
     implicit val supw = Json.writes[SubscriptionUpdateRequest]
-    withWhakaokoAuth(wsClient.url(subscriptionUrl(subscriptionId))).
+    val request = wsClient.url(subscriptionUrl(subscriptionId)).
       withHttpHeaders(ApplicationJsonHeader).
-      withRequestTimeout(TenSeconds).
-      put(Json.toJson(SubscriptionUpdateRequest(name = title))).map { r =>
+      withRequestTimeout(TenSeconds)
+
+    withWhakaokoAuth(request).put(Json.toJson(SubscriptionUpdateRequest(name = title))).map { r =>
       r.status match {
         case 200 =>
           log.debug("Update subscription name result: " + r.status + "/" + r.body)
