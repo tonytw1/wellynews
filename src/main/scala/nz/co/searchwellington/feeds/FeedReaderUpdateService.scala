@@ -1,5 +1,6 @@
 package nz.co.searchwellington.feeds
 
+import io.micrometer.core.instrument.MeterRegistry
 import nz.co.searchwellington.feeds.whakaoko.model.FeedItem
 import nz.co.searchwellington.model.{Feed, Resource, Tagging, User}
 import nz.co.searchwellington.modification.ContentUpdateService
@@ -10,10 +11,14 @@ import org.springframework.stereotype.Component
 
 import scala.concurrent.{ExecutionContext, Future}
 
-@Component class FeedReaderUpdateService @Autowired()(contentUpdateService: ContentUpdateService, autoTagger: AutoTaggingService,
-                                                      feedItemAcceptor: FeedItemAcceptor) {
+@Component class FeedReaderUpdateService @Autowired()(contentUpdateService: ContentUpdateService,
+                                                      autoTagger: AutoTaggingService,
+                                                      feedItemAcceptor: FeedItemAcceptor,
+                                                      registry: MeterRegistry) {
 
   private val log = Logger.getLogger(classOf[FeedReaderUpdateService])
+
+  private val acceptedCount = registry.counter("feedreader_accepted")
 
   def acceptFeeditem(feedReaderUser: User, feednewsitem: FeedItem, feed: Feed)(implicit ec: ExecutionContext): Future[Resource] = {
     log.info("Accepting newsitem: " + feednewsitem.url)
@@ -27,6 +32,7 @@ import scala.concurrent.{ExecutionContext, Future}
       log.info("With autotaggings: " + withAutoTaggings)
       contentUpdateService.create(withAutoTaggings).map { created =>
         log.info("Created accepted newsitem: " + withAutoTaggings)
+        acceptedCount.increment()
         created
       }
     }

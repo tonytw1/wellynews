@@ -54,7 +54,7 @@ import scala.concurrent.{Await, ExecutionContext, Future}
               }
 
               Await.result(Future.sequence(eventualOutcomes), TenSeconds)
-              checkedCount.increment(1)
+              checkedCount.increment()
               true
             }
 
