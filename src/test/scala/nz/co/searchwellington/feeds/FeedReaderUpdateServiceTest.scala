@@ -1,5 +1,6 @@
 package nz.co.searchwellington.feeds
 
+import io.micrometer.core.instrument.{Counter, MeterRegistry}
 import nz.co.searchwellington.ReasonableWaits
 import nz.co.searchwellington.feeds.whakaoko.model.FeedItem
 import nz.co.searchwellington.model.taggingvotes.HandTagging
@@ -20,8 +21,11 @@ class FeedReaderUpdateServiceTest extends ReasonableWaits {
   private val contentUpdateService = mock(classOf[ContentUpdateService])
   private val autoTaggingService = mock(classOf[AutoTaggingService])
   private val feedItemAcceptor = mock(classOf[FeedItemAcceptor])
+  private val meterRegistry = mock(classOf[MeterRegistry])
+  private val counter = mock(classOf[Counter])
 
-  private val feedReaderUpdateService = new FeedReaderUpdateService(contentUpdateService, autoTaggingService, feedItemAcceptor)
+  private val feedReaderUpdateService = new FeedReaderUpdateService(contentUpdateService,
+    autoTaggingService, feedItemAcceptor, meterRegistry)
 
   @Test
   def acceptedFeedItemsShouldBeAutotaggedAndSaved(): Unit = {
@@ -48,6 +52,7 @@ class FeedReaderUpdateServiceTest extends ReasonableWaits {
         Tagging(tag_id = anotherTag._id, user_id = autoTagUser._id),
       )
     ))).thenReturn(Future.successful(acceptedNewsitem))
+    when(meterRegistry.counter("feedreader_accepted")).thenReturn(counter)
 
     val created = Await.result(feedReaderUpdateService.acceptFeeditem(feedReaderUser, feednewsitem, feed), TenSeconds)
 
