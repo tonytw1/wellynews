@@ -12,10 +12,14 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
 import reactivemongo.api.bson.BSONObjectID
 
+import io.micrometer.core.instrument.Counter
+import io.micrometer.core.instrument.MeterRegistry
+
 import scala.concurrent.{Await, ExecutionContext, Future}
 
 @Component class LinkChecker @Autowired()(mongoRepository: MongoRepository, contentUpdateService: ContentUpdateService,
-                                          httpFetcher: RobotsAwareHttpFetcher, feedAutodiscoveryProcesser: FeedAutodiscoveryProcesser)
+                                          httpFetcher: RobotsAwareHttpFetcher, feedAutodiscoveryProcesser: FeedAutodiscoveryProcesser,
+                                          registry: MeterRegistry)
   extends ReasonableWaits {
 
   private val log = Logger.getLogger(classOf[LinkChecker])
@@ -23,13 +27,15 @@ import scala.concurrent.{Await, ExecutionContext, Future}
 
   private val processers: Seq[LinkCheckerProcessor] = Seq(feedAutodiscoveryProcesser) // TODO inject all
 
+  private val checkedCount = registry.counter("linkchecker_checked")
+
   //val snapshotArchive = new FilesystemSnapshotArchive("/home/tony/snapshots")
 
   def scanResource(checkResourceId: String)(implicit ec: ExecutionContext) {
     log.info("Scanning resource: " + checkResourceId)
 
     mongoRepository.getResourceByObjectId(BSONObjectID.parse(checkResourceId).get).flatMap { maybeResource =>
-      val mayToCheck = maybeResource.flatMap { resource =>
+      val maybeToCheck = maybeResource.flatMap { resource =>
         val page = resource.page
         if (page.nonEmpty) {
           Some(resource, page)
@@ -38,17 +44,18 @@ import scala.concurrent.{Await, ExecutionContext, Future}
         }
       }
 
-      mayToCheck.map { toCheck =>
+      maybeToCheck.map { toCheck =>
         log.info("Checking: " + toCheck._1.title + " (" + toCheck._1.page + ")")
         httpCheck(toCheck._1, toCheck._2).map { maybePageBody =>
           maybePageBody.map { pageBody =>
-            val x: Seq[Future[Boolean]] = processers.map { processor =>
+            val eventualOutcomes = processers.map { processor =>
               log.debug("Running processor: " + processor.getClass.toString)
               processor.process(toCheck._1, pageBody, DateTime.now)
               //snapshotArchive.put(new Snapshot(p, DateTime.now.toDate, pageContent))
             }
 
-            Await.result(Future.sequence(x), TenSeconds)
+            Await.result(Future.sequence(eventualOutcomes), TenSeconds)
+            checkedCount.increment(1)
             true
           }
 
