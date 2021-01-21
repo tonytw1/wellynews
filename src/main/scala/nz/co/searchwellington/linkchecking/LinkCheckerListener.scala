@@ -1,15 +1,11 @@
 package nz.co.searchwellington.linkchecking
 
-import java.io.IOException
-
-import nz.co.searchwellington.queues.LinkCheckerQueue
-import nz.co.searchwellington.queues.RabbitConnectionFactory
+import com.rabbitmq.client.{Channel, QueueingConsumer}
+import nz.co.searchwellington.queues.{LinkCheckerQueue, RabbitConnectionFactory}
 import org.apache.log4j.Logger
 import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.stereotype.Component
-import com.rabbitmq.client.Channel
-import com.rabbitmq.client.QueueingConsumer
 import org.springframework.core.task.TaskExecutor
+import org.springframework.stereotype.Component
 
 import scala.concurrent.ExecutionContext
 
@@ -52,6 +48,8 @@ import scala.concurrent.ExecutionContext
         case e: Exception =>
           log.error(e)
       }
+
+
       while ( {
         true
 
@@ -64,10 +62,9 @@ import scala.concurrent.ExecutionContext
 
       } catch {
         case e: Exception =>
-          log.error(e)
+          log.error("Error while processing link checker message: ", e)
       }
     }
-
   }
 
 }

@@ -1,5 +1,6 @@
 package nz.co.searchwellington.linkchecking
 
+import io.micrometer.core.instrument.MeterRegistry
 import nz.co.searchwellington.ReasonableWaits
 import nz.co.searchwellington.http.RobotsAwareHttpFetcher
 import nz.co.searchwellington.model.Resource
@@ -11,9 +12,6 @@ import org.joda.time.DateTime
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
 import reactivemongo.api.bson.BSONObjectID
-
-import io.micrometer.core.instrument.Counter
-import io.micrometer.core.instrument.MeterRegistry
 
 import scala.concurrent.{Await, ExecutionContext, Future}
 
@@ -34,42 +32,47 @@ import scala.concurrent.{Await, ExecutionContext, Future}
   def scanResource(checkResourceId: String)(implicit ec: ExecutionContext) {
     log.info("Scanning resource: " + checkResourceId)
 
-    mongoRepository.getResourceByObjectId(BSONObjectID.parse(checkResourceId).get).flatMap { maybeResource =>
-      val maybeToCheck = maybeResource.flatMap { resource =>
-        val page = resource.page
-        if (page.nonEmpty) {
-          Some(resource, page)
-        } else {
-          None
+    try {
+      mongoRepository.getResourceByObjectId(BSONObjectID.parse(checkResourceId).get).flatMap { maybeResource =>
+        val maybeToCheck = maybeResource.flatMap { resource =>
+          val page = resource.page
+          if (page.nonEmpty) {
+            Some(resource, page)
+          } else {
+            None
+          }
         }
-      }
 
-      maybeToCheck.map { toCheck =>
-        log.info("Checking: " + toCheck._1.title + " (" + toCheck._1.page + ")")
-        httpCheck(toCheck._1, toCheck._2).map { maybePageBody =>
-          maybePageBody.map { pageBody =>
-            val eventualOutcomes = processers.map { processor =>
-              log.debug("Running processor: " + processor.getClass.toString)
-              processor.process(toCheck._1, pageBody, DateTime.now)
-              //snapshotArchive.put(new Snapshot(p, DateTime.now.toDate, pageContent))
+        maybeToCheck.map { toCheck =>
+          log.info("Checking: " + toCheck._1.title + " (" + toCheck._1.page + ")")
+          httpCheck(toCheck._1, toCheck._2).map { maybePageBody =>
+            maybePageBody.map { pageBody =>
+              val eventualOutcomes = processers.map { processor =>
+                log.debug("Running processor: " + processor.getClass.toString)
+                processor.process(toCheck._1, pageBody, DateTime.now)
+                //snapshotArchive.put(new Snapshot(p, DateTime.now.toDate, pageContent))
+              }
+
+              Await.result(Future.sequence(eventualOutcomes), TenSeconds)
+              checkedCount.increment(1)
+              true
             }
 
-            Await.result(Future.sequence(eventualOutcomes), TenSeconds)
-            checkedCount.increment(1)
+            log.debug("Saving resource and updating snapshot")
+            toCheck._1.setLastScanned(DateTime.now.toDate)
+
+            contentUpdateService.update(toCheck._1) // TODO should be a specific field set
+            log.info("Finished link checking")
             true
           }
 
-          log.debug("Saving resource and updating snapshot")
-          toCheck._1.setLastScanned(DateTime.now.toDate)
-
-          contentUpdateService.update(toCheck._1) // TODO should be a specific field set
-          log.info("Finished link checking")
-          true
+        }.getOrElse {
+          Future.successful(false)
         }
-
-      }.getOrElse {
-        Future.successful(false)
       }
+    } catch {
+      case e: Exception =>
+        log.error("Error while link checking: ", e)
     }
   }
 
