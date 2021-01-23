@@ -1,5 +1,7 @@
 package nz.co.searchwellington.linkchecking
 
+import java.net.UnknownHostException
+
 import io.micrometer.core.instrument.MeterRegistry
 import nz.co.searchwellington.ReasonableWaits
 import nz.co.searchwellington.http.RobotsAwareHttpFetcher
@@ -91,6 +93,9 @@ import scala.concurrent.{Await, ExecutionContext, Future}
       log.info("Http status for " + url + " set was: " + httpResult.status)
       Right(httpResult.status, httpResult.body)
     }.recoverWith {
+      case e: UnknownHostException =>
+        log.error("Link check http fetch failed: ", e)
+        Future.successful(Left(-2))
       case e: Exception =>
         log.error("Link check http fetch failed: ", e)
         Future.successful(Left(CANT_CONNECT))
