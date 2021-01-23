@@ -43,7 +43,7 @@ import scala.concurrent.{Await, ExecutionContext, Future}
           }
         }
 
-        maybeToCheck.map { toCheck =>
+        val eventualResult = maybeToCheck.map { toCheck =>
           log.info("Checking: " + toCheck._1.title + " (" + toCheck._1.page + ")")
           httpCheck(toCheck._1, toCheck._2).map { maybePageBody =>
             maybePageBody.map { pageBody =>
@@ -54,7 +54,6 @@ import scala.concurrent.{Await, ExecutionContext, Future}
               }
 
               Await.result(Future.sequence(eventualOutcomes), TenSeconds)
-              checkedCount.increment()
               true
             }
 
@@ -69,6 +68,11 @@ import scala.concurrent.{Await, ExecutionContext, Future}
         }.getOrElse {
           Future.successful(false)
         }
+
+        eventualResult.map { _ =>
+          checkedCount.increment()
+        }
+
       }
     } catch {
       case e: Exception =>
