@@ -6,7 +6,6 @@ import nz.co.searchwellington.http.RobotsAwareHttpFetcher
 import nz.co.searchwellington.model.Resource
 import nz.co.searchwellington.modification.ContentUpdateService
 import nz.co.searchwellington.repositories.mongo.MongoRepository
-import org.apache.http.HttpStatus
 import org.apache.log4j.Logger
 import org.joda.time.DateTime
 import org.springframework.beans.factory.annotation.Autowired
@@ -29,81 +28,68 @@ import scala.concurrent.{Await, ExecutionContext, Future}
 
   //val snapshotArchive = new FilesystemSnapshotArchive("/home/tony/snapshots")
 
+
+  // Given a resource id,
+  // load the resource.
+  // If it has a url fetch the url and process the loaded page
+  // Update the last scanned timestamp
   def scanResource(checkResourceId: String)(implicit ec: ExecutionContext) {
     log.info("Scanning resource: " + checkResourceId)
 
-    try {
-      mongoRepository.getResourceByObjectId(BSONObjectID.parse(checkResourceId).get).flatMap { maybeResource =>
-        val maybeToCheck = maybeResource.flatMap { resource =>
-          if (resource.page.nonEmpty) {
-            Some(resource, resource.page)
-          } else {
-            None
-          }
-        }
+    val eventualMaybeResource: Future[Option[Resource]] = mongoRepository.getResourceByObjectId(BSONObjectID.parse(checkResourceId).get)
+    val eventualMaybeResourceWithUrl = eventualMaybeResource.map { mayByResource =>
+      mayByResource.filter(_.page.nonEmpty)
+    }
 
-        val eventualResult = maybeToCheck.map { toCheck =>
-          log.info("Checking: " + toCheck._1.title + " (" + toCheck._1.page + ")")
-          httpCheck(toCheck._1, toCheck._2).map { maybePageBody =>
-            maybePageBody.map { pageBody =>
-              val eventualOutcomes = processers.map { processor =>
-                log.debug("Running processor: " + processor.getClass.toString)
-                processor.process(toCheck._1, pageBody, DateTime.now)
-                //snapshotArchive.put(new Snapshot(p, DateTime.now.toDate, pageContent))
-              }
+    eventualMaybeResourceWithUrl.map { maybeResourceWithUrl =>
+      maybeResourceWithUrl.map { resource =>
+        log.info("Checking: " + resource.title + " (" + resource.page + ")")
 
-              Await.result(Future.sequence(eventualOutcomes), TenSeconds)
+        val x = httpCheck(resource.page).flatMap { result =>
+          result.fold({ left =>
+            Future.successful {
+              resource.setHttpStatus(left)
               true
             }
 
-            log.debug("Saving resource and updating snapshot")
-            toCheck._1.setLastScanned(DateTime.now.toDate)  // This should be set for fails as well
+          }, { right =>
+            resource.setHttpStatus(right._1)
 
-            contentUpdateService.update(toCheck._1) // TODO should be a specific field set
+            val eventualProcesserOutcomes = processers.map { processor =>
+              log.debug("Running processor: " + processor.getClass.toString)
+              processor.process(resource, right._2, DateTime.now)
+            }
+
+            Future.sequence(eventualProcesserOutcomes).map { _ =>
+              true
+            }
+          })
+        }
+
+        val z = x.flatMap { _ =>
+          log.debug("Updating resource")
+          resource.setLastScanned(DateTime.now.toDate)
+          contentUpdateService.update(resource).map { _ => // TODO should be a specific field set
+            checkedCounter.increment()
             log.info("Finished link checking")
-            true
           }
-
-        }.getOrElse {
-          Future.successful(false)
         }
 
-        eventualResult.map { _ =>
-          checkedCounter.increment()
-        }
-
+        Await.result(z, OneMinute)
       }
-    } catch {
-      case e: Exception =>
-        log.error("Error while link checking: ", e)
     }
+
   }
 
-  private def httpCheck(checkResource: Resource, url: String)(implicit ec: ExecutionContext): Future[Option[String]] = {
+  // Given a URL load it and return the http status and the page contents
+  def httpCheck(url: String)(implicit ec: ExecutionContext): Future[Either[Int, (Integer, String)]] = {
     httpFetcher.httpFetch(url).map { httpResult =>
-      try {
-        checkResource.setHttpStatus(httpResult.status)
-        log.info("Http status for " + checkResource.page + " set to: " + checkResource.http_status)
-
-        if (httpResult.status == HttpStatus.SC_OK) {
-          Some(httpResult.body)
-        } else {
-          checkResource.setHttpStatus(httpResult.status)
-          None
-
-        }
-      }
-      catch {
-        case e: Exception =>
-          log.error("Error while checking url: ", e)
-          checkResource.setHttpStatus(CANT_CONNECT)
-          None
-      }
-
+      log.info("Http status for " + url + " set was: " + httpResult.status)
+      Right(httpResult.status, httpResult.body)
     }.recoverWith {
       case e: Exception =>
         log.error("Link check http fetch failed: ", e)
-        Future.successful(None)
+        Future.successful(Left(CANT_CONNECT))
     }
   }
 
