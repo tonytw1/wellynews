@@ -68,11 +68,6 @@ import scala.concurrent.{Await, ExecutionContext, Future}
 
         }.getOrElse {
           Future.successful(false)
-
-        }.recoverWith {
-          case e: Exception =>
-            log.error("Link check failed: ", e)
-            Future.successful(false)
         }
       }
     } catch {
@@ -101,6 +96,11 @@ import scala.concurrent.{Await, ExecutionContext, Future}
           checkResource.setHttpStatus(CANT_CONNECT)
           None
       }
+
+    }.recoverWith {
+      case e: Exception =>
+        log.error("Link check http fetch failed: ", e)
+        Future.successful(None)
     }
   }
 
