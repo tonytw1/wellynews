@@ -66,9 +66,10 @@ import scala.concurrent.{Await, ExecutionContext, Future}
               true
             }
           })
+
         }.recoverWith{
           case e: Exception =>
-            log.error("Link check http fetch failed: ", e)
+            log.error("Link check failed: ", e)
             Future.successful(false)
         }
 
