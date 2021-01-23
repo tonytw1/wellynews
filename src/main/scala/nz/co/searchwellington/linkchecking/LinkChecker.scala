@@ -58,7 +58,7 @@ import scala.concurrent.{Await, ExecutionContext, Future}
             }
 
             log.debug("Saving resource and updating snapshot")
-            toCheck._1.setLastScanned(DateTime.now.toDate)
+            toCheck._1.setLastScanned(DateTime.now.toDate)  // This should be set for fails as well
 
             contentUpdateService.update(toCheck._1) // TODO should be a specific field set
             log.info("Finished link checking")
