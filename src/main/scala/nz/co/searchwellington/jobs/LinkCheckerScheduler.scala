@@ -1,6 +1,5 @@
 package nz.co.searchwellington.jobs
 
-import io.micrometer.core.instrument.MeterRegistry
 import nz.co.searchwellington.ReasonableWaits
 import nz.co.searchwellington.queues.LinkCheckerQueue
 import nz.co.searchwellington.repositories.mongo.MongoRepository
@@ -14,13 +13,10 @@ import reactivemongo.api.bson.BSONObjectID
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.{Await, Future}
 
-@Component class LinkCheckerScheduler @Autowired()(mongoRepository: MongoRepository, linkCheckerQueue: LinkCheckerQueue,
-                                                   registry: MeterRegistry)
+@Component class LinkCheckerScheduler @Autowired()(mongoRepository: MongoRepository, linkCheckerQueue: LinkCheckerQueue)
   extends ReasonableWaits {
 
   private val log = Logger.getLogger(classOf[LinkCheckerScheduler])
-
-  private val queuedCounter = registry.counter("linkcheck_queued")
 
   //@Scheduled(fixedRate = 86400000)
   def queueWatchlistItems {
@@ -48,7 +44,6 @@ import scala.concurrent.{Await, Future}
 
     val queued= Await.result(eventualQueued, TenSeconds)
     log.info("Queued: " + queued.flatten.size)
-    queuedCounter.increment(queued.flatten.size)
   }
 
   private def queueBsonIDs(r: BSONObjectID): String = {
