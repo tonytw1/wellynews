@@ -25,7 +25,7 @@ import scala.concurrent.{Await, ExecutionContext, Future}
 
   private val processers: Seq[LinkCheckerProcessor] = Seq(feedAutodiscoveryProcesser) // TODO inject all
 
-  private val checkedCount = registry.counter("linkchecker_checked")
+  private val checkedCounter = registry.counter("linkchecker_checked")
 
   //val snapshotArchive = new FilesystemSnapshotArchive("/home/tony/snapshots")
 
@@ -35,9 +35,8 @@ import scala.concurrent.{Await, ExecutionContext, Future}
     try {
       mongoRepository.getResourceByObjectId(BSONObjectID.parse(checkResourceId).get).flatMap { maybeResource =>
         val maybeToCheck = maybeResource.flatMap { resource =>
-          val page = resource.page
-          if (page.nonEmpty) {
-            Some(resource, page)
+          if (resource.page.nonEmpty) {
+            Some(resource, resource.page)
           } else {
             None
           }
@@ -70,7 +69,7 @@ import scala.concurrent.{Await, ExecutionContext, Future}
         }
 
         eventualResult.map { _ =>
-          checkedCount.increment()
+          checkedCounter.increment()
         }
 
       }
