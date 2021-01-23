@@ -68,6 +68,11 @@ import scala.concurrent.{Await, ExecutionContext, Future}
 
         }.getOrElse {
           Future.successful(false)
+
+        }.recoverWith {
+          case e: Exception =>
+            log.error("Link check failed: ", e)
+            Future.successful(false)
         }
       }
     } catch {
