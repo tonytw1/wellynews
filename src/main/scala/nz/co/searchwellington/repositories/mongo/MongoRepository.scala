@@ -274,6 +274,21 @@ class MongoRepository @Autowired()(@Value("${mongo.uri}") mongoUri: String) exte
     }
   }
 
+  def getNeverScanned(maxItems: Int)(implicit ec: ExecutionContext): Future[List[BSONObjectID]] = {
+    val selector = BSONDocument(
+      "last_scanned" -> BSONDocument(
+        "$exists" -> false
+      )
+    )
+
+    // TODO time window to prevent race for new items
+
+    resourceCollection.find(selector, Some(idOnlyProjection)).cursor[BSONDocument]().
+      collect[List](maxDocs = maxItems, err = Cursor.FailOnError[List[BSONDocument]]()).map { r =>
+      r.flatMap(i => i.getAsOpt[BSONObjectID]("_id"))
+    }
+  }
+
   def getNotCheckedSince(lastScanned: DateTime, maxItems: Int)(implicit ec: ExecutionContext): Future[Seq[BSONObjectID]] = {
     val selector = BSONDocument(
       "last_scanned" -> BSONDocument(

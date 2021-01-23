@@ -1,5 +1,6 @@
 package nz.co.searchwellington.jobs
 
+import io.micrometer.core.instrument.MeterRegistry
 import nz.co.searchwellington.ReasonableWaits
 import nz.co.searchwellington.queues.LinkCheckerQueue
 import nz.co.searchwellington.repositories.mongo.MongoRepository
@@ -8,14 +9,18 @@ import org.joda.time.DateTime
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.scheduling.annotation.Scheduled
 import org.springframework.stereotype.Component
+import reactivemongo.api.bson.BSONObjectID
 
-import scala.concurrent.Await
 import scala.concurrent.ExecutionContext.Implicits.global
+import scala.concurrent.{Await, Future}
 
-@Component class LinkCheckerScheduler @Autowired()(mongoRepository: MongoRepository, linkCheckerQueue: LinkCheckerQueue)
+@Component class LinkCheckerScheduler @Autowired()(mongoRepository: MongoRepository, linkCheckerQueue: LinkCheckerQueue,
+                                                   registry: MeterRegistry)
   extends ReasonableWaits {
 
   private val log = Logger.getLogger(classOf[LinkCheckerScheduler])
+
+  private val queuedCounter = registry.counter("linkcheck_queued")
 
   //@Scheduled(fixedRate = 86400000)
   def queueWatchlistItems {
@@ -29,24 +34,28 @@ import scala.concurrent.ExecutionContext.Implicits.global
   @Scheduled(cron = "0 */10 * * * *")
   def queueExpiredItems {
     val numberOfItemsToQueue = 100
-    /*
-    log.info("Queuing items launched within the last 24 hours with but not scanned within the last 4 hours")
-    val oneDayAgo: Date = new DateTime(()).minusDays(1).toDate
-    val fourHoursAgo: Date = new DateTime(()).minusHours(4).toDate
-    for (resource <- mongoRepository.getNotCheckedSince(oneDayAgo, fourHoursAgo, numberOfItemsToQueue)) {
-      if (resource.`type` == "N") {
-        log.info("Queuing recent newsitem for checking: " + resource.title + " - " + resource.last_scanned)
-        linkCheckerQueue.add(resource.id)
-      }
-    }
-    */
 
-    log.info("Queuing " + numberOfItemsToQueue + " items not scanned for more than one month.")
-    val oneMonthAgo = DateTime.now.minusMonths(1)
-    Await.result(mongoRepository.getNotCheckedSince(oneMonthAgo, numberOfItemsToQueue), TenSeconds).foreach { r =>
-      log.info("Queuing for scheduled checking: " + r.stringify)
-      linkCheckerQueue.add(r.stringify)
-    }
+    log.info("Queuing items")
+    def neverScanned = mongoRepository.getNeverScanned(100)
+    def lastScannedOverAMonthAgo = mongoRepository.getNotCheckedSince(DateTime.now.minusMonths(1), numberOfItemsToQueue)
+    val selectors = Seq(neverScanned, lastScannedOverAMonthAgo)
+
+    val eventualQueued: Future[Seq[Seq[String]]] = Future.sequence(selectors.map { selector =>
+      selector.map { ids =>
+        ids.map(queueBsonIDs)
+      }
+    })
+
+    val queued= Await.result(eventualQueued, TenSeconds)
+    log.info("Queued: " + queued.flatten.size)
+    queuedCounter.increment(queued.flatten.size)
+  }
+
+  private def queueBsonIDs(r: BSONObjectID): String = {
+    val stringify = r.stringify
+    log.info("Queuing for scheduled checking: " + stringify)
+    linkCheckerQueue.add(stringify)
+    stringify
   }
 
 }
