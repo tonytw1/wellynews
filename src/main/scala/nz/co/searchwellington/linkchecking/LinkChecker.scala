@@ -43,7 +43,7 @@ import scala.concurrent.{Await, ExecutionContext, Future}
       mayByResource.filter(_.page.nonEmpty)
     }
 
-    eventualMaybeResourceWithUrl.map { maybeResourceWithUrl =>
+    val y: Future[Unit] = eventualMaybeResourceWithUrl.flatMap { maybeResourceWithUrl =>
       maybeResourceWithUrl.map { resource =>
         log.info("Checking: " + resource.title + " (" + resource.page + ")")
 
@@ -81,8 +81,10 @@ import scala.concurrent.{Await, ExecutionContext, Future}
             log.info("Finished link checking")
           }
         }
+        z
 
-        Await.result(z, OneMinute)
+      }.getOrElse {
+        Future.successful()
       }
     }
 
