@@ -88,6 +88,7 @@ import scala.concurrent.{Await, ExecutionContext, Future}
       }
     }
 
+    Await.result(y, OneMinute)
   }
 
   // Given a URL load it and return the http status and the page contents
