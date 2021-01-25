@@ -6,11 +6,10 @@ import org.apache.log4j.Logger
 import org.joda.time.DateTime
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
-import uk.co.eelpieconsulting.archiving.SnapshotArchive
 
 import scala.concurrent.{ExecutionContext, Future}
 
-@Component class ContentHasChangedProcesser @Autowired()(snapshotArchive: SnapshotArchive) extends LinkCheckerProcessor {
+@Component class ContentHasChangedProcesser @Autowired()() extends LinkCheckerProcessor {
 
   private val log = Logger.getLogger(classOf[ContentHasChangedProcesser])
 
@@ -21,6 +20,7 @@ import scala.concurrent.{ExecutionContext, Future}
 
   // TODO cleaning and filtering?
   private def checkForChangeUsingSnapshots(checkResource: Resource, after: String) = {
+    /*
     log.debug("Comparing content before and after snapshots from content change.")
     val snapshotBeforeHttpCheck = snapshotArchive.getLatestFor(checkResource.page)
     val pageContentBeforeHttpCheck = if (snapshotBeforeHttpCheck != null) snapshotBeforeHttpCheck.getBody else null
@@ -28,7 +28,7 @@ import scala.concurrent.{ExecutionContext, Future}
       log.info("Change in content checksum detected. Setting last changed.")
       checkResource.setLastChanged(new DateTime().toDate)
     }
-
+    */
   }
 
   private def contentHasChanged(before: String, after: String): Boolean = { // TODO use options
