@@ -14,7 +14,17 @@ import scala.util.Random
 class MongoRepositoryTest extends ReasonableWaits {
 
   val databaseName = "wellynews-" + UUID.randomUUID().toString
-  val mongoRepository = new MongoRepository("mongodb://localhost:27017/" + databaseName)
+
+
+  private val mongoHost = {
+    var mongoHost = System.getenv("MONGO_HOST");
+    if (mongoHost == null) {
+      mongoHost = "localhost";
+    }
+    mongoHost
+  }
+
+  val mongoRepository = new MongoRepository(s"mongodb://{$mongoHost}:27017/" + databaseName)
 
   @Test
   def canPersistResources = {
