@@ -5,11 +5,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import uk.co.eelpieconsulting.common.caching.MemcachedCache;
-import uk.co.eelpieconsulting.common.shorturls.BitlyUrlResolver;
-import uk.co.eelpieconsulting.common.shorturls.FeedBurnerRedirectResolver;
-import uk.co.eelpieconsulting.common.shorturls.ShortUrlResolverService;
-import uk.co.eelpieconsulting.common.shorturls.TinyUrlResolver;
-import uk.co.eelpieconsulting.common.shorturls.TwitterShortenerUrlResolver;
+import uk.co.eelpieconsulting.common.shorturls.ShortUrlResolver;
+import uk.co.eelpieconsulting.common.shorturls.resolvers.*;
+
+import java.net.MalformedURLException;
+import java.net.URI;
+import java.net.URL;
 
 @Component
 public class CachingShortUrlResolverService {
@@ -19,16 +20,16 @@ public class CachingShortUrlResolverService {
     private static final int ONE_DAY = 3600 * 24;
     private final static String KEY_PREFIX = "resolved-urls::";
 
-    private ShortUrlResolverService shortUrlResolverService;
+    private ShortUrlResolver shortUrlResolverService;
     private MemcachedCache cache;
 
     @Autowired
     public CachingShortUrlResolverService(MemcachedCache cache) {
-        shortUrlResolverService = new ShortUrlResolverService(new BitlyUrlResolver(), new FeedBurnerRedirectResolver(), new TinyUrlResolver(), new TwitterShortenerUrlResolver());
+        shortUrlResolverService = new CompositeUrlResolver(new BitlyUrlResolver(), new FeedBurnerRedirectResolver(), new TinyUrlResolver(), new TwitterShortenerUrlResolver());
         this.cache = cache;
     }
 
-    public String resolveUrl(String url) {
+    public String resolveUrl(String url) throws MalformedURLException {
         if (url != null && !url.isEmpty()) {
             final String cachedResult = (String) cache.get(generateKey(url));
             if (cachedResult != null) {
@@ -37,11 +38,11 @@ public class CachingShortUrlResolverService {
             }
 
             log.debug("Delegating to live url resolver");
-            final String result = shortUrlResolverService.resolveUrl(url);
+            final URL result = shortUrlResolverService.resolveUrl(new java.net.URL(url));
             if (result != null) {
-                putUrlIntoCache(url, result);
+                putUrlIntoCache(url, result.toExternalForm());
             }
-            return result;
+            return result.toExternalForm();
 
         } else {
             log.warn("Called with empty url");
