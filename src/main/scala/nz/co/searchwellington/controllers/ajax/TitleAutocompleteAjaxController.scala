@@ -3,7 +3,7 @@ package nz.co.searchwellington.controllers.ajax
 import javax.servlet.http.{HttpServletRequest, HttpServletResponse}
 import nz.co.searchwellington.ReasonableWaits
 import nz.co.searchwellington.controllers.LoggedInUserFilter
-import nz.co.searchwellington.htmlparsing.{SnapshotBodyExtractor, TitleExtractor}
+import nz.co.searchwellington.htmlparsing.TitleExtractor
 import nz.co.searchwellington.http.WSHttpFetcher
 import nz.co.searchwellington.repositories.elasticsearch.PublisherGuessingService
 import org.apache.commons.lang.StringEscapeUtils
