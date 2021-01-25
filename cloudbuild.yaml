@@ -5,6 +5,7 @@ steps:
   entrypoint: 'mvn'
   args: ['install']
   env:
+  - 'ELASTIC_HOST=elasticsearch7'
   - 'MONGO_HOST=mongo'
 - name: 'gcr.io/cloud-builders/docker'
   args: ['build', '-t', 'eu.gcr.io/$PROJECT_ID/wellynews', '.']

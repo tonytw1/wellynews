@@ -14,8 +14,7 @@ import scala.util.Random
 class MongoRepositoryTest extends ReasonableWaits {
 
   val databaseName = "wellynews-" + UUID.randomUUID().toString
-
-
+  
   private val mongoHost = {
     var mongoHost = System.getenv("MONGO_HOST");
     if (mongoHost == null) {
