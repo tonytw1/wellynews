@@ -35,11 +35,11 @@ class ElasticSearchIndexerTest extends ReasonableWaits {
   val taggingReturnsOfficerService = new TaggingReturnsOfficerService(new HandTaggingDAO(mongoRepository), mongoRepository)
 
   private val elasticHost = {
-    var mongoHost = System.getenv("ELASTIC_HOST");
-    if (mongoHost == null) {
-      mongoHost = "localhost";
+    var elasticHost = System.getenv("ELASTIC_HOST");
+    if (elasticHost == null) {
+      elasticHost = "localhost";
     }
-    mongoHost
+    elasticHost
   }
 
   val elasticSearchIndexer = new ElasticSearchIndexer(showBrokenDecisionService, s"http://$elasticHost:9200", databaseAndIndexName, taggingReturnsOfficerService)
