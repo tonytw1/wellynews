@@ -29,7 +29,7 @@ class ElasticSearchIndexerTest extends ReasonableWaits {
     mongoHost
   }
 
-  val mongoRepository = new MongoRepository(s"mongodb://{$mongoHost}:27017/" + databaseAndIndexName)
+  val mongoRepository = new MongoRepository(s"mongodb://$mongoHost:27017/" + databaseAndIndexName)
 
   private val showBrokenDecisionService = mock(classOf[ShowBrokenDecisionService])
   val taggingReturnsOfficerService = new TaggingReturnsOfficerService(new HandTaggingDAO(mongoRepository), mongoRepository)
@@ -42,7 +42,7 @@ class ElasticSearchIndexerTest extends ReasonableWaits {
     mongoHost
   }
 
-  val elasticSearchIndexer = new ElasticSearchIndexer(showBrokenDecisionService, s"http://{elasticHost}:9200", databaseAndIndexName, taggingReturnsOfficerService)
+  val elasticSearchIndexer = new ElasticSearchIndexer(showBrokenDecisionService, s"http://$elasticHost:9200", databaseAndIndexName, taggingReturnsOfficerService)
   val rebuild = new ElasticSearchIndexRebuildService(mongoRepository, elasticSearchIndexer, taggingReturnsOfficerService)
 
   private val loggedInUser = User()
