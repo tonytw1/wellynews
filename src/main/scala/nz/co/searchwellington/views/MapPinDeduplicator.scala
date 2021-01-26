@@ -2,16 +2,16 @@ package nz.co.searchwellington.views
 
 import nz.co.searchwellington.model.{Geocode, Newsitem}
 import org.apache.log4j.Logger
+import org.locationtech.spatial4j.distance.{DistanceCalculator, GeodesicSphereDistCalc}
+import org.locationtech.spatial4j.shape.Point
+import org.locationtech.spatial4j.shape.impl.PointImpl
 import org.springframework.stereotype.Component
-import uk.co.eelpieconsulting.common.geo.DistanceMeasuringService
 import uk.co.eelpieconsulting.common.geo.model.LatLong
 
 @Component class MapPinDeduplicator() {
 
   private val ONE_HUNDRED_METERS = 0.1
   private val log = Logger.getLogger(classOf[MapPinDeduplicator])
-
-  private val distanceMeasuringService = new DistanceMeasuringService
 
   def dedupe(geocoded: Seq[Newsitem], selected: Option[Newsitem] = None): Seq[Newsitem] = {
     log.debug("Deduping collection with " + geocoded.size + " items")
@@ -49,7 +49,14 @@ import uk.co.eelpieconsulting.common.geo.model.LatLong
       hereLatLong <- latLongFor(here)
       thereLatLong <- latLongFor(there)
     } yield {
-      val distanceBetweenHereAndThere = distanceMeasuringService.getDistanceBetween(hereLatLong, thereLatLong)
+
+      import org.locationtech.spatial4j.context.SpatialContext
+      val ctx = SpatialContext.GEO
+
+      val h = ctx.makePoint(hereLatLong.getLatitude, hereLatLong.getLongitude)
+      val t = ctx.makePoint(thereLatLong.getLatitude, thereLatLong.getLongitude)
+
+      val distanceBetweenHereAndThere = ctx.calcDistance(h, t)
       distanceBetweenHereAndThere < ONE_HUNDRED_METERS
     }
   }.getOrElse(false)

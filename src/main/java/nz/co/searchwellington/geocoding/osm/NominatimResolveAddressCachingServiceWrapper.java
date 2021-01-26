@@ -1,13 +1,11 @@
 package nz.co.searchwellington.geocoding.osm;
 
-import java.util.List;
-
 import org.apache.commons.codec.digest.DigestUtils;
 import org.springframework.stereotype.Component;
-
 import uk.co.eelpieconsulting.common.caching.CachableService;
-import uk.co.eelpieconsulting.common.geo.NominatimGeocodingService;
 import uk.co.eelpieconsulting.common.geo.model.Place;
+
+import java.util.List;
 
 @Component
 public class NominatimResolveAddressCachingServiceWrapper implements CachableService<String, List<Place>> {
@@ -15,15 +13,15 @@ public class NominatimResolveAddressCachingServiceWrapper implements CachableSer
 	private static final String OSM_ID_CACHE_PREFIX = "osmaddressgeocode:";
 	private static final int ONE_DAY = 60 * 60 * 24;
 	
-	private NominatimGeocodingService nominatimGeocodingService;
+	//private NominatimGeocodingService nominatimGeocodingService;
 	
 	public NominatimResolveAddressCachingServiceWrapper() {
-		this.nominatimGeocodingService = new NominatimGeocodingService("tony@eelpieconsulting.co.uk", "http://nominatim.openstreetmap.org/");
+		//this.nominatimGeocodingService = new NominatimGeocodingService("tony@eelpieconsulting.co.uk", "http://nominatim.openstreetmap.org/");
 	}
 
 	@Override
 	public List<Place> callService(String placeName) {
-		return nominatimGeocodingService.resolvePlaceName(placeName);
+		return null; //nominatimGeocodingService.resolvePlaceName(placeName);
 	}
 
 	@Override
