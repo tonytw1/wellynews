@@ -5,6 +5,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import uk.co.eelpieconsulting.common.caching.CachableService;
+import uk.co.eelpieconsulting.common.geo.NominatimGeocodingService;
 import uk.co.eelpieconsulting.common.geo.model.OsmId;
 import uk.co.eelpieconsulting.common.geo.model.Place;
 
@@ -14,11 +15,11 @@ public class NominatimResolveOsmIdCachingServiceWrapper implements CachableServi
 	private static final String OSM_ID_CACHE_PREFIX = "osmidgeocode:";
 	private static final int ONE_DAY = 60 * 60 * 24;
 	
-	//private NominatimGeocodingService nominatimGeocodingService;
+	private NominatimGeocodingService nominatimGeocodingService;
     
     @Autowired
 	public NominatimResolveOsmIdCachingServiceWrapper(@Value("${nominatim.url}") String nominatimUrl) {
-		//this.nominatimGeocodingService = new NominatimGeocodingService("tony@eelpieconsulting.co.uk", nominatimUrl);
+		this.nominatimGeocodingService = new NominatimGeocodingService("tony@eelpieconsulting.co.uk", nominatimUrl);
 	}
 
 	@Override
