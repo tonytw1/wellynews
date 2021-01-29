@@ -6,7 +6,7 @@
 	<artifactId>common-geo</artifactId>
 	<packaging>jar</packaging>
 	<name>Common geo</name>
-	<version>1.1.0</version>
+	<version>1.1.1</version>
 	<description>Shared geo functions</description>
 	<build>
 		<plugins>
@@ -36,9 +36,9 @@
 		</dependency>
 
 		<dependency>
-			<groupId>geoGoogle</groupId>
-			<artifactId>geoGoogle</artifactId>
-			<version>1.5.0</version>
+			<groupId>org.locationtech.spatial4j</groupId>
+			<artifactId>spatial4j</artifactId>
+			<version>0.8</version>
 		</dependency>
 
 		<dependency>
