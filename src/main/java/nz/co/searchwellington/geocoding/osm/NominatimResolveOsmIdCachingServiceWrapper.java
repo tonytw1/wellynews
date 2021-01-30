@@ -24,7 +24,7 @@ public class NominatimResolveOsmIdCachingServiceWrapper implements CachableServi
 
 	@Override
 	public Place callService(OsmId osmId) {
-		return null; // nominatimGeocodingService.loadPlaceByOsmId(osmId);
+		return nominatimGeocodingService.loadPlaceByOsmId(osmId);
 	}
 
 	@Override

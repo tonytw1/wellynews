@@ -22,7 +22,7 @@ public class NominatimResolveAddressCachingServiceWrapper implements CachableSer
 
 	@Override
 	public List<Place> callService(String placeName) {
-		return null; //nominatimGeocodingService.resolvePlaceName(placeName);
+		return nominatimGeocodingService.resolvePlaceName(placeName);
 	}
 
 	@Override
