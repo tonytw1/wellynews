@@ -7,7 +7,6 @@ import javax.servlet.http.{HttpServletRequest, HttpServletResponse}
 import nz.co.searchwellington.feeds.whakaoko.WhakaokoService
 import nz.co.searchwellington.feeds.{FeedItemAcceptor, FeeditemToNewsitemService, RssfeedNewsitemService}
 import nz.co.searchwellington.filters.AdminRequestFilter
-import nz.co.searchwellington.htmlparsing.SnapshotBodyExtractor
 import nz.co.searchwellington.model._
 import nz.co.searchwellington.model.mappers.FrontendResourceMapper
 import nz.co.searchwellington.modification.{ContentDeletionService, ContentUpdateService}
@@ -30,7 +29,7 @@ import scala.concurrent.ExecutionContext.Implicits.global
                                                       autoTagger: AutoTaggingService,
                                                       val loggedInUserFilter: LoggedInUserFilter, editPermissionService: EditPermissionService, urlStack: UrlStack,
                                                       submissionProcessingService: SubmissionProcessingService, contentUpdateService: ContentUpdateService,
-                                                      contentDeletionService: ContentDeletionService, snapBodyExtractor: SnapshotBodyExtractor, anonUserService: AnonUserService,
+                                                      contentDeletionService: ContentDeletionService, anonUserService: AnonUserService,
                                                       tagVoteDAO: HandTaggingDAO, feedItemAcceptor: FeedItemAcceptor,
                                                       feednewsItemToNewsitemService: FeeditemToNewsitemService, urlWordsGenerator: UrlWordsGenerator,
                                                       whakaokoService: WhakaokoService, frontendResourceMapper: FrontendResourceMapper,
@@ -93,7 +92,6 @@ import scala.concurrent.ExecutionContext.Implicits.global
       val mv = new ModelAndView("viewSnapshot").
         addObject("heading", "Resource snapshot").
         addObject("resource", editResource).
-        addObject("body", snapBodyExtractor.extractLatestSnapshotBodyTextFor(editResource)).
         //addObject("tag_select", tagWidgetFactory.createMultipleTagSelect(tagVoteDAO.getHandpickedTagsForThisResourceByUser(loggedInUser.get, editResource))).
         addObject("show_additional_tags", 1)
 

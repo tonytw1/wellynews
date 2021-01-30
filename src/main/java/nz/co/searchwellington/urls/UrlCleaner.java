@@ -1,11 +1,12 @@
 package nz.co.searchwellington.urls;
 
 import nz.co.searchwellington.urls.shorturls.CachingShortUrlResolverService;
-
 import nz.co.searchwellington.utils.UrlFilters;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+
+import java.net.MalformedURLException;
 
 @Component
 public class UrlCleaner {
@@ -19,7 +20,7 @@ public class UrlCleaner {
         this.shortUrlResolver = shortUrlResolver;
     }
 
-    public String cleanSubmittedItemUrl(String url) {
+    public String cleanSubmittedItemUrl(String url) throws MalformedURLException {
         if (!url.isEmpty()) {
             // Trim and add prefix is missing from user submitted input
             url = UrlFilters.trimWhiteSpace(url);

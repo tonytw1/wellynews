@@ -1,0 +1,65 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+
+	<modelVersion>4.0.0</modelVersion>
+	<groupId>uk.co.eelpieconsulting.common</groupId>
+	<artifactId>common-geo</artifactId>
+	<packaging>jar</packaging>
+	<name>Common geo</name>
+	<version>1.1.1</version>
+	<description>Shared geo functions</description>
+	<build>
+		<plugins>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-compiler-plugin</artifactId>
+				<configuration>
+					<source>1.8</source>
+					<target>1.8</target>
+				</configuration>
+				<version>2.0.2</version>
+			</plugin>
+		</plugins>
+	</build>
+  	
+	<dependencies>
+		<dependency>
+   			<groupId>uk.co.eelpieconsulting.common</groupId>
+   			<artifactId>common-geo-model</artifactId>
+   			<version>1.0.3</version>
+     	</dependency>
+
+		<dependency>
+			<groupId>fr.dudie</groupId>
+			<artifactId>nominatim-api</artifactId>
+			<version>3.0.1</version>
+		</dependency>
+
+		<dependency>
+			<groupId>org.locationtech.spatial4j</groupId>
+			<artifactId>spatial4j</artifactId>
+			<version>0.8</version>
+		</dependency>
+
+		<dependency>
+			<groupId>com.google.guava</groupId>
+			<artifactId>guava</artifactId>
+			<version>14.0</version>
+		</dependency>
+		
+		<dependency>
+			<groupId>log4j</groupId>
+			<artifactId>log4j</artifactId>
+			<version>1.2.17</version>
+			<type>jar</type>
+		</dependency>
+				
+		<dependency>
+			<groupId>junit</groupId>
+			<artifactId>junit</artifactId>
+			<version>4.8.2</version>
+			<scope>test</scope>
+		</dependency>		
+	</dependencies>
+	
+</project>

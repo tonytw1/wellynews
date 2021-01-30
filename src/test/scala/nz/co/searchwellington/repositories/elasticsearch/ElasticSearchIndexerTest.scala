@@ -20,11 +20,29 @@ import scala.concurrent.{Await, Future}
 class ElasticSearchIndexerTest extends ReasonableWaits {
   
   private val databaseAndIndexName = "wellynews-" + UUID.randomUUID().toString()
-  val mongoRepository = new MongoRepository("mongodb://localhost:27017/" + databaseAndIndexName)
+
+  private val mongoHost = {
+    var mongoHost = System.getenv("MONGO_HOST");
+    if (mongoHost == null) {
+      mongoHost = "localhost";
+    }
+    mongoHost
+  }
+
+  val mongoRepository = new MongoRepository(s"mongodb://$mongoHost:27017/" + databaseAndIndexName)
 
   private val showBrokenDecisionService = mock(classOf[ShowBrokenDecisionService])
   val taggingReturnsOfficerService = new TaggingReturnsOfficerService(new HandTaggingDAO(mongoRepository), mongoRepository)
-  val elasticSearchIndexer = new ElasticSearchIndexer(showBrokenDecisionService, "http://localhost:9200", databaseAndIndexName, taggingReturnsOfficerService)
+
+  private val elasticHost = {
+    var elasticHost = System.getenv("ELASTIC_HOST");
+    if (elasticHost == null) {
+      elasticHost = "localhost";
+    }
+    elasticHost
+  }
+
+  val elasticSearchIndexer = new ElasticSearchIndexer(showBrokenDecisionService, s"http://$elasticHost:9200", databaseAndIndexName, taggingReturnsOfficerService)
   val rebuild = new ElasticSearchIndexRebuildService(mongoRepository, elasticSearchIndexer, taggingReturnsOfficerService)
 
   private val loggedInUser = User()

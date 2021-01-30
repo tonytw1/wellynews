@@ -4,7 +4,6 @@ import org.apache.commons.codec.digest.DigestUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
-
 import uk.co.eelpieconsulting.common.caching.CachableService;
 import uk.co.eelpieconsulting.common.geo.NominatimGeocodingService;
 import uk.co.eelpieconsulting.common.geo.model.OsmId;
