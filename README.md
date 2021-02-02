@@ -33,6 +33,13 @@ Start locally.
 mvn spring-boot:run
 ```
 
+## Cloud build
+
+```
+gcloud components install cloud-build-local
+cloud-build-local --config=cloudbuild.yaml --dryrun=false --push=false .
+```
+
 
 ## Related services
 
