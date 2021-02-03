@@ -1,6 +1,6 @@
 package nz.co.searchwellington.linkchecking
 
-import java.net.UnknownHostException
+import java.net.{URL, UnknownHostException}
 
 import io.micrometer.core.instrument.MeterRegistry
 import nz.co.searchwellington.ReasonableWaits
@@ -47,7 +47,9 @@ import scala.concurrent.{Await, ExecutionContext, Future}
       maybeResourceWithUrl.map { resource =>
         log.info("Checking: " + resource.title + " (" + resource.page + ")")
 
-        val x = httpCheck(resource.page).flatMap { result =>
+        val url = new java.net.URL(resource.page)
+
+        val x = httpCheck(url).flatMap { result =>
           result.fold({ left =>
             Future.successful {
               resource.setHttpStatus(left)
@@ -92,7 +94,7 @@ import scala.concurrent.{Await, ExecutionContext, Future}
   }
 
   // Given a URL load it and return the http status and the page contents
-  def httpCheck(url: String)(implicit ec: ExecutionContext): Future[Either[Int, (Integer, String)]] = {
+  def httpCheck(url: URL)(implicit ec: ExecutionContext): Future[Either[Int, (Integer, String)]] = {
     httpFetcher.httpFetch(url).map { httpResult =>
       log.info("Http status for " + url + " set was: " + httpResult.status)
       Right(httpResult.status, httpResult.body)

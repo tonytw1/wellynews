@@ -1,5 +1,7 @@
 package nz.co.searchwellington.http
 
+import java.net.URL
+
 import nz.co.searchwellington.ReasonableWaits
 import org.junit.Assert.assertEquals
 import org.junit.{Before, Test}
@@ -10,7 +12,7 @@ import scala.concurrent.ExecutionContext.Implicits.global
 
 class RobotsAwareHttpFetcherTest extends ReasonableWaits {
 
-  private val TEST_URL = "http://test.wellington.gen.nz/blah"
+  private val TEST_URL = new URL("http://test.wellington.gen.nz/blah")
   private val TEST_USER_AGENT = "test user agent"
 
   private val robotExclusionService = mock(classOf[RobotExclusionService])

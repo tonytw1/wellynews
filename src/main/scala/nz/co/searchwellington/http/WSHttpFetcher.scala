@@ -1,5 +1,7 @@
 package nz.co.searchwellington.http
 
+import java.net.URL
+
 import akka.actor.ActorSystem
 import akka.stream.ActorMaterializer
 import nz.co.searchwellington.ReasonableWaits
@@ -22,8 +24,8 @@ class WSHttpFetcher @Autowired()(taskExecutor: TaskExecutor, siteInformation: Si
 
   private val wsClient = StandaloneAhcWSClient()
 
-  override def httpFetch(url: String)(implicit ec: ExecutionContext): Future[HttpFetchResult] = {
-    wsClient.url(url).withRequestTimeout(TenSeconds).get.map { r =>
+  override def httpFetch(url: URL)(implicit ec: ExecutionContext): Future[HttpFetchResult] = {
+    wsClient.url(url.toExternalForm).withRequestTimeout(TenSeconds).get.map { r =>
       log.info("Got HTTP response code " + r.status + " for url: " + url)
       HttpFetchResult(r.status, r.body)
     }

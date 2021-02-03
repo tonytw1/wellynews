@@ -1,5 +1,7 @@
 package nz.co.searchwellington.http
 
+import java.net.URL
+
 import org.apache.http.HttpStatus
 import org.apache.log4j.Logger
 import org.springframework.beans.factory.annotation.Autowired
@@ -14,8 +16,8 @@ class RobotsAwareHttpFetcher @Autowired()(robotExclusionService: RobotExclusionS
 
   private val excludedUrlPrefixes = Seq.empty
 
-  override def httpFetch(url: String)(implicit ec: ExecutionContext): Future[HttpFetchResult] = {
-    val ignoreRobotDotTxt = excludedUrlPrefixes.exists(e => url.startsWith(e))
+  override def httpFetch(url: URL)(implicit ec: ExecutionContext): Future[HttpFetchResult] = {
+    val ignoreRobotDotTxt = excludedUrlPrefixes.exists(e => url.toExternalForm.startsWith(e))
     if (ignoreRobotDotTxt || robotExclusionService.isUrlCrawlable(url, getUserAgent)) {
       httpFetcher.httpFetch(url)
 

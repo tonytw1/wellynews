@@ -40,7 +40,7 @@ class TitleAutocompleteAjaxController @Autowired()(viewFactory: ViewFactory, log
         try {
           val uri = java.net.URI.create(url)  // TODO use a Try instead
 
-          httpFetcher.httpFetch(uri.toString).map { r =>
+          httpFetcher.httpFetch(uri.toURL).map { r =>
             if (r.status == HttpServletResponse.SC_OK) {
               val maybePageTitle = titleExtractor.extractTitle(r.body)
 
@@ -66,7 +66,7 @@ class TitleAutocompleteAjaxController @Autowired()(viewFactory: ViewFactory, log
           case _: IllegalArgumentException =>
             log.warn("Likely invalid url; ignoring: " + url);
             Future.successful(None)
-          case _ =>
+          case _: Throwable =>
             Future.successful(None)
         }
 
