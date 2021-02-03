@@ -68,11 +68,6 @@ import scala.concurrent.{Await, ExecutionContext, Future}
               true
             }
           })
-
-        }.recoverWith{
-          case e: Exception =>
-            log.error("Link check failed: ", e)
-            Future.successful(false)
         }
 
         val z = x.flatMap { _ =>
@@ -88,6 +83,11 @@ import scala.concurrent.{Await, ExecutionContext, Future}
       }.getOrElse {
         Future.successful()
       }
+
+    }.recoverWith{
+      case e: Exception =>
+        log.error("Link check failed: ", e)
+        Future.successful(false)
     }
 
     Await.result(y, OneMinute)
