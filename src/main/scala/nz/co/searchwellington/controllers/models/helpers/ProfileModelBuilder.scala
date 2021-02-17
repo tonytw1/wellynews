@@ -56,7 +56,7 @@ import scala.concurrent.Future
         }
 
       }.getOrElse {
-        Future.successful(None[ModelAndView])
+        Future.successful(None)
       }
     }
   }

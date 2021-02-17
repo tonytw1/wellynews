@@ -59,23 +59,6 @@ class ProfileControllerTest extends ReasonableWaits {
   }
 
   @Test
-  def usersPostsAndTaggingHistoryShouldBeFetchedFromTheContentRetrievalService {
-    request.setRequestURI("/profiles/" + VALID_PROFILE_NAME)
-    when(loggedInUserFilter.getLoggedInUser).thenReturn(None)
-    when(mongoRepository.getUserByProfilename(VALID_PROFILE_NAME)).thenReturn(Future.successful(Some(existingUser)))
-    when(contentRetrievalService.getOwnedBy(existingUser, loggedInUser)).thenReturn(Future.successful(existingUsersSubmittedItems))
-    when(contentRetrievalService.getTaggedBy(existingUser, loggedInUser)).thenReturn(Future.successful(existingUsersTaggedItems))
-    when(contentRetrievalService.getTopLevelTags).thenReturn(Future.successful(Seq.empty))
-    when(contentRetrievalService.getFeaturedTags).thenReturn(Future.successful(Seq.empty))
-
-    val mv = controller.profile(request, response)
-
-    import scala.collection.JavaConverters._
-    assertEquals(existingUsersSubmittedItems.asJava, mv.getModel.get("submitted"))
-    assertEquals(existingUsersTaggedItems.asJava, mv.getModel.get("tagged"))
-  }
-
-  @Test
   def lettersAndNumbersIsValidNewProfileName {
     when(mongoRepository.getUserByProfilename(VALID_PROFILE_NAME)).thenReturn(Future.successful(None))
     assertTrue(Await.result(controller.isValidAvailableProfilename(VALID_PROFILE_NAME), TenSeconds))
