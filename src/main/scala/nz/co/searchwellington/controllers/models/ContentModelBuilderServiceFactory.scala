@@ -24,7 +24,8 @@ import uk.co.eelpieconsulting.common.views.ViewFactory
                                                                 archiveModelBuilder: ArchiveModelBuilder,
                                                                 searchModelBuilder: SearchModelBuilder,
                                                                 geotaggedModelBuilder: GeotaggedModelBuilder,
-                                                                newsitemPageModelBuilder: NewsitemPageModelBuilder) {
+                                                                newsitemPageModelBuilder: NewsitemPageModelBuilder,
+                                                                profileModelBuilder: ProfileModelBuilder) {
 
   def makeContentModelBuilderService(): ContentModelBuilderService = {
     val modelBuilders = Seq(indexModelBuilder,
@@ -34,7 +35,7 @@ import uk.co.eelpieconsulting.common.views.ViewFactory
       publishersModelBuilder, publisherMonthModelBuilder, publisherModelBuilder, publisherTagCombinerModelBuilder,
       watchlistModelBuilder, feedModelBuilder, justinModelBuilder, archiveModelBuilder,
       suggestionsModelBuilder, geotaggedModelBuilder,
-      newsitemPageModelBuilder)
+      newsitemPageModelBuilder, profileModelBuilder)
 
     new ContentModelBuilderService(viewFactory, contentRetrievalService, modelBuilders)
   }

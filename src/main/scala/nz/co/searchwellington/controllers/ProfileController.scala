@@ -42,56 +42,6 @@ class ProfileController @Autowired()(mongoRepository: MongoRepository, loggedInU
     }, TenSeconds)
   }
 
-  @RequestMapping(Array("/profiles/*"))
-  def profile(request: HttpServletRequest, response: HttpServletResponse): ModelAndView = {
-    val loggedInUser = loggedInUserFilter.getLoggedInUser
-
-    def userByPath(path: String): Option[User] = {
-      if (path.matches("^/profiles/.*$")) {
-        val profilename = path.split("/")(2)
-        Await.result(mongoRepository.getUserByProfilename(profilename), TenSeconds)
-      } else {
-        None
-      }
-    }
-
-    val path = RequestPath.getPathFrom(request)
-    userByPath(path).map { user =>
-      val eventualOwnedBy = contentRetrievalService.getOwnedBy(user, loggedInUser)
-      val eventualTaggedBy = contentRetrievalService.getTaggedBy(user, loggedInUser)
-
-      Await.result((for {
-        ownedBy <- eventualOwnedBy
-        taggedBy <- eventualTaggedBy
-      } yield {
-
-        def selectView: String = {
-          loggedInUser.map { u =>
-            if (u.getId == user.getId) {
-              "profile"
-            } else {
-              "viewProfile"
-            }
-          }.getOrElse {
-            "viewProfile"
-          }
-        }
-
-        import scala.collection.JavaConverters._
-        new ModelAndView(selectView).
-          addObject("heading", "User profile").
-          addObject("profileuser", user).
-          addObject("submitted", ownedBy.asJava).
-          addObject("tagged", taggedBy.asJava)
-      }).flatMap(withCommonLocal), TenSeconds)
-
-    }.getOrElse {
-      log.info("User not found for path: " + path)
-      response.setStatus(HttpServletResponse.SC_NOT_FOUND)
-      null
-    }
-  }
-
   @RequestMapping(Array("/profile/edit")) def edit(request: HttpServletRequest, response: HttpServletResponse): ModelAndView = {
     val loggedInUser = loggedInUserFilter.getLoggedInUser
 
