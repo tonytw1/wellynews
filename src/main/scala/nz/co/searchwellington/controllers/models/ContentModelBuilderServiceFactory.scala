@@ -30,12 +30,13 @@ import uk.co.eelpieconsulting.common.views.ViewFactory
   def makeContentModelBuilderService(): ContentModelBuilderService = {
     val modelBuilders = Seq(indexModelBuilder,
       searchModelBuilder,
+      profileModelBuilder,
       tagsModelBuilder, tagModelBuilder, tagCombinerModelBuilder,
       feedsModelBuilder,
       publishersModelBuilder, publisherMonthModelBuilder, publisherModelBuilder, publisherTagCombinerModelBuilder,
       watchlistModelBuilder, feedModelBuilder, justinModelBuilder, archiveModelBuilder,
       suggestionsModelBuilder, geotaggedModelBuilder,
-      newsitemPageModelBuilder, profileModelBuilder)
+      newsitemPageModelBuilder)
 
     new ContentModelBuilderService(viewFactory, contentRetrievalService, modelBuilders)
   }
