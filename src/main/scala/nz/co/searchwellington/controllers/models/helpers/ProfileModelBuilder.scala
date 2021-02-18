@@ -4,11 +4,12 @@ import java.util.regex.Pattern
 
 import javax.servlet.http.HttpServletRequest
 import nz.co.searchwellington.ReasonableWaits
-import nz.co.searchwellington.controllers.models.ModelBuilder
+import nz.co.searchwellington.controllers.models.{ContentModelBuilderService, ModelBuilder}
 import nz.co.searchwellington.filters.RequestPath
 import nz.co.searchwellington.model.User
 import nz.co.searchwellington.repositories.ContentRetrievalService
 import nz.co.searchwellington.repositories.mongo.MongoRepository
+import org.apache.log4j.Logger
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
 import org.springframework.web.servlet.ModelAndView
@@ -19,6 +20,8 @@ import scala.concurrent.Future
 @Component class ProfileModelBuilder @Autowired()(val contentRetrievalService: ContentRetrievalService,
                                                   mongoRepository: MongoRepository) extends ModelBuilder
   with CommonSizes with ReasonableWaits with Pagination {
+
+  private val logger = Logger.getLogger(classOf[ProfileModelBuilder])
 
   private val profilePageRegex = "^/profiles/(.*?)(/(rss|json))?$"
 
@@ -36,6 +39,7 @@ import scala.concurrent.Future
       if (matcher.matches) {
         matcher.group(1)
         val profilename = path.split("/")(2)
+        logger.info(s"Fetching user by profile name {profilename}")
         mongoRepository.getUserByProfilename(profilename)
 
       } else {
