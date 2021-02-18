@@ -20,7 +20,7 @@ class ContentController @Autowired()(contentModelBuilderServiceFactory: ContentM
 
   private val contentModelBuilderService = contentModelBuilderServiceFactory.makeContentModelBuilderService()
 
-  @RequestMapping(value = Array("/", "/*", "/search", "/archive/*", "/(?!static-assets)*/*", "/*/comment", "/*/geotagged", "/feed/*", "/feeds/inbox", "/publishers", "/publishers/json", "/tags", "/tags/json", "/*/json", "/*/rss", "/newsitem/*", "/*/*/*/*/*"))
+  @RequestMapping(value = Array("/", "/*", "/search", "/archive/*", "/(?!static-assets)*/*", "/profiles/**", "/*/geotagged", "/feed/*", "/feeds/inbox", "/publishers", "/publishers/json", "/tags", "/tags/json", "/*/json", "/*/rss", "/newsitem/*", "/*/*/*/*/*"))
   def normal(request: HttpServletRequest, response: HttpServletResponse): ModelAndView = {
     val TenSeconds = Duration(10, SECONDS)
 
