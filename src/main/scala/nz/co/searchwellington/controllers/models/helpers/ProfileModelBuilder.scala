@@ -20,7 +20,7 @@ import scala.concurrent.Future
                                                   mongoRepository: MongoRepository) extends ModelBuilder
   with CommonSizes with ReasonableWaits with Pagination {
 
-  private val profilePageRegex = "^/profile/(.*?)(/(rss|json))?$"
+  private val profilePageRegex = "^/profiles/(.*?)(/(rss|json))?$"
 
   def isValid(request: HttpServletRequest): Boolean = {
     RequestPath.getPathFrom(request).matches(profilePageRegex)
