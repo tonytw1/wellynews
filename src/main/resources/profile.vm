@@ -72,22 +72,12 @@
 		#if ($user.twitterId) 
 			<p>Your profile is linked to twitter id: $user.twitterId</p>
 		#end
-					
 	#end
-		
-		
+
 	<div class="tag_main_content">
 		<h3>Submissions</h3>
-		#if ($submitted.size() > 0) 
-			<ul class="flat_list">
-				#foreach($item in $submitted)
-					<li class="content_item">
-						<ul class="main_content_item">
-							#parse("includes/content_element.vm")
-						</ul>
-					</li>
-				#end
-			</ul>
+		#if ($submitted.size() > 0)
+            #parse("includes/main_content.vm")
 		#else
 			<p>You have not made any submissions.</p>
 		#end
