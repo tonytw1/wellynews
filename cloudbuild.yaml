@@ -12,4 +12,4 @@ steps:
 - name: 'gcr.io/cloud-builders/docker'
   args: ['push', 'eu.gcr.io/$PROJECT_ID/wellynews']
 - name: gcr.io/cloud-builders/gsutil
-  args: ['cp', '-r', '.ivy2', 'gs://$PROJECT_ID-ivy2/.ivy2']
+  args: ['cp', '-r', '.m2', 'gs://$PROJECT_ID-ivy2/.m2']
