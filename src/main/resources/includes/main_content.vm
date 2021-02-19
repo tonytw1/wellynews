@@ -2,9 +2,6 @@
 	#if ($main_heading)
 		<h2>$main_heading</h2>
 	#end
-	#if ($main_description)
-		<p>$main_description</p>
-	#end
 	<ul class="flat_list">
 		#foreach($item in $main_content)
 			<li class="content_item">
