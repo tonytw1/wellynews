@@ -11,10 +11,3 @@ steps:
   args: ['build', '-t', 'eu.gcr.io/$PROJECT_ID/wellynews', '.']
 - name: 'gcr.io/cloud-builders/docker'
   args: ['push', 'eu.gcr.io/$PROJECT_ID/wellynews']
-- name: 'gcr.io/cloud-builders/gsutil'
-  args:
-  - '-m'
-  - 'rsync'
-  - '-r'
-  - '/root/.m2'
-  - 'gs://$PROJECT_ID-ivy2/'
