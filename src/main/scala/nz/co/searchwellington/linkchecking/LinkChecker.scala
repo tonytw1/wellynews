@@ -35,21 +35,21 @@ import scala.concurrent.{Await, ExecutionContext, Future}
   // load the resource.
   // If it has a url fetch the url and process the loaded page
   // Update the last scanned timestamp
-  def scanResource(checkResourceId: String)(implicit ec: ExecutionContext) {
-    log.info("Scanning resource: " + checkResourceId)
+  def scanResource(resourceId: String)(implicit ec: ExecutionContext) {
+    log.info("Scanning resource: " + resourceId)
 
-    val eventualMaybeResource: Future[Option[Resource]] = mongoRepository.getResourceByObjectId(BSONObjectID.parse(checkResourceId).get)
+    val eventualMaybeResource= mongoRepository.getResourceByObjectId(BSONObjectID.parse(resourceId).get)
     val eventualMaybeResourceWithUrl = eventualMaybeResource.map { mayByResource =>
       mayByResource.filter(_.page.nonEmpty)
     }
 
-    val y: Future[Unit] = eventualMaybeResourceWithUrl.flatMap { maybeResourceWithUrl =>
-      maybeResourceWithUrl.map { resource =>
+    val y: Future[Boolean] = eventualMaybeResourceWithUrl.flatMap { maybeResourceWithUrl =>
+      val a = maybeResourceWithUrl.map { resource =>
         log.info("Checking: " + resource.title + " (" + resource.page + ")")
 
-        val url = new java.net.URL(resource.page)
+        val url = new java.net.URL(resource.page) // TODO This parsing can fail hard
 
-        val x = httpCheck(url).flatMap { result =>
+        val eventualHttpCheckOutcome = httpCheck(url).flatMap { result =>
           result.fold({ left =>
             Future.successful {
               resource.setHttpStatus(left)
@@ -64,25 +64,28 @@ import scala.concurrent.{Await, ExecutionContext, Future}
               processor.process(resource, right._2, DateTime.now)
             }
 
-            Future.sequence(eventualProcesserOutcomes).map { _ =>
-              true
+            Future.sequence(eventualProcesserOutcomes).map { processorOutcomes =>
+              processorOutcomes.forall(outcome => outcome)
             }
           })
         }
 
-        val z = x.flatMap { _ =>
-          log.debug("Updating resource")
+        val z: Future[Boolean] = eventualHttpCheckOutcome.flatMap { outcome =>
+          log.debug("Updating resource")  // TODO push upwards to capture fail as well
           resource.setLastScanned(DateTime.now.toDate)
           contentUpdateService.update(resource).map { _ => // TODO should be a specific field set
             checkedCounter.increment()
             log.info("Finished link checking")
+            outcome
           }
         }
         z
 
       }.getOrElse {
-        Future.successful()
+        log.warn("Link checker was past an unknown resource id: " + resourceId)
+        Future.successful(false)
       }
+      a
 
     }.recoverWith{
       case e: Exception =>
@@ -94,7 +97,7 @@ import scala.concurrent.{Await, ExecutionContext, Future}
   }
 
   // Given a URL load it and return the http status and the page contents
-  def httpCheck(url: URL)(implicit ec: ExecutionContext): Future[Either[Int, (Integer, String)]] = {
+  private def httpCheck(url: URL)(implicit ec: ExecutionContext): Future[Either[Int, (Integer, String)]] = {
     httpFetcher.httpFetch(url).map { httpResult =>
       log.info("Http status for " + url + " set was: " + httpResult.status)
       Right(httpResult.status, httpResult.body)
