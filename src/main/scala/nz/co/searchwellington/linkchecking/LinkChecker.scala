@@ -4,8 +4,10 @@ import java.net.{URL, UnknownHostException}
 import io.micrometer.core.instrument.MeterRegistry
 import nz.co.searchwellington.ReasonableWaits
 import nz.co.searchwellington.http.RobotsAwareHttpFetcher
+import nz.co.searchwellington.model.Resource
 import nz.co.searchwellington.modification.ContentUpdateService
 import nz.co.searchwellington.repositories.mongo.MongoRepository
+import org.apache.commons.validator.UrlValidator
 import org.apache.log4j.Logger
 import org.joda.time.DateTime
 import org.springframework.beans.factory.annotation.Autowired
@@ -46,37 +48,7 @@ import scala.util.Try
       val a = maybeResourceWithUrl.map { resource =>
         log.info("Checking: " + resource.title + " (" + resource.page + ")")
 
-        val parsedUrl = Try {
-          new java.net.URL(resource.page)
-        }.toOption
-
-        val j: Future[Boolean] = parsedUrl.map { url =>
-          val eventualHttpCheckOutcome = httpCheck(url).flatMap { result =>
-            result.fold({ left =>
-              Future.successful {
-                resource.setHttpStatus(left)
-                true
-              }
-
-            }, { right =>
-              resource.setHttpStatus(right._1)
-
-              val eventualProcesserOutcomes = processers.map { processor =>
-                log.debug("Running processor: " + processor.getClass.toString)
-                processor.process(resource, right._2, DateTime.now)
-              }
-
-              Future.sequence(eventualProcesserOutcomes).map { processorOutcomes =>
-                processorOutcomes.forall(outcome => outcome)
-              }
-            })
-          }
-          eventualHttpCheckOutcome
-
-        }.getOrElse {
-          log.warn("Resource had an unparsable url: " + resource.page)
-          Future.successful(false)
-        }
+        val j = checkResource(resource)
 
         val g = j.flatMap { outcome =>
           log.debug("Updating resource")
@@ -117,6 +89,47 @@ import scala.util.Try
         log.error("Link check http fetch failed: ", e)
         Future.successful(Left(CANT_CONNECT))
     }
+  }
+
+  def checkResource(resource: Resource)(implicit ec: ExecutionContext): Future[Boolean] = {
+    val parsedUrl = {
+      if (new UrlValidator().isValid(resource.page)) {  // java.net.URL's construct is too permissive; ie. http:////
+        Try {
+          new java.net.URL(resource.page)
+        }.toOption
+      } else {
+        None
+      }
+    }
+
+    parsedUrl.map { url =>
+      val eventualHttpCheckOutcome = httpCheck(url).flatMap { result =>
+        result.fold({ left =>
+          Future.successful {
+            resource.setHttpStatus(left)
+            true
+          }
+
+        }, { right =>
+          resource.setHttpStatus(right._1)
+
+          val eventualProcesserOutcomes = processers.map { processor =>
+            log.debug("Running processor: " + processor.getClass.toString)
+            processor.process(resource, right._2, DateTime.now)
+          }
+
+          Future.sequence(eventualProcesserOutcomes).map { processorOutcomes =>
+            processorOutcomes.forall(outcome => outcome)
+          }
+        })
+      }
+      eventualHttpCheckOutcome
+
+    }.getOrElse {
+      log.warn("Resource had an unparsable url: " + resource.page)
+      Future.successful(false)
+    }
+
   }
 
 }
