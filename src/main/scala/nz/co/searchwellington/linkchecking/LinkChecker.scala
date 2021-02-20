@@ -1,11 +1,9 @@
 package nz.co.searchwellington.linkchecking
 
 import java.net.{URL, UnknownHostException}
-
 import io.micrometer.core.instrument.MeterRegistry
 import nz.co.searchwellington.ReasonableWaits
 import nz.co.searchwellington.http.RobotsAwareHttpFetcher
-import nz.co.searchwellington.model.Resource
 import nz.co.searchwellington.modification.ContentUpdateService
 import nz.co.searchwellington.repositories.mongo.MongoRepository
 import org.apache.log4j.Logger
@@ -15,6 +13,7 @@ import org.springframework.stereotype.Component
 import reactivemongo.api.bson.BSONObjectID
 
 import scala.concurrent.{Await, ExecutionContext, Future}
+import scala.util.Try
 
 @Component class LinkChecker @Autowired()(mongoRepository: MongoRepository, contentUpdateService: ContentUpdateService,
                                           httpFetcher: RobotsAwareHttpFetcher, feedAutodiscoveryProcesser: FeedAutodiscoveryProcesser,
@@ -47,39 +46,47 @@ import scala.concurrent.{Await, ExecutionContext, Future}
       val a = maybeResourceWithUrl.map { resource =>
         log.info("Checking: " + resource.title + " (" + resource.page + ")")
 
-        val url = new java.net.URL(resource.page) // TODO This parsing can fail hard
+        val parsedUrl = Try {
+          new java.net.URL(resource.page)
+        }.toOption
 
-        val eventualHttpCheckOutcome = httpCheck(url).flatMap { result =>
-          result.fold({ left =>
-            Future.successful {
-              resource.setHttpStatus(left)
-              true
-            }
+        parsedUrl.map { url =>
+          val eventualHttpCheckOutcome = httpCheck(url).flatMap { result =>
+            result.fold({ left =>
+              Future.successful {
+                resource.setHttpStatus(left)
+                true
+              }
 
-          }, { right =>
-            resource.setHttpStatus(right._1)
+            }, { right =>
+              resource.setHttpStatus(right._1)
 
-            val eventualProcesserOutcomes = processers.map { processor =>
-              log.debug("Running processor: " + processor.getClass.toString)
-              processor.process(resource, right._2, DateTime.now)
-            }
+              val eventualProcesserOutcomes = processers.map { processor =>
+                log.debug("Running processor: " + processor.getClass.toString)
+                processor.process(resource, right._2, DateTime.now)
+              }
 
-            Future.sequence(eventualProcesserOutcomes).map { processorOutcomes =>
-              processorOutcomes.forall(outcome => outcome)
-            }
-          })
-        }
-
-        val z: Future[Boolean] = eventualHttpCheckOutcome.flatMap { outcome =>
-          log.debug("Updating resource")  // TODO push upwards to capture fail as well
-          resource.setLastScanned(DateTime.now.toDate)
-          contentUpdateService.update(resource).map { _ => // TODO should be a specific field set
-            checkedCounter.increment()
-            log.info("Finished link checking")
-            outcome
+              Future.sequence(eventualProcesserOutcomes).map { processorOutcomes =>
+                processorOutcomes.forall(outcome => outcome)
+              }
+            })
           }
+
+          val z: Future[Boolean] = eventualHttpCheckOutcome.flatMap { outcome =>
+            log.debug("Updating resource") // TODO push upwards to capture fail as well
+            resource.setLastScanned(DateTime.now.toDate)
+            contentUpdateService.update(resource).map { _ => // TODO should be a specific field set
+              checkedCounter.increment()
+              log.info("Finished link checking")
+              outcome
+            }
+          }
+          z
+
+        }.getOrElse{
+          log.warn("Resource had an unparsable url: " + resource.page)
+          Future.successful(false)
         }
-        z
 
       }.getOrElse {
         log.warn("Link checker was past an unknown resource id: " + resourceId)
