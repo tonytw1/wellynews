@@ -24,7 +24,7 @@ public class LinkCheckerQueue {
 
     @Autowired
     public LinkCheckerQueue(RabbitConnectionFactory rabbitConnectionFactory, MeterRegistry registry) throws IOException, TimeoutException {
-        this.queuedCounter = registry.counter("linkcheck_queued");
+        this.queuedCounter = registry.counter("linkchecker_queued");
 
         channel = rabbitConnectionFactory.connect().createChannel();
         channel.queueDeclare(QUEUE_NAME, false, false, false, null);
