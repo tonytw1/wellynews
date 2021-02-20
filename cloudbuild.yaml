@@ -16,5 +16,5 @@ steps:
   - '-m'
   - 'rsync'
   - '-r'
-  - '/workspace/.m2'
-  - 'gs://$PROJECT_ID-ivy2/workspace/.m2/'
+  - '/root/.m2'
+  - 'gs://$PROJECT_ID-ivy2/'
