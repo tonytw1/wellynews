@@ -28,6 +28,7 @@ import scala.util.Try
   private val processers: Seq[LinkCheckerProcessor] = Seq(feedAutodiscoveryProcesser) // TODO inject all
 
   private val checkedCounter = registry.counter("linkchecker_checked")
+  private val failedCounter = registry.counter("linkchecker_failed")
 
   //val snapshotArchive = new FilesystemSnapshotArchive("/home/tony/snapshots")
 
@@ -63,6 +64,7 @@ import scala.util.Try
 
       }.getOrElse {
         log.warn("Link checker was past an unknown resource id: " + resourceId)
+        failedCounter.increment()
         Future.successful(false)
       }
       a
@@ -70,6 +72,7 @@ import scala.util.Try
     }.recoverWith {
       case e: Exception =>
         log.error("Link check failed: ", e)
+        failedCounter.increment()
         Future.successful(false)
     }
 
