@@ -37,7 +37,7 @@ import scala.util.Try
   def scanResource(resourceId: String)(implicit ec: ExecutionContext) {
     log.info("Scanning resource: " + resourceId)
 
-    val eventualMaybeResource= mongoRepository.getResourceByObjectId(BSONObjectID.parse(resourceId).get)
+    val eventualMaybeResource = mongoRepository.getResourceByObjectId(BSONObjectID.parse(resourceId).get)
     val eventualMaybeResourceWithUrl = eventualMaybeResource.map { mayByResource =>
       mayByResource.filter(_.page.nonEmpty)
     }
@@ -50,7 +50,7 @@ import scala.util.Try
           new java.net.URL(resource.page)
         }.toOption
 
-        parsedUrl.map { url =>
+        val j: Future[Boolean] = parsedUrl.map { url =>
           val eventualHttpCheckOutcome = httpCheck(url).flatMap { result =>
             result.fold({ left =>
               Future.successful {
@@ -71,22 +71,23 @@ import scala.util.Try
               }
             })
           }
+          eventualHttpCheckOutcome
 
-          val z: Future[Boolean] = eventualHttpCheckOutcome.flatMap { outcome =>
-            log.debug("Updating resource") // TODO push upwards to capture fail as well
-            resource.setLastScanned(DateTime.now.toDate)
-            contentUpdateService.update(resource).map { _ => // TODO should be a specific field set
-              checkedCounter.increment()
-              log.info("Finished link checking")
-              outcome
-            }
-          }
-          z
-
-        }.getOrElse{
+        }.getOrElse {
           log.warn("Resource had an unparsable url: " + resource.page)
           Future.successful(false)
         }
+
+        val g = j.flatMap { outcome =>
+          log.debug("Updating resource")
+          resource.setLastScanned(DateTime.now.toDate)
+          contentUpdateService.update(resource).map { _ => // TODO should be a specific field set
+            checkedCounter.increment()
+            log.info("Finished link checking")
+            outcome
+          }
+        }
+        g
 
       }.getOrElse {
         log.warn("Link checker was past an unknown resource id: " + resourceId)
@@ -94,7 +95,7 @@ import scala.util.Try
       }
       a
 
-    }.recoverWith{
+    }.recoverWith {
       case e: Exception =>
         log.error("Link check failed: ", e)
         Future.successful(false)
