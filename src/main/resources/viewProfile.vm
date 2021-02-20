@@ -25,7 +25,7 @@
 
 	<div class="tag_main_content">
 		<h3>Submissions</h3>
-		#if ($submitted.size() > 0) 
+		#if ($main_content.size() > 0)
             #parse("includes/main_content.vm")
 		#else
 			<p>This user has not made any submissions.</p>
