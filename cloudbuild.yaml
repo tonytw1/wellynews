@@ -12,9 +12,6 @@ steps:
 - name: 'gcr.io/cloud-builders/docker'
   args: ['push', 'eu.gcr.io/$PROJECT_ID/wellynews']
 - name: 'gcr.io/cloud-builders/gsutil'
-  volumes:
-      - name: 'mavenrepo'
-        path: '/root/.m2'
   args:
   - '-m'
   - 'rsync'
