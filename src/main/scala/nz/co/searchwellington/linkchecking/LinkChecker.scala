@@ -71,7 +71,7 @@ import scala.util.Try
 
     }.recoverWith {
       case e: Exception =>
-        log.error(s"Link check failed: {e.getMessage}", e)
+        log.error("Link check failed: " + e.getMessage, e)
         failedCounter.increment()
         Future.successful(false)
     }
