@@ -295,8 +295,7 @@ class MongoRepository @Autowired()(@Value("${mongo.uri}") mongoUri: String) exte
         "$lt" -> BSONDateTime(lastScanned.getMillis)
       )
     )
-    resourceCollection.find(selector, Some(idOnlyProjection)).cursor[BSONDocument]().
-      collect[List](maxDocs = maxItems, err = Cursor.FailOnError[List[BSONDocument]]()).map { r =>
+    resourceCollection.find(selector, Some(idOnlyProjection)).cursor[BSONDocument]().collect[List](maxDocs = maxItems, err = Cursor.FailOnError[List[BSONDocument]]()).map { r =>
       r.flatMap(i => i.getAsOpt[BSONObjectID]("_id"))
     }
 
@@ -384,12 +383,16 @@ class MongoRepository @Autowired()(@Value("${mongo.uri}") mongoUri: String) exte
   private def getResourceBy(selector: BSONDocument)(implicit ec: ExecutionContext): Future[Option[Resource]] = {
     resourceCollection.find(selector, noProjection).one[BSONDocument].map { bo =>
       bo.flatMap { b =>
-        b.get("type").get match {
+        val `type` = b.get("type").get
+        `type` match {
           case BSONString("N") => b.asOpt[Newsitem]
           case BSONString("W") => b.asOpt[Website]
           case BSONString("F") => b.asOpt[Feed]
           case BSONString("L") => b.asOpt[Watchlist]
-          case _ => None
+          case _ => {
+            log.warn("Resource had unexpected type: " + `type`)
+            None
+          }
         }
       }
     }

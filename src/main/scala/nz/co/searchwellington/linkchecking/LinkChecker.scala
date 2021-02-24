@@ -39,9 +39,8 @@ import scala.util.Try
   // Update the last scanned timestamp
   def scanResource(resourceId: String)(implicit ec: ExecutionContext) {
     log.info("Scanning resource: " + resourceId)
-
-    val eventualMaybeResource = mongoRepository.getResourceByObjectId(BSONObjectID.parse(resourceId).get)
-    val eventualMaybeResourceWithUrl = eventualMaybeResource.map { mayByResource =>
+    val objectId = BSONObjectID.parse(resourceId).get
+    val eventualMaybeResourceWithUrl = mongoRepository.getResourceByObjectId(objectId).map { mayByResource =>
       mayByResource.filter(_.page.nonEmpty)
     }
 
@@ -63,7 +62,7 @@ import scala.util.Try
         g
 
       }.getOrElse {
-        log.warn("Link checker was past an unknown resource id: " + resourceId)
+        log.warn("Link checker was past an unknown resource id: " + resourceId + " / " + objectId.stringify)
         failedCounter.increment()
         Future.successful(false)
       }
