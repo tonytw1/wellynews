@@ -124,5 +124,11 @@ trait FrontendResource extends RssFeedable with Serializable {
 
   case class TagWithChildren(tag: Tag, children: Set[BSONObjectID])
 
+  override def getFeatureName: String = {
+    place.flatMap { place =>
+      place.address
+    }.orNull
+  }
+
 }
 
