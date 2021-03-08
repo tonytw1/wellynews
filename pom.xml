@@ -127,7 +127,7 @@
         <dependency>
             <groupId>uk.co.eelpieconsulting.common</groupId>
             <artifactId>common-views</artifactId>
-            <version>1.1.0</version>
+            <version>1.1.1</version>
         </dependency>
 
         <dependency>
@@ -186,12 +186,12 @@
         <dependency>
             <groupId>com.rometools</groupId>
             <artifactId>rome</artifactId>
-            <version>1.15.0</version>
+            <version>1.15.1-SNAPSHOT</version>
         </dependency>
         <dependency>
             <groupId>com.rometools</groupId>
             <artifactId>rome-modules</artifactId>
-            <version>1.15.0</version>
+            <version>1.15.1-SNAPSHOT</version>
         </dependency>
 
         <dependency>
