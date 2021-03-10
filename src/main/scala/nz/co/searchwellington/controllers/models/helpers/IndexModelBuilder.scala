@@ -4,9 +4,10 @@ import javax.servlet.http.HttpServletRequest
 import nz.co.searchwellington.ReasonableWaits
 import nz.co.searchwellington.controllers.RssUrlBuilder
 import nz.co.searchwellington.controllers.models.ModelBuilder
+import nz.co.searchwellington.feeds.whakaoko.model.{LatLong, Place}
 import nz.co.searchwellington.filters.RequestPath
-import nz.co.searchwellington.model.User
-import nz.co.searchwellington.model.frontend.FrontendResource
+import nz.co.searchwellington.model.{Geocode, User}
+import nz.co.searchwellington.model.frontend.{FrontendNewsitem, FrontendResource}
 import nz.co.searchwellington.model.helpers.ArchiveLinksService
 import nz.co.searchwellington.repositories.ContentRetrievalService
 import nz.co.searchwellington.urls.UrlBuilder
@@ -46,11 +47,15 @@ import scala.concurrent.Future
     for {
       latestNewsitems <- contentRetrievalService.getLatestNewsitems(100, getPage(request), loggedInUser = loggedInUser)
     } yield {
+
+      val newsitem = FrontendNewsitem(name = "Meh", date = DateTime.now.toDate, id = "dkjdksd",
+        place = Some(Geocode(latitude = Some(51.1), longitude = Some(-0.3), address = Some("Somewhere"))))
+
       val mv = new ModelAndView().
         addObject("heading", "Wellynews").
         addObject("description", "Wellington related newsitems").
         addObject("link", urlBuilder.fullyQualified(urlBuilder.getHomeUrl)).
-        addObject(MAIN_CONTENT, latestNewsitems.asJava)
+        addObject(MAIN_CONTENT, Seq(newsitem).asJava)
 
       monthOfLastItem(latestNewsitems).map { month =>
         mv.addObject("main_content_moreurl", urlBuilder.getIntervalUrl(month))
