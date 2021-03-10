@@ -47,15 +47,11 @@ import scala.concurrent.Future
     for {
       latestNewsitems <- contentRetrievalService.getLatestNewsitems(100, getPage(request), loggedInUser = loggedInUser)
     } yield {
-
-      val newsitem = FrontendNewsitem(name = "Meh", date = DateTime.now.toDate, id = "dkjdksd",
-        place = Some(Geocode(latitude = Some(51.1), longitude = Some(-0.3), address = Some("Somewhere"))))
-
       val mv = new ModelAndView().
         addObject("heading", "Wellynews").
         addObject("description", "Wellington related newsitems").
         addObject("link", urlBuilder.fullyQualified(urlBuilder.getHomeUrl)).
-        addObject(MAIN_CONTENT, Seq(newsitem).asJava)
+        addObject(MAIN_CONTENT, latestNewsitems.asJava)
 
       monthOfLastItem(latestNewsitems).map { month =>
         mv.addObject("main_content_moreurl", urlBuilder.getIntervalUrl(month))
