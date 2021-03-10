@@ -2,9 +2,12 @@
 
     <modelVersion>4.0.0</modelVersion>
 
-    <groupId>com.rometools</groupId>
-    <artifactId>rome-parent</artifactId>
-    <version>1.15.1-SNAPSHOT</version>
+    <parent>
+        <groupId>com.rometools</groupId>
+        <artifactId>rome-parent</artifactId>
+        <version>1.15.1-SNAPSHOT</version>
+        <relativePath>../pom.xml</relativePath>
+    </parent>
 
     <artifactId>rome-modules</artifactId>
     <packaging>jar</packaging>

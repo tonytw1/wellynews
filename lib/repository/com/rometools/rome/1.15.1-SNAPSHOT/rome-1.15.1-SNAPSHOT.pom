@@ -2,9 +2,12 @@
 
     <modelVersion>4.0.0</modelVersion>
 
-    <groupId>com.rometools</groupId>
-    <artifactId>rome-parent</artifactId>
-    <version>1.15.1-SNAPSHOT</version>
+    <parent>
+        <groupId>com.rometools</groupId>
+        <artifactId>rome-parent</artifactId>
+        <version>1.15.0</version>
+        <relativePath>../pom.xml</relativePath>
+    </parent>
 
     <artifactId>rome</artifactId>
     <packaging>jar</packaging>
@@ -86,7 +89,7 @@
                 <!-- mvn verify -->
                 <groupId>org.owasp</groupId>
                 <artifactId>dependency-check-maven</artifactId>
-                <version>6.0.3</version>
+                <version>5.0.0-M3</version>
                 <executions>
                     <execution>
                         <goals>
