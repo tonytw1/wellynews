@@ -21,7 +21,7 @@ class FeeditemToNewsitemServiceTest {
     val newsitem = service.makeNewsitemFromFeedItem(feedNewsitem, feed)
 
     assertTrue(newsitem.geocode.nonEmpty)
-    assertEquals("51.3, -0.3", newsitem.geocode.get.address.get)
+    assertEquals(None, newsitem.geocode.get.address)
     assertEquals(feedItemLatLong.latitude, newsitem.geocode.get.latitude.get, 0)
     assertEquals(feedItemLatLong.longitude, newsitem.geocode.get.longitude.get, 0)
   }
