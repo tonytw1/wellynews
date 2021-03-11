@@ -6,6 +6,7 @@ import nz.co.searchwellington.forms.EditWebsite
 import nz.co.searchwellington.geocoding.osm.CachingNominatimResolveOsmIdService
 import nz.co.searchwellington.model._
 import nz.co.searchwellington.modification.ContentUpdateService
+import nz.co.searchwellington.repositories.elasticsearch.ElasticSearchIndexRebuildService
 import nz.co.searchwellington.repositories.{HandTaggingService, TagDAO}
 import nz.co.searchwellington.repositories.mongo.MongoRepository
 import nz.co.searchwellington.urls.UrlBuilder
@@ -28,7 +29,8 @@ class EditWebsiteController @Autowired()(contentUpdateService: ContentUpdateServ
                                          val loggedInUserFilter: LoggedInUserFilter,
                                          tagDAO: TagDAO,
                                          val cachingNominatimResolveOsmIdService: CachingNominatimResolveOsmIdService,
-                                         handTaggingService: HandTaggingService
+                                         handTaggingService: HandTaggingService,
+                                         elasticSearchIndexRebuildService: ElasticSearchIndexRebuildService
                                         ) extends ReasonableWaits with AcceptancePolicyOptions with Errors with GeotagParsing with RequiringLoggedInUser {
 
   private val log = Logger.getLogger(classOf[EditWebsiteController])
@@ -94,6 +96,15 @@ class EditWebsiteController @Autowired()(contentUpdateService: ContentUpdateServ
 
           contentUpdateService.update(withNewTags)
           log.info("Updated website: " + withNewTags)
+
+          val tagsHaveChanged = tags.map(_._id) == withNewTags.resource_tags.map(_.tag_id).toSet
+          if (tagsHaveChanged) {
+            mongoRepository.getResourcesIdsForPublisher(w).flatMap { taggedResourceIds =>
+              elasticSearchIndexRebuildService.reindexResources(taggedResourceIds)
+            }.map { i =>
+              log.info("Reindexed publisher resources after publisher tag change: " + i)
+            }
+          }
 
           new ModelAndView(new RedirectView(urlBuilder.getPublisherUrl(updated)))
         }

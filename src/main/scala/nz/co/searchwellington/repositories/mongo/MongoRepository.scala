@@ -323,7 +323,7 @@ class MongoRepository @Autowired()(@Value("${mongo.uri}") mongoUri: String) exte
     allResourceIdsFor(selector)
   }
 
-  def getNewsitemIdsForPublisher(publisher: Website)(implicit ec: ExecutionContext): Future[Seq[BSONObjectID]] = {
+  def getResourcesIdsForPublisher(publisher: Website)(implicit ec: ExecutionContext): Future[Seq[BSONObjectID]] = {
     val byPublisher = BSONDocument("publisher" -> publisher._id)
     allResourceIdsFor(byPublisher)
   }

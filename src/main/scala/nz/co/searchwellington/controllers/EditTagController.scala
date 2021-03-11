@@ -107,7 +107,7 @@ class EditTagController @Autowired()(contentUpdateService: ContentUpdateService,
           )
 
           Await.result(mongoRepository.saveTag(updatedTag), TenSeconds)
-          log.info("Updated feed: " + updatedTag)
+          log.info("Updated tag: " + updatedTag)
 
           val parentHasChanged = tag.parent != updatedTag.parent
           if (parentHasChanged) {

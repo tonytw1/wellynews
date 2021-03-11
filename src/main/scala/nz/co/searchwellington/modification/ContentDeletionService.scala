@@ -53,7 +53,7 @@ import scala.concurrent.{Await, Future}
   }
 
   private def removePublisherFromPublishersContent(publisher: Website) {
-    mongoRepository.getNewsitemIdsForPublisher(publisher).map { published =>
+    mongoRepository.getResourcesIdsForPublisher(publisher).map { published =>
       published.foreach { publishedResource =>
         mongoRepository.getResourceByObjectId(publishedResource).map {
           case published: PublishedResource =>
