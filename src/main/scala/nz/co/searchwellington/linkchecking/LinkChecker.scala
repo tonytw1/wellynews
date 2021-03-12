@@ -18,14 +18,16 @@ import scala.concurrent.{Await, ExecutionContext, Future}
 import scala.util.Try
 
 @Component class LinkChecker @Autowired()(mongoRepository: MongoRepository, contentUpdateService: ContentUpdateService,
-                                          httpFetcher: RobotsAwareHttpFetcher, feedAutodiscoveryProcesser: FeedAutodiscoveryProcesser,
+                                          httpFetcher: RobotsAwareHttpFetcher,
+                                          feedAutodiscoveryProcessor: FeedAutodiscoveryProcesser,
+                                          twitterPhotoDetector: TwitterPhotoDetector,
                                           registry: MeterRegistry)
   extends ReasonableWaits {
 
   private val log = Logger.getLogger(classOf[LinkChecker])
   private val CANT_CONNECT = -1
 
-  private val processers: Seq[LinkCheckerProcessor] = Seq(feedAutodiscoveryProcesser) // TODO inject all
+  private val processors = Seq(feedAutodiscoveryProcessor, twitterPhotoDetector) // TODO inject all
 
   private val checkedCounter = registry.counter("linkchecker_checked")
   private val failedCounter = registry.counter("linkchecker_failed")
@@ -115,7 +117,7 @@ import scala.util.Try
         }, { right =>
           resource.setHttpStatus(right._1)
 
-          val eventualProcesserOutcomes = processers.map { processor =>
+          val eventualProcesserOutcomes = processors.map { processor =>
             log.debug("Running processor: " + processor.getClass.toString)
             processor.process(resource, right._2, DateTime.now)
           }
