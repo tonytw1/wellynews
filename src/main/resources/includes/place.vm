@@ -1,10 +1,10 @@
 #if ($geocode)
 	<p>
 	#if($urlBuilder.getLocationUrlFor($geocode)) 
-		<a href="$urlBuilder.getLocationUrlFor($geocode)">#parse("includes/geotag_icon.vm")$geocode.address</a>
+		<a href="$urlBuilder.getLocationUrlFor($geocode)">#parse("includes/geotag_icon.vm")$geocode.displayName</a>
 	#else
 		#parse("includes/geotag_icon.vm")
-		$geocode.address
+		$geocode.displayName
 	#end
 	#if ($geocode.osmId)
 		(<a href="$urlBuilder.getOsmWebsiteUrl($geocode.osmId)">OpenStreetMap</a>)

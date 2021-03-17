@@ -1,4 +1,4 @@
 <label for="geocode">Geocode: </label>
-<input id="geocode" name="geocode" #if($geocode) value="$!geocode.address" #end size="50" />
+<input id="geocode" name="geocode" #if($geocode) value="$!geocode.displayName" #end size="50" />
 <input id="selectedGeocode" name="selectedGeocode" value="$!geocode.osmPlaceId">
 <br />

@@ -56,7 +56,7 @@
     <p>These taggings contributed to this item's location:<p>
     <ul>
         #foreach ($vote in $geotag_votes)
-            <li>#parse("includes/geotag_icon.vm") $vote.geocode.address - $vote.explanation</li>
+            <li>#parse("includes/geotag_icon.vm") $vote.geocode.displayName - $vote.explanation</li>
         #end
     </ul>
 
