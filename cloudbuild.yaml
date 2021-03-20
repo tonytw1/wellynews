@@ -9,5 +9,7 @@ steps:
   - 'MONGO_HOST=mongo'
 - name: 'gcr.io/cloud-builders/docker'
   args: ['build', '-t', 'eu.gcr.io/$PROJECT_ID/wellynews', '.']
-- name: 'gcr.io/cloud-builders/docker'
-  args: ['push', 'eu.gcr.io/$PROJECT_ID/wellynews']
+- name: 'docker/compose:1.19.0'
+  args: [ '-f', 'docker/docker-compose.yml', 'down' ]
+images:
+  - 'eu.gcr.io/$PROJECT_ID/wellynews'
