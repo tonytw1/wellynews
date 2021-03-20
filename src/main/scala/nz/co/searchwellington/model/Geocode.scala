@@ -23,9 +23,14 @@ case class Geocode(address: Option[String] = None,
   }
 
   def getDisplayName: String = {
-    address.getOrElse {
-      latitude + ", " + longitude
+    val positionLabel = for {
+      lat <- latitude
+      lon <- longitude
+    } yield {
+      lat + ", " + lon
     }
+    val availableDisplayNames = Seq(address, positionLabel).flatten
+    availableDisplayNames.headOption.orNull
   }
 
 }
