@@ -11,24 +11,21 @@ import org.springframework.stereotype.Component
 
 import scala.concurrent.{ExecutionContext, Future}
 
-@Component class FeedItemAcceptanceDecider @Autowired()(mongoRepository: MongoRepository,
-                                                        suppressionDAO: SuppressionDAO) {
+@Component class FeedItemAcceptanceDecider @Autowired()(mongoRepository: MongoRepository, suppressionDAO: SuppressionDAO) {
 
   private val log = Logger.getLogger(classOf[FeedItemAcceptanceDecider])
 
   def getAcceptanceErrors(feeditem: FeedItem, acceptancePolicy: FeedAcceptancePolicy)(implicit ec: ExecutionContext): Future[Seq[String]] = {
-    val feedItemUrl = feeditem.url
-
-    def cannotBeSuppressed(): Future[Option[String]] = {
-      suppressionDAO.isSupressed(feedItemUrl).map { isSuppressed =>
-        log.debug("Is feed item url '" + feedItemUrl + "' suppressed: " + isSuppressed)
+    val cannotBeSuppressed: FeedItem => Future[Option[String]] = (feedItem: FeedItem) => {
+      suppressionDAO.isSupressed(feedItem.url).map { isSuppressed =>
+        log.debug("Is feed item url '" + feedItem.url + "' suppressed: " + isSuppressed)
         if (isSuppressed) Some("This item is suppressed") else None
       }
     }
 
-    def titleCannotBeBlank(): Future[Option[String]] = {
+    val titleCannotBeBlank = (feedItem: FeedItem) => {
       Future.successful {
-        if (feeditem.title.getOrElse("").trim.isEmpty) {
+        if (feedItem.title.getOrElse("").trim.isEmpty) {
           Some("Item has no title")
         } else {
           None
@@ -36,21 +33,19 @@ import scala.concurrent.{ExecutionContext, Future}
       }
     }
 
-    def cannotBeMoreThanOneWeekOld(): Future[Option[String]] = {
+    val cannotBeMoreThanOneWeekOld = (feedItem: FeedItem) => {
       Future.successful {
         if (acceptancePolicy == FeedAcceptancePolicy.ACCEPT_EVEN_WITHOUT_DATES) {
           None
 
         } else {
-
-          if (feeditem.date.isEmpty) {
+          if (feedItem.date.isEmpty) {
             Some("Item has no date and feed acceptance policy is not accept even without dates")
 
           } else {
-
             feeditem.date.flatMap { date =>
               val oneWeekAgo = DateTime.now.minusWeeks(1)
-              val isMoreThanOneWeekOld = new DateTime(feeditem.date).isBefore(oneWeekAgo)
+              val isMoreThanOneWeekOld = date.isBefore(oneWeekAgo)
               if (isMoreThanOneWeekOld) {
                 Some("Item is more than one week old")
               } else {
@@ -62,10 +57,11 @@ import scala.concurrent.{ExecutionContext, Future}
       }
     }
 
-    def cannotHaveDateInTheFuture(): Future[Option[String]] = Future.successful(None) // TODO
+    val cannotHaveDateInTheFuture = (_: FeedItem) => Future.successful(None) // TODO
 
-    def cannotAlreadyHaveThisFeedItem(): Future[Option[String]] = {
-      alreadyHaveThisFeedItem(feeditem).map { alreadyHaveThisFeedItem =>
+    val cannotAlreadyHaveThisFeedItem = (feedItem: FeedItem) => {
+      val eventualAlreadyHaveThisFeedItem = mongoRepository.getResourceByUrl(feedItem.url).map(_.nonEmpty)
+      eventualAlreadyHaveThisFeedItem.map { alreadyHaveThisFeedItem =>
         if (alreadyHaveThisFeedItem) {
           log.debug("A resource with url '" + feeditem.url + "' already exists; not accepting.")
           Some("Item already exists")
@@ -75,28 +71,22 @@ import scala.concurrent.{ExecutionContext, Future}
       }
     }
 
-    def alreadyHaveAnItemWithTheSameHeadlineFromTheSamePublisherWithinTheLastMonth(): Future[Option[String]] = {
+    val alreadyHaveAnItemWithTheSameHeadlineFromTheSamePublisherWithinTheLastMonth = (_: FeedItem) => {
       Future.successful(None)
     } // TODO implement me
 
 
-    val eventualObjections = Future.sequence {
-      Seq(cannotBeSuppressed(),
-        titleCannotBeBlank(),
-        // cannotBeMoreThanOneWeekOld(),  TODO reinstate
-        cannotHaveDateInTheFuture(),
-        cannotAlreadyHaveThisFeedItem(),
-        alreadyHaveAnItemWithTheSameHeadlineFromTheSamePublisherWithinTheLastMonth()
-      )
-    }
+    val reasonsToRejectFeedItems = Seq(
+      cannotAlreadyHaveThisFeedItem,
+      cannotBeSuppressed,
+      titleCannotBeBlank,
+      cannotBeMoreThanOneWeekOld,
+      cannotHaveDateInTheFuture,
+      alreadyHaveAnItemWithTheSameHeadlineFromTheSamePublisherWithinTheLastMonth)
 
-    eventualObjections.map { objections =>
-      objections.flatten
+    Future.sequence(reasonsToRejectFeedItems.map(reason => reason(feeditem))).map { possibleObjections =>
+      possibleObjections.flatten
     }
-  }
-
-  private def alreadyHaveThisFeedItem(feedItem: FeedItem)(implicit ec: ExecutionContext): Future[Boolean] = {
-    mongoRepository.getResourceByUrl(feedItem.url).map(_.nonEmpty)
   }
 
 }
