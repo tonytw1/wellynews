@@ -30,8 +30,7 @@ class FeedItemAcceptanceDeciderTest extends ReasonableWaits {
     when(mongoRepository.getResourceByUrl(feedItem.url)).thenReturn(Future.successful(None))
 
     val objections = Await.result(feedItemAcceptanceDecider.getAcceptanceErrors(feedItem, FeedAcceptancePolicy.ACCEPT), TenSeconds)
-    println(objections)
-    println(objections.isEmpty)
+
     assertTrue(objections.isEmpty)
   }
 
