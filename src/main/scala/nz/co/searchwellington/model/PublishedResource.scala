@@ -5,5 +5,5 @@ import reactivemongo.api.bson.BSONObjectID
 trait PublishedResource extends Resource {
   var publisher: Option[BSONObjectID]
   def getPublisher: Option[BSONObjectID] = publisher
-  def setPublisher(publisher: BSONObjectID): Unit = this.publisher = Some(publisher)
+  def clearPublisher(): Unit = this.publisher = None
 }
