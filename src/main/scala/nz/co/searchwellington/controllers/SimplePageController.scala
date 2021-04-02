@@ -3,7 +3,7 @@ package nz.co.searchwellington.controllers
 import javax.servlet.http.HttpServletRequest
 import nz.co.searchwellington.ReasonableWaits
 import nz.co.searchwellington.controllers.models.helpers.CommonAttributesModelBuilder
-import nz.co.searchwellington.model.SiteInformation
+import nz.co.searchwellington.model.{DiscoveredFeed, SiteInformation}
 import nz.co.searchwellington.repositories.ContentRetrievalService
 import nz.co.searchwellington.repositories.mongo.MongoRepository
 import org.springframework.beans.factory.annotation.Autowired
@@ -12,6 +12,7 @@ import org.springframework.stereotype.Controller
 import org.springframework.web.bind.annotation.{RequestMapping, RequestMethod}
 import org.springframework.web.servlet.ModelAndView
 
+import java.util.Date
 import scala.concurrent.Await
 import scala.concurrent.ExecutionContext.Implicits.global
 
@@ -85,9 +86,16 @@ import scala.concurrent.ExecutionContext.Implicits.global
     urlStack.setUrlStack(request)
 
     import scala.collection.JavaConverters._
+    val discoveredFeedOccurrences = Await.result(mongoRepository.getAllDiscoveredFeeds, TenSeconds)
+    val discoveredFeedUrls: Seq[String] = discoveredFeedOccurrences.map(_.url)
+    val discoveredFeeds = discoveredFeedUrls.map { feedUrl =>
+      val seenDates = discoveredFeedOccurrences.filter(_.url == feedUrl).map(_.seen)
+      (feedUrl, seenDates.min)
+    }
+
     Await.result(withCommonLocal(new ModelAndView("discoveredFeeds").
       addObject("heading", "Discovered Feeds").
-      addObject("discovered_feeds", Await.result(mongoRepository.getAllDiscoveredFeeds, TenSeconds).asJava)), TenSeconds)
+      addObject("discovered_feeds", discoveredFeeds.asJava)), TenSeconds)
   }
 
   private def eventualLatestNewsitems = contentRetrievalService.getLatestNewsitems(5, loggedInUser = loggedInUserFilter.getLoggedInUser)
