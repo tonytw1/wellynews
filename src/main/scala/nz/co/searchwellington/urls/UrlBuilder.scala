@@ -235,4 +235,8 @@ class UrlBuilder @Autowired()(siteInformation: SiteInformation, urlWordsGenerato
     archiveMonthFormat.format(interval.getStart.toDate).toLowerCase
   }
 
+  def getDiscoveredFeeds(): String = {
+    getFeedsUrl + "/discovered"
+  }
+
 }

@@ -56,6 +56,7 @@ import scala.concurrent.Future
       import scala.collection.JavaConverters._
       mv.addObject("suggestions", suggestedFeednewsitems.asJava)
       mv.addObject("discovered_feeds", discoveredFeeds.asJava)
+      mv.addObject("discovered_feeds_moreurl", urlBuilder.getDiscoveredFeeds()) // TODO conditional on number
       commonAttributesModelBuilder.withSecondaryFeeds(mv, currentFeeds)
     }
   }
