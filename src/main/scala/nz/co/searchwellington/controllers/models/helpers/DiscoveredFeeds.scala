@@ -2,14 +2,13 @@ package nz.co.searchwellington.controllers.models.helpers
 
 import nz.co.searchwellington.model.DiscoveredFeed
 
-import java.util.Date
-
 trait DiscoveredFeeds {
 
-  def filterDiscoveredFeeds(discoveredFeedOccurrences: Seq[DiscoveredFeed]): Seq[(String, Date)] = {
+  def filterDiscoveredFeeds(discoveredFeedOccurrences: Seq[DiscoveredFeed]): Seq[(String, DiscoveredFeed)] = {
     discoveredFeedOccurrences.groupBy(_.url).map { i =>
-      (i._1, i._2.map(_.seen).min)
-    }.toSeq.sortBy(_._2).reverse
+      val feeds: Seq[DiscoveredFeed] = i._2.sortBy(_.seen)
+      (i._1, feeds.head)
+    }.toSeq.sortBy(_._2.seen).reverse
   }
 
 }
