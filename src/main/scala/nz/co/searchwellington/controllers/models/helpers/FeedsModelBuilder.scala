@@ -4,7 +4,7 @@ import javax.servlet.http.HttpServletRequest
 import nz.co.searchwellington.ReasonableWaits
 import nz.co.searchwellington.controllers.models.ModelBuilder
 import nz.co.searchwellington.filters.RequestPath
-import nz.co.searchwellington.model.{FeedAcceptancePolicy, User}
+import nz.co.searchwellington.model.{DiscoveredFeed, FeedAcceptancePolicy, User}
 import nz.co.searchwellington.repositories.{ContentRetrievalService, SuggestedFeeditemsService}
 import nz.co.searchwellington.urls.UrlBuilder
 import org.apache.log4j.Logger
@@ -12,6 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
 import org.springframework.web.servlet.ModelAndView
 
+import java.util.Date
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
@@ -53,14 +54,24 @@ import scala.concurrent.Future
       currentFeeds <- eventualCurrentFeeds
 
     } yield {
+
+
+
       import scala.collection.JavaConverters._
       mv.addObject("suggestions", suggestedFeednewsitems.asJava)
-      mv.addObject("discovered_feeds", discoveredFeeds.asJava)
+      mv.addObject("discovered_feeds", filterDiscoveredFeeds(discoveredFeeds).take(10).asJava)
       mv.addObject("discovered_feeds_moreurl", urlBuilder.getDiscoveredFeeds()) // TODO conditional on number
       commonAttributesModelBuilder.withSecondaryFeeds(mv, currentFeeds)
     }
   }
 
   def getViewName(mv: ModelAndView): String = "feeds"
+
+  // TODO dedupliate
+  private def filterDiscoveredFeeds(discoveredFeedOccurrences: Seq[DiscoveredFeed]): Seq[(String, Date)] = {
+    discoveredFeedOccurrences.groupBy(_.url).map { i =>
+      (i._1, i._2.map(_.seen).min)
+    }.toSeq.sortBy(_._2)
+  }
 
 }
