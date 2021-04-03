@@ -6,8 +6,7 @@ trait DiscoveredFeeds {
 
   def filterDiscoveredFeeds(discoveredFeedOccurrences: Seq[DiscoveredFeed]): Seq[(String, DiscoveredFeed)] = {
     discoveredFeedOccurrences.groupBy(_.url).map { i =>
-      val feeds: Seq[DiscoveredFeed] = i._2.sortBy(_.seen)
-      (i._1, feeds.head)
+      (i._1, i._2.sortBy(_.seen).head)
     }.toSeq.sortBy(_._2.seen).reverse
   }
 
