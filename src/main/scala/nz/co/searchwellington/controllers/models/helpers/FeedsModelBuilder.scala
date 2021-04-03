@@ -71,7 +71,7 @@ import scala.concurrent.Future
   private def filterDiscoveredFeeds(discoveredFeedOccurrences: Seq[DiscoveredFeed]): Seq[(String, Date)] = {
     discoveredFeedOccurrences.groupBy(_.url).map { i =>
       (i._1, i._2.map(_.seen).min)
-    }.toSeq.sortBy(_._2)
+    }.toSeq.sortBy(_._2).reverse
   }
 
 }

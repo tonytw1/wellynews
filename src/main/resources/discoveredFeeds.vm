@@ -9,7 +9,7 @@
 
 <div class="main">
 
-<h2>$heading</h2>
+<h2><a href="$urlBuilder.feedsUrl">Feeds</a> / $heading</h2>
 
 <p>The following feed urls have been automatically discovered while indexing pages.
 Sometimes, something interesting washes up here.</p>
