@@ -87,11 +87,11 @@ import scala.concurrent.ExecutionContext.Implicits.global
 
     import scala.collection.JavaConverters._
     val discoveredFeedOccurrences = Await.result(mongoRepository.getAllDiscoveredFeeds, TenSeconds)
-    val discoveredFeedUrls: Seq[String] = discoveredFeedOccurrences.map(_.url)
-    val discoveredFeeds = discoveredFeedUrls.map { feedUrl =>
-      val seenDates = discoveredFeedOccurrences.filter(_.url == feedUrl).map(_.seen)
-      (feedUrl, seenDates.min)
-    }
+
+    val stringToTuples = discoveredFeedOccurrences.groupBy(_.url)
+    val discoveredFeeds = stringToTuples.map { i =>
+      (i._1, i._2.map(_.seen).min)
+    }.toSeq.sortBy(_._2)
 
     Await.result(withCommonLocal(new ModelAndView("discoveredFeeds").
       addObject("heading", "Discovered Feeds").
