@@ -1,9 +1,8 @@
 package nz.co.searchwellington.controllers
 
-import javax.servlet.http.HttpServletRequest
 import nz.co.searchwellington.ReasonableWaits
-import nz.co.searchwellington.controllers.models.helpers.CommonAttributesModelBuilder
-import nz.co.searchwellington.model.{DiscoveredFeed, SiteInformation}
+import nz.co.searchwellington.controllers.models.helpers.{CommonAttributesModelBuilder, DiscoveredFeeds}
+import nz.co.searchwellington.model.SiteInformation
 import nz.co.searchwellington.repositories.ContentRetrievalService
 import nz.co.searchwellington.repositories.mongo.MongoRepository
 import org.springframework.beans.factory.annotation.Autowired
@@ -12,7 +11,7 @@ import org.springframework.stereotype.Controller
 import org.springframework.web.bind.annotation.{RequestMapping, RequestMethod}
 import org.springframework.web.servlet.ModelAndView
 
-import java.util.Date
+import javax.servlet.http.HttpServletRequest
 import scala.concurrent.Await
 import scala.concurrent.ExecutionContext.Implicits.global
 
@@ -24,7 +23,7 @@ import scala.concurrent.ExecutionContext.Implicits.global
                                                      loggedInUserFilter: LoggedInUserFilter,
                                                      rssUrlBuilder: RssUrlBuilder,
                                                      commonAttributesModelBuilder: CommonAttributesModelBuilder)
-  extends ReasonableWaits with CommonModelObjectsService {
+  extends ReasonableWaits with CommonModelObjectsService with DiscoveredFeeds {
 
   @RequestMapping(value = Array("/about"), method = Array(RequestMethod.GET)) def about(request: HttpServletRequest): ModelAndView = {
     urlStack.setUrlStack(request)
@@ -96,11 +95,5 @@ import scala.concurrent.ExecutionContext.Implicits.global
   }
 
   private def eventualLatestNewsitems = contentRetrievalService.getLatestNewsitems(5, loggedInUser = loggedInUserFilter.getLoggedInUser)
-
-  private def filterDiscoveredFeeds(discoveredFeedOccurrences: Seq[DiscoveredFeed]): Seq[(String, Date)] = {
-    discoveredFeedOccurrences.groupBy(_.url).map { i =>
-      (i._1, i._2.map(_.seen).min)
-    }.toSeq.sortBy(_._2).reverse
-  }
 
 }
