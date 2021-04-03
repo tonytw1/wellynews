@@ -85,19 +85,22 @@ import scala.concurrent.ExecutionContext.Implicits.global
   def discovered(request: HttpServletRequest): ModelAndView = {
     urlStack.setUrlStack(request)
 
-    import scala.collection.JavaConverters._
     val discoveredFeedOccurrences = Await.result(mongoRepository.getAllDiscoveredFeeds, TenSeconds)
 
-    val stringToTuples = discoveredFeedOccurrences.groupBy(_.url)
-    val discoveredFeeds = stringToTuples.map { i =>
-      (i._1, i._2.map(_.seen).min)
-    }.toSeq.sortBy(_._2)
+    val discoveredFeeds = filterDiscoveredFeeds(discoveredFeedOccurrences)
 
+    import scala.collection.JavaConverters._
     Await.result(withCommonLocal(new ModelAndView("discoveredFeeds").
       addObject("heading", "Discovered Feeds").
       addObject("discovered_feeds", discoveredFeeds.asJava)), TenSeconds)
   }
 
   private def eventualLatestNewsitems = contentRetrievalService.getLatestNewsitems(5, loggedInUser = loggedInUserFilter.getLoggedInUser)
+
+  private def filterDiscoveredFeeds(discoveredFeedOccurrences: Seq[DiscoveredFeed]): Seq[(String, Date)] = {
+    discoveredFeedOccurrences.groupBy(_.url).map { i =>
+      (i._1, i._2.map(_.seen).min)
+    }.toSeq.sortBy(_._2)
+  }
 
 }
