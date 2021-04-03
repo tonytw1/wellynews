@@ -9,7 +9,7 @@
 
 	<div class="main">
 
-		<h2><a href="$siteInformation.url/feeds">Feeds</a> / $heading</h2>
+		<h2><a href="$urlBuilder.feedsUrl">Feeds</a> / $heading</h2>
 		
 		<p>These newsitems have been seen in local feeds which may be suitable for inclusion in the newslog.
 		They will be reviewed by an real person before been accepted or discarded.</p>
