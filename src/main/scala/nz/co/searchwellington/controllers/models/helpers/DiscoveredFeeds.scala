@@ -4,10 +4,10 @@ import nz.co.searchwellington.model.DiscoveredFeed
 
 trait DiscoveredFeeds {
 
-  def filterDiscoveredFeeds(discoveredFeedOccurrences: Seq[DiscoveredFeed]): Seq[(String, DiscoveredFeed)] = {
+  def filterDiscoveredFeeds(discoveredFeedOccurrences: Seq[DiscoveredFeed]): Seq[DiscoveredFeed] = {
     discoveredFeedOccurrences.groupBy(_.url).map { i =>
       (i._1, i._2.minBy(_.seen))
-    }.toSeq.sortBy(_._2.seen).reverse
+    }.toSeq.sortBy(_._2.seen).reverse.map(_._2)
   }
 
 }
