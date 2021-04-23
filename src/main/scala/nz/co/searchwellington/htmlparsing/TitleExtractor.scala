@@ -12,20 +12,20 @@ class TitleExtractor {
   private val log = Logger.getLogger(classOf[TitleExtractor])
 
   def extractTitle(htmlPage: String): Option[String] = {
-    log.info("Extracting title")
     try {
       val parser = new Parser
       parser.setInputHTML(htmlPage)
 
       val titleTagFilter = new TagNameFilter("TITLE")
       val list = parser.extractAllNodesThatMatch(titleTagFilter)
-      log.info("Found matching nodes: " + list.size())
       if (list.size > 0) {
         val title = list.elementAt(0)
-        log.info("Found title: " + title)
-        Some(title.toPlainTextString)
+        val asString = title.toPlainTextString
+        log.info("Found title: " + asString)
+        Some(asString)
+
       } else {
-        log.info("No title found")
+        log.debug("No title found")
         None
       }
 
