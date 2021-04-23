@@ -195,6 +195,7 @@ import scala.concurrent.ExecutionContext.Implicits.global
         editResource.`type` match {
           case "F" =>
             urlStack.setUrlStack(request, "")
+          case _ =>
         }
       } else {
         log.warn("Not deleting resource: " + editResource)
