@@ -66,6 +66,7 @@ import scala.concurrent.Future
         addObject("tag", maybeTag.orNull).
         addObject("publisher", maybeFrontendPublisher.orNull)
 
+      mv.addObject("secondary_heading", "Matching websites");
       mv.addObject("secondary_content", matchingWebsites._1.asJava);
 
       if (tagRefinements.nonEmpty) {

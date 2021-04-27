@@ -155,6 +155,7 @@ class SearchModelBuilderTest extends ReasonableWaits with ContentFields {
     val mv = Await.result(modelBuilder.populateContentModel(request), TenSeconds).get
 
     assertEquals(keywordMatchingWebsites._1.asJava, mv.getModel.get("secondary_content"))
+    assertEquals("Matching websites", mv.getModel.get("secondary_heading"))
   }
 
 }
