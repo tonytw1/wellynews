@@ -220,8 +220,8 @@ import scala.concurrent.{Await, Future}
     ).flatMap(i => fetchByIds(i._1, loggedInUser))
   }
 
-  def getWebsitesMatchingKeywords(keywords: String, tag: Tag, startIndex: Int, maxItems: Int, loggedInUser: Option[User]): Seq[FrontendResource] = {
-    keywordSearchService.getWebsitesMatchingKeywords(keywords, showBrokenDecisionService.shouldShowBroken(loggedInUser), tag, startIndex, maxItems)
+  def getWebsitesMatchingKeywords(keywords: String, startIndex: Int, maxItems: Int, loggedInUser: Option[User]): Future[Seq[FrontendResource]] = {
+    keywordSearchService.getWebsitesMatchingKeywords(keywords, showBrokenDecisionService.shouldShowBroken(loggedInUser), startIndex, maxItems)
   }
 
   def getArchiveMonths(loggedInUser: Option[User]): Future[Seq[ArchiveLink]] = {

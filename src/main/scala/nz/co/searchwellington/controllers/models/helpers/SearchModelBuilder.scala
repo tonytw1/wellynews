@@ -48,7 +48,8 @@ import scala.concurrent.Future
     val eventualPublisherRefinements = contentRetrievalService.getNewsitemKeywordSearchRelatedPublishers(keywords, loggedInUser)
 
     for {
-      contentWithCount <- contentRetrievalService.getNewsitemsMatchingKeywords(keywords, startIndex, MAX_NEWSITEMS, loggedInUser, maybeTag, maybePublisher)
+      newsitemsWithCount <- contentRetrievalService.getNewsitemsMatchingKeywords(keywords, startIndex, MAX_NEWSITEMS, loggedInUser, maybeTag, maybePublisher)
+      matchingWebsites <- contentRetrievalService.getWebsitesMatchingKeywords(keywords, 0, MAX_NEWSITEMS, loggedInUser)
       maybeFrontendPublisher <- eventualMaybeFrontendPublisher
       tagRefinements <- eventualTagRefinements
       publisherRefinements <- eventualPublisherRefinements
@@ -59,11 +60,13 @@ import scala.concurrent.Future
       val mv = new ModelAndView().
         addObject("page", page).
         addObject("heading", "Search results - " + keywords).
-        addObject(MAIN_CONTENT, contentWithCount._1.asJava).
+        addObject(MAIN_CONTENT, newsitemsWithCount._1.asJava).
         addObject("main_heading", "Matching Newsitems").
         addObject("query", keywords).
         addObject("tag", maybeTag.orNull).
         addObject("publisher", maybeFrontendPublisher.orNull)
+
+      mv.addObject("secondary_content", matchingWebsites);
 
       if (tagRefinements.nonEmpty) {
         mv.addObject("related_tags", tagRefinements.asJava)
@@ -72,7 +75,7 @@ import scala.concurrent.Future
         mv.addObject("related_publishers", publisherRefinements.asJava)
       }
 
-      val contentCount = contentWithCount._2
+      val contentCount = newsitemsWithCount._2
       def paginationLinks(page: Int) = urlBuilder.getSearchUrlFor(keywords, Some(page))
       populatePagination(mv, startIndex, contentCount, MAX_NEWSITEMS, paginationLinks)
 
