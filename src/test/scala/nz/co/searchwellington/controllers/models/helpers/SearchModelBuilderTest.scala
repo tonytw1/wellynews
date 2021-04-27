@@ -30,7 +30,7 @@ class SearchModelBuilderTest extends ReasonableWaits with ContentFields {
   private val keywordNewsitemResults = (Seq.empty, 0L)
   private val tagKeywordNewsitemResults = (Seq(tagNewsitem, anotherTagNewsitem), 2L)
 
-  private val loggedInUser = None
+  private val noLoggedInUser = None
 
   private val modelBuilder = new SearchModelBuilder(contentRetrievalService, urlBuilder, frontendResourceMapper)
 
@@ -50,10 +50,10 @@ class SearchModelBuilderTest extends ReasonableWaits with ContentFields {
   def pageHeadingShouldBeSearchKeyword() {
     val request = new MockHttpServletRequest
     request.setParameter("q", "widgets")
-    when(contentRetrievalService.getNewsitemsMatchingKeywords("widgets", 0, 30, loggedInUser, tag = None, publisher = None)).thenReturn(Future.successful(keywordNewsitemResults))
-    when(contentRetrievalService.getNewsitemKeywordSearchRelatedTags("widgets", loggedInUser)).thenReturn(Future.successful(Seq.empty))
-    when(contentRetrievalService.getNewsitemKeywordSearchRelatedPublishers("widgets", loggedInUser)).thenReturn(Future.successful(Seq.empty))
-    when(contentRetrievalService.getWebsitesMatchingKeywords("widgets", None, 0, 30, loggedInUser)).thenReturn(Future.successful(emptySearchResults))
+    when(contentRetrievalService.getNewsitemsMatchingKeywords("widgets", 0, 30, noLoggedInUser, tag = None, publisher = None)).thenReturn(Future.successful(keywordNewsitemResults))
+    when(contentRetrievalService.getNewsitemKeywordSearchRelatedTags("widgets", noLoggedInUser)).thenReturn(Future.successful(Seq.empty))
+    when(contentRetrievalService.getNewsitemKeywordSearchRelatedPublishers("widgets", noLoggedInUser)).thenReturn(Future.successful(Seq.empty))
+    when(contentRetrievalService.getWebsitesMatchingKeywords("widgets", None, 0, 30, noLoggedInUser)).thenReturn(Future.successful(emptySearchResults))
 
     val mv = Await.result(modelBuilder.populateContentModel(request), TenSeconds).get
 
@@ -74,10 +74,10 @@ class SearchModelBuilderTest extends ReasonableWaits with ContentFields {
 
     val request = new MockHttpServletRequest
     request.setParameter("q", q)
-    when(contentRetrievalService.getNewsitemsMatchingKeywords(q, 0, 30, loggedInUser, tag = None, publisher = None)).thenReturn(Future.successful(keywordNewsitemResults))
-    when(contentRetrievalService.getNewsitemKeywordSearchRelatedTags(q, loggedInUser)).thenReturn(Future.successful(tagRefinements))
-    when(contentRetrievalService.getNewsitemKeywordSearchRelatedPublishers(q, loggedInUser)).thenReturn(Future.successful(publisherRefinements))
-    when(contentRetrievalService.getWebsitesMatchingKeywords(q, None, 0, 30, loggedInUser)).thenReturn(Future.successful(emptySearchResults))
+    when(contentRetrievalService.getNewsitemsMatchingKeywords(q, 0, 30, noLoggedInUser, tag = None, publisher = None)).thenReturn(Future.successful(keywordNewsitemResults))
+    when(contentRetrievalService.getNewsitemKeywordSearchRelatedTags(q, noLoggedInUser)).thenReturn(Future.successful(tagRefinements))
+    when(contentRetrievalService.getNewsitemKeywordSearchRelatedPublishers(q, noLoggedInUser)).thenReturn(Future.successful(publisherRefinements))
+    when(contentRetrievalService.getWebsitesMatchingKeywords(q, None, 0, 30, noLoggedInUser)).thenReturn(Future.successful(emptySearchResults))
 
     val mv = Await.result(modelBuilder.populateContentModel(request), TenSeconds).get
     assertEquals(tagRefinements.asJava, mv.getModel.get("related_tags"))
@@ -94,11 +94,11 @@ class SearchModelBuilderTest extends ReasonableWaits with ContentFields {
 
     val publisherNewsitemSearchResults = (Seq(tagNewsitem, anotherTagNewsitem), 2L)
 
-    when(contentRetrievalService.getNewsitemsMatchingKeywords("sausages", 0, 30, loggedInUser, tag = None, publisher = Some(publisher))).
+    when(contentRetrievalService.getNewsitemsMatchingKeywords("sausages", 0, 30, noLoggedInUser, tag = None, publisher = Some(publisher))).
       thenReturn(Future.successful(publisherNewsitemSearchResults))
-    when(contentRetrievalService.getNewsitemKeywordSearchRelatedTags("sausages", loggedInUser)).thenReturn(Future.successful(Seq.empty))
-    when(contentRetrievalService.getNewsitemKeywordSearchRelatedPublishers("sausages", loggedInUser)).thenReturn(Future.successful(Seq.empty))
-    when(contentRetrievalService.getWebsitesMatchingKeywords("sausages", None, 0, 30, loggedInUser)).thenReturn(Future.successful(emptySearchResults))
+    when(contentRetrievalService.getNewsitemKeywordSearchRelatedTags("sausages", noLoggedInUser)).thenReturn(Future.successful(Seq.empty))
+    when(contentRetrievalService.getNewsitemKeywordSearchRelatedPublishers("sausages", noLoggedInUser)).thenReturn(Future.successful(Seq.empty))
+    when(contentRetrievalService.getWebsitesMatchingKeywords("sausages", None, 0, 30, noLoggedInUser)).thenReturn(Future.successful(emptySearchResults))
     when(frontendResourceMapper.createFrontendResourceFrom(publisher, None)).thenReturn(Future.successful(FrontendWebsite(id = "123")))
     val mv = Await.result(modelBuilder.populateContentModel(request), TenSeconds).get
 
@@ -110,11 +110,11 @@ class SearchModelBuilderTest extends ReasonableWaits with ContentFields {
     val request = new MockHttpServletRequest
     request.setParameter("q", "widgets")
     request.setAttribute("tag", tag)
-    when(contentRetrievalService.getNewsitemsMatchingKeywords("widgets", 0, 30, loggedInUser, tag = Some(tag), publisher = None)).
+    when(contentRetrievalService.getNewsitemsMatchingKeywords("widgets", 0, 30, noLoggedInUser, tag = Some(tag), publisher = None)).
       thenReturn(Future.successful(tagKeywordNewsitemResults))
-    when(contentRetrievalService.getNewsitemKeywordSearchRelatedPublishers("widgets", loggedInUser)).thenReturn(Future.successful(Seq.empty))
-    when(contentRetrievalService.getNewsitemKeywordSearchRelatedTags("widgets", loggedInUser)).thenReturn(Future.successful(Seq.empty))
-    when(contentRetrievalService.getWebsitesMatchingKeywords("widgets", Some(tag), 0, 30, loggedInUser)).thenReturn(Future.successful(emptySearchResults))
+    when(contentRetrievalService.getNewsitemKeywordSearchRelatedPublishers("widgets", noLoggedInUser)).thenReturn(Future.successful(Seq.empty))
+    when(contentRetrievalService.getNewsitemKeywordSearchRelatedTags("widgets", noLoggedInUser)).thenReturn(Future.successful(Seq.empty))
+    when(contentRetrievalService.getWebsitesMatchingKeywords("widgets", Some(tag), 0, 30, noLoggedInUser)).thenReturn(Future.successful(emptySearchResults))
 
     val mv = Await.result(modelBuilder.populateContentModel(request), TenSeconds).get
 
@@ -126,11 +126,11 @@ class SearchModelBuilderTest extends ReasonableWaits with ContentFields {
     val request = new MockHttpServletRequest
     request.setParameter("q", "widgets")
     request.setAttribute("tag", tag)
-    when(contentRetrievalService.getNewsitemsMatchingKeywords("widgets", 0, 30, loggedInUser, tag = Some(tag), publisher = None)).
+    when(contentRetrievalService.getNewsitemsMatchingKeywords("widgets", 0, 30, noLoggedInUser, tag = Some(tag), publisher = None)).
       thenReturn(Future.successful(tagKeywordNewsitemResults))
-    when(contentRetrievalService.getNewsitemKeywordSearchRelatedTags("widgets", loggedInUser)).thenReturn(Future.successful(Seq.empty))
-    when(contentRetrievalService.getNewsitemKeywordSearchRelatedPublishers("widgets", loggedInUser)).thenReturn(Future.successful(Seq.empty))
-    when(contentRetrievalService.getWebsitesMatchingKeywords("widgets", Some(tag), 0, 30, loggedInUser)).thenReturn(Future.successful(emptySearchResults))
+    when(contentRetrievalService.getNewsitemKeywordSearchRelatedTags("widgets", noLoggedInUser)).thenReturn(Future.successful(Seq.empty))
+    when(contentRetrievalService.getNewsitemKeywordSearchRelatedPublishers("widgets", noLoggedInUser)).thenReturn(Future.successful(Seq.empty))
+    when(contentRetrievalService.getWebsitesMatchingKeywords("widgets", Some(tag), 0, 30, noLoggedInUser)).thenReturn(Future.successful(emptySearchResults))
 
     val mv = Await.result(modelBuilder.populateContentModel(request), TenSeconds).get
 
@@ -146,11 +146,11 @@ class SearchModelBuilderTest extends ReasonableWaits with ContentFields {
     val widgetsWebsite = FrontendWebsite(id = UUID.randomUUID().toString)
     val keywordMatchingWebsites = (Seq(widgetsWebsite), 1L)
 
-    when(contentRetrievalService.getNewsitemsMatchingKeywords("widgets", 0, 30, loggedInUser, tag = None, publisher = None)).
+    when(contentRetrievalService.getNewsitemsMatchingKeywords("widgets", 0, 30, noLoggedInUser, tag = None, publisher = None)).
       thenReturn(Future.successful(emptySearchResults))
-    when(contentRetrievalService.getNewsitemKeywordSearchRelatedTags("widgets", loggedInUser)).thenReturn(Future.successful(Seq.empty))
-    when(contentRetrievalService.getNewsitemKeywordSearchRelatedPublishers("widgets", loggedInUser)).thenReturn(Future.successful(Seq.empty))
-    when(contentRetrievalService.getWebsitesMatchingKeywords("widgets", None, 0, 30, loggedInUser)).thenReturn(Future.successful(keywordMatchingWebsites))
+    when(contentRetrievalService.getNewsitemKeywordSearchRelatedTags("widgets", noLoggedInUser)).thenReturn(Future.successful(Seq.empty))
+    when(contentRetrievalService.getNewsitemKeywordSearchRelatedPublishers("widgets", noLoggedInUser)).thenReturn(Future.successful(Seq.empty))
+    when(contentRetrievalService.getWebsitesMatchingKeywords("widgets", None, 0, 30, noLoggedInUser)).thenReturn(Future.successful(keywordMatchingWebsites))
 
     val mv = Await.result(modelBuilder.populateContentModel(request), TenSeconds).get
 
