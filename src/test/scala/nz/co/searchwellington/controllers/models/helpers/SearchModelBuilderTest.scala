@@ -2,7 +2,7 @@ package nz.co.searchwellington.controllers.models.helpers
 
 import nz.co.searchwellington.ReasonableWaits
 import nz.co.searchwellington.controllers.models.SearchModelBuilder
-import nz.co.searchwellington.model.frontend.{FrontendResource, FrontendWebsite}
+import nz.co.searchwellington.model.frontend.{FrontendNewsitem, FrontendResource, FrontendWebsite}
 import nz.co.searchwellington.model.mappers.FrontendResourceMapper
 import nz.co.searchwellington.model.{PublisherContentCount, Tag, TagContentCount, Website}
 import nz.co.searchwellington.repositories.ContentRetrievalService
@@ -24,8 +24,8 @@ class SearchModelBuilderTest extends ReasonableWaits with ContentFields {
 
   private val tag = Tag(id = UUID.randomUUID().toString, name = "A tag")
 
-  private val tagNewsitem = mock(classOf[FrontendResource])
-  private val anotherTagNewsitem = mock(classOf[FrontendResource])
+  private val tagNewsitem = FrontendNewsitem(id = UUID.randomUUID().toString, name = "A tag newsitem")
+  private val anotherTagNewsitem = FrontendNewsitem(id = UUID.randomUUID().toString, name = "Another tag newsitem")
 
   private val keywordNewsitemResults = (Seq.empty, 0L)
   private val tagKeywordNewsitemResults = (Seq(tagNewsitem, anotherTagNewsitem), 2L)
