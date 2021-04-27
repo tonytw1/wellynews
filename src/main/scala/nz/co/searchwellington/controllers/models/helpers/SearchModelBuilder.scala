@@ -49,7 +49,7 @@ import scala.concurrent.Future
 
     for {
       newsitemsWithCount <- contentRetrievalService.getNewsitemsMatchingKeywords(keywords, startIndex, MAX_NEWSITEMS, loggedInUser, maybeTag, maybePublisher)
-      matchingWebsites <- contentRetrievalService.getWebsitesMatchingKeywords(keywords, 0, MAX_NEWSITEMS, loggedInUser)
+      matchingWebsites <- contentRetrievalService.getWebsitesMatchingKeywords(keywords, maybeTag, 0, MAX_NEWSITEMS, loggedInUser)
       maybeFrontendPublisher <- eventualMaybeFrontendPublisher
       tagRefinements <- eventualTagRefinements
       publisherRefinements <- eventualPublisherRefinements
@@ -66,7 +66,7 @@ import scala.concurrent.Future
         addObject("tag", maybeTag.orNull).
         addObject("publisher", maybeFrontendPublisher.orNull)
 
-      mv.addObject("secondary_content", matchingWebsites);
+      mv.addObject("secondary_content", matchingWebsites._1.asJava);
 
       if (tagRefinements.nonEmpty) {
         mv.addObject("related_tags", tagRefinements.asJava)

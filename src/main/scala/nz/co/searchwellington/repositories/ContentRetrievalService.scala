@@ -2,7 +2,6 @@ package nz.co.searchwellington.repositories
 
 import nz.co.searchwellington.ReasonableWaits
 import nz.co.searchwellington.controllers.models.helpers.CommonSizes
-import nz.co.searchwellington.controllers.{RelatedTagsService, ShowBrokenDecisionService}
 import nz.co.searchwellington.model._
 import nz.co.searchwellington.model.frontend.FrontendResource
 import nz.co.searchwellington.model.mappers.FrontendResourceMapper
@@ -18,11 +17,9 @@ import uk.co.eelpieconsulting.common.geo.model.LatLong
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.{Await, Future}
 
-@Component class ContentRetrievalService @Autowired()(resourceDAO: HibernateResourceDAO,
-                                                      keywordSearchService: KeywordSearchService,
-                                                      showBrokenDecisionService: ShowBrokenDecisionService,
-                                                      tagDAO: TagDAO, relatedTagsService: RelatedTagsService,
-                                                      frontendResourceMapper: FrontendResourceMapper, elasticSearchIndexer: ElasticSearchIndexer,
+@Component class ContentRetrievalService @Autowired()(resourceDAO: HibernateResourceDAO, tagDAO: TagDAO,
+                                                      frontendResourceMapper: FrontendResourceMapper,
+                                                      elasticSearchIndexer: ElasticSearchIndexer,
                                                       mongoRepository: MongoRepository) extends ReasonableWaits with CommonSizes {
 
   private val log = Logger.getLogger(classOf[ContentRetrievalService])
@@ -220,8 +217,9 @@ import scala.concurrent.{Await, Future}
     ).flatMap(i => fetchByIds(i._1, loggedInUser))
   }
 
-  def getWebsitesMatchingKeywords(keywords: String, startIndex: Int, maxItems: Int, loggedInUser: Option[User]): Future[Seq[FrontendResource]] = {
-    keywordSearchService.getWebsitesMatchingKeywords(keywords, showBrokenDecisionService.shouldShowBroken(loggedInUser), startIndex, maxItems)
+  def getWebsitesMatchingKeywords(keywords: String, tag: Option[Tag], startIndex: Int, maxItems: Int, loggedInUser: Option[User]): Future[(Seq[FrontendResource], Long)] = {
+    val websitesByKeyword = ResourceQuery(`type` = websites, q = Some(keywords), tags = tag.map(t => Set(t)))
+    toFrontendResourcesWithTotalCount(elasticSearchIndexer.getResources(websitesByKeyword, loggedInUser = loggedInUser), loggedInUser)
   }
 
   def getArchiveMonths(loggedInUser: Option[User]): Future[Seq[ArchiveLink]] = {
