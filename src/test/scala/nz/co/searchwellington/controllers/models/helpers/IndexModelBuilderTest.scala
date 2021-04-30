@@ -55,7 +55,7 @@ class IndexModelBuilderTest extends ReasonableWaits with ContentFields {
 
   @Test
   def indexPageMainContentIsTheLatestNewsitems {
-    when(contentRetrievalService.getLatestNewsitems(100, 1, loggedInUser)).thenReturn(Future.successful(latestNewsitems))
+    when(contentRetrievalService.getLatestNewsitems(30, 1, loggedInUser)).thenReturn(Future.successful(latestNewsitems))
 
     val mv = Await.result(modelBuilder.populateContentModel(request), TenSeconds).get
 

@@ -1,13 +1,11 @@
 package nz.co.searchwellington.controllers.models.helpers
 
-import javax.servlet.http.HttpServletRequest
 import nz.co.searchwellington.ReasonableWaits
 import nz.co.searchwellington.controllers.RssUrlBuilder
 import nz.co.searchwellington.controllers.models.ModelBuilder
-import nz.co.searchwellington.feeds.whakaoko.model.{LatLong, Place}
 import nz.co.searchwellington.filters.RequestPath
-import nz.co.searchwellington.model.{Geocode, User}
-import nz.co.searchwellington.model.frontend.{FrontendNewsitem, FrontendResource}
+import nz.co.searchwellington.model.User
+import nz.co.searchwellington.model.frontend.FrontendResource
 import nz.co.searchwellington.model.helpers.ArchiveLinksService
 import nz.co.searchwellington.repositories.ContentRetrievalService
 import nz.co.searchwellington.urls.UrlBuilder
@@ -17,13 +15,15 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
 import org.springframework.web.servlet.ModelAndView
 
+import javax.servlet.http.HttpServletRequest
 import scala.collection.JavaConverters._
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
 @Component class IndexModelBuilder @Autowired()(val contentRetrievalService: ContentRetrievalService, rssUrlBuilder: RssUrlBuilder,
                                                 val urlBuilder: UrlBuilder, archiveLinksService: ArchiveLinksService,
-                                                commonAttributesModelBuilder: CommonAttributesModelBuilder) extends ModelBuilder with CommonSizes with Pagination with ReasonableWaits {
+                                                commonAttributesModelBuilder: CommonAttributesModelBuilder) extends ModelBuilder
+  with CommonSizes with Pagination with ReasonableWaits {
 
   private val log = Logger.getLogger(classOf[IndexModelBuilder])
 
@@ -45,7 +45,7 @@ import scala.concurrent.Future
     }
 
     for {
-      latestNewsitems <- contentRetrievalService.getLatestNewsitems(100, getPage(request), loggedInUser = loggedInUser)
+      latestNewsitems <- contentRetrievalService.getLatestNewsitems(MAX_NEWSITEMS, getPage(request), loggedInUser = loggedInUser)
     } yield {
       val mv = new ModelAndView().
         addObject("heading", "Wellynews").
@@ -104,7 +104,6 @@ import scala.concurrent.Future
   private def populateSecondaryJustin(mv: ModelAndView, websites: Seq[FrontendResource]) {
     mv.addObject("secondary_heading", "Just In")
     mv.addObject("secondary_description", "New additions.")
-    import scala.collection.JavaConverters._
     mv.addObject("secondary_content", websites.asJava)
     mv.addObject("secondary_content_moreurl", "justin")
   }
