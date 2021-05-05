@@ -65,7 +65,7 @@ import scala.concurrent.Future
   def populateExtraModelContent(request: HttpServletRequest, mv: ModelAndView, loggedInUser: Option[User]): Future[ModelAndView] = {
     def populateUserOwnedResources(mv: ModelAndView, l: Option[User]) {
       l.map { loggedInUser =>
-        val ownedCount: Int = contentRetrievalService.getOwnedByCount(loggedInUser)
+        val ownedCount = contentRetrievalService.getOwnedByCount(loggedInUser)
         if (ownedCount > 0) {
           mv.addObject("owned", contentRetrievalService.getOwnedBy(loggedInUser, Some(loggedInUser)))
           if (ownedCount > MAX_OWNED_TO_SHOW_IN_RHS) {
