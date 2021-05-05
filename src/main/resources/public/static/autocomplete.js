@@ -70,13 +70,10 @@ $(function() {
                 'R': 'RELATIONSHIP'};
 
 		$("#geocode").autocomplete({
-
 			source: function( request, response ) {
 				$.ajax({
 					url: "https://nominatim-ac.eelpieconsulting.co.uk/search",
 					cache: true,
-					dataType: "jsonp",
-					jsonpCallback: 'placeAutocomplete',
 					data: {
   						q: request.term,
                         country: 'nz',
