@@ -7,6 +7,7 @@ public class NewNewsitem {
     @NotBlank
     private String title, url, date, publisher;
 
+    private String geocode, selectedGeocode;
     private String description;
 
     public String getTitle() {
@@ -44,15 +45,32 @@ public class NewNewsitem {
         this.description = description;
     }
 
+    public String getGeocode() {
+        return geocode;
+    }
+
+    public void setGeocode(String geocode) {
+        this.geocode = geocode;
+    }
+
+    public String getSelectedGeocode() {
+        return selectedGeocode;
+    }
+
+    public void setSelectedGeocode(String selectedGeocode) {
+        this.selectedGeocode = selectedGeocode;
+    }
+
     @Override
     public String toString() {
         return "NewNewsitem{" +
                 "title='" + title + '\'' +
                 ", url='" + url + '\'' +
                 ", date='" + date + '\'' +
-                ", description='" + description + '\'' +
                 ", publisher='" + publisher + '\'' +
+                ", geocode='" + geocode + '\'' +
+                ", selectedGeocode='" + selectedGeocode + '\'' +
+                ", description='" + description + '\'' +
                 '}';
     }
-
 }

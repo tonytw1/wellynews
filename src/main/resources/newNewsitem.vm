@@ -38,6 +38,15 @@
                 <input name="${status.expression}" class="title" value="$!{status.value}" />
                 <br />
 
+                #springBind("newNewsitem.geocode")
+                <label for="${status.expression}">Geocode:</label>
+                <input id="geocode" name="${status.expression}" class="title" value="$!{status.value}" />
+                <br />
+                #springBind("newNewsitem.selectedGeocode")
+                <label for="${status.expression}">Selected geocode:</label>
+                <input id="selectedGeocode" name="${status.expression}" class="title" value="$!{status.value}" />
+                <br />
+
                 #springBind("newNewsitem.description")
                 <label for="${status.expression}">Description:</label>
                 <input name="${status.expression}" class="title" value="$!{status.value}" />
