@@ -82,9 +82,8 @@ $(function() {
 					},
 					success: function( data ) {
 						response( $.map( data, function( item ) {
-						    itemType = itemTypes[item.type];
 							return {
-								label: (item.address + " (" + item.classification + "/" + itemType + ")"),
+								label: (item.address + " (" + item.classification + "/" + item.type + ")"),
 								value: item.address,
 								osmId: item.osmId,
 								osmType: item.osmType
