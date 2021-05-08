@@ -133,13 +133,13 @@ class EditNewsitemController @Autowired()(contentUpdateService: ContentUpdateSer
     formObject.setPublisher(publisher)
     formObject.setDescription(n.description.getOrElse(""))
 
-    n.geocode.map { g =>
+    n.geocode.foreach { g =>
       formObject.setGeocode(g.getAddress)
       val osmId = g.osmId.map(osmToString)
       formObject.setSelectedGeocode(osmId.getOrElse(""))
     }
 
-    n.date.map { d =>
+    n.date.foreach { d =>
       formObject.setDate(formDateFormat.print(d.getTime))
     }
 
