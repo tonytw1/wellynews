@@ -40,7 +40,7 @@
                 <label for="${status.expression}">Tags:</label>
                 <select name="${status.expression}" multiple >
                     #foreach($tag in $tags)
-                        <option value="$tag.id" #if($status.actualValue.contains($tag.getBSONId())) SELECTED #end>$tag.name
+                        <option value="$tag.id" #if($status.actualValue.contains($tag.getBSONId())) SELECTED #end>$tag.displayName
                     #end
                 </select>
                 <br />
