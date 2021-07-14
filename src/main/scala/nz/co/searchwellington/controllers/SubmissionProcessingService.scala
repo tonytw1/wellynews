@@ -1,13 +1,10 @@
 package nz.co.searchwellington.controllers
 
-import java.util.{Calendar, Date}
-
 import com.google.common.base.Strings
-import javax.servlet.http.HttpServletRequest
 import nz.co.searchwellington.ReasonableWaits
 import nz.co.searchwellington.controllers.submission.UrlProcessor
 import nz.co.searchwellington.feeds.PlaceToGeocodeMapper
-import nz.co.searchwellington.geocoding.osm.{CachingNominatimGeocodingService, OsmIdParser}
+import nz.co.searchwellington.geocoding.osm.OsmIdParser
 import nz.co.searchwellington.model._
 import nz.co.searchwellington.repositories.mongo.MongoRepository
 import nz.co.searchwellington.repositories.{HandTaggingDAO, HibernateResourceDAO, TagDAO}
@@ -16,12 +13,14 @@ import org.apache.commons.lang.{StringEscapeUtils, StringUtils}
 import org.apache.log4j.Logger
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
-import uk.co.eelpieconsulting.common.geo.model.{OsmId, Place}
+import uk.co.eelpieconsulting.common.geo.model.OsmId
 
+import java.util.{Calendar, Date}
+import javax.servlet.http.HttpServletRequest
 import scala.concurrent.Await
 import scala.concurrent.ExecutionContext.Implicits.global
 
-@Component class SubmissionProcessingService @Autowired()(nominatimGeocodeService: CachingNominatimGeocodingService, tagDAO: TagDAO,
+@Component class SubmissionProcessingService @Autowired()(tagDAO: TagDAO,
                                                           tagVoteDAO: HandTaggingDAO, resourceDAO: HibernateResourceDAO, urlProcessor: UrlProcessor,
                                                           osmIdParser: OsmIdParser, placeToGeocodeMapper: PlaceToGeocodeMapper,
                                                           mongoRepository: MongoRepository) extends ReasonableWaits with StringWrangling {
@@ -62,7 +61,7 @@ import scala.concurrent.ExecutionContext.Implicits.global
 
       val osmIdString: String = new String(request.getParameter(REQUEST_SELECTED_GEOCODE).trim)
       val osmId: OsmId = osmIdParser.parseOsmId(osmIdString)
-      val resolvedPlace: Place = nominatimGeocodeService.resolveOsmId(osmId)
+      //val resolvedPlace: Place = nominatimGeocodeService.resolveOsmId(osmId)
 
      // log.info("Selected geocode " + osmIdString + " resolved to: " + resolvedPlace)
 

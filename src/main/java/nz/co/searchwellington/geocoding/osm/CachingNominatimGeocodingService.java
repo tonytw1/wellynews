@@ -11,20 +11,13 @@ import uk.co.eelpieconsulting.common.geo.model.Place;
 @Component
 public class CachingNominatimGeocodingService implements GeoCodeService {
 	
-	private CachingNominatimResolveAddressService cachingNominatimResolveAddressService;
 	private CachingNominatimResolveOsmIdService cachingNominatimResolveOsmIdService;
 	
 	@Autowired
-	public CachingNominatimGeocodingService(CachingNominatimResolveAddressService cachingNominatimResolveAddressService, CachingNominatimResolveOsmIdService cachingNominatimResolveOsmIdService) {
-		this.cachingNominatimResolveAddressService = cachingNominatimResolveAddressService;
+	public CachingNominatimGeocodingService(CachingNominatimResolveOsmIdService cachingNominatimResolveOsmIdService) {
 		this.cachingNominatimResolveOsmIdService = cachingNominatimResolveOsmIdService;
 	}
 
-	@Override
-	public List<Place> resolveAddress(String address) {
-		return cachingNominatimResolveAddressService.callService(address);
-	}
-	
 	@Override
 	public Place resolveOsmId(OsmId osmId) {
 		return cachingNominatimResolveOsmIdService.callService(osmId);

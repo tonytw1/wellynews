@@ -15,6 +15,8 @@ import org.mockito.MockitoAnnotations;
 import org.springframework.mock.web.MockHttpServletRequest;
 
 import uk.co.eelpieconsulting.common.geo.model.LatLong;
+import uk.co.eelpieconsulting.common.geo.model.OsmId;
+import uk.co.eelpieconsulting.common.geo.model.OsmType;
 import uk.co.eelpieconsulting.common.geo.model.Place;
 
 import com.google.common.collect.Lists;
@@ -22,35 +24,26 @@ import com.google.common.collect.Lists;
 public class LocationParameterFilterTest {
 	
 	private static final String VALID_LOCATION = "Petone Station";
-	
-	@Mock private CachingNominatimGeocodingService geocodeService;
-	
+
+	private CachingNominatimGeocodingService geocodeService = Mockito.mock(CachingNominatimGeocodingService.class);
+
 	private MockHttpServletRequest request;
-	private Place petoneStation;
-	
-	private LocationParameterFilter filter;
-	
-	@Before
-	public void setup() {
-		MockitoAnnotations.initMocks(this);
-		request = new MockHttpServletRequest();
-		filter = new LocationParameterFilter(geocodeService, new OsmIdParser());
-		petoneStation = new Place(VALID_LOCATION, new LatLong(1.1, 2.2), null);
-	}
+	private Place petoneStation = new Place(VALID_LOCATION, new LatLong(1.1, 2.2), new OsmId(123, OsmType.NODE));
+
+	private LocationParameterFilter filter = new LocationParameterFilter(geocodeService, new OsmIdParser());
 
 	@Test
-	public void canResolveNamedPlaceAsLocation() throws Exception {
-		request.setParameter("location", VALID_LOCATION);
-		List<Place> results = Lists.newArrayList();
-		results.add(petoneStation);
-		Mockito.when(geocodeService.resolveAddress(VALID_LOCATION)).thenReturn(results);
-		
+	public void canResolveOsmIdAsLocation() throws Exception {
+		request.setParameter("osm", "123/NODE");
+		System.out.println(petoneStation.getOsmId());
+		Mockito.when(geocodeService.resolveOsmId(petoneStation.getOsmId())).thenReturn(petoneStation);
+
 		filter.filter(request);
-		
-		final Place locationAttribute = (Place) request.getAttribute(LocationParameterFilter.LOCATION);	
+
+		final Place locationAttribute = (Place) request.getAttribute(LocationParameterFilter.LOCATION);
 		assertEquals(VALID_LOCATION, locationAttribute.getAddress());
 	}
-	
+
 	@Test
 	public void canResolveLocationSearchRadius() throws Exception {
 		request.setParameter("radius", "3");
