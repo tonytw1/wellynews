@@ -10,7 +10,7 @@
 
     <properties>
         <elastic4s.version>7.3.6</elastic4s.version>
-        <jackson.version>2.10.5</jackson.version>
+        <jackson.version>2.12.1</jackson.version>
     </properties>
 
     <parent>
