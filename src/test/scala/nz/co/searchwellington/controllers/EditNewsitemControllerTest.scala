@@ -22,10 +22,10 @@ class EditNewsitemControllerTest {
   val mongoRepository = mock(classOf[MongoRepository])
   val loggedInUserFilter = mock(classOf[LoggedInUserFilter])
   val tagDAO = mock(classOf[TagDAO])
-  val cachingNominatimResolveOsmIdService = mock(classOf[GeoCodeService])
+  val geoCodeService = mock(classOf[GeoCodeService])
   val handTaggingService = new HandTaggingService(mock(classOf[FrontendContentUpdater]), mongoRepository)
 
-  val controller = new EditNewsitemController(contentUpdateService, mongoRepository, loggedInUserFilter, tagDAO, cachingNominatimResolveOsmIdService, handTaggingService)
+  val controller = new EditNewsitemController(contentUpdateService, mongoRepository, loggedInUserFilter, tagDAO, geoCodeService, handTaggingService)
 
   @Test
   def canUpdateExistingNewsitem(): Unit = {
