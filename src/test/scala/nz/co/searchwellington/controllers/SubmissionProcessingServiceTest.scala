@@ -2,7 +2,7 @@ package nz.co.searchwellington.controllers
 
 import nz.co.searchwellington.controllers.submission.UrlProcessor
 import nz.co.searchwellington.feeds.PlaceToGeocodeMapper
-import nz.co.searchwellington.geocoding.osm.{CachingNominatimGeocodingService, OsmIdParser}
+import nz.co.searchwellington.geocoding.osm.{GeoCodeService, OsmIdParser}
 import nz.co.searchwellington.model.{Feed, Newsitem, UrlWordsGenerator, User}
 import nz.co.searchwellington.repositories.mongo.MongoRepository
 import nz.co.searchwellington.repositories.{HandTaggingDAO, HibernateResourceDAO, TagDAO}
@@ -21,7 +21,7 @@ class SubmissionProcessingServiceTest {
   private val FEED_NAME: String = "A feed"
 
   @Mock val urlCleaner: UrlCleaner = null
-  @Mock val geocodeService: CachingNominatimGeocodingService = null
+  @Mock val geocodeService: GeoCodeService = null
   @Mock val tagDAO: TagDAO = null
   @Mock val mongoRepository: MongoRepository = null
   @Mock val tagVoteDAO: HandTaggingDAO = null

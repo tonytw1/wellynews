@@ -1,9 +1,8 @@
 package nz.co.searchwellington.controllers
 
-import javax.validation.Valid
 import nz.co.searchwellington.ReasonableWaits
 import nz.co.searchwellington.forms.EditNewsitem
-import nz.co.searchwellington.geocoding.osm.CachingNominatimResolveOsmIdService
+import nz.co.searchwellington.geocoding.osm.GeoCodeService
 import nz.co.searchwellington.model._
 import nz.co.searchwellington.modification.ContentUpdateService
 import nz.co.searchwellington.repositories.mongo.MongoRepository
@@ -18,6 +17,7 @@ import org.springframework.web.bind.annotation.{ModelAttribute, PathVariable, Re
 import org.springframework.web.servlet.ModelAndView
 import org.springframework.web.servlet.view.RedirectView
 
+import javax.validation.Valid
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.{Await, Future}
 
@@ -26,7 +26,7 @@ class EditNewsitemController @Autowired()(contentUpdateService: ContentUpdateSer
                                           mongoRepository: MongoRepository,
                                           val loggedInUserFilter: LoggedInUserFilter,
                                           tagDAO: TagDAO,
-                                          val cachingNominatimResolveOsmIdService: CachingNominatimResolveOsmIdService,
+                                          val geocodeService: GeoCodeService,
                                           handTaggingService: HandTaggingService)
   extends ReasonableWaits with AcceptancePolicyOptions with Errors with GeotagParsing with RequiringLoggedInUser {
 

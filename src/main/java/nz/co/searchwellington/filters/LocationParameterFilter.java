@@ -2,7 +2,7 @@ package nz.co.searchwellington.filters;
 
 import com.google.common.base.Strings;
 import nz.co.searchwellington.exceptions.UnresolvableLocationException;
-import nz.co.searchwellington.geocoding.osm.CachingNominatimGeocodingService;
+import nz.co.searchwellington.geocoding.osm.GeoCodeService;
 import nz.co.searchwellington.geocoding.osm.OsmIdParser;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,14 +27,14 @@ public class LocationParameterFilter implements RequestAttributeFilter {
 	private static final String LONGITUDE = "longitude";
 	private static final String OSM = "osm";	
 
-	private CachingNominatimGeocodingService geoCodeService;
+	private GeoCodeService geoCodeService;
 	private OsmIdParser osmIdParser;
 	
 	public LocationParameterFilter() {
 	}
 	
 	@Autowired
-	public LocationParameterFilter(CachingNominatimGeocodingService geoCodeService, OsmIdParser osmIdParser) {
+	public LocationParameterFilter(GeoCodeService geoCodeService, OsmIdParser osmIdParser) {
 		this.geoCodeService = geoCodeService;
 		this.osmIdParser = osmIdParser;
 	}
@@ -65,7 +65,6 @@ public class LocationParameterFilter implements RequestAttributeFilter {
 			// TODO - is you wanted to, you could resolve for a name, but don't alter the user supplied lat/long values.
 			// TODO lat, long isn't really an address - this should be something like a display method on latLong or the view which gives a sensible output when address is null.
 			request.setAttribute(LOCATION, new Place(latLongLabel, latLong, null));
-			return;
 		}
 	}
 	

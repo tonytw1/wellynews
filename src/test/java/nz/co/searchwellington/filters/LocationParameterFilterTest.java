@@ -1,6 +1,6 @@
 package nz.co.searchwellington.filters;
 
-import nz.co.searchwellington.geocoding.osm.CachingNominatimGeocodingService;
+import nz.co.searchwellington.geocoding.osm.GeoCodeService;
 import nz.co.searchwellington.geocoding.osm.OsmIdParser;
 import org.junit.Test;
 import org.mockito.Mockito;
@@ -16,14 +16,14 @@ public class LocationParameterFilterTest {
 	
 	private static final String VALID_LOCATION = "Petone Station";
 
-	private CachingNominatimGeocodingService geocodeService = Mockito.mock(CachingNominatimGeocodingService.class);
+	private GeoCodeService geocodeService = Mockito.mock(GeoCodeService.class);
 
 	private Place petoneStation = new Place(VALID_LOCATION, new LatLong(1.1, 2.2), new OsmId(123, OsmType.NODE));
 
 	private LocationParameterFilter filter = new LocationParameterFilter(geocodeService, new OsmIdParser());
 
 	@Test
-	public void canResolveOsmIdAsLocation() throws Exception {
+	public void canResolveOsmIdAsLocation() {
 		MockHttpServletRequest request = new MockHttpServletRequest();
 		request.setParameter("osm", "123/NODE");
 		Mockito.when(geocodeService.resolveOsmId(petoneStation.getOsmId())).thenReturn(petoneStation);
@@ -34,7 +34,7 @@ public class LocationParameterFilterTest {
 	}
 
 	@Test
-	public void canResolveLocationSearchRadius() throws Exception {
+	public void canResolveLocationSearchRadius() {
 		MockHttpServletRequest request = new MockHttpServletRequest();
 		request.setParameter("radius", "3");
 		filter.filter(request);		
@@ -42,7 +42,7 @@ public class LocationParameterFilterTest {
 	}
 	
 	@Test
-	public void canResolveAbsoluteLatLongPointAsALocation() throws Exception {
+	public void canResolveAbsoluteLatLongPointAsALocation() {
 		MockHttpServletRequest request = new MockHttpServletRequest();
 		request.setParameter("latitude", "51.2");
 		request.setParameter("longitude", "-0.1");

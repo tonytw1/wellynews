@@ -1,14 +1,13 @@
 package nz.co.searchwellington.controllers
 
-import javax.validation.Valid
 import nz.co.searchwellington.ReasonableWaits
 import nz.co.searchwellington.forms.EditWebsite
-import nz.co.searchwellington.geocoding.osm.CachingNominatimResolveOsmIdService
+import nz.co.searchwellington.geocoding.osm.GeoCodeService
 import nz.co.searchwellington.model._
 import nz.co.searchwellington.modification.ContentUpdateService
 import nz.co.searchwellington.repositories.elasticsearch.ElasticSearchIndexRebuildService
-import nz.co.searchwellington.repositories.{HandTaggingService, TagDAO}
 import nz.co.searchwellington.repositories.mongo.MongoRepository
+import nz.co.searchwellington.repositories.{HandTaggingService, TagDAO}
 import nz.co.searchwellington.urls.UrlBuilder
 import nz.co.searchwellington.views.Errors
 import org.apache.log4j.Logger
@@ -19,6 +18,7 @@ import org.springframework.web.bind.annotation.{ModelAttribute, PathVariable, Re
 import org.springframework.web.servlet.ModelAndView
 import org.springframework.web.servlet.view.RedirectView
 
+import javax.validation.Valid
 import scala.concurrent.Await
 import scala.concurrent.ExecutionContext.Implicits.global
 
@@ -28,7 +28,7 @@ class EditWebsiteController @Autowired()(contentUpdateService: ContentUpdateServ
                                          urlBuilder: UrlBuilder,
                                          val loggedInUserFilter: LoggedInUserFilter,
                                          tagDAO: TagDAO,
-                                         val cachingNominatimResolveOsmIdService: CachingNominatimResolveOsmIdService,
+                                         val geocodeService: GeoCodeService,
                                          handTaggingService: HandTaggingService,
                                          elasticSearchIndexRebuildService: ElasticSearchIndexRebuildService
                                         ) extends ReasonableWaits with AcceptancePolicyOptions with Errors with GeotagParsing with RequiringLoggedInUser {
@@ -44,7 +44,7 @@ class EditWebsiteController @Autowired()(contentUpdateService: ContentUpdateServ
         editWebsite.setUrl(w.page)
         editWebsite.setDescription(w.description.getOrElse(""))
 
-        w.geocode.map { g =>
+        w.geocode.foreach { g =>
           editWebsite.setGeocode(g.getAddress)
           val osmId = g.osmId.map(osmToString)
           editWebsite.setSelectedGeocode(osmId.getOrElse(""))

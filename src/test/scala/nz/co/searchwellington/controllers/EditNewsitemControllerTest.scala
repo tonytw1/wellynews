@@ -1,7 +1,7 @@
 package nz.co.searchwellington.controllers
 
 import nz.co.searchwellington.forms.EditNewsitem
-import nz.co.searchwellington.geocoding.osm.CachingNominatimResolveOsmIdService
+import nz.co.searchwellington.geocoding.osm.GeoCodeService
 import nz.co.searchwellington.model.{Newsitem, User, Website}
 import nz.co.searchwellington.modification.ContentUpdateService
 import nz.co.searchwellington.repositories.mongo.MongoRepository
@@ -22,7 +22,7 @@ class EditNewsitemControllerTest {
   val mongoRepository = mock(classOf[MongoRepository])
   val loggedInUserFilter = mock(classOf[LoggedInUserFilter])
   val tagDAO = mock(classOf[TagDAO])
-  val cachingNominatimResolveOsmIdService = mock(classOf[CachingNominatimResolveOsmIdService])
+  val cachingNominatimResolveOsmIdService = mock(classOf[GeoCodeService])
   val handTaggingService = new HandTaggingService(mock(classOf[FrontendContentUpdater]), mongoRepository)
 
   val controller = new EditNewsitemController(contentUpdateService, mongoRepository, loggedInUserFilter, tagDAO, cachingNominatimResolveOsmIdService, handTaggingService)

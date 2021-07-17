@@ -1,9 +1,8 @@
 package nz.co.searchwellington.controllers
 
-import javax.validation.Valid
 import nz.co.searchwellington.ReasonableWaits
 import nz.co.searchwellington.forms.EditTag
-import nz.co.searchwellington.geocoding.osm.CachingNominatimResolveOsmIdService
+import nz.co.searchwellington.geocoding.osm.GeoCodeService
 import nz.co.searchwellington.model.{Tag, UrlWordsGenerator, User}
 import nz.co.searchwellington.modification.{ContentUpdateService, TagModificationService}
 import nz.co.searchwellington.repositories.TagDAO
@@ -20,6 +19,7 @@ import org.springframework.web.servlet.ModelAndView
 import org.springframework.web.servlet.view.RedirectView
 import reactivemongo.api.bson.BSONObjectID
 
+import javax.validation.Valid
 import scala.concurrent.Await
 import scala.concurrent.ExecutionContext.Implicits.global
 
@@ -31,7 +31,7 @@ class EditTagController @Autowired()(contentUpdateService: ContentUpdateService,
                                      val loggedInUserFilter: LoggedInUserFilter,
                                      tagModificationService: TagModificationService,
                                      elasticSearchIndexRebuildService: ElasticSearchIndexRebuildService,
-                                     val cachingNominatimResolveOsmIdService: CachingNominatimResolveOsmIdService)
+                                     val geocodeService: GeoCodeService)
   extends ReasonableWaits with Errors with InputParsing with GeotagParsing with RequiringLoggedInUser {
 
   private val log = Logger.getLogger(classOf[EditTagController])
