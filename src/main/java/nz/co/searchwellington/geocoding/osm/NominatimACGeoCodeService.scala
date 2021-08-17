@@ -34,7 +34,10 @@ class NominatimACGeoCodeService @Autowired()() extends GeoCodeService with Reaso
           case HttpStatus.SC_OK =>
             implicit val nacll = Json.reads[NominatimACLatLong]
             implicit val nacpr = Json.reads[NominatimACPlace]
-            val nominatimACPlace = Json.parse(result.body).as[NominatimACPlace]
+
+            val body = result.body
+            log.info(body)
+            val nominatimACPlace = Json.parse(body).as[NominatimACPlace]
 
             val osmType = Option(nominatimACPlace.osmType).flatMap { osmType =>
               osmType match {
