@@ -26,7 +26,7 @@ class NominatimACGeoCodeService @Autowired()() extends GeoCodeService with Reaso
   private implicit val ec = ExecutionContext.Implicits.global
 
   override def resolveOsmId(osmId: OsmId): Place = {
-    val url = "https://nominatim-ac.eelpieconsulting.co.uk/places/" + osmId.getId + osmId.getType
+    val url = "https://nominatim-ac.eelpieconsulting.co.uk/places/" + osmId.getId + osmId.getType.toString.take(1)
 
     val eventualPlace = wsClient.url(url).
       withRequestTimeout(TenSeconds).get.map { result =>
@@ -37,6 +37,7 @@ class NominatimACGeoCodeService @Autowired()() extends GeoCodeService with Reaso
 
             val body = result.body
             log.info(body)
+
             val nominatimACPlace = Json.parse(body).as[NominatimACPlace]
 
             val osmType = Option(nominatimACPlace.osmType).flatMap { osmType =>
