@@ -6,12 +6,14 @@ import nz.co.searchwellington.ReasonableWaits
 import org.apache.http.HttpStatus
 import org.apache.log4j.Logger
 import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.stereotype.Component
 import play.api.libs.json.Json
 import play.api.libs.ws.ahc.StandaloneAhcWSClient
 import uk.co.eelpieconsulting.common.geo.model.{LatLong, OsmId, OsmType, Place}
 
 import scala.concurrent.{Await, ExecutionContext}
 
+@Component
 class NominatimACGeoCodeService @Autowired()() extends GeoCodeService with ReasonableWaits {
 
   private val log = Logger.getLogger(classOf[NominatimACGeoCodeService])
