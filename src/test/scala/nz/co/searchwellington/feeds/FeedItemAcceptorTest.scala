@@ -57,4 +57,13 @@ class FeedItemAcceptorTest {
     assertEquals(accepted.accepted, accepted.date)
   }
 
+  @Test
+  def acceptedFeedItemsWithNoDatesShouldDefaultToToday(): Unit = {
+    val feedItemWithNoDate = FeedItem(id = "", title = Some("HEADLINE"), url ="",  subscriptionId = "", body = None, date = None)
+
+    val accepted = feedItemAcceptor.acceptFeedItem(feedReadingUser, (feedItemWithNoDate, feed))
+
+    assertFalse(accepted.date.isEmpty)
+  }
+
 }

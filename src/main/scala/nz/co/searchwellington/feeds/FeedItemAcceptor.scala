@@ -12,15 +12,15 @@ import org.springframework.stereotype.Component
   def acceptFeedItem(feedReadingUser: User, feeditem: (FeedItem, Feed)): Newsitem = {
     val newsitem = feeditemToNewsItemSerice.makeNewsitemFromFeedItem(feeditem._1, feeditem._2)
 
-    val accepted = Some(DateTime.now.toDate)
+    val now = DateTime.now.toDate
     val dateToApply = feeditem._2.acceptance match {
-      case FeedAcceptancePolicy.ACCEPT_IGNORING_DATE => accepted
-      case _ => newsitem.date
+      case FeedAcceptancePolicy.ACCEPT_IGNORING_DATE => now
+      case _ => newsitem.date.getOrElse(now)
     }
     newsitem.copy(
       title = newsitem.title.map(lowerCappedSentence),
-      date = dateToApply,
-      accepted = accepted,
+      date = Some(dateToApply),
+      accepted = Some(now),
       acceptedBy = Some(feedReadingUser._id),
       owner = Some(feedReadingUser._id)
     )
