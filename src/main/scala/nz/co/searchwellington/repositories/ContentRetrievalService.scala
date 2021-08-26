@@ -222,7 +222,12 @@ import scala.concurrent.{Await, Future}
   }
 
   def getWebsitesMatchingKeywords(keywords: String, tag: Option[Tag], startIndex: Int, maxItems: Int, loggedInUser: Option[User]): Future[(Seq[FrontendResource], Long)] = {
-    val websitesByKeyword = ResourceQuery(`type` = websites, q = Some(keywords), tags = tag.map(t => Set(t)))
+    val websitesByKeyword = ResourceQuery(`type` = websites,
+      q = Some(keywords), 
+      tags = tag.map(t => Set(t)),
+      startIndex = startIndex,
+      maxItems = maxItems
+    )
     toFrontendResourcesWithTotalCount(elasticSearchIndexer.getResources(websitesByKeyword, loggedInUser = loggedInUser), loggedInUser)
   }
 
