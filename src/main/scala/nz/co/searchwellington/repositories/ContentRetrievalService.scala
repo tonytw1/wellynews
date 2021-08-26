@@ -8,7 +8,7 @@ import nz.co.searchwellington.model.mappers.FrontendResourceMapper
 import nz.co.searchwellington.repositories.elasticsearch._
 import nz.co.searchwellington.repositories.mongo.MongoRepository
 import org.apache.log4j.Logger
-import org.joda.time.Interval
+import org.joda.time.{DateTime, Interval}
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
 import reactivemongo.api.bson.BSONObjectID
@@ -158,7 +158,11 @@ import scala.concurrent.{Await, Future}
   }
 
   def getLatestNewsitems(maxItems: Int = MAX_NEWSITEMS, page: Int = 1, loggedInUser: Option[User]): Future[Seq[FrontendResource]] = {
-    elasticSearchIndexer.getResources(ResourceQuery(`type` = newsitems, maxItems = maxItems, startIndex = maxItems * (page - 1)), loggedInUser = loggedInUser).flatMap(i => fetchByIds(i._1, loggedInUser))
+    elasticSearchIndexer.getResources(ResourceQuery(`type` = newsitems,
+      before = Some(DateTime.now().plusWeeks(1)),
+      maxItems = maxItems,
+      startIndex = maxItems * (page - 1)
+    ), loggedInUser = loggedInUser).flatMap(i => fetchByIds(i._1, loggedInUser))
   }
 
   def getNewsitemsForInterval(interval: Interval, loggedInUser: Option[User]): Future[Seq[FrontendResource]] = {

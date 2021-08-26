@@ -238,6 +238,9 @@ class ElasticSearchIndexer @Autowired()(val showBrokenDecisionService: ShowBroke
       query.interval.map { i =>
         rangeQuery("date") gte i.getStartMillis lt i.getEndMillis
       },
+      query.before.map { d =>
+        rangeQuery("date") lt d.getMillis
+      },
       query.q.map { qt =>
         val titleMatches = matchQuery(Title, qt).boost(5)
         val descriptionMatches = matchQuery(Description, qt)
