@@ -73,7 +73,7 @@ import scala.concurrent.ExecutionContext.Implicits.global
       import scala.collection.JavaConverters._
       val mv = new ModelAndView("rssfeeds").
         addObject("heading", "RSS feeds").
-        addObject("feedable_tags", Await.result(contentRetrievalService.getFeedworthyTags(), TenSeconds).asJava)
+        addObject("feedable_tags", Await.result(contentRetrievalService.getFeaturedTags, TenSeconds).asJava)
 
       commonAttributesModelBuilder.setRss(mv, rssUrlBuilder.getBaseRssTitle, rssUrlBuilder.getBaseRssUrl)
       mv

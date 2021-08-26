@@ -310,10 +310,6 @@ import scala.concurrent.{Await, Future}
     elasticSearchIndexer.getResources(publisherTagCombiner, loggedInUser = loggedInUser).flatMap(i => fetchByIds(i._1, loggedInUser))
   }
 
-  def getFeedworthyTags(): Future[Seq[Tag]] = {
-    getFeaturedTags
-  }
-
   def getDiscoveredFeeds: Future[Seq[DiscoveredFeed]] = {
     mongoRepository.getAllDiscoveredFeeds()
   }
@@ -327,7 +323,7 @@ import scala.concurrent.{Await, Future}
   def getFeaturedTags: Future[Seq[Tag]] = tagDAO.getFeaturedTags
 
   def getWebsitesByHostname(hostname: String, loggedInUser: Option[User]): Future[Seq[Resource]] = {
-    elasticSearchIndexer.getResources(new ResourceQuery(hostname = Some(hostname), `type` = Some(Set("W"))), loggedInUser = loggedInUser).flatMap(i => fetchResourcesByIds(i._1))
+    elasticSearchIndexer.getResources(ResourceQuery(hostname = Some(hostname), `type` = Some(Set("W"))), loggedInUser = loggedInUser).flatMap(i => fetchResourcesByIds(i._1))
   }
 
   private def buildFrontendResourcesFor(i: (Seq[BSONObjectID], Long), loggedInUser: Option[User]): Future[(Seq[FrontendResource], Long)] = {
