@@ -223,7 +223,7 @@ import scala.concurrent.{Await, Future}
 
   def getWebsitesMatchingKeywords(keywords: String, tag: Option[Tag], startIndex: Int, maxItems: Int, loggedInUser: Option[User]): Future[(Seq[FrontendResource], Long)] = {
     val websitesByKeyword = ResourceQuery(`type` = websites,
-      q = Some(keywords), 
+      q = Some(keywords),
       tags = tag.map(t => Set(t)),
       startIndex = startIndex,
       maxItems = maxItems
@@ -268,7 +268,7 @@ import scala.concurrent.{Await, Future}
   def getAllFeedsOrderedByLatestItemDate(loggedInUser: Option[User]): Future[Seq[FrontendResource]] = {
     val allFeeds = ResourceQuery(`type` = feeds)
     elasticSearchIndexer.getResources(allFeeds, elasticSearchIndexer.byFeedLatestFeedItemDate, loggedInUser = loggedInUser).
-      flatMap(i => fetchByIds(i._1, loggedInUser)) // TODO order
+      flatMap(i => fetchByIds(i._1, loggedInUser))
   }
 
   def getTaggedNewsitems(tag: Tag, startIndex: Int = 0, maxItems: Int = MAX_NEWSITEMS, loggedInUser: Option[User]): Future[(Seq[FrontendResource], Long)] = {
