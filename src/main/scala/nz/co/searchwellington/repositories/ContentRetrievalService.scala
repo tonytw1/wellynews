@@ -15,7 +15,7 @@ import reactivemongo.api.bson.BSONObjectID
 import uk.co.eelpieconsulting.common.geo.model.LatLong
 
 import scala.concurrent.ExecutionContext.Implicits.global
-import scala.concurrent.{Await, Future}
+import scala.concurrent.Future
 
 @Component class ContentRetrievalService @Autowired()(resourceDAO: HibernateResourceDAO, tagDAO: TagDAO,
                                                       frontendResourceMapper: FrontendResourceMapper,
@@ -177,22 +177,29 @@ import scala.concurrent.{Await, Future}
 
   def getPublishersForInterval(interval: Interval, loggedInUser: Option[User]): Future[Seq[(FrontendResource, Long)]] = {
 
-    def getPublishersForInterval(interval: Interval, loggedInUser: Option[User]): Future[Seq[(String, Long)]] = {
+    def getPublisherIdsAndCountsForInterval(interval: Interval, loggedInUser: Option[User]): Future[Seq[(String, Long)]] = {
       val newsitemsForInterval = ResourceQuery(`type` = newsitems, interval = Some(interval))
       elasticSearchIndexer.getPublisherAggregationFor(newsitemsForInterval, loggedInUser)
     }
 
-    getPublishersForInterval(interval, loggedInUser).flatMap { meh =>
-      Future.sequence(meh.map { t =>
-        val bid = BSONObjectID.parse(t._1).get // TODO naked get
-        val eventualMaybeResource = mongoRepository.getResourceByObjectId(bid)
-        eventualMaybeResource.map { ro =>
-          ro.map { r =>
-            val eventualFrontennResource = frontendResourceMapper.createFrontendResourceFrom(r, loggedInUser)
-            (Await.result(eventualFrontennResource, TenSeconds), t._2)
-          }
+    def toFrontendResourceWithCount(t: (String, Long)): Future[Option[(FrontendResource, Long)]] = {
+      BSONObjectID.parse(t._1).map { bid =>
+        mongoRepository.getResourceByObjectId(bid).flatMap { maybeResource =>
+          maybeResource.map { resource: Resource =>
+            val eventualResource = frontendResourceMapper.createFrontendResourceFrom(resource)
+            eventualResource.map { frontendResource =>
+              Some((frontendResource, t._2))
+            }
+          }.getOrElse(Future.successful(None))
         }
-      }).map(_.flatten)
+      }.getOrElse {
+        Future.successful(None)
+      }
+    }
+
+    getPublisherIdsAndCountsForInterval(interval, loggedInUser).flatMap { stringLongPairs =>
+      val eventualMaybeTuples: Seq[Future[Option[(FrontendResource, Long)]]] = stringLongPairs.map(toFrontendResourceWithCount)
+      Future.sequence(eventualMaybeTuples).map(_.flatten)
     }
   }
 
