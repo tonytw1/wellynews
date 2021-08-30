@@ -28,26 +28,32 @@ import scala.concurrent.{Await, Future}
     resource.withTaggings(otherUsersTaggings ++ usersNewsTaggings)
   }
 
-  def clearTaggingsForTag(tag: Tag): Unit = {
-
-    def deleteTagFromResource(tag: Tag, resource: Resource): Resource = {
-      val filtered = resource.resource_tags.filterNot(t => t.tag_id == tag._id)
-      resource.withTaggings(filtered)
+  def clearTaggingsForTag(tag: Tag): Boolean = {
+    def withTagRemoved(resource: Resource, tag: Tag): Resource = {
+      val tagsToRetain = resource.resource_tags.filterNot(t => t.tag_id == tag._id)
+      resource.withTaggings(tagsToRetain)
     }
 
     log.info("Clearing tagging votes for tag: " + tag.getName)
-    val resourceIdsTaggedWithTag = Await.result(mongoRepository.getResourceIdsByTag(tag), TenSeconds)
-    log.info(resourceIdsTaggedWithTag.size + " votes will needs to be cleared and the frontend resources updated.")
+    val eventualOutcomes = mongoRepository.getResourceIdsByTag(tag).flatMap { resourceIdsTaggedWithTag =>
+      log.info(resourceIdsTaggedWithTag.size + " votes will needs to be cleared and the frontend resources updated.")
 
-    val eventualResources = Future.sequence(resourceIdsTaggedWithTag.map { rid =>
-      mongoRepository.getResourceByObjectId(rid)
-    }).map(_.flatten)
+      val eventualResources = Future.sequence(resourceIdsTaggedWithTag.map { rid =>
+        mongoRepository.getResourceByObjectId(rid)
+      }).map(_.flatten)
 
-    Await.result(eventualResources, TenSeconds).foreach { taggedResource => // TODO remove blocking Await
-      val updatedResource = deleteTagFromResource(tag, taggedResource)
-      mongoRepository.saveResource(updatedResource) // TODO Map
-      frontendContentUpdater.update(updatedResource)
+      eventualResources.flatMap { taggedResources =>
+        val eventualDeletions = taggedResources.map { taggedResource =>
+          val updatedResource = withTagRemoved(taggedResource, tag)
+          mongoRepository.saveResource(updatedResource).flatMap { saveWriteResult =>
+            frontendContentUpdater.update(updatedResource)
+          }
+        }
+        Future.sequence(eventualDeletions)
+      }
     }
+
+    Await.result(eventualOutcomes, TenSeconds).forall(_ == true)
   }
 
   def transferVotes(previousOwner: User, newOwner: User) {
