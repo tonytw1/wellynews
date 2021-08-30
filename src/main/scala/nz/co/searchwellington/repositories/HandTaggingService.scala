@@ -56,8 +56,7 @@ import scala.concurrent.{Await, Future}
     Await.result(eventualOutcomes, TenSeconds).forall(_ == true)
   }
 
-  def transferVotes(previousOwner: User, newOwner: User) {
-
+  def transferVotes(previousOwner: User, newOwner: User): Boolean = {
     def transferTaggings(resource: Resource): Resource = {
       val updatedTaggings = resource.resource_tags.map { t =>
         if (t.user_id == previousOwner._id) {
@@ -69,18 +68,25 @@ import scala.concurrent.{Await, Future}
       resource.withTaggings(updatedTaggings)
     }
 
-    val resourcesTaggedByPreviousUser = Await.result(mongoRepository.getResourceIdsByTaggingUser(previousOwner), TenSeconds)
+    val eventualTransferOutcomes: Future[Seq[Boolean]] = mongoRepository.getResourceIdsByTaggingUser(previousOwner).flatMap { resourcesTaggedByPreviousUser =>
+      log.info("Transferring taggings on " + resourcesTaggedByPreviousUser.size + " resources from user " + previousOwner.getName + " to " + newOwner.getName)
+      val eventualResourcesToTransfer = Future.sequence(resourcesTaggedByPreviousUser.map { rid =>
+        mongoRepository.getResourceByObjectId(rid)
+      }).map(_.flatten)
 
-    log.info("Transferring taggings on " + resourcesTaggedByPreviousUser.size + " resources from user " + previousOwner.getName + " to " + newOwner.getName)
-    val eventualResources = Future.sequence(resourcesTaggedByPreviousUser.map { rid =>
-      mongoRepository.getResourceByObjectId(rid)
-    }).map(_.flatten)
+      eventualResourcesToTransfer.flatMap { resourcesToTransfer =>
+        val eventualTransferOutcomes = resourcesToTransfer.map { resource =>
+          val updatedResource = transferTaggings(resource) // TODO blocking
+          mongoRepository.saveResource(updatedResource).flatMap { saveWriteResult =>
+            frontendContentUpdater.update(updatedResource)
+          }
+        }
+        Future.sequence(eventualTransferOutcomes)
 
-    Await.result(eventualResources, TenSeconds).foreach { resource =>
-      val updatedResource = transferTaggings(resource)
-      mongoRepository.saveResource(updatedResource) // TODO map
-      frontendContentUpdater.update(updatedResource)
+      }
     }
+
+    Await.result(eventualTransferOutcomes, TenSeconds).forall(_ == true)
   }
 
 }
