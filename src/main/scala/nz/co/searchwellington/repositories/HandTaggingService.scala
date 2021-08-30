@@ -28,7 +28,7 @@ import scala.concurrent.{Await, Future}
     resource.withTaggings(otherUsersTaggings ++ usersNewsTaggings)
   }
 
-  def clearTaggingsForTag(tag: Tag): Boolean = {
+  def clearTaggingsForTag(tag: Tag): Future[Boolean] = {
     def withTagRemoved(resource: Resource, tag: Tag): Resource = {
       val tagsToRetain = resource.resource_tags.filterNot(t => t.tag_id == tag._id)
       resource.withTaggings(tagsToRetain)
@@ -53,10 +53,10 @@ import scala.concurrent.{Await, Future}
       }
     }
 
-    Await.result(eventualOutcomes, TenSeconds).forall(_ == true)
+    eventualOutcomes.map(_.forall(_ == true))
   }
 
-  def transferVotes(previousOwner: User, newOwner: User): Boolean = {
+  def transferVotes(previousOwner: User, newOwner: User): Future[Boolean] = {
     def transferTaggings(resource: Resource): Resource = {
       val updatedTaggings = resource.resource_tags.map { t =>
         if (t.user_id == previousOwner._id) {
@@ -86,7 +86,7 @@ import scala.concurrent.{Await, Future}
       }
     }
 
-    Await.result(eventualTransferOutcomes, TenSeconds).forall(_ == true)
+    eventualTransferOutcomes.map(_.forall(_ == true))
   }
 
 }

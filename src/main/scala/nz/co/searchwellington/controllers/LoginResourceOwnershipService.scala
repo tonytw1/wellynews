@@ -17,7 +17,7 @@ import scala.concurrent.{Await, ExecutionContext}
       //resource.setOwner(newOwner)
       //mongoRepository.saveResource(resource)
     }
-    handTaggingService.transferVotes(previousOwner, newOwner)
+    Await.result(handTaggingService.transferVotes(previousOwner, newOwner), TenSeconds)
 
     mongoRepository.removeUser(previousOwner)
   }

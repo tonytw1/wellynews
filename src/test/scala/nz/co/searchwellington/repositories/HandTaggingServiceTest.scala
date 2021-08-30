@@ -1,5 +1,6 @@
 package nz.co.searchwellington.repositories
 
+import nz.co.searchwellington.ReasonableWaits
 import nz.co.searchwellington.model.{Tagging, _}
 import nz.co.searchwellington.repositories.mongo.MongoRepository
 import org.junit.Assert.{assertEquals, assertFalse, assertTrue}
@@ -7,9 +8,9 @@ import org.junit.Test
 import org.mockito.Mockito.{mock, verify, verifyZeroInteractions, when}
 import org.mockito.{ArgumentCaptor, Matchers}
 
-import scala.concurrent.{ExecutionContext, Future}
+import scala.concurrent.{Await, ExecutionContext, Future}
 
-class HandTaggingServiceTest {
+class HandTaggingServiceTest extends ReasonableWaits {
   private val frontendContentUpdater = mock(classOf[FrontendContentUpdater])
   private val mongoRepository = mock(classOf[MongoRepository])
 
@@ -93,7 +94,7 @@ class HandTaggingServiceTest {
     when(mongoRepository.getResourceIdsByTag(tag)).thenReturn(Future.successful(Seq(taggedResource._id)))
     when(mongoRepository.getResourceByObjectId(taggedResource._id)).thenReturn(Future.successful(Some(taggedResource)))
 
-    handTaggingService.clearTaggingsForTag(tag)
+    Await.result(handTaggingService.clearTaggingsForTag(tag), TenSeconds)
 
     verify(frontendContentUpdater).update(taggedResource.copy(resource_tags = Seq.empty))
   }
@@ -104,7 +105,7 @@ class HandTaggingServiceTest {
     when(mongoRepository.getResourceByObjectId(taggedResource._id)).thenReturn(Future.successful(Some(taggedResource)))
 
     val updated = ArgumentCaptor.forClass(classOf[Resource])
-    handTaggingService.transferVotes(taggingUser, newUser)
+    Await.result(handTaggingService.transferVotes(taggingUser, newUser), TenSeconds)
 
     verify(mongoRepository).saveResource(updated.capture())(Matchers.eq(ec))
     assertEquals(taggedResource._id, updated.getValue._id)
