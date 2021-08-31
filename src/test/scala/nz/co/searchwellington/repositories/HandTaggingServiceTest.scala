@@ -7,6 +7,7 @@ import org.junit.Assert.{assertEquals, assertFalse, assertTrue}
 import org.junit.Test
 import org.mockito.Mockito.{mock, verify, verifyZeroInteractions, when}
 import org.mockito.{ArgumentCaptor, Matchers}
+import reactivemongo.api.commands.WriteResult
 
 import scala.concurrent.{Await, ExecutionContext, Future}
 
@@ -23,15 +24,19 @@ class HandTaggingServiceTest extends ReasonableWaits {
   private val taggedResource = Website(resource_tags = Seq(handTagging))
   private val newUser = User(name = Some("New user"))
 
+  private val successfulWrite = mock(classOf[WriteResult])
+
   implicit val ec = ExecutionContext.Implicits.global
 
   @Test
   def clearingTagVotesClearAllVotesForThatTagFromTheDatabase {
     when(mongoRepository.getResourceIdsByTag(tag)).thenReturn(Future.successful(Seq(taggedResource._id)))
     when(mongoRepository.getResourceByObjectId(taggedResource._id)).thenReturn(Future.successful(Some(taggedResource)))
+    when(mongoRepository.saveResource(Matchers.any(classOf[Resource]))(Matchers.eq(ec))).thenReturn(Future.successful(successfulWrite))
+    when(frontendContentUpdater.update(Matchers.any(classOf[Resource]))(Matchers.eq(ec))).thenReturn(Future.successful(true))
 
     val updated = ArgumentCaptor.forClass(classOf[Resource])
-    handTaggingService.clearTaggingsForTag(tag)
+    Await.result(handTaggingService.clearTaggingsForTag(tag), TenSeconds)
 
     // Expect the previously tagged resource to be updated with the tagging for the deleted tag removed
     verify(mongoRepository).saveResource(updated.capture())(Matchers.eq(ec))
@@ -93,6 +98,8 @@ class HandTaggingServiceTest extends ReasonableWaits {
   def clearingTagVotesShouldtriggerFrontendContentUpdateForTheEffectedResources {
     when(mongoRepository.getResourceIdsByTag(tag)).thenReturn(Future.successful(Seq(taggedResource._id)))
     when(mongoRepository.getResourceByObjectId(taggedResource._id)).thenReturn(Future.successful(Some(taggedResource)))
+    when(mongoRepository.saveResource(Matchers.any(classOf[Resource]))(Matchers.eq(ec))).thenReturn(Future.successful(successfulWrite))
+    when(frontendContentUpdater.update(Matchers.any(classOf[Resource]))(Matchers.eq(ec))).thenReturn(Future.successful(true))
 
     Await.result(handTaggingService.clearTaggingsForTag(tag), TenSeconds)
 
@@ -103,6 +110,8 @@ class HandTaggingServiceTest extends ReasonableWaits {
   def shouldReassignTheVotesUserAndPreformFrontendUpdateWhenTransferringVotes {
     when(mongoRepository.getResourceIdsByTaggingUser(taggingUser)).thenReturn(Future.successful(Seq(taggedResource._id)))
     when(mongoRepository.getResourceByObjectId(taggedResource._id)).thenReturn(Future.successful(Some(taggedResource)))
+    when(mongoRepository.saveResource(Matchers.any(classOf[Resource]))(Matchers.eq(ec))).thenReturn(Future.successful(successfulWrite))
+    when(frontendContentUpdater.update(Matchers.any(classOf[Resource]))(Matchers.eq(ec))).thenReturn(Future.successful(true))
 
     val updated = ArgumentCaptor.forClass(classOf[Resource])
     Await.result(handTaggingService.transferVotes(taggingUser, newUser), TenSeconds)

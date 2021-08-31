@@ -38,8 +38,9 @@ import scala.concurrent.ExecutionContext.Implicits.global
     getAllTags.map(ts => ts.filter(t => t.parent.isEmpty))
   }
 
-  def deleteTag(tag: Tag) {
+  def deleteTag(tag: Tag): Future[Boolean] = {
     // sessionFactory.getCurrentSession.delete(tag)
+    Future.successful(false) // TODO
   }
 
   def getTagNamesStartingWith(q: String): Future[Seq[String]] = getAllTags.map(ts => ts.filter(t => t.name.startsWith(q)).map(t => t.name))

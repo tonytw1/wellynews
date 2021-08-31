@@ -23,6 +23,7 @@ class LoginResourceOwnershipServiceTest {
   @Test
   def shouldDeletePreviousUserAfterReassigningResources() {
     when(mongoRepository.getResourcesOwnedBy(previousOwner)).thenReturn(Future.successful(resourcesOwnedByUser))
+    when(handTaggingService.transferVotes(previousOwner, newOwner)).thenReturn(Future.successful(true))
 
     loginResourceOwnershipService.reassignOwnership(previousOwner, newOwner)
 
@@ -32,6 +33,7 @@ class LoginResourceOwnershipServiceTest {
   @Test
   def shouldTransferAllTaggingVotesWhenReassigningUser() {
     when(mongoRepository.getResourcesOwnedBy(previousOwner)).thenReturn(Future.successful(resourcesOwnedByUser))
+    when(handTaggingService.transferVotes(previousOwner, newOwner)).thenReturn(Future.successful(true))
 
     loginResourceOwnershipService.reassignOwnership(previousOwner, newOwner)
 
