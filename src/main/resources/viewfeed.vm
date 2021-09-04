@@ -25,10 +25,13 @@
             #end
 		</ul>
 
-		#if ($feed.lastRead)
-			<p>This feed was last read $dateFormatter.timeSince($feed.lastRead)</p>
-		#end
-		
+        <p>
+            Added on $dateFormatter.dayMonthYear($item.date).
+		    #if ($feed.lastRead)
+		        >This feed was last read $dateFormatter.timeSince($feed.lastRead).
+    		#end
+		</p>
+
 		#if($feed.isScreenScraped())
 			#if($feed.publisher) 
 				<p>This feed is produced by screen scraping a page from the <a href="$feed.publisher.url">$feed.publisher.name</a> site.</p>
