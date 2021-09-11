@@ -26,9 +26,9 @@
 		</ul>
 
         <p>
-            Added on $dateFormatter.dayMonthYear($item.date).
+            Added on $dateFormatter.dayMonthYear($feed.date).
 		    #if ($feed.lastRead)
-		        >This feed was last read $dateFormatter.timeSince($feed.lastRead).
+		        This feed was last read $dateFormatter.timeSince($feed.lastRead).
     		#end
 		</p>
 
