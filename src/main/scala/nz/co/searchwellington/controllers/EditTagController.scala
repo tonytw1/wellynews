@@ -68,11 +68,13 @@ class EditTagController @Autowired()(contentUpdateService: ContentUpdateService,
 
     def submitEditTag(loggedInUser: User): ModelAndView = {
       Await.result(mongoRepository.getTagById(id), TenSeconds).map { tag =>
-        val geocode = Option(editTag.getGeocode).flatMap { address =>
-          Option(editTag.getSelectedGeocode).flatMap { osmId =>
-            parseGeotag(address, osmId)
-          }
+        val geocode = for {
+          address <- Option(editTag.getGeocode)
+          osmId <- Option(editTag.getSelectedGeocode)
+        } yield {
+          parseGeotag(address, osmId)
         }
+
         if (Option(editTag.getGeocode).nonEmpty || geocode.isEmpty) {
           result.addError(new ObjectError("geocode", "Could not resolve geocode"))
         }
