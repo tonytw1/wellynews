@@ -13,7 +13,7 @@ import nz.co.searchwellington.views.Errors
 import org.apache.log4j.Logger
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Controller
-import org.springframework.validation.BindingResult
+import org.springframework.validation.{BindingResult, ObjectError}
 import org.springframework.web.bind.annotation.{ModelAttribute, PathVariable, RequestMapping, RequestMethod}
 import org.springframework.web.servlet.ModelAndView
 import org.springframework.web.servlet.view.RedirectView
@@ -47,7 +47,7 @@ class EditTagController @Autowired()(contentUpdateService: ContentUpdateService,
           tag.getAutotagHints.orNull,
           tag.isFeatured,
         )
-        tag.geocode.map { g =>
+        tag.geocode.foreach { g =>
           editTag.setGeocode(g.getAddress)
           val osmId = g.osmId.map(osmToString)
           editTag.setSelectedGeocode(osmId.getOrElse(""))
@@ -68,6 +68,15 @@ class EditTagController @Autowired()(contentUpdateService: ContentUpdateService,
 
     def submitEditTag(loggedInUser: User): ModelAndView = {
       Await.result(mongoRepository.getTagById(id), TenSeconds).map { tag =>
+        val geocode = Option(editTag.getGeocode).flatMap { address =>
+          Option(editTag.getSelectedGeocode).flatMap { osmId =>
+            parseGeotag(address, osmId)
+          }
+        }
+        if (Option(editTag.getGeocode).nonEmpty || geocode.isEmpty) {
+          result.addError(new ObjectError("geocode", "Could not resolve geocode"))
+        }
+
         if (result.hasErrors) {
           log.warn("Edit tag submission has errors: " + result)
           renderEditForm(tag, editTag)
@@ -89,12 +98,6 @@ class EditTagController @Autowired()(contentUpdateService: ContentUpdateService,
             val maybeTag = Await.result(tagDAO.loadTagByObjectId(p), TenSeconds)
             log.info("Found parent for tag id " + p.stringify + ": " + maybeTag)
             maybeTag
-          }
-
-          val geocode = Option(editTag.getGeocode).flatMap { address =>
-            Option(editTag.getSelectedGeocode).flatMap { osmId =>
-              parseGeotag(address, osmId)
-            }
           }
 
           val updatedTag = tag.copy(
