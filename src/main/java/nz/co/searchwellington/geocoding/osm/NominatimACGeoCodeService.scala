@@ -36,9 +36,10 @@ class NominatimACGeoCodeService @Autowired()() extends GeoCodeService with Reaso
             implicit val nacpr = Json.reads[NominatimACPlace]
 
             val body = result.body
-            log.info(body)
+            log.info("Nominatim AC response: " + body)
 
             val nominatimACPlace = Json.parse(body).as[NominatimACPlace]
+            log.info("Nominatim AC response parsed: " + nominatimACPlace)
 
             val osmType = Option(nominatimACPlace.osmType).flatMap { osmType =>
               osmType match {
@@ -60,11 +61,14 @@ class NominatimACGeoCodeService @Autowired()() extends GeoCodeService with Reaso
               new LatLong(ll.lat, ll.lon)
             }
 
-            new Place(
+            val place = new Place(
               nominatimACPlace.address,
               latLong.orNull,
               osmId.orNull
             )
+
+            log.info("Place: " + place)
+            place
 
           case _ =>
             log.warn("NominatimAC call to " + url + " failed with status: " + result.status)
