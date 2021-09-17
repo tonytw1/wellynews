@@ -3,7 +3,7 @@ package nz.co.searchwellington.controllers
 import nz.co.searchwellington.ReasonableWaits
 import nz.co.searchwellington.forms.EditTag
 import nz.co.searchwellington.geocoding.osm.GeoCodeService
-import nz.co.searchwellington.model.{Tag, UrlWordsGenerator, User}
+import nz.co.searchwellington.model.{Geocode, Tag, UrlWordsGenerator, User}
 import nz.co.searchwellington.modification.{ContentUpdateService, TagModificationService}
 import nz.co.searchwellington.repositories.TagDAO
 import nz.co.searchwellington.repositories.elasticsearch.ElasticSearchIndexRebuildService
@@ -68,14 +68,15 @@ class EditTagController @Autowired()(contentUpdateService: ContentUpdateService,
 
     def submitEditTag(loggedInUser: User): ModelAndView = {
       Await.result(mongoRepository.getTagById(id), TenSeconds).map { tag =>
-        val geocode = for {
+        val resolvedGeocode = for {
           address <- Option(editTag.getGeocode)
           osmId <- Option(editTag.getSelectedGeocode)
+          geocode <- parseGeotag(address, osmId)
         } yield {
-          parseGeotag(address, osmId)
+          geocode
         }
 
-        if (Option(editTag.getGeocode).nonEmpty || geocode.isEmpty) {
+        if (Option(editTag.getSelectedGeocode).nonEmpty && resolvedGeocode.isEmpty) {
           result.addError(new ObjectError("geocode", "Could not resolve geocode"))
         }
 
