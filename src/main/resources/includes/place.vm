@@ -1,4 +1,5 @@
 #if ($geocode)
+    <p>$geocode</p>
 	<p>
 	#if($urlBuilder.getLocationUrlFor($geocode)) 
 		<a href="$urlBuilder.getLocationUrlFor($geocode)">#parse("includes/geotag_icon.vm")$geocode.displayName</a>
