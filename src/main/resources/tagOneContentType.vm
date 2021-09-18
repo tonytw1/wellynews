@@ -18,6 +18,7 @@
 
         #parse("includes/tag_heading.vm")
 
+        #set($geocode = $tag.place)
 		#parse("includes/place.vm")
 		
 		#parse("includes/tag_admin_links.vm")
