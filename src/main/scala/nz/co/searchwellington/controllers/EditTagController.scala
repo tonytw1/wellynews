@@ -76,6 +76,7 @@ class EditTagController @Autowired()(contentUpdateService: ContentUpdateService,
           geocode
         }
 
+        log.info("Resolved geocode: " + resolvedGeocode)
         if (Option(editTag.getSelectedGeocode).nonEmpty && resolvedGeocode.isEmpty) {
           result.addError(new ObjectError("geocode", "Could not resolve geocode"))
         }
