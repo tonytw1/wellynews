@@ -41,20 +41,9 @@
 			<p>Listings tagged with both $heading. <br/>
 			Select an individual tag to see all listings for that tag.</p>
 
-		#else
-			#parse("includes/tag_heading.vm")
-
-            #set($geocode = $tag.place)
-			#parse("includes/place.vm")
-				
-			#parse("includes/tag_admin_links.vm")	
-
-			#if($tag.description)
-				<p>$tag.description</p>
-			#end
-			
-			#parse("includes/child_tags.vm")
-		#end
+        #else
+            #parse("includes/tag_header.vm")
+        #end
 				
 		#parse("includes/search_widget.vm")
 			

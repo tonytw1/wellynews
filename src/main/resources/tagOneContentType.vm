@@ -16,18 +16,7 @@
 			#parse("includes/rss_widget_for_tag.vm")
 		</div>
 
-        #parse("includes/tag_heading.vm")
-
-        #set($geocode = $tag.place)
-		#parse("includes/place.vm")
-		
-		#parse("includes/tag_admin_links.vm")
-
-		#parse("includes/child_tags.vm")
-		
-		#if($tag.description) 
-			<p>$tag.description</p>
-		#end
+        #parse("includes/tag_header.vm")
 
 		#parse("includes/search_widget.vm")
 		
