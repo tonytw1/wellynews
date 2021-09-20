@@ -10,7 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
 
 import scala.concurrent.ExecutionContext.Implicits.global
-import scala.concurrent.Future
+import scala.concurrent.{Await, Future}
 
 @Component class TaggingReturnsOfficerService @Autowired()(handTaggingDAO: HandTaggingDAO, val mongoRepository: MongoRepository)
   extends ReasonableWaits with TagAncestors {
@@ -100,7 +100,6 @@ import scala.concurrent.Future
             mongoRepository.getResourceByObjectId(p).map { maybePublisher =>
               maybePublisher.flatMap { publisher =>
                 publisher.geocode.map { pg =>
-                  log.debug("Adding publisher geotag: " + pg)
                   new GeotaggingVote(pg, "Publisher's location", 1)
                 }
               }
@@ -113,13 +112,21 @@ import scala.concurrent.Future
       }
     }
 
-    // TODO val tagsWithGeocodes: List[Tag] = getIndexTagsForResource(resource).toList.filter(t => {t.getGeocode != null && t.getGeocode.isValid})
-    // TODO votes ++= tagsWithGeocodes.map(t => {new GeotaggingVote(t.getGeocode, new AncestorTagVoter, 1)})
+    val eventualHandTaggingGeoVotes = getHandTaggingsForResource(resource).map { handTaggingsForResource =>
+      val tags = handTaggingsForResource.map(_.tag)
+      val tagsWithGeocodes = tags.filter(t => t.geocode.exists(_.isValid))
+      tagsWithGeocodes.flatMap { t =>
+        t.geocode.map { tagGeocode =>
+          GeotaggingVote(tagGeocode, t.display_name + " tag geocode", 1)
+        }
+      }
+    }
 
     for {
       publisherGeocodeVote <- eventualPublisherGeocodeVote
+      handTaggingGeoVotes <- eventualHandTaggingGeoVotes
     } yield {
-      Seq(resourceGeocodeVote, publisherGeocodeVote).flatten.filter(gv => gv.geocode.isValid)
+      (Seq(resourceGeocodeVote, publisherGeocodeVote).flatten ++ handTaggingGeoVotes).filter(gv => gv.geocode.isValid)  // TODO this filter is odd
     }
   }
 

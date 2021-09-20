@@ -3,9 +3,10 @@ package nz.co.searchwellington.tagging
 import com.google.common.truth.Truth._
 import nz.co.searchwellington.ReasonableWaits
 import nz.co.searchwellington.model._
-import nz.co.searchwellington.model.taggingvotes.HandTagging
+import nz.co.searchwellington.model.taggingvotes.{GeotaggingVote, HandTagging}
 import nz.co.searchwellington.repositories.HandTaggingDAO
 import nz.co.searchwellington.repositories.mongo.MongoRepository
+import org.junit.Assert.assertTrue
 import org.junit.Test
 import org.mockito.Mockito.{mock, when}
 
@@ -14,8 +15,9 @@ import scala.concurrent.{Await, Future}
 
 class TaggingReturnsOfficerServiceTest extends ReasonableWaits {
 
+  private val aroValley = Geocode(address = Some("Aro Valley"), latitude = Some(-41.2954), longitude = Some(174.7662))
   private val placesTag = Tag(name = "places", display_name = "Places")
-  private val aroValleyTag = Tag(name = "arovalley", display_name = "Aro Valley", parent = Some(placesTag._id))
+  private val aroValleyTag = Tag(name = "arovalley", display_name = "Aro Valley", parent = Some(placesTag._id), geocode = Some(aroValley))
   private val educationTag = Tag(name = "education", display_name = "Education")
   private val consultationTag = Tag(name = "consultation", display_name = "Consultation")
   private val sportTag = Tag(name = "sport", display_name = "Sport")
@@ -43,13 +45,25 @@ class TaggingReturnsOfficerServiceTest extends ReasonableWaits {
     when(handTaggingDAO.getHandTaggingsForResourceId(victoriaUniversity._id)).thenReturn(Future.successful(Seq(HandTagging(user = taggingUser, tag = educationTag))))
     when(mongoRepository.getTagByObjectId(placesTag._id)).thenReturn(Future.successful(Some(placesTag)))
 
-    val taggings = Await.result(taggingReturnsOfficerService.compileTaggingVotes(aroValleyNewsitem), TenSeconds)
+    val votes = Await.result(taggingReturnsOfficerService.compileTaggingVotes(aroValleyNewsitem), TenSeconds)
 
-    assertThat(taggings.head.tag).isEqualTo(aroValleyTag) // TODO not a great assert
+    assertThat(votes.head.tag).isEqualTo(aroValleyTag) // TODO not a great assert
   }
 
   @Test
-  def indexTagsShouldContainAtLeastOneCopyOfEachManuallyAppliedTag(): Unit = {
+  def geotaggingVotesForNewsitemShouldContainHandTaggingTagsGeocodes(): Unit = {
+    when(mongoRepository.getTagByObjectId(placesTag._id)).thenReturn(Future.successful(Some(placesTag)))
+    val newsitemWithNoPublisher = aroValleyNewsitem.copy(publisher = None)
+    val handTags = Seq(HandTagging(user = taggingUser, tag = aroValleyTag))
+    when(handTaggingDAO.getHandTaggingsForResource(newsitemWithNoPublisher)).thenReturn(Future.successful(handTags))
+
+    val geotaggingVotes = Await.result(taggingReturnsOfficerService.getGeotagVotesForResource(newsitemWithNoPublisher), TenSeconds)
+
+    assertTrue(geotaggingVotes.contains(GeotaggingVote(geocode = aroValley, explanation = "Aro Valley tag geocode", 1)))
+  }
+
+  @Test
+  def indexTagsShouldContainAtLeastOneCopyOfEachManuallyAppliedTag(): Unit = {  // TODO belongs somewhere else
     val handTags = Seq(HandTagging(user = taggingUser, tag = aroValleyTag))
     when(handTaggingDAO.getHandTaggingsForResource(aroValleyNewsitem)).thenReturn(Future.successful(handTags))
     when(handTaggingDAO.getHandTaggingsForResourceId(victoriaUniversity._id)).thenReturn(Future.successful(Seq(HandTagging(user = taggingUser, tag = educationTag))))
@@ -57,12 +71,11 @@ class TaggingReturnsOfficerServiceTest extends ReasonableWaits {
 
     val indexTags = Await.result(taggingReturnsOfficerService.getIndexTagsForResource(aroValleyNewsitem), TenSeconds)
 
-    import scala.collection.JavaConverters._
-    assertThat(indexTags.asJava).contains(aroValleyTag)
+    assertTrue(indexTags.contains(aroValleyTag))
   }
 
   @Test
-  def shouldIncludePublishersTagsInNewsitemsIndexTags(): Unit = {
+  def shouldIncludePublishersTagsInNewsitemsIndexTags(): Unit = { // TODO belongs somewhere else
     when(handTaggingDAO.getHandTaggingsForResource(aroValleyNewsitem)).thenReturn(Future.successful(Seq(HandTagging(user = taggingUser, tag = aroValleyTag))))
     when(handTaggingDAO.getHandTaggingsForResourceId(victoriaUniversity._id)).thenReturn(Future.successful(Seq(HandTagging(user = taggingUser, tag = educationTag))))
     when(mongoRepository.getTagByObjectId(placesTag._id)).thenReturn(Future.successful(Some(placesTag)))
@@ -74,7 +87,7 @@ class TaggingReturnsOfficerServiceTest extends ReasonableWaits {
   }
 
   @Test
-  def shouldIncludeAncestorsOfPublishersTags(): Unit = {
+  def indexTagsShouldIncludeAncestorsOfPublishersTags(): Unit = { // TODO belongs somewhere else
     val cricketWellingtonNewsitem = Newsitem(title = Some("Cricket"),
       description = Some("Cricket thing"),
       publisher = Some(cricketWellington._id)
@@ -91,7 +104,7 @@ class TaggingReturnsOfficerServiceTest extends ReasonableWaits {
   }
 
   @Test
-  def shouldIncludeFeedsTagsInNewsitemIndexTags(): Unit = {
+  def shouldIncludeFeedsTagsInNewsitemIndexTags(): Unit = { // TODO belongs somewhere else
     val publicInputFeed = Feed(title = Some("Wellington City Council - Public Input"))
 
     val publicInputNewsitem = Newsitem(
