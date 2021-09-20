@@ -16,27 +16,25 @@ import scala.concurrent.{ExecutionContext, Future}
                                                      adminUrlBuilder: AdminUrlBuilder) extends ReasonableWaits {
 
   def createFrontendResourceFrom(contentItem: Resource, loggedInUser: Option[User] = None)(implicit ec: ExecutionContext): Future[FrontendResource] = {
-    val eventualIndexTags: Future[Seq[Tag]] = taggingReturnsOfficerService.getIndexTagsForResource(contentItem)
-    // TODO this could probably be extracted from the index tags if we wanted to save dao calls
     val eventualHandTags = taggingReturnsOfficerService.getHandTagsForResource(contentItem) // TODO This is interesting as it's applied to unaccepted feed items as well.
-    val eventualPlace: Future[Option[Geocode]] = taggingReturnsOfficerService.getIndexGeocodeForResource(contentItem)
-
-    eventualIndexTags.flatMap { indexTags =>
-      eventualHandTags.flatMap { handTags =>
-        eventualPlace.flatMap { place =>
-          mapFrontendResource(contentItem, place).map { frontendResource =>
-            val actions = actionsFor(frontendResource, loggedInUser)
-            frontendResource match {
-              // TODO this match to call the same code on each class is a weird smell
-              case n: FrontendNewsitem => n.copy(tags = indexTags, handTags = handTags, actions = actions)
-              case f: FrontendFeed => f.copy(tags = indexTags, handTags = handTags, actions = actions)
-              case l: FrontendWatchlist => l.copy(tags = indexTags, handTags = handTags, actions = actions)
-              case w: FrontendWebsite => w.copy(tags = indexTags, handTags = handTags, actions = actions)
-            }
-          }
+    val eventualIndexTags = taggingReturnsOfficerService.getIndexTagsForResource(contentItem) // TODO this could use the above handtaggings to save a duplicate query
+    val eventualPlace = taggingReturnsOfficerService.getIndexGeocodeForResource(contentItem)
+    (for {
+      indexTags <- eventualIndexTags
+      handTags <- eventualHandTags
+      place <- eventualPlace
+    } yield {
+      mapFrontendResource(contentItem, place).map { frontendResource =>
+        val actions = actionsFor(frontendResource, loggedInUser)
+        frontendResource match {
+          // TODO this match to call the same code on each class is a weird smell
+          case n: FrontendNewsitem => n.copy(tags = indexTags, handTags = handTags, actions = actions)
+          case f: FrontendFeed => f.copy(tags = indexTags, handTags = handTags, actions = actions)
+          case l: FrontendWatchlist => l.copy(tags = indexTags, handTags = handTags, actions = actions)
+          case w: FrontendWebsite => w.copy(tags = indexTags, handTags = handTags, actions = actions)
         }
       }
-    }
+    }).flatten
   }
 
   def mapFrontendResource(contentItem: Resource, place: Option[Geocode])(implicit ec: ExecutionContext): Future[FrontendResource] = {
