@@ -69,15 +69,15 @@ class EditTagController @Autowired()(contentUpdateService: ContentUpdateService,
     def submitEditTag(loggedInUser: User): ModelAndView = {
       Await.result(mongoRepository.getTagById(id), TenSeconds).map { tag =>
         val resolvedGeocode = for {
-          address <- Option(editTag.getGeocode)
-          osmId <- Option(editTag.getSelectedGeocode)
+          address <- optionalInputString(editTag.getGeocode)
+          osmId <- optionalInputString(editTag.getSelectedGeocode)
           geocode <- parseGeotag(address, osmId)
         } yield {
           geocode
         }
 
         log.info("Resolved geocode: " + resolvedGeocode)
-        if (Option(editTag.getSelectedGeocode).nonEmpty && resolvedGeocode.isEmpty) {
+        if (optionalInputString(editTag.getSelectedGeocode).nonEmpty && resolvedGeocode.isEmpty) {
           result.addError(new ObjectError("geocode", "Could not resolve geocode"))
         }
 
@@ -104,13 +104,13 @@ class EditTagController @Autowired()(contentUpdateService: ContentUpdateService,
             maybeTag
           }
 
-          val updatedTag = tag.copy(
+          val updatedTag: Tag = tag.copy(
             display_name = editTag.getDisplayName,
             description = Option(editTag.getDescription),
             parent = parentTag.map(_._id),
             autotag_hints = Some(editTag.getAutotagHints),
             featured = editTag.getFeatured,
-            geocode = resolvedGeocode,
+            geocode = resolvedGeocode
           )
 
           Await.result(mongoRepository.saveTag(updatedTag), TenSeconds)
