@@ -68,6 +68,15 @@ class EditTagController @Autowired()(contentUpdateService: ContentUpdateService,
 
     def submitEditTag(loggedInUser: User): ModelAndView = {
       Await.result(mongoRepository.getTagById(id), TenSeconds).map { tag =>
+        val parentTag = optionalBsonObjectId(editTag.getParent).flatMap { p =>
+          val maybeTag = Await.result(tagDAO.loadTagByObjectId(p), TenSeconds)
+          log.info("Found parent for tag id " + p.stringify + ": " + maybeTag)
+          maybeTag
+        }
+        if (optionalInputString(editTag.getParent).nonEmpty && parentTag.isEmpty) {
+          result.addError(new ObjectError("geocode", "Could not resolve parent tag"))
+        }
+
         val resolvedGeocode = for {
           address <- optionalInputString(editTag.getGeocode)
           osmId <- optionalInputString(editTag.getSelectedGeocode)
@@ -75,7 +84,6 @@ class EditTagController @Autowired()(contentUpdateService: ContentUpdateService,
         } yield {
           geocode
         }
-
         log.info("Resolved geocode: " + resolvedGeocode)
         if (optionalInputString(editTag.getSelectedGeocode).nonEmpty && resolvedGeocode.isEmpty) {
           result.addError(new ObjectError("geocode", "Could not resolve geocode"))
@@ -86,25 +94,7 @@ class EditTagController @Autowired()(contentUpdateService: ContentUpdateService,
           renderEditForm(tag, editTag)
 
         } else {
-
-          def optionalBsonObjectId(i: String): Option[BSONObjectID] = {
-            optionalInputString(i).flatMap { bid =>
-              val maybeParsed = BSONObjectID.parse(bid)
-              if (maybeParsed.isSuccess) {
-                Some(maybeParsed.get)
-              } else {
-                None // TODO push error up
-              }
-            }
-          }
-
-          val parentTag = optionalBsonObjectId(editTag.getParent).flatMap { p =>
-            val maybeTag = Await.result(tagDAO.loadTagByObjectId(p), TenSeconds)
-            log.info("Found parent for tag id " + p.stringify + ": " + maybeTag)
-            maybeTag
-          }
-
-          val updatedTag: Tag = tag.copy(
+          val updatedTag = tag.copy(
             display_name = editTag.getDisplayName,
             description = Option(editTag.getDescription),
             parent = parentTag.map(_._id),
@@ -142,6 +132,17 @@ class EditTagController @Autowired()(contentUpdateService: ContentUpdateService,
       addObject("tag", tag).
       addObject("parents", possibleParents.asJava).
       addObject("editTag", editTag)
+  }
+
+  private def optionalBsonObjectId(i: String): Option[BSONObjectID] = {
+    optionalInputString(i).flatMap { bid =>
+      val maybeParsed = BSONObjectID.parse(bid)
+      if (maybeParsed.isSuccess) {
+        Some(maybeParsed.get)
+      } else {
+        None // TODO push error up
+      }
+    }
   }
 
 }
