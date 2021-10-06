@@ -14,6 +14,7 @@ import play.api.libs.json.Reads.DefaultJodaDateReads
 import play.api.libs.ws.JsonBodyWritables.writeableOf_JsValue
 import play.api.libs.ws.StandaloneWSRequest
 import play.api.libs.ws.ahc.StandaloneAhcWSClient
+import play.api.libs.json.JodaReads
 
 import scala.concurrent.{ExecutionContext, Future}
 
@@ -31,7 +32,7 @@ class WhakaokoClient @Autowired()(@Value("${whakaoko.url}") whakaokoUrl: String,
 
   private val wsClient = StandaloneAhcWSClient()
 
-  private implicit val dr = DefaultJodaDateReads
+  private implicit val dr = JodaReads.DefaultJodaDateTimeReads
   private implicit val llr = Json.reads[LatLong]
   private implicit val pr = Json.reads[Place]
   private implicit val fir = Json.reads[FeedItem]
