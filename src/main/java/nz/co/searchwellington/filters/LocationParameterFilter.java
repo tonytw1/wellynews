@@ -49,13 +49,15 @@ public class LocationParameterFilter implements RequestAttributeFilter {
 		if(!Strings.isNullOrEmpty(request.getParameter(OSM))) {
 			final String osmIdString = request.getParameter(OSM);
 			final OsmId osmId = osmIdParser.parseOsmId(osmIdString);
-			final Place resolvedPlace = geoCodeService.resolveOsmId(osmId);
-			log.debug("OSM id '" + osmId + "' resolved to: " + resolvedPlace);
-			if (resolvedPlace == null) {
-				throw new UnresolvableLocationException("OSM place could not be resolved");
+			if (osmId != null) {
+				final Place resolvedPlace = geoCodeService.resolveOsmId(osmId);
+				log.debug("OSM id '" + osmId + "' resolved to: " + resolvedPlace);
+				if (resolvedPlace == null) {
+					throw new UnresolvableLocationException("OSM place could not be resolved");
+				}
+				request.setAttribute(LOCATION, resolvedPlace);
+				return;
 			}
-			request.setAttribute(LOCATION, resolvedPlace);
-			return;
 		}
 				
 		if (!Strings.isNullOrEmpty(request.getParameter("latitude")) && !Strings.isNullOrEmpty(request.getParameter("longitude"))) {
