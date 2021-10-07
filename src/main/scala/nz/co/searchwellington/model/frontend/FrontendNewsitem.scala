@@ -36,7 +36,7 @@ case class FrontendNewsitem(id: String,
 
   def getAcceptedByProfilename: String = acceptedBy.flatMap(_.profilename).orNull
 
-  @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = isoDateJsonFormat)
+  @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ssXXX")
   def getAccepted: Date = accepted
 
   override def getAuthor: String = getPublisherName

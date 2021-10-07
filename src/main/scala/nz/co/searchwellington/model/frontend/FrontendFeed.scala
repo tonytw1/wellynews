@@ -28,7 +28,7 @@ case class FrontendFeed(id: String,
                         actions: Seq[Action] = Seq.empty
                        ) extends FrontendResource {
 
-  @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = isoDateJsonFormat)
+  @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ssXXX")
   def getLatestItemDate: Date = {
     latestItemDate
   }
@@ -37,7 +37,7 @@ case class FrontendFeed(id: String,
     acceptancePolicy
   }
 
-  @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = isoDateJsonFormat)
+  @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ssXXX")
   def getLastRead: Date = {
     lastRead.orNull
   }

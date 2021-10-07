@@ -27,8 +27,6 @@ trait FrontendResource extends RssFeedable with Serializable {
   val lastScanned: Option[Date]
   val actions: Seq[Action]
 
-  val isoDateJsonFormat = "yyyy-MM-dd'T'HH:mm:ssXXX"
-
   def getId: String = id
 
   final def getType: String = `type`
@@ -43,12 +41,12 @@ trait FrontendResource extends RssFeedable with Serializable {
 
   final def getHttpStatus: Int = httpStatus
 
-  @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = isoDateJsonFormat)
+  @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ssXXX")
   final def getDate: Date = date
 
   final def getDescription: String = description
 
-  @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = isoDateJsonFormat)
+  @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ssXXX")
   final def getLiveTime: Date = liveTime
 
   final def getTags: List[Tag] = {
