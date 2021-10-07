@@ -57,12 +57,8 @@ import scala.concurrent.ExecutionContext.Implicits.global
   @RequestMapping(Array("/api"))
   def api(request: HttpServletRequest): ModelAndView = {
     urlStack.setUrlStack(request)
-
     Await.result(withCommonLocal(new ModelAndView("api").
-      addObject("heading", "The Wellynews API").
-      addObject("feeds", contentRetrievalService.getFeeds(loggedInUser = loggedInUserFilter.getLoggedInUser)).
-      addObject("publishers", contentRetrievalService.getAllPublishers(loggedInUserFilter.getLoggedInUser)).  // TODO Future!?
-      addObject("api_tags", contentRetrievalService.getTopLevelTags)), TenSeconds)
+      addObject("heading", "The Wellynews API")), TenSeconds)
   }
 
   @RequestMapping(Array("/rssfeeds"))

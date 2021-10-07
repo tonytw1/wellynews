@@ -182,43 +182,6 @@
 		</ul>
 	
 		<p>A complete list of feed url snippets is provided <a href="#feedurlsnippets">below</a>.</p>
-
-
-
-
-		<a name="urlsnippets"></a>
-		<h2>URL snippets</h2>
-
-		<h5><b>Available Tags</b></h5>
-		<table>
-			<tr><td>Tag</td><td>URL snippet</td></tr>
-			#foreach($item in $api_tags)
-				<tr><td>$item.displayName</td>
-				<td><code>$item.name</code></td></tr>
-			#end
-		</table>
-
-
-		<h5><b>Available Publishers</b></h5>
-		<table>
-			<tr><td>Publisher</td><td>URL snippet</td></tr>
-			#foreach($publisher in $publishers)
-				<tr><td>$publisher.name</td>
-				<td><code>$publisher.urlWords</code></td></tr>
-			#end
-		</table>	
-
-
-
-		<a name="feedurlsnippets"></a>
-		<h5><b>Available RSS to JSON Feeds</b></h5>
-		<table>
-			<tr><td>Feed</td><td>URL snippet</td></tr>
-			#foreach($item in $feeds)
-				<tr><td>$item.name</td>
-				<td><code>$item.urlWords</code></td></tr>
-			#end
-		</table>
 	</div>
 
 	<div class="right">
