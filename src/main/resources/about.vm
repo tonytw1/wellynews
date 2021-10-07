@@ -71,7 +71,7 @@ settlers.
 <p>Some newsitems contain <a href="geotagged">location information</a>. This makes the following possible:</p>
 
 <p>-Searching for newitems based on location<br/>
-		ie. Newsitems near Islandbay: <a href="$urlBuilder.geotaggedUrl?osm=79654904/NODE">$urlBuilder.geotaggedUrl?osm=79654904/NODE</a>
+		ie. Newsitems near Islandbay: <a href="$urlBuilder.geotaggedUrl?osm=279654904/NODE">$urlBuilder.geotaggedUrl?osm=279654904/NODE</a>
 	</p>
 	<p>-RSS feeds of newsitems near a location<br/>
 	ie. An RSS feed of newsitems near Wellington railway station: <a href="$urlBuilder.geotaggedUrl/rss?osm=2640313612/NODE">$urlBuilder.geotaggedUrl/rss?osm=2640313612/NODE</a>
