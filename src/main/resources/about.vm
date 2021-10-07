@@ -12,25 +12,21 @@
 <h2>$heading</h2>
 
 <p>The <i><a href="/#newslog">${siteInformation.areaname} newslog</a></i>
-draws in notices and newsitems published by local organisations. The resulting 
+collects newsitems and notices published by local organisations. The resulting
 content isn't going to be what you'll find in a newspaper but we think that's 
 half the attraction.</p>
 
 <p>The newslog is also available as an <a href="rssfeeds">RSS feed</a>.</p>
 
 
-<h3>Getting content out of the system</h3>
+<h3>RSS and JSON feeds</h3>
 
 <p>By running an aggregator we're taking a slight liberty with other people's content.
 It's therefore important that we've transparent about what we're doing.
-To this end our index is available in machine readable formats for reuse by other members of the community.</p>
-
-<p>Our ethos is that if we use a piece of data to render one of our own pages, that data should also be available in a feed.</p>
-
-<h3>RSS and JSON feeds</h3>
+Our index is available in machine readable formats for reuse by other members of the community.</p>
 
 <p>The main content of each page is available as an RSS feed or JSON.
-Appending /rss or /json to a page url to access these feeds (credit - this url scheme is inspired by the Guardian newspaper's site)</p>
+Appending /rss or /json to a page url to access these feeds. This url scheme is inspired by the Guardian newspaper.</p>
 
 <p>The complete set of available feeds is documented in the <a href="/api">API instructions</a>.</p>
 
@@ -72,14 +68,13 @@ settlers.
 <a name="geotagged" />
 <h3>Geotagged newsitems</h3>
 
-<p>Some of the newsitems in our feeds contain <a href="geotagged">position information</a>. This information
-makes the following possible:</p>
+<p>Some newsitems contain <a href="geotagged">location information</a>. This makes the following possible:</p>
 
 <p>-Searching for newitems based on location<br/>
-		ie. Newsitems near Islandbay: <a href="$urlBuilder.geotaggedUrl?location=Island+Bay">$urlBuilder.geotaggedUrl?location=Island+Bay</a>
+		ie. Newsitems near Islandbay: <a href="$urlBuilder.geotaggedUrl?osm=79654904/NODE">$urlBuilder.geotaggedUrl?osm=79654904/NODE</a>
 	</p>
 	<p>-RSS feeds of newsitems near a location<br/>
-	ie. An RSS feed of newsitems near Petone Station: <a href="$urlBuilder.geotaggedUrl/rss?location=Petone+Station">$urlBuilder.geotaggedUrl/rss?location=Petone+Station</a>
+	ie. An RSS feed of newsitems near Wellington railway station: <a href="$urlBuilder.geotaggedUrl/rss?osm=2640313612/NODE">$urlBuilder.geotaggedUrl/rss?osm=2640313612/NODE</a>
 	</p>
 	
 	<p>-Newsitems near your current position (HTML5 browsers such as Firefox 4 and Safari 5 only)<br/>
