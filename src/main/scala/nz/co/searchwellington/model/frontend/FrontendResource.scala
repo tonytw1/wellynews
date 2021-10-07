@@ -1,11 +1,12 @@
 package nz.co.searchwellington.model.frontend
 
-import java.io.Serializable
-import java.util.{Date, List}
-
+import com.fasterxml.jackson.annotation.JsonFormat
 import nz.co.searchwellington.model.{Geocode, Tag}
 import reactivemongo.api.bson.BSONObjectID
 import uk.co.eelpieconsulting.common.views.rss.RssFeedable
+
+import java.io.Serializable
+import java.util.{Date, List}
 
 trait FrontendResource extends RssFeedable with Serializable {
   val id: String
@@ -26,6 +27,8 @@ trait FrontendResource extends RssFeedable with Serializable {
   val lastScanned: Option[Date]
   val actions: Seq[Action]
 
+  val isoDateJsonFormat = "yyyy-MM-dd'T'HH:mm:ssXXX"
+
   def getId: String = id
 
   final def getType: String = `type`
@@ -40,10 +43,12 @@ trait FrontendResource extends RssFeedable with Serializable {
 
   final def getHttpStatus: Int = httpStatus
 
+  @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = isoDateJsonFormat)
   final def getDate: Date = date
 
   final def getDescription: String = description
 
+  @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = isoDateJsonFormat)
   final def getLiveTime: Date = liveTime
 
   final def getTags: List[Tag] = {

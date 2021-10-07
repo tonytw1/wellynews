@@ -1,7 +1,8 @@
 package nz.co.searchwellington.model.frontend
 
-import java.util.Date
+import com.fasterxml.jackson.annotation.JsonFormat
 
+import java.util.Date
 import nz.co.searchwellington.model.{FeedAcceptancePolicy, Geocode, Tag}
 
 case class FrontendFeed(id: String,
@@ -27,6 +28,7 @@ case class FrontendFeed(id: String,
                         actions: Seq[Action] = Seq.empty
                        ) extends FrontendResource {
 
+  @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = isoDateJsonFormat)
   def getLatestItemDate: Date = {
     latestItemDate
   }
@@ -35,6 +37,7 @@ case class FrontendFeed(id: String,
     acceptancePolicy
   }
 
+  @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = isoDateJsonFormat)
   def getLastRead: Date = {
     lastRead.orNull
   }

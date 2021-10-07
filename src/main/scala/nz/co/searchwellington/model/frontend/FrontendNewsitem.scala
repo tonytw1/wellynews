@@ -1,8 +1,9 @@
 package nz.co.searchwellington.model.frontend
 
+import com.fasterxml.jackson.annotation.JsonFormat
+
 import java.util
 import java.util.Date
-
 import nz.co.searchwellington.model.{Geocode, Tag, User, Website}
 import uk.co.eelpieconsulting.common.views.rss.RssFeedable
 
@@ -35,6 +36,7 @@ case class FrontendNewsitem(id: String,
 
   def getAcceptedByProfilename: String = acceptedBy.flatMap(_.profilename).orNull
 
+  @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = isoDateJsonFormat)
   def getAccepted: Date = accepted
 
   override def getAuthor: String = getPublisherName
