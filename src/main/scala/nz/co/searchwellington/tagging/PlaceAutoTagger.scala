@@ -30,7 +30,7 @@ import scala.concurrent.{ExecutionContext, Future}
     }
 
     getAllPlaces.map { places =>
-      log.info("Place autotagger is considering these place tags: " + places.map(_.id).mkString(","))
+      log.info("Place autotagger is considering these place tags: " + places.map(_.name).mkString(", "))
       places.filter(p => checkForMatchingTag(resource, p)).toSet
     }
   }
