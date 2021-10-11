@@ -2,26 +2,24 @@ package nz.co.searchwellington.tagging
 
 import nz.co.searchwellington.ReasonableWaits
 import nz.co.searchwellington.model.{Resource, Tag}
-import nz.co.searchwellington.repositories.TagDAO
 import nz.co.searchwellington.repositories.mongo.MongoRepository
+import org.apache.log4j.Logger
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
 
 import scala.concurrent.{ExecutionContext, Future}
 
-@Component class PlaceAutoTagger @Autowired() (mongoRepository: MongoRepository, tagDAO: TagDAO) extends ReasonableWaits {
+@Component class PlaceAutoTagger @Autowired() (val mongoRepository: MongoRepository) extends TagAncestors
+  with ReasonableWaits {
 
   private final val PLACES_TAG_NAME = "places"
+  private val log = Logger.getLogger(classOf[PlaceAutoTagger])
 
   def suggestTags(resource: Resource)(implicit ec: ExecutionContext): Future[Set[Tag]] = {
 
     def getAllPlaces: Future[Seq[Tag]] = {
-      mongoRepository.getTagByUrlWords(PLACES_TAG_NAME).flatMap { maybePlacesTag =>
-        maybePlacesTag.map { placesTag =>
-          tagDAO.loadTagsByParent(placesTag._id)
-        }.getOrElse {
-          Future.successful(Seq.empty)
-        }
+      mongoRepository.getTagByUrlWords(PLACES_TAG_NAME).flatMap { maybePlaceTag =>
+        maybePlaceTag.map(descendantsOf).getOrElse(Future.successful(Seq.empty))
       }
     }
 
@@ -32,6 +30,7 @@ import scala.concurrent.{ExecutionContext, Future}
     }
 
     getAllPlaces.map { places =>
+      log.info("Place autotagger is considering these place tags: " + places.map(_.id).mkString(","))
       places.filter(p => checkForMatchingTag(resource, p)).toSet
     }
   }

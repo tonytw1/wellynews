@@ -1,18 +1,16 @@
 package nz.co.searchwellington.tagging
 
-import java.util.UUID
-
 import nz.co.searchwellington.ReasonableWaits
 import nz.co.searchwellington.model.{Newsitem, Tag}
-import nz.co.searchwellington.repositories.TagDAO
 import nz.co.searchwellington.repositories.mongo.MongoRepository
 import org.junit.Assert._
 import org.junit.{Before, Test}
 import org.mockito.Mockito.{mock, when}
 import reactivemongo.api.bson.BSONObjectID
 
-import scala.concurrent.{Await, Future}
+import java.util.UUID
 import scala.concurrent.ExecutionContext.Implicits.global
+import scala.concurrent.{Await, Future}
 
 class PlaceAutoTaggerTest extends ReasonableWaits {
 
@@ -22,15 +20,16 @@ class PlaceAutoTaggerTest extends ReasonableWaits {
 
   private val aroValleyNewsitem = Newsitem(title = Some("Test newsitem"), description = Some(".. Student flats in the Aro Valley... Test"))
 
-  private val tagDAO = mock(classOf[TagDAO])
   private val mongoRepository = mock(classOf[MongoRepository])
 
-  private val placeAutoTagger = new PlaceAutoTagger(mongoRepository, tagDAO)
+  private val placeAutoTagger = new PlaceAutoTagger(mongoRepository)
 
   @Before
   def setUp {
     when(mongoRepository.getTagByUrlWords("places")).thenReturn(Future.successful(Some(placesTag)))
-    when(tagDAO.loadTagsByParent(placesTag._id)).thenReturn(Future.successful(List(aroValleyTag, islandBayTag)))
+    when(mongoRepository.getTagsByParent(placesTag._id)).thenReturn(Future.successful(List(aroValleyTag, islandBayTag)))
+    when(mongoRepository.getTagsByParent(aroValleyTag._id)).thenReturn(Future.successful(List.empty))
+    when(mongoRepository.getTagsByParent(islandBayTag._id)).thenReturn(Future.successful(List.empty))
   }
 
   @Test

@@ -24,7 +24,13 @@ trait TagAncestors {
   }
 
   def descendantsOf(tag: Tag)(implicit ec: ExecutionContext): Future[Seq[Tag]] = {
-    mongoRepository.getTagsByParent(tag._id)  // TODO recurse
+    val eventualChildTags = mongoRepository.getTagsByParent(tag._id)
+    eventualChildTags.flatMap { childTags =>
+      val eventualChildrensDescendants = childTags.map(descendantsOf)
+      Future.sequence(eventualChildrensDescendants).map { childrensDescendants =>
+        childTags ++ childrensDescendants.flatten
+      }
+    }
   }
 
 }
