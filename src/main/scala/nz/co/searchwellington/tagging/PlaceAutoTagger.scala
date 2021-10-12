@@ -3,7 +3,6 @@ package nz.co.searchwellington.tagging
 import nz.co.searchwellington.ReasonableWaits
 import nz.co.searchwellington.model.{Resource, Tag}
 import nz.co.searchwellington.repositories.mongo.MongoRepository
-import org.apache.log4j.Logger
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
 
@@ -13,7 +12,6 @@ import scala.concurrent.{ExecutionContext, Future}
   with ReasonableWaits {
 
   private final val PLACES_TAG_NAME = "places"
-  private val log = Logger.getLogger(classOf[PlaceAutoTagger])
 
   def suggestTags(resource: Resource)(implicit ec: ExecutionContext): Future[Set[Tag]] = {
 
@@ -30,7 +28,6 @@ import scala.concurrent.{ExecutionContext, Future}
     }
 
     getAllPlaces.map { places =>
-      log.info("Place autotagger is considering these place tags: " + places.map(_.name).mkString(", "))
       places.filter(p => checkForMatchingTag(resource, p)).toSet
     }
   }
