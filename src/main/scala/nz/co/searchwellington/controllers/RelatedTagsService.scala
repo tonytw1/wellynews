@@ -3,8 +3,6 @@ package nz.co.searchwellington.controllers
 // TODO move out of controllers package
 import nz.co.searchwellington.ReasonableWaits
 import nz.co.searchwellington.model._
-import nz.co.searchwellington.model.mappers.FrontendResourceMapper
-import nz.co.searchwellington.repositories.TagDAO
 import nz.co.searchwellington.repositories.elasticsearch.{Circle, ElasticSearchIndexer, ResourceQuery}
 import nz.co.searchwellington.repositories.mongo.MongoRepository
 import nz.co.searchwellington.tagging.TagAncestors
@@ -16,10 +14,7 @@ import uk.co.eelpieconsulting.common.geo.model.{LatLong, Place}
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
-@Component class RelatedTagsService @Autowired()(tagDAO: TagDAO, showBrokenDecisionService: ShowBrokenDecisionService,
-                                                 frontendResourceMapper: FrontendResourceMapper,
-                                                 val mongoRepository: MongoRepository,
-                                                 elasticSearchIndexer: ElasticSearchIndexer) extends ReasonableWaits with TagAncestors {
+@Component class RelatedTagsService @Autowired()(val mongoRepository: MongoRepository, elasticSearchIndexer: ElasticSearchIndexer) extends ReasonableWaits with TagAncestors {
 
   private val newsitems = Some(Set("N"))
 
