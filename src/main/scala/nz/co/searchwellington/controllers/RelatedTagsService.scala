@@ -2,8 +2,8 @@ package nz.co.searchwellington.controllers
 
 // TODO move out of controllers package
 import nz.co.searchwellington.ReasonableWaits
-import nz.co.searchwellington.model.mappers.FrontendResourceMapper
 import nz.co.searchwellington.model._
+import nz.co.searchwellington.model.mappers.FrontendResourceMapper
 import nz.co.searchwellington.repositories.TagDAO
 import nz.co.searchwellington.repositories.elasticsearch.{Circle, ElasticSearchIndexer, ResourceQuery}
 import nz.co.searchwellington.repositories.mongo.MongoRepository
@@ -14,7 +14,7 @@ import reactivemongo.api.bson.BSONObjectID
 import uk.co.eelpieconsulting.common.geo.model.{LatLong, Place}
 
 import scala.concurrent.ExecutionContext.Implicits.global
-import scala.concurrent.{Await, Future}
+import scala.concurrent.Future
 
 @Component class RelatedTagsService @Autowired()(tagDAO: TagDAO, showBrokenDecisionService: ShowBrokenDecisionService,
                                                  frontendResourceMapper: FrontendResourceMapper,
@@ -24,35 +24,36 @@ import scala.concurrent.{Await, Future}
   private val newsitems = Some(Set("N"))
 
   def getRelatedTagsForTag(tag: Tag, maxItems: Int, loggedInUser: Option[User]): Future[Seq[TagContentCount]] = {
-
-    val tagsAncestors = Await.result(parentsOf(tag), TenSeconds) // TODO Await
-    val tagsDescendants = Await.result(descendantsOf(tag), TenSeconds) // TODO Await
-
-
-    def suitableRelatedTag(tagFacetsForTag: TagContentCount): Boolean = {
-      def isTagSuitableRelatedTag(relatedTag: Tag): Boolean = {
-        //  !(relatedTag.isHidden) && !(tag == relatedTag) && !(relatedTag.isParentOf(tag)) && !(tag.getAncestors.contains(relatedTag)) && !(tag.getChildren.contains(relatedTag)) && !(relatedTag.getName == "places") && !(relatedTag.getName == "blogs") // TODO push up
-
-        val isNotParentOf = !tagsAncestors.contains(relatedTag)
-        val isNotDescendantOf = !tagsDescendants.contains(relatedTag)
-
-        tag != relatedTag && isNotParentOf && isNotDescendantOf // TODO implement all
-      }
-
-      isTagSuitableRelatedTag(tagFacetsForTag.tag)
-    }
-
     def getTagAggregation(tag: Tag, loggedInUser: Option[User]): Future[Seq[(String, Long)]] = {
       val newsitemsForTag = ResourceQuery(`type` = newsitems, tags = Some(Set(tag)))
       elasticSearchIndexer.getAggregationFor(newsitemsForTag, elasticSearchIndexer.Tags, loggedInUser)
     }
 
-    val eventualTagContentCounts: Future[Seq[TagContentCount]] = getTagAggregation(tag, loggedInUser).flatMap { ts =>
+    val eventualTagsAncestors = parentsOf(tag)
+    val eventualTagsDescendants = descendantsOf(tag)
+    val eventualTagContentCounts = getTagAggregation(tag, loggedInUser).flatMap { ts =>
       Future.sequence(ts.map(toTagContentCount)).map(_.flatten)
     }
 
-    eventualTagContentCounts.map { tcs =>
-      tcs.filter(suitableRelatedTag).take(maxItems)
+    for {
+      tagsAncestors <- eventualTagsAncestors
+      tagsDescendants <- eventualTagsDescendants
+      tagContentContents <- eventualTagContentCounts
+    } yield {
+
+      def suitableRelatedTag(tagFacetsForTag: TagContentCount): Boolean = {
+        def isTagSuitableRelatedTag(relatedTag: Tag): Boolean = {
+          //  !(relatedTag.isHidden) && !(tag == relatedTag) && !(relatedTag.isParentOf(tag)) && !(tag.getAncestors.contains(relatedTag)) && !(tag.getChildren.contains(relatedTag)) && !(relatedTag.getName == "places") && !(relatedTag.getName == "blogs") // TODO push up
+          val isNotParentOf = !tagsAncestors.contains(relatedTag)
+          val isNotDescendantOf = !tagsDescendants.contains(relatedTag)
+
+          tag != relatedTag && isNotParentOf && isNotDescendantOf // TODO implement all
+        }
+
+        isTagSuitableRelatedTag(tagFacetsForTag.tag)
+      }
+
+      tagContentContents.filter(suitableRelatedTag).take(maxItems)
     }
   }
 
