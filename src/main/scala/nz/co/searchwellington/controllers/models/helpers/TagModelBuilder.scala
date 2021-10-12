@@ -1,15 +1,15 @@
 package nz.co.searchwellington.controllers.models.helpers
 
 import java.util.List
-
 import javax.servlet.http.HttpServletRequest
 import nz.co.searchwellington.ReasonableWaits
 import nz.co.searchwellington.controllers.models.ModelBuilder
-import nz.co.searchwellington.controllers.{RelatedTagsService, RssUrlBuilder}
+import nz.co.searchwellington.controllers.RssUrlBuilder
 import nz.co.searchwellington.feeds.{FeedItemActionDecorator, RssfeedNewsitemService}
 import nz.co.searchwellington.model.mappers.FrontendResourceMapper
 import nz.co.searchwellington.model.{Resource, Tag, User}
 import nz.co.searchwellington.repositories.{ContentRetrievalService, TagDAO}
+import nz.co.searchwellington.tagging.RelatedTagsService
 import nz.co.searchwellington.urls.UrlBuilder
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component

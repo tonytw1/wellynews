@@ -1,14 +1,14 @@
 package nz.co.searchwellington.controllers.models.helpers
 
 import java.util.UUID
-
 import nz.co.searchwellington.ReasonableWaits
 import nz.co.searchwellington.controllers.models.GeotaggedNewsitemExtractor
-import nz.co.searchwellington.controllers.{RelatedTagsService, RssUrlBuilder}
+import nz.co.searchwellington.controllers.RssUrlBuilder
 import nz.co.searchwellington.model.frontend.{FrontendFeed, FrontendNewsitem, FrontendResource, FrontendWebsite}
 import nz.co.searchwellington.model.mappers.FrontendResourceMapper
 import nz.co.searchwellington.model.{ArchiveLink, Geocode, PublisherArchiveLink, Website}
 import nz.co.searchwellington.repositories.ContentRetrievalService
+import nz.co.searchwellington.tagging.RelatedTagsService
 import nz.co.searchwellington.urls.UrlBuilder
 import org.joda.time.{DateTime, Interval}
 import org.junit.Assert.assertEquals

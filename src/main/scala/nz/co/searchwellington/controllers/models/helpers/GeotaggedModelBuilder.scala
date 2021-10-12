@@ -3,10 +3,11 @@ package nz.co.searchwellington.controllers.models.helpers
 import javax.servlet.http.HttpServletRequest
 import nz.co.searchwellington.ReasonableWaits
 import nz.co.searchwellington.controllers.models.ModelBuilder
-import nz.co.searchwellington.controllers.{RelatedTagsService, RssUrlBuilder}
+import nz.co.searchwellington.controllers.RssUrlBuilder
 import nz.co.searchwellington.filters.{LocationParameterFilter, RequestPath}
 import nz.co.searchwellington.model.User
 import nz.co.searchwellington.repositories.ContentRetrievalService
+import nz.co.searchwellington.tagging.RelatedTagsService
 import nz.co.searchwellington.urls.UrlBuilder
 import org.apache.log4j.Logger
 import org.springframework.beans.factory.annotation.Autowired

@@ -1,11 +1,9 @@
-package nz.co.searchwellington.controllers
+package nz.co.searchwellington.tagging
 
-// TODO move out of controllers package
 import nz.co.searchwellington.ReasonableWaits
 import nz.co.searchwellington.model._
 import nz.co.searchwellington.repositories.elasticsearch.{Circle, ElasticSearchIndexer, ResourceQuery}
 import nz.co.searchwellington.repositories.mongo.MongoRepository
-import nz.co.searchwellington.tagging.TagAncestors
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
 import reactivemongo.api.bson.BSONObjectID
