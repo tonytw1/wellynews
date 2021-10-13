@@ -50,7 +50,7 @@ import scala.concurrent.Future
       val mv = new ModelAndView().
         addObject("heading", "Wellynews").
         addObject("description", "Wellington related newsitems").
-        addObject("link", urlBuilder.fullyQualified(urlBuilder.getHomeUrl)).
+        addObject("link", urlBuilder.fullyQualified(urlBuilder.getHomeUri)).
         addObject(MAIN_CONTENT, latestNewsitems.asJava)
 
       monthOfLastItem(latestNewsitems).map { month =>

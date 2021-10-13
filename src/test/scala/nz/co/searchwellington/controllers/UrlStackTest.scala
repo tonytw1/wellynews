@@ -17,7 +17,7 @@ class UrlStackTest {
 
     val redirectUrl = urlStack.getExitUrlFromStack(request)
 
-    assertEquals("/", redirectUrl)
+    assertEquals("https://wellynews.local/", redirectUrl)
   }
 
   @Test
