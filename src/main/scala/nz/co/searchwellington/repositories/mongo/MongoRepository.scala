@@ -219,7 +219,7 @@ class MongoRepository @Autowired()(@Value("${mongo.uri}") mongoUri: String) exte
   }
 
   def getWebsitesByNamePrefix(q: String, showHeld: Boolean)(implicit ec: ExecutionContext): Future[Seq[Website]] = {
-    val prefixRegex = BSONDocument("$regex" -> ("^" + q + ".*")) // TODO How to escape
+    val prefixRegex = BSONDocument("$regex" -> ("^" + q + ".*"), "$options" -> "i") // TODO How to escape
 
     val selector = BSONDocument(
       "type" -> "W",
