@@ -29,13 +29,13 @@ import scala.concurrent.{Await, ExecutionContext, Future}
 
   def processFeed(feed: Feed, readingUser: User, acceptancePolicy: FeedAcceptancePolicy)(implicit ec: ExecutionContext): Future[Unit] = {
     try {
-      log.info("Processing feed: " + feed.title.getOrElse(feed.page) + " using acceptance policy '" + acceptancePolicy + ". Last read: " + feed.last_read)
+      log.info(s"Processing feed: ${feed.title.getOrElse(feed.page)} using acceptance policy $acceptancePolicy. Last read: " + feed.last_read.getOrElse(""))
 
       // Attempt to back fill missing whakaoko subscriptions
       if (feed.whakaokoSubscription.isEmpty) {
         val eventualMaybeEventualBoolean: Future[Boolean] = whakaokoService.getSubscriptions().flatMap { subscriptions =>
           subscriptions.find(s => s.url == feed.page).map { s =>
-            log.info("Found subscription to attached to feed: " + s);
+            log.debug("Found subscription to attached to feed: " + s)
             feed.whakaokoSubscription = Some(s.id)
             contentUpdateService.update(feed)
           }.getOrElse {
@@ -116,7 +116,7 @@ import scala.concurrent.{Await, ExecutionContext, Future}
 
     Future.sequence(eventualProcessed).map { processed =>
       val accepted = processed.flatten
-      log.info("Processed feed items " + processed.size + " and accepted " + accepted.size)
+      log.debug("Processed feed items " + processed.size + " and accepted " + accepted.size)
       accepted
     }
   }
