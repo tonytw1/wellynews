@@ -1,6 +1,5 @@
 package nz.co.searchwellington.controllers
 
-import javax.validation.Valid
 import nz.co.searchwellington.ReasonableWaits
 import nz.co.searchwellington.forms.NewNewsitem
 import nz.co.searchwellington.model.{Newsitem, User, Website}
@@ -17,6 +16,7 @@ import org.springframework.web.bind.annotation.{ModelAttribute, RequestMapping, 
 import org.springframework.web.servlet.ModelAndView
 import org.springframework.web.servlet.view.RedirectView
 
+import javax.validation.Valid
 import scala.concurrent.Await
 import scala.concurrent.ExecutionContext.Implicits.global
 
@@ -69,7 +69,7 @@ class NewNewsitemController @Autowired()(contentUpdateService: ContentUpdateServ
       contentUpdateService.create(newsitem)
       log.info("Created newsitem: " + newsitem)
 
-      exitFromPublisherSubmit(publisher)
+      exitFromNewsitemSubmit(newsitem, publisher)
     }
   }
 
@@ -83,11 +83,11 @@ class NewNewsitemController @Autowired()(contentUpdateService: ContentUpdateServ
       addObject("newNewsitem", newNewsitem)
   }
 
-  private def exitFromPublisherSubmit(publisher: Option[Website]) = {
-    val redirection = publisher.map { p =>
+  private def exitFromNewsitemSubmit(newsitem: Newsitem, maybePublisher: Option[Website]): ModelAndView = {
+    val redirection = maybePublisher.map { p =>
       new RedirectView(urlBuilder.getPublisherUrl(p))
     }.getOrElse {
-      new RedirectView("/TODO")
+      new RedirectView(urlBuilder.getLocalPageUrl(newsitem))
     }
     new ModelAndView(redirection)
   }

@@ -85,8 +85,20 @@ class UrlBuilder @Autowired()(siteInformation: SiteInformation, urlWordsGenerato
       case w: FrontendWebsite =>
         "/" + w.urlWords
       case _ =>
-        //"/" + resource.getUrlWords
-        ""
+        "" // TODO Watchlist items have no local page
+    }
+  }
+
+  def getLocalPageUrl(resource: Resource): String = {
+    resource match {
+      case n: FrontendNewsitem =>
+        "/newsitem/" + n.id
+      case f: FrontendFeed =>
+        "/feed/" + f.getUrlWords
+      case w: FrontendWebsite =>
+        "/" + w.urlWords
+      case _ =>
+        ""  // TODO Watchlist items have no local page
     }
   }
 
