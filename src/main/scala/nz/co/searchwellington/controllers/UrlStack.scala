@@ -16,7 +16,7 @@ import org.springframework.stereotype.Component
       log.debug("Stack url is: " + uri)
       urlBuilder.fullyQualified(uri)
     }.getOrElse{
-      urlBuilder.fullyQualified("")
+      urlBuilder.getHomeUrl
     }
   }
 
