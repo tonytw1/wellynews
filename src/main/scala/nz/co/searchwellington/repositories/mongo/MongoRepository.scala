@@ -1,7 +1,5 @@
 package nz.co.searchwellington.repositories.mongo
 
-import java.util.Date
-
 import nz.co.searchwellington.ReasonableWaits
 import nz.co.searchwellington.model._
 import org.apache.log4j.Logger
@@ -15,6 +13,8 @@ import reactivemongo.api.commands.WriteResult
 import reactivemongo.api.indexes.{Index, IndexType}
 import reactivemongo.api.{AsyncDriver, Cursor, DB, MongoConnection}
 
+import java.util.Date
+import java.util.regex.Pattern
 import scala.concurrent.{Await, ExecutionContext, Future}
 import scala.util.Try
 
@@ -219,7 +219,9 @@ class MongoRepository @Autowired()(@Value("${mongo.uri}") mongoUri: String) exte
   }
 
   def getWebsitesByNamePrefix(q: String, showHeld: Boolean)(implicit ec: ExecutionContext): Future[Seq[Website]] = {
-    val prefixRegex = BSONDocument("$regex" -> ("^" + q + ".*"), "$options" -> "i") // TODO How to escape
+    val quoted = Pattern.quote(q)
+    log.info(s"Quoted regex input '$q' to '$quoted'")
+    val prefixRegex = BSONDocument("$regex" -> ("^" + quoted + ".*"), "$options" -> "i")
 
     val selector = BSONDocument(
       "type" -> "W",
