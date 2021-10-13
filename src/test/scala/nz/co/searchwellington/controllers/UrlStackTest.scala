@@ -12,12 +12,12 @@ class UrlStackTest {
   private val urlStack = new UrlStack(urlBuilder)
 
   @Test
-  def redirectionsFromEmptyStackShouldBeToFullyQualifiedHomepageUrl: Unit = {
+  def redirectionsFromEmptyStackShouldBeToHomepage: Unit = {
     val request = new MockHttpServletRequest()
 
     val redirectUrl = urlStack.getExitUrlFromStack(request)
 
-    assertEquals("https://wellynews.local", redirectUrl)
+    assertEquals("/", redirectUrl)
   }
 
   @Test
