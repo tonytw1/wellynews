@@ -137,6 +137,8 @@ class UrlBuilder @Autowired()(siteInformation: SiteInformation, urlWordsGenerato
     "/comment"
   }
 
+  def getAcceptedUrl: String = "/accepted"
+
   def getJustinUrl: String = {
     "/justin"
   }

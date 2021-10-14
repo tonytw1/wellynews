@@ -1,6 +1,5 @@
 package nz.co.searchwellington.controllers.models.helpers
 
-import javax.servlet.http.HttpServletRequest
 import nz.co.searchwellington.ReasonableWaits
 import nz.co.searchwellington.controllers.RssUrlBuilder
 import nz.co.searchwellington.controllers.models.ModelBuilder
@@ -12,36 +11,37 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
 import org.springframework.web.servlet.ModelAndView
 
+import javax.servlet.http.HttpServletRequest
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
-@Component class JustinModelBuilder @Autowired()(val contentRetrievalService: ContentRetrievalService,
-                                                 rssUrlBuilder: RssUrlBuilder, val urlBuilder: UrlBuilder,
-                                                 commonAttributesModelBuilder: CommonAttributesModelBuilder)
+@Component class AcceptedModelBuilder @Autowired()(val contentRetrievalService: ContentRetrievalService,
+                                                   rssUrlBuilder: RssUrlBuilder, val urlBuilder: UrlBuilder,
+                                                   commonAttributesModelBuilder: CommonAttributesModelBuilder)
   extends ModelBuilder with CommonSizes with ReasonableWaits with Pagination {
 
   def isValid(request: HttpServletRequest): Boolean = {
-    RequestPath.getPathFrom(request).matches("^/justin(/(rss|json))?$")
+    RequestPath.getPathFrom(request).matches("^/accepted(/(rss|json))?$")
   }
 
   def populateContentModel(request: HttpServletRequest, loggedInUser: Option[User]): Future[Option[ModelAndView]] = {
     val page = getPage(request)
 
     for {
-      websites <- contentRetrievalService.getLatestWebsites(MAX_NEWSITEMS, loggedInUser = loggedInUser, page = page)
+      acceptedNewsitmes <- contentRetrievalService.getAcceptedNewsitems(MAX_NEWSITEMS, loggedInUser = loggedInUser, page = page)
     } yield {
       import scala.collection.JavaConverters._
       val mv = new ModelAndView().
-        addObject("heading", "Latest additions").
-        addObject("description", "The most recently submitted website listings.").
-        addObject("link", urlBuilder.fullyQualified(urlBuilder.getJustinUrl)).
-        addObject(MAIN_CONTENT, websites._1.asJava)
+        addObject("heading", "Accepted newsitems").
+        addObject("description", "The most recently accepted feed news items.").
+        addObject("link", urlBuilder.fullyQualified(urlBuilder.getAcceptedUrl)).
+        addObject(MAIN_CONTENT, acceptedNewsitmes._1.asJava)
 
       val startIndex = getStartIndex(page, MAX_NEWSITEMS)
       def paginationLinks(page: Int): String = {
         urlBuilder.getJustinUrl + "?page=" + page
       }
-      populatePagination(mv, startIndex, websites._2, MAX_NEWSITEMS, paginationLinks)
+      populatePagination(mv, startIndex, acceptedNewsitmes._2, MAX_NEWSITEMS, paginationLinks)
 
       commonAttributesModelBuilder.setRss(mv, rssUrlBuilder.getRssTitleForJustin, rssUrlBuilder.getRssUrlForJustin)
       Some(mv)
@@ -52,6 +52,6 @@ import scala.concurrent.Future
     withLatestNewsitems(mv, loggedInUser)
   }
 
-  def getViewName(mv: ModelAndView) = "justin"
+  def getViewName(mv: ModelAndView) = "justin"  // TODO
 
 }

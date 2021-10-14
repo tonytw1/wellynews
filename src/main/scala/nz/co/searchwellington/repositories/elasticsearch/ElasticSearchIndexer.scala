@@ -40,6 +40,8 @@ class ElasticSearchIndexer @Autowired()(val showBrokenDecisionService: ShowBroke
 
   def byFeedLatestFeedItemDate(request: SearchRequest): SearchRequest = request sortByFieldDesc FeedLatestItemDate
 
+  def byAcceptedDate(request: SearchRequest): SearchRequest = request sortByFieldDesc AcceptedDate
+
   private val log = Logger.getLogger(classOf[ElasticSearchIndexer])
 
   private val Index = elasticsearchIndex
@@ -80,6 +82,7 @@ class ElasticSearchIndexer @Autowired()(val showBrokenDecisionService: ShowBroke
             dateField(FeedLatestItemDate),
             dateField(LastChanged),
             keywordField(Hostname),
+            dateField(AcceptedDate),
           ))
         }
 
@@ -133,6 +136,11 @@ class ElasticSearchIndexer @Autowired()(val showBrokenDecisionService: ShowBroke
           url.getHost
         }
 
+        val accepted = r._1 match {
+          case n: Newsitem => n.accepted
+          case _ => None
+        }
+
         val fields = Seq(
           Some(Type -> r._1.`type`),
           r._1.title.map(t => Title -> t),
@@ -149,7 +157,8 @@ class ElasticSearchIndexer @Autowired()(val showBrokenDecisionService: ShowBroke
           feedAcceptancePolicy.map(ap => FeedAcceptancePolicy -> ap.toString),
           feedLatestItemDate.map(fid => FeedLatestItemDate -> new DateTime(fid)),
           r._1.last_changed.map(lc => LastChanged -> new DateTime(lc)),
-          hostname.map(u => Hostname -> u)
+          hostname.map(u => Hostname -> u),
+          accepted.map(a => AcceptedDate -> new DateTime(a))
         )
 
         indexInto(Index).fields(fields.flatten) id r._1._id.stringify

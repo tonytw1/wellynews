@@ -1,11 +1,10 @@
 package nz.co.searchwellington.modification
 
 import nz.co.searchwellington.ReasonableWaits
-import nz.co.searchwellington.feeds.RssfeedNewsitemService
 import nz.co.searchwellington.model._
 import nz.co.searchwellington.repositories.elasticsearch.ElasticSearchIndexer
 import nz.co.searchwellington.repositories.mongo.MongoRepository
-import nz.co.searchwellington.repositories.{HandTaggingDAO, SuppressionDAO, TagDAO}
+import nz.co.searchwellington.repositories.{HandTaggingDAO, SuppressionDAO}
 import org.apache.log4j.Logger
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
@@ -40,7 +39,6 @@ import scala.concurrent.{Await, Future}
       }
 
       Await.result(elasticSearchIndexer.deleteResource(resource._id).flatMap { dr =>
-        log.info("Elastic delete result: " + dr)
         mongoRepository.removeResource(resource)
       }, TenSeconds)
       true

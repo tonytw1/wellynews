@@ -18,5 +18,6 @@ trait ElasticFields {
   val FeedLatestItemDate = "feed_latest_item_date"
   val LastChanged = "last_changed"
   val Hostname = "hostname"
+  val AcceptedDate = "accepted"
 
 }
