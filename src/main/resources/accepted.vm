@@ -1,0 +1,39 @@
+#parse("includes/header.vm")
+
+<div class="page">
+#parse("includes/topbar.vm")
+
+<div class="left">
+#parse("includes/tag_tree.vm")
+</div>
+
+<div class="main">
+<h2>$heading</h2>
+
+<p>These newsitems have been accepted from feeds recently.</p>
+
+<p>This listing is also available as an RSS feed.</p>
+<ul>
+	<li>#parse("includes/rss_icon.vm") <code>$rss_url</code></li>
+</ul>
+
+#parse("includes/main_content.vm")
+
+#parse("includes/page_links.vm")
+</div>
+
+
+<div class="right">
+
+<div class="box">
+#parse("includes/latest_newsitems.vm")
+
+<br clear="all"/>
+
+</div>
+
+</div>
+
+</div>
+
+#parse("includes/footer.vm")

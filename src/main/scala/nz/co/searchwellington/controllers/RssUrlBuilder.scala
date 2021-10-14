@@ -29,6 +29,10 @@ import uk.co.eelpieconsulting.common.geo.model.{LatLong, OsmId, Place}
     siteInformation.getUrl + "/geotagged/rss"
   }
 
+  def getRssUrlForAccepted: String = siteInformation.getUrl + "/accepted/rss"
+
+  def getRssTitleForAccepted: String = siteInformation.getSitename + " - Accepted news items"
+
   def getRssUrlForJustin: String = {
     siteInformation.getUrl + "/justin/rss"
   }
