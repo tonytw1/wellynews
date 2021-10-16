@@ -21,7 +21,7 @@
             #end
             #if ($editPermissionService.canEdit($feed))
                 <p>$feed.acceptancePolicy</p>
-                <p>This feed is read by this <a href="$adminUrlBuilder.getWhakaokoPreviewUrl($subscription)">Whakaoko subscription $subscription.id</a></p>
+                <p>This feed is read by this <a href="$adminUrlBuilder.getWhakaokoPreviewUrl($subscription)">Whakaoko subscription</a></p>
             #end
 		</ul>
 
