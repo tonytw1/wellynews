@@ -23,7 +23,7 @@ class AdminUrlBuilder @Autowired()(urlBuilder: UrlBuilder,
       case w: FrontendWebsite =>
         "/edit-website/" + w.id
       case _ =>
-        "/edit?resource=" + resource.id
+        "/edit-watchlist/=" + resource.id // TODO
     }
   }
 
