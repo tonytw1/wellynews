@@ -51,12 +51,14 @@ import scala.concurrent.Future
       maybeUser.map { user =>
         for {
           submissions <- contentRetrievalService.getOwnedBy(user, loggedInUser)
+          tagged <- contentRetrievalService.getTaggedBy(user, loggedInUser)
         } yield {
           import scala.collection.JavaConverters._
           Some(new ModelAndView().
             addObject("heading", "User profile").
             addObject("profileuser", user).
-            addObject(MAIN_CONTENT, submissions.asJava))
+            addObject(MAIN_CONTENT, submissions.asJava).
+            addObject("tagged", tagged.asJava))
         }
 
       }.getOrElse {

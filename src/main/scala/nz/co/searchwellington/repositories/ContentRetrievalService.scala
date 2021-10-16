@@ -224,11 +224,12 @@ import scala.concurrent.Future
   }
 
   def getTaggedBy(user: User, loggedInUser: Option[User]): Future[Seq[FrontendResource]] = {
+    val taggedByUser = ResourceQuery(
+      taggingUser = Some(user._id),
+      maxItems = MAX_NEWSITEMS
+    )
     elasticSearchIndexer.getResources(
-      ResourceQuery(
-        taggingUser = Some(user._id),
-        maxItems = MAX_NEWSITEMS
-      ),
+      taggedByUser,
       loggedInUser = loggedInUser
     ).flatMap(i => fetchByIds(i._1, loggedInUser))
   }
