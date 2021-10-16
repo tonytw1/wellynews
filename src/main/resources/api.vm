@@ -93,7 +93,7 @@
 		<p>ie. newsitems published by the Wellington City Council, in JSON format.</p>
 
 		<ul>
-			<li><code><a href="$siteInformation.url/capital-times/json">$siteInformation.url/wellington-city-council/json</a></code></li>
+			<li><code><a href="$siteInformation.url/wellington-city-council/json">$siteInformation.url/wellington-city-council/json</a></code></li>
 		</ul>
 
 		<h5><b>Combinations</b></h5>
