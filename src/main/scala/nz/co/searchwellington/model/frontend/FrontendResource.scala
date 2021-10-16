@@ -82,8 +82,10 @@ trait FrontendResource extends RssFeedable with Serializable {
 
   }.orNull
 
+  @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ssXXX")
   def getLastScanned: Date = lastScanned.orNull
 
+  @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ssXXX")
   def getLastChanged: Date = lastChanged.orNull
 
   def getActions: List[Action] = {
