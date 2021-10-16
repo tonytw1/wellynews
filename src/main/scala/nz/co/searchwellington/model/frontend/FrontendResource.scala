@@ -1,6 +1,7 @@
 package nz.co.searchwellington.model.frontend
 
-import com.fasterxml.jackson.annotation.JsonFormat
+import com.fasterxml.jackson.annotation.JsonInclude.Include
+import com.fasterxml.jackson.annotation.{JsonFormat, JsonInclude}
 import nz.co.searchwellington.model.{Geocode, Tag}
 import reactivemongo.api.bson.BSONObjectID
 import uk.co.eelpieconsulting.common.views.rss.RssFeedable
@@ -8,6 +9,7 @@ import uk.co.eelpieconsulting.common.views.rss.RssFeedable
 import java.io.Serializable
 import java.util.{Date, List}
 
+@JsonInclude(Include.NON_NULL)
 trait FrontendResource extends RssFeedable with Serializable {
   val id: String
   val urlWords: String
