@@ -117,7 +117,7 @@
 
 <h5><b>Geotagged newsitems</b></h5>
 
-<p>Some newsitems contain <a href="geotagged">location information</a>. This makes the following possible:</p>
+    <p>Some newsitems contain <a href="geotagged">location information</a>. This makes the following possible:</p>
 
     <p>Geotagged newsitems in RSS format.</p>
         <ul>
@@ -137,6 +137,15 @@
 	    Click the near me link on the <a href="geotagged">geotagged newsitems page</a> to experiment with this feature
 	</p>
 
+    <p> Where applicable, geotags are also embedded in our RSS feeds using the
+    <a href="https://en.wikipedia.org/wiki/GeoRSS">GeoRSS</a> standard. A GeoRSS tagged feed item has this format:</p>
+    <code>
+        &lt;item&gt;<br/>
+          &lt;title&gt;Can you replace the Hilton?&lt;/title&gt; <br/>
+          &lt;geo:lat&gt;-41.284896&lt;/geo:lat&gt; <br/>
+          &lt;geo:long&gt;174.778531&lt;/geo:long&gt; <br/>
+        &lt;/item&gt;
+    </code>
 
 <h5><b>Pagination</b></h5>
 
@@ -163,21 +172,6 @@
 </code>
 </pre>
 
-
-
-		<a name="geotagging">
-		<h2>Geotagging</h2>
-		
-		<p> Where applicable, geotags are also embedded in our RSS feeds using the
-		<a href="https://en.wikipedia.org/wiki/GeoRSS">GeoRSS</a> standard. A GeoRSS tagged feed item has this format:</p>
-		<code>
-	        &lt;item&gt;<br/>
-	          &lt;title&gt;Can you replace the Hilton?&lt;/title&gt; <br/>
-	          &lt;geo:lat&gt;-41.284896&lt;/geo:lat&gt; <br/>
-	          &lt;geo:long&gt;174.778531&lt;/geo:long&gt; <br/>
-	        &lt;/item&gt;
-		</code>
-	
 		<a name="rsstojson"></a>	
 		<h2>RSS to JSON feed mirroring</h2>
 
