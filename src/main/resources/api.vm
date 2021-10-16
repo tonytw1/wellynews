@@ -113,23 +113,16 @@
 		<p>Credit: This url scheme was inspired by the Guardian newspapers' tag combiners.</p>
 
 
-		<h5><b>Geotagged newsitems</b></h5>
-		
-		<p>Returns newsitems which have been geotagged.</p>
-		<ul>
-			<li><code>$siteInformation.url/geotagged/[rss|json]</code></li>
-		</ul>
+<h5><b>Geotagged newsitems</b></h5>
 
-		<p>ie. Geotagged newsitems in RSS format.</p>
+<p>Some newsitems contain <a href="geotagged">location information</a>. This makes the following possible:</p>
+
+		<p>Geotagged newsitems in RSS format.</p>
 		<ul>
 			<li><code><a href="$siteInformation.url/geotagged/rss">$siteInformation.url/geotagged/rss</a></code></li>
 		</ul>
 
-    <h3>Geotagged newsitems</h3>
-
-<p>Some newsitems contain <a href="geotagged">location information</a>. This makes the following possible:</p>
-
-<p>-Searching for newitems based on location<br/>
+    <p>-Searching for newitems based on location<br/>
 		ie. Newsitems near Islandbay: <a href="$urlBuilder.geotaggedUrl?osm=279654904/NODE">$urlBuilder.geotaggedUrl?osm=279654904/NODE</a>
 	</p>
 	<p>-RSS feeds of newsitems near a location<br/>
@@ -139,7 +132,7 @@
 	<p>-Newsitems near your current position (HTML5 browsers such as Firefox 4 and Safari 5 only)<br/>
 	Click the near me link on the <a href="geotagged">geotagged newsitems page</a> to experiment with this feature
 	</p>
-</ul>
+
 
 		<h5><b>Pagination</b></h5>
 
@@ -165,6 +158,8 @@
 }
 </code>
 </pre>
+
+
 
 		<a name="geotagging">
 		<h2>Geotagging</h2>
