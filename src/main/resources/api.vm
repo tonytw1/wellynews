@@ -25,13 +25,15 @@
 		<span class="wordlecredit">Word cloud by <a href="http://www.wordle.net/">Wordle</a></span>
 		<br/>
 		<p>A number of large news organisations have begun providing <a href="http://www.guardian.co.uk/open-platform">APIs to their content</a>. 
-		These services allow content to be queried programmatically for use in mash ups and the like.</p>
+		These APIs allow content to be queried programmatically for use in mash ups and the like.</p>
 
-		<p>The Wellynews API lets you do something simular with the local newsitems.</p>
+		<p>The Wellynews API lets you do something simular with local newsitems.</p>
 
-		<p>For example, the API can provide a feed of local newsitems related to <a href="$siteInformation.url/consultation/rss">consultation</a>;
-		or maybe <a href="$siteInformation.url/zebras/rss">zebras</a>. It can also handle potentially interesting combinations,
-		such as <a href="$siteInformation.url/wellington-city-council+indoorsportscentre/rss">what Wellington City Council has said about the Indoor Sports Centre</a> or
+		<p>For example the API can provide a feed of local newsitems related to <a href="$siteInformation.url/consultation/rss">consultation</a>;
+		or maybe <a href="$siteInformation.url/zebras/rss">zebras</a>.
+
+		<p>It can also handle potentially interesting combinations,
+		such as <a href="$siteInformation.url/wellington-city-council+central-library/rss">what Wellington City Council has said about the Central Library closure</a> or
 		<a href="$siteInformation.url/sculpture+waterfront/rss">sculpture on the waterfront</a>.
 		</p>
 
@@ -41,10 +43,10 @@
 	
 		<h5>Supported Formats</h5>
 
-		<p>The API allows newsitems to be extracted in RSS or JSON (JavaScript) formats. RSS is widely supported by feed readers,
+		<p>The API allows newsitems to be extracted in RSS or JSON format. RSS is widely supported by feed readers,
 		web browsers and server side libraries. JSON is typically used for passing data into browser based JavaScript applications and mashups.</p>
 
-		<p>The desired format is specified by appending ethier <code>rss</code> or <code>json</code>
+		<p>The desired format is specified by appending either <code>rss</code> or <code>json</code>
 		to the end of the query url.</p>
 
 		<p>ie. Transport newsitems in RSS format:</p>
@@ -117,24 +119,26 @@
 
 <p>Some newsitems contain <a href="geotagged">location information</a>. This makes the following possible:</p>
 
-		<p>Geotagged newsitems in RSS format.</p>
-		<ul>
-			<li><code><a href="$siteInformation.url/geotagged/rss">$siteInformation.url/geotagged/rss</a></code></li>
-		</ul>
+    <p>Geotagged newsitems in RSS format.</p>
+        <ul>
+            <li><code><a href="$siteInformation.url/geotagged/rss">$siteInformation.url/geotagged/rss</a></code></li>
+        </ul>
+    </p>
 
-    <p>-Searching for newitems based on location<br/>
-		ie. Newsitems near Islandbay: <a href="$urlBuilder.geotaggedUrl?osm=279654904/NODE">$urlBuilder.geotaggedUrl?osm=279654904/NODE</a>
-	</p>
-	<p>-RSS feeds of newsitems near a location<br/>
-	ie. An RSS feed of newsitems near Wellington railway station: <a href="$urlBuilder.geotaggedUrl/rss?osm=2640313612/NODE">$urlBuilder.geotaggedUrl/rss?osm=2640313612/NODE</a>
+    <p>-Searching for newitems based on location.<br/>
+		ie. Newsitems near Island Bay: <a href="$urlBuilder.geotaggedUrl?osm=279654904/NODE">$urlBuilder.geotaggedUrl?osm=279654904/NODE</a>
 	</p>
 
-	<p>-Newsitems near your current position (HTML5 browsers such as Firefox 4 and Safari 5 only)<br/>
-	Click the near me link on the <a href="geotagged">geotagged newsitems page</a> to experiment with this feature
+	<p>RSS feeds of newsitems near a location.<br/>
+    	ie. An RSS feed of newsitems near Wellington railway station: <a href="$urlBuilder.geotaggedUrl/rss?osm=2640313612/NODE">$urlBuilder.geotaggedUrl/rss?osm=2640313612/NODE</a>
+	</p>
+
+	<p>Newsitems near your current position (HTML5 browsers such as Firefox 4 and Safari 5 only).<br/>
+	    Click the near me link on the <a href="geotagged">geotagged newsitems page</a> to experiment with this feature
 	</p>
 
 
-		<h5><b>Pagination</b></h5>
+<h5><b>Pagination</b></h5>
 
 		<p>Each RSS or JSON call returns a maximum of 30 results. 
 		For JSON calls, additional results can be obtained from using the <code>page</code> parameter to paginate through the results.</p>
@@ -189,8 +193,6 @@
 		<ul>
 			<li><code><a href="$siteInformation.url/feed/wellington-city-council-latest-news/json">$siteInformation.url/feed/wellington-city-council-latest-news/json</a></code></li>
 		</ul>
-	
-		<p>A complete list of feed url snippets is provided <a href="#feedurlsnippets">below</a>.</p>
 	</div>
 
 	<div class="right">

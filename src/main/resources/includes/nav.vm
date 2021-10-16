@@ -7,6 +7,7 @@
 		<li><a href="$siteInformation.url/publishers">Publishers</a></li>
 		<li><a href="$siteInformation.url/watchlist">Watchlist</a></li>
 		<li><a href="$siteInformation.url/about">About</a></li>
+		<li><a href="$siteInformation.url/api">API</a></li>
 		<li><a href="$siteInformation.url/about#contact">Contact</a></li>
 	</ul>
 	<br/>
