@@ -1,7 +1,7 @@
 package nz.co.searchwellington.controllers.admin
 
 import nz.co.searchwellington.feeds.whakaoko.model.Subscription
-import nz.co.searchwellington.model.frontend.{FrontendFeed, FrontendNewsitem, FrontendResource, FrontendWebsite}
+import nz.co.searchwellington.model.frontend.{FrontendFeed, FrontendNewsitem, FrontendResource, FrontendWatchlist, FrontendWebsite}
 import nz.co.searchwellington.model._
 import nz.co.searchwellington.urls.{UrlBuilder, UrlParameterEncoder}
 import org.springframework.beans.factory.annotation.{Autowired, Value}
@@ -22,8 +22,8 @@ class AdminUrlBuilder @Autowired()(urlBuilder: UrlBuilder,
         "/edit-newsitem/" + n.id
       case w: FrontendWebsite =>
         "/edit-website/" + w.id
-      case _ =>
-        "/edit-watchlist/=" + resource.id // TODO
+      case l: FrontendWatchlist =>
+        "/edit-watchlist/=" + l.id
     }
   }
 
