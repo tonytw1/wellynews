@@ -137,7 +137,7 @@
 	    Click the near me link on the <a href="geotagged">geotagged newsitems page</a> to experiment with this feature
 	</p>
 
-    <p> Where applicable, geotags are also embedded in our RSS feeds using the
+    <p>Geotags are embedded in our RSS feeds using the
     <a href="https://en.wikipedia.org/wiki/GeoRSS">GeoRSS</a> standard. A GeoRSS tagged feed item has this format:</p>
     <code>
         &lt;item&gt;<br/>
