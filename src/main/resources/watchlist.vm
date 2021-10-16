@@ -3,23 +3,18 @@
 <div class="page">
 #parse("includes/topbar.vm")
 
-
 <div class="left">
-
 #parse("includes/tag_tree.vm")
 </div>
 
-
 <div class="main">
 <h2>$heading</h2>
-
 
 <p>The News Watchlist looks for changes on pages known to contain local news items.</p>
 
 <p>Automatically finding new content on sites which do not provide news feeds is not an exact science. The Watchlist tries to assist by highlighting altered pages for manual checking.</p>
 
-<p>Looking for a way to check all Wellington related news pages in under 60 seconds? The Watchlist is available as an RSS feed; try subscribing and opening all in tabs.</p>
-
+<p>The Watchlist is available as an RSS feed:</p>
 <ul>
 	<li>#parse("includes/rss_icon.vm") <code>$rss_url</code></li>
 </ul>
