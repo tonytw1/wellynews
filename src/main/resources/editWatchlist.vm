@@ -10,7 +10,7 @@
 	<div class="main">
 		<h2>Editing a Watchlist</h2>
 		
-		<form id="editForm" action="$adminUrlBuilder.getResourceEditUrl($website)" method="POST">
+		<form id="editForm" action="$adminUrlBuilder.getResourceEditUrl($watchlist)" method="POST">
             <fieldset>
                 #springBind("editWatchlist.title")
                 <label for="${status.expression}">Title:</label>

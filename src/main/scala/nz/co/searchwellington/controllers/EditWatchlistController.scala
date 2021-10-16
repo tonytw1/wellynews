@@ -35,7 +35,7 @@ class EditWatchlistController @Autowired()(contentUpdateService: ContentUpdateSe
 
   private val log = Logger.getLogger(classOf[EditWatchlistController])
 
-  @RequestMapping(value = Array("/edit-website/{id}"), method = Array(RequestMethod.GET))
+  @RequestMapping(value = Array("/edit-watchlist/{id}"), method = Array(RequestMethod.GET))
   def prompt(@PathVariable id: String): ModelAndView = {
     def showForm(loggedInUser: User): ModelAndView = {
       getWatchlistById(id).map { w =>
@@ -59,8 +59,8 @@ class EditWatchlistController @Autowired()(contentUpdateService: ContentUpdateSe
     requiringAdminUser(showForm)
   }
 
-  @RequestMapping(value = Array("/edit-website/{id}"), method = Array(RequestMethod.POST))
-  def submit(@PathVariable id: String, @Valid @ModelAttribute("editWebsite") editWatchlist: EditWatchlist, result: BindingResult): ModelAndView = {
+  @RequestMapping(value = Array("/edit-watchlist/{id}"), method = Array(RequestMethod.POST))
+  def submit(@PathVariable id: String, @Valid @ModelAttribute("editWatchlist") editWatchlist: EditWatchlist, result: BindingResult): ModelAndView = {
     def handleSubmission(loggedInUser: User): ModelAndView = {
       getWatchlistById(id).map { w =>
         if (result.hasErrors) {
