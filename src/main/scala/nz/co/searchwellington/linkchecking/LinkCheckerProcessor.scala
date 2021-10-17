@@ -6,5 +6,5 @@ import org.joda.time.DateTime
 import scala.concurrent.{ExecutionContext, Future}
 
 trait LinkCheckerProcessor {
-  def process(checkResource: Resource, pageContent: String, seen: DateTime)(implicit ec: ExecutionContext): Future[Boolean]
+  def process(checkResource: Resource, pageContent: Option[String], seen: DateTime)(implicit ec: ExecutionContext): Future[Boolean]
 }

@@ -21,19 +21,16 @@ import scala.util.Try
                                           httpFetcher: RobotsAwareHttpFetcher,
                                           feedAutodiscoveryProcessor: FeedAutodiscoveryProcesser,
                                           twitterPhotoDetector: TwitterPhotoDetector,
-                                          registry: MeterRegistry)
-  extends ReasonableWaits {
+                                          contentHasChangedProcesser: ContentHasChangedProcesser,
+                                          registry: MeterRegistry) extends ReasonableWaits {
 
   private val log = Logger.getLogger(classOf[LinkChecker])
   private val CANT_CONNECT = -1
 
-  private val processors = Seq(feedAutodiscoveryProcessor, twitterPhotoDetector) // TODO inject all
+  private val processors = Seq(feedAutodiscoveryProcessor, twitterPhotoDetector, contentHasChangedProcesser) // TODO inject all
 
   private val checkedCounter = registry.counter("linkchecker_checked")
   private val failedCounter = registry.counter("linkchecker_failed")
-
-  //val snapshotArchive = new FilesystemSnapshotArchive("/home/tony/snapshots")
-
 
   // Given a resource id,
   // load the resource.
@@ -81,10 +78,10 @@ import scala.util.Try
   }
 
   // Given a URL load it and return the http status and the page contents
-  private def httpCheck(url: URL)(implicit ec: ExecutionContext): Future[Either[Int, (Integer, String)]] = {
+  private def httpCheck(url: URL)(implicit ec: ExecutionContext): Future[Either[Int, (Integer, Option[String])]] = {
     httpFetcher.httpFetch(url).map { httpResult =>
       log.info("Http status for " + url + " set was: " + httpResult.status)
-      Right(httpResult.status, httpResult.body)
+      Right(httpResult.status, Some(httpResult.body))
     }.recoverWith {
       case e: UnknownHostException =>
         log.error("Link check http fetch failed: ", e)

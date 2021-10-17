@@ -20,9 +20,9 @@ class TwitterPhotoDetectorTest {
     implicit val ec = ExecutionContext.Implicits.global
 
     val newsitem = Newsitem()
-    twitterPhotoDetector.process(newsitem, pageWithTwitterPhoto, DateTime.now)
+    twitterPhotoDetector.process(newsitem, Some(pageWithTwitterPhoto), DateTime.now)
 
-    //assertEquals(Some(twitterPhotoUrl), newsitem.image)
+    // TODO assertEquals(Some(twitterPhotoUrl), newsitem.image)
   }
 
 }

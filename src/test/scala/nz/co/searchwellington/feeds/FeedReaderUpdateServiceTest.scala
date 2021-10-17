@@ -4,15 +4,13 @@ import io.micrometer.core.instrument.{Counter, MeterRegistry}
 import nz.co.searchwellington.ReasonableWaits
 import nz.co.searchwellington.feeds.whakaoko.model.FeedItem
 import nz.co.searchwellington.model.taggingvotes.HandTagging
-import nz.co.searchwellington.model.{Feed, Newsitem, Tag, Tagging, User}
+import nz.co.searchwellington.model._
 import nz.co.searchwellington.modification.ContentUpdateService
-import nz.co.searchwellington.queues.LinkCheckerQueue
 import nz.co.searchwellington.tagging.AutoTaggingService
 import org.junit.Assert.assertEquals
 import org.junit.Test
 import org.mockito.Mockito.{mock, when}
 
-import scala.collection.immutable
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.{Await, Future}
 

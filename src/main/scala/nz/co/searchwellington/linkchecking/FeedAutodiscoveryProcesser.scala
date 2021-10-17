@@ -21,7 +21,7 @@ import scala.concurrent.{ExecutionContext, Future}
 
   private val log = Logger.getLogger(classOf[FeedAutodiscoveryProcesser])
 
-  override def process(checkResource: Resource, pageContent: String, seen: DateTime)(implicit ec: ExecutionContext): Future[Boolean] = {
+  override def process(checkResource: Resource, pageContent: Option[String], seen: DateTime)(implicit ec: ExecutionContext): Future[Boolean] = {
     if (!checkResource.`type`.equals("F")) {
       val pageUrl = new URL(checkResource.page) // TODO catch
 
@@ -49,7 +49,7 @@ import scala.concurrent.{ExecutionContext, Future}
       }
 
       val newlyDiscovered: Future[Seq[String]] = Future.sequence {
-        rssLinkExtractor.extractFeedLinks(pageContent).map(expandUrl).map { discoveredUrl =>
+        rssLinkExtractor.extractFeedLinks(pageContent.get).map(expandUrl).map { discoveredUrl =>  // TODO naked get
           log.info("Processing discovered url: " + discoveredUrl)
 
           if (commentFeedDetector.isCommentFeedUrl(discoveredUrl)) {

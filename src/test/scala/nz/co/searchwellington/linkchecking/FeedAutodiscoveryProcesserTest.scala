@@ -49,7 +49,7 @@ class FeedAutodiscoveryProcesserTest extends ReasonableWaits {
 
     val saved = ArgumentCaptor.forClass(classOf[DiscoveredFeed])
 
-    val eventualBoolean = feedAutodiscoveryProcesser.process(resource, pageContent, now)(ec)
+    val eventualBoolean = feedAutodiscoveryProcesser.process(resource, Some(pageContent), now)(ec)
     Await.result(eventualBoolean, TenSeconds)
 
     verify(mongoRepository).saveDiscoveredFeed(saved.capture())(Matchers.eq(ec))
@@ -70,7 +70,7 @@ class FeedAutodiscoveryProcesserTest extends ReasonableWaits {
 
     val saved = ArgumentCaptor.forClass(classOf[DiscoveredFeed])
 
-    Await.result(feedAutodiscoveryProcesser.process(resource, pageContent, DateTime.now), TenSeconds)
+    Await.result(feedAutodiscoveryProcesser.process(resource, Some(pageContent), DateTime.now), TenSeconds)
 
     verify(mongoRepository).saveDiscoveredFeed(saved.capture())(Matchers.eq(ec))
     assertEquals("https://localhost/feed.xml", saved.getValue.url)
@@ -86,7 +86,7 @@ class FeedAutodiscoveryProcesserTest extends ReasonableWaits {
     when(mongoRepository.getDiscoveredFeedByUrlAndReference(EXISTING_FEED_URL, resource.page)).thenReturn(Future.successful(None))
     when(mongoRepository.getFeedByUrl(EXISTING_FEED_URL)).thenReturn(Future.successful(Some(mock(classOf[Feed]))))
 
-    Await.result(feedAutodiscoveryProcesser.process(resource, pageContent, DateTime.now), TenSeconds)
+    Await.result(feedAutodiscoveryProcesser.process(resource, Some(pageContent), DateTime.now), TenSeconds)
 
     verify(mongoRepository, never).saveDiscoveredFeed(any(classOf[DiscoveredFeed]))(Matchers.eq(ec))
   }

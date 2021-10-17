@@ -17,8 +17,8 @@ class TwitterPhotoDetector extends LinkCheckerProcessor {
   private val metaTags = new AndFilter(new TagNameFilter("META"), new NodeClassFilter(classOf[Tag]))
   private val twitterPhotoMetaTags = new AndFilter(metaTags, new HasAttributeFilter("name", "twitter:image"))
 
-  override def process(checkResource: Resource, pageContent: String, seen: DateTime)(implicit ec: ExecutionContext): Future[Boolean] = {
-    parserFor(pageContent).flatMap { parser =>
+  override def process(checkResource: Resource, pageContent: Option[String], seen: DateTime)(implicit ec: ExecutionContext): Future[Boolean] = {
+    parserFor(pageContent.get).flatMap { parser =>  // TODO naked get
       Try {
         val tags = parser.extractAllNodesThatMatch(twitterPhotoMetaTags).toNodeArray.toSeq.map(_.asInstanceOf[Tag])
         val imageURLs = tags.map(tag => Option(tag.getAttribute("content"))).flatten
