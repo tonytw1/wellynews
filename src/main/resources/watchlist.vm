@@ -10,16 +10,15 @@
 <div class="main">
 <h2>$heading</h2>
 
-<p>The News Watchlist looks for changes on pages known to contain local news items.</p>
+<p>The news watchlist looks for changes on pages known to contain news items.</p>
 
-<p>Automatically finding new content on sites which do not provide news feeds is not an exact science. The Watchlist tries to assist by highlighting altered pages for manual checking.</p>
+<p>Automatically finding new content on sites which do not provide news feeds is not an exact science.
+The watchlist tries to assist by highlighting pages which have changed for manual checking.</p>
 
 <p>The Watchlist is available as an RSS feed:</p>
 <ul>
 	<li>#parse("includes/rss_icon.vm") <code>$rss_url</code></li>
 </ul>
-
-<p>The following pages are currently in the watchlist.</p>
 
 #parse("includes/main_content.vm")
 
