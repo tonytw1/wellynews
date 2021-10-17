@@ -22,7 +22,7 @@
                 <input name="${status.expression}" class="title" value="$!{status.value}" />
                 <br />
 
-                #springBind("formObject.publisher")
+                #springBind("editWatchlist.publisher")
                 <label for="${status.expression}">Publisher:</label>
                 <input id="publisher" name="${status.expression}" class="title" value="$!{status.value}" />
                 <br />
