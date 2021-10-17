@@ -48,17 +48,22 @@ import scala.concurrent.Future
     }
 
     userByPath(path).flatMap { maybeUser =>
-      maybeUser.map { user =>
+      maybeUser.map{ user =>
         for {
           submissions <- contentRetrievalService.getOwnedBy(user, loggedInUser)
           tagged <- contentRetrievalService.getTaggedBy(user, loggedInUser)
+          mv = {
+            import scala.collection.JavaConverters._
+            new ModelAndView().
+              addObject("heading", "User profile").
+              addObject("profileuser", user).
+              addObject(MAIN_CONTENT, submissions.asJava).
+              addObject("tagged", tagged.asJava)
+          }
+          withNewsitems <- withLatestNewsitems(mv, loggedInUser)
+
         } yield {
-          import scala.collection.JavaConverters._
-          Some(new ModelAndView().
-            addObject("heading", "User profile").
-            addObject("profileuser", user).
-            addObject(MAIN_CONTENT, submissions.asJava).
-            addObject("tagged", tagged.asJava))
+          Some(withNewsitems)
         }
 
       }.getOrElse {
