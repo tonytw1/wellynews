@@ -5,7 +5,6 @@ import nz.co.searchwellington.forms.EditWatchlist
 import nz.co.searchwellington.geocoding.osm.GeoCodeService
 import nz.co.searchwellington.model._
 import nz.co.searchwellington.modification.ContentUpdateService
-import nz.co.searchwellington.repositories.elasticsearch.ElasticSearchIndexRebuildService
 import nz.co.searchwellington.repositories.mongo.MongoRepository
 import nz.co.searchwellington.repositories.{HandTaggingService, TagDAO}
 import nz.co.searchwellington.urls.UrlBuilder
@@ -19,8 +18,8 @@ import org.springframework.web.servlet.ModelAndView
 import org.springframework.web.servlet.view.RedirectView
 
 import javax.validation.Valid
-import scala.concurrent.Await
 import scala.concurrent.ExecutionContext.Implicits.global
+import scala.concurrent.{Await, Future}
 
 @Controller
 class EditWatchlistController @Autowired()(contentUpdateService: ContentUpdateService,
@@ -29,8 +28,7 @@ class EditWatchlistController @Autowired()(contentUpdateService: ContentUpdateSe
                                            val loggedInUserFilter: LoggedInUserFilter,
                                            tagDAO: TagDAO,
                                            val geocodeService: GeoCodeService,
-                                           handTaggingService: HandTaggingService,
-                                           elasticSearchIndexRebuildService: ElasticSearchIndexRebuildService
+                                           handTaggingService: HandTaggingService
                                         ) extends ReasonableWaits with AcceptancePolicyOptions with Errors with GeotagParsing with RequiringLoggedInUser {
 
   private val log = Logger.getLogger(classOf[EditWatchlistController])
@@ -39,11 +37,7 @@ class EditWatchlistController @Autowired()(contentUpdateService: ContentUpdateSe
   def prompt(@PathVariable id: String): ModelAndView = {
     def showForm(loggedInUser: User): ModelAndView = {
       getWatchlistById(id).map { w =>
-        val editWatchlist = new EditWatchlist()
-        editWatchlist.setTitle(w.title.getOrElse(""))
-        editWatchlist.setUrl(w.page)
-        editWatchlist.setDescription(w.description.getOrElse(""))
-
+        val editWatchlist = mapToForm(w)
         val usersTags = w.resource_tags.filter(_.user_id == loggedInUser._id)
 
         import scala.collection.JavaConverters._
@@ -59,6 +53,28 @@ class EditWatchlistController @Autowired()(contentUpdateService: ContentUpdateSe
     requiringAdminUser(showForm)
   }
 
+  private def mapToForm(w: Watchlist): EditWatchlist = {
+    val eventualPublisher = w.publisher.map { pid =>
+      mongoRepository.getResourceByObjectId(pid).map { ro =>
+        ro.flatMap { r =>
+          r match {
+            case w: Website => Some(w)
+            case _ => None
+          }
+        }
+      }
+
+    }.getOrElse(Future.successful(None))
+    val publisher = Await.result(eventualPublisher, TenSeconds).flatMap(p => p.title).getOrElse("")
+
+    val editWatchlist = new EditWatchlist()
+    editWatchlist.setTitle(w.title.getOrElse(""))
+    editWatchlist.setUrl(w.page)
+    editWatchlist.setPublisher(publisher)
+    editWatchlist.setDescription(w.description.getOrElse(""))
+    editWatchlist
+  }
+
   @RequestMapping(value = Array("/edit-watchlist/{id}"), method = Array(RequestMethod.POST))
   def submit(@PathVariable id: String, @Valid @ModelAttribute("editWatchlist") editWatchlist: EditWatchlist, result: BindingResult): ModelAndView = {
     def handleSubmission(loggedInUser: User): ModelAndView = {
@@ -70,9 +86,19 @@ class EditWatchlistController @Autowired()(contentUpdateService: ContentUpdateSe
         } else {
           log.info("Got valid edit watchlist submission: " + editWatchlist)
 
+          val publisherName = if (editWatchlist.getPublisher.trim.nonEmpty) {
+            Some(editWatchlist.getPublisher.trim)
+          } else {
+            None
+          }
+          val publisher = publisherName.flatMap { publisherName =>
+            Await.result(mongoRepository.getWebsiteByName(publisherName), TenSeconds)
+          }
+
           val updated = w.copy(
             title = Some(editWatchlist.getTitle),
             page = editWatchlist.getUrl,
+            publisher = publisher.map(_._id),
             description = Some(editWatchlist.getDescription),
             held = submissionShouldBeHeld(loggedInUser)
           )
@@ -84,7 +110,7 @@ class EditWatchlistController @Autowired()(contentUpdateService: ContentUpdateSe
           contentUpdateService.update(withNewTags)
           log.info("Updated watchlist: " + withNewTags)
 
-          new ModelAndView(new RedirectView("TODO"))
+          new ModelAndView(new RedirectView(urlBuilder.getWatchlistUrl))
         }
 
       }.getOrElse(NotFound)

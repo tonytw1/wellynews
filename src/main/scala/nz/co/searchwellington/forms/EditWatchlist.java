@@ -10,6 +10,8 @@ public class EditWatchlist {
     @NotBlank
     private String title, url;
 
+    private String publisher;
+
     private String description;
 
     private List<String> tags = Lists.newArrayList();
@@ -28,6 +30,14 @@ public class EditWatchlist {
 
     public void setUrl(String url) {
         this.url = url;
+    }
+
+    public String getPublisher() {
+        return publisher;
+    }
+
+    public void setPublisher(String publisher) {
+        this.publisher = publisher;
     }
 
     public String getDescription() {
@@ -51,6 +61,7 @@ public class EditWatchlist {
         return "EditWatchlist{" +
                 "title='" + title + '\'' +
                 ", url='" + url + '\'' +
+                ", publisher='" + publisher + '\'' +
                 ", description='" + description + '\'' +
                 ", tags=" + tags +
                 '}';

@@ -75,7 +75,7 @@ class EditNewsitemController @Autowired()(contentUpdateService: ContentUpdateSer
           } else {
             None
           }
-          val publisher: Option[Website] = publisherName.flatMap { publisherName =>
+          val publisher = publisherName.flatMap { publisherName =>
             Await.result(mongoRepository.getWebsiteByName(publisherName), TenSeconds)
           }
 
