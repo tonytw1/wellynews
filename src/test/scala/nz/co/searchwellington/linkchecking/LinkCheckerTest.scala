@@ -27,7 +27,8 @@ class LinkCheckerTest extends ReasonableWaits {
   def returnsFalseForUnparsableResourceUrls(): Unit = {
     val website = Website(page = "http:////feedproxy.google.com/~r/WellingtonGreens/~3/Tdcpif4nmKI/")
 
-    val linkChecker = new LinkChecker(mongoRepository, contentUpdateService, httpFetcher, feedAutodiscoveryProcesser, twitterPhotoDetector, contentHasChangedProcesser, meterRegistry)
+    import scala.collection.JavaConverters._
+    val linkChecker = new LinkChecker(mongoRepository, contentUpdateService, httpFetcher, meterRegistry, Seq(feedAutodiscoveryProcesser, twitterPhotoDetector, contentHasChangedProcesser).asJava)
 
     val eventualResult = linkChecker.checkResource(website)
 
