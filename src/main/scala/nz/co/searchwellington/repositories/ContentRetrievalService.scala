@@ -295,7 +295,7 @@ import scala.concurrent.Future
 
   def getWatchlistItems(loggedInUser: Option[User], page: Int): Future[(Seq[FrontendResource], Long)] = {
     val watchListItems = ResourceQuery(`type` = watchlists, maxItems = MAX_NEWSITEMS, startIndex = MAX_NEWSITEMS * (page - 1))
-    elasticSearchIndexer.getResources(watchListItems, loggedInUser = loggedInUser).flatMap(r => buildFrontendResourcesFor(r, loggedInUser))
+    elasticSearchIndexer.getResources(watchListItems, elasticSearchIndexer.byLastChangedDescending, loggedInUser = loggedInUser).flatMap(r => buildFrontendResourcesFor(r, loggedInUser))
   }
 
   def getTaggedWebsites(tag: Tag, maxItems: Int, loggedInUser: Option[User]): Future[Seq[FrontendResource]] = {
