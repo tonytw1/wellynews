@@ -37,7 +37,7 @@ class AdminUrlBuilder @Autowired()(urlBuilder: UrlBuilder,
       case w: Website =>
         "/edit-website/" + w.id
       case l: Watchlist =>
-        "/edit-watchlist/=" + l.id
+        "/edit-watchlist/" + l.id
     }
   }
 
