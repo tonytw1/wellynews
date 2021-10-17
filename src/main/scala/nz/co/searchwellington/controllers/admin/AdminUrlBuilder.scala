@@ -41,10 +41,6 @@ class AdminUrlBuilder @Autowired()(urlBuilder: UrlBuilder,
     }
   }
 
-  def getResourceEditUrl(resourceId: Int): String = {
-    "/edit?resource=" + resourceId
-  }
-
   def getResourceDeleteUrl(resource: FrontendResource): String = {
     "/delete?resource=" + resource.getId
   }
