@@ -89,18 +89,18 @@ import scala.concurrent.{Await, Future}
   }
 
   def getGeotagVotesForResource(resource: Resource): Future[Seq[GeotaggingVote]] = {
-    val resourceGeocodeVote: Option[GeotaggingVote] = resource.geocode.map { g =>
-      new GeotaggingVote(g, "Resources own geo tag", 1) // TODO resource owner as the voter
+    val resourceGeocodeVote = resource.geocode.filter(_.isValid).map { g =>
+      GeotaggingVote(g, "Resources own geo tag", 1) // TODO resource owner as the voter
     }
 
-    val eventualPublisherGeocodeVote: Future[Option[GeotaggingVote]] = {
+    val eventualPublisherGeocodeVote = {
       (resource match {
         case pr: PublishedResource =>
           pr.publisher.map { p =>
             mongoRepository.getResourceByObjectId(p).map { maybePublisher =>
               maybePublisher.flatMap { publisher =>
-                publisher.geocode.map { pg =>
-                  new GeotaggingVote(pg, "Publisher's location", 1)
+                publisher.geocode.filter(_.isValid).map { pg =>
+                  GeotaggingVote(pg, "Publisher's location", 1)
                 }
               }
             }
@@ -112,13 +112,25 @@ import scala.concurrent.{Await, Future}
       }
     }
 
-    val eventualHandTaggingGeoVotes = getHandTaggingsForResource(resource).map { handTaggingsForResource =>
-      val tags = handTaggingsForResource.map(_.tag)
+    val eventualHandTaggingGeoVotes = getHandTaggingsForResource(resource).flatMap { handTaggingsForResource =>
+      val tags = handTaggingsForResource.map(_.tag).toSet
       val tagsWithGeocodes = tags.filter(t => t.geocode.exists(_.isValid))
-      // TODO sort these tags by depth; a finer tag like naenae-pool should beat a coarser old like naenae
-      tagsWithGeocodes.flatMap { t =>
-        t.geocode.map { tagGeocode =>
-          GeotaggingVote(tagGeocode, t.display_name + " tag geocode", 1)
+
+      // Sort these tags by depth; a finer tag like naenae-pool should beat a coarser old like naenae
+      val withDepths = tagsWithGeocodes.map { tag =>
+        parentsOf(tag).map { parents =>
+          (tag, parents.size)
+        }
+      }.toSeq
+
+      val sorted = Future.sequence(withDepths).map { tuples =>
+        tuples.sortBy(_._2).reverse.map(_._1)
+      }
+      sorted.map { geocodeTags =>
+        geocodeTags.flatMap { t =>
+          t.geocode.map { tagGeocode =>
+            GeotaggingVote(tagGeocode, t.display_name + " tag geocode", 1)
+          }
         }
       }
     }
@@ -127,7 +139,7 @@ import scala.concurrent.{Await, Future}
       publisherGeocodeVote <- eventualPublisherGeocodeVote
       handTaggingGeoVotes <- eventualHandTaggingGeoVotes
     } yield {
-      (Seq(resourceGeocodeVote, publisherGeocodeVote).flatten ++ handTaggingGeoVotes).filter(gv => gv.geocode.isValid)  // TODO this filter is odd
+      Seq(resourceGeocodeVote, publisherGeocodeVote).flatten ++ handTaggingGeoVotes
     }
   }
 
