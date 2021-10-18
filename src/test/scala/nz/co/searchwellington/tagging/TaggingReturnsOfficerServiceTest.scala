@@ -32,7 +32,7 @@ class TaggingReturnsOfficerServiceTest extends ReasonableWaits {
   private val handTaggingDAO = mock(classOf[HandTaggingDAO])
   private val mongoRepository = mock(classOf[MongoRepository])
 
-  private val taggingReturnsOfficerService: TaggingReturnsOfficerService = new TaggingReturnsOfficerService(handTaggingDAO, mongoRepository)
+  private val taggingReturnsOfficerService = new TaggingReturnsOfficerService(handTaggingDAO, mongoRepository)
 
   @Test
   def compliedTagsShouldContainAtLeastOneCopyOfEachManuallyAppliedTag(): Unit = {
