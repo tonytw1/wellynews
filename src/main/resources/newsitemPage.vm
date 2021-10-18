@@ -60,10 +60,10 @@
         #end
     </ul>
 
-	<h3>Index tags</h3>
-	<p>These tags have been used to index this item:<p>
+	<h3>Tagging votes</h3>
+	<p>These taggings contributed to this item's tags:<p>
 	<ul>
-        #foreach ($tagging in $index_taggings)
+        #foreach ($tagging in $tagging_votes)
             <li>$tagging.tag.name - $tagging.explanation</li>
         #end
 	</ul>

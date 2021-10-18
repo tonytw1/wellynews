@@ -73,14 +73,14 @@ class NewsitemPageModelBuilderTest extends ReasonableWaits {
     val frontendNewsitem = FrontendNewsitem(id = newsitem.id, place = Some(place))
 
     val handTaggingsForNewsitem = Seq(HandTagging(user = User(), tag = Tag()))
-    val geotagVotesForNewsitem = Seq(new GeotaggingVote(geocode = place, weight = 1, explanation = "Some tagging"))
-    val indexTaggingsForNewsitem = Seq(HandTagging(tag = Tag(id = "123"), user = User()))
+    val geotagVotesForNewsitem = Seq(GeotaggingVote(geocode = place, weight = 1, explanation = "Some tagging"))
+    val taggingVotesForNewsitem = Seq(HandTagging(tag = Tag(id = "123"), user = User()))
 
     when(mongoRepository.getResourceById(newsitem.id)).thenReturn(Future.successful(Some(newsitem)))
     when(frontendResourceMapper.createFrontendResourceFrom(newsitem, None)).thenReturn(Future.successful(frontendNewsitem))
     when(handTaggingDAO.getHandTaggingsForResource(newsitem)).thenReturn(Future.successful(handTaggingsForNewsitem))
     when(taggingReturnsOfficerService.getGeotagVotesForResource(newsitem)).thenReturn(Future.successful(geotagVotesForNewsitem))
-    when(taggingReturnsOfficerService.getTaggingsVotesForResource(newsitem)).thenReturn(Future.successful(indexTaggingsForNewsitem))
+    when(taggingReturnsOfficerService.getTaggingsVotesForResource(newsitem)).thenReturn(Future.successful(taggingVotesForNewsitem))
 
     val mv = Await.result(modelBuilder.populateContentModel(request), TenSeconds).get
 
@@ -91,8 +91,8 @@ class NewsitemPageModelBuilderTest extends ReasonableWaits {
     val geoTagVotes = mv.getModel.get("geotag_votes")
     assertEquals("Expect to be see geotagging votes", geotagVotesForNewsitem.asJava, geoTagVotes)
 
-    val indexTaggings = mv.getModel.get("index_taggings")
-    assertEquals("Expect to be see index taggings", indexTaggingsForNewsitem.asJava, indexTaggings)
+    val indexTaggings = mv.getModel.get("tagging_votes")
+    assertEquals("Expect to be see tagging votes", taggingVotesForNewsitem.asJava, indexTaggings)
   }
 
   @Test
