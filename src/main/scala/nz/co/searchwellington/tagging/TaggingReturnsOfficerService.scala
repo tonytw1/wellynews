@@ -11,6 +11,9 @@ import org.springframework.stereotype.Component
 import scala.concurrent.ExecutionContext.Implicits.global // TODO pass in
 import scala.concurrent.Future
 
+// The tagging returns officer is responsible for collecting all opinions / votes on how a resource should be tagged
+// These votes are used to determine how a resource is indexed and how it renders on the frontend.
+// Behaviours like a newsitem's publisher's tags should contribute to that newsitem's tagging are expressed here using tagging votes.
 @Component class TaggingReturnsOfficerService @Autowired()(handTaggingDAO: HandTaggingDAO, val mongoRepository: MongoRepository)
   extends ReasonableWaits with TagAncestors {
 
