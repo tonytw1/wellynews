@@ -115,6 +115,7 @@ import scala.concurrent.{Await, Future}
     val eventualHandTaggingGeoVotes = getHandTaggingsForResource(resource).map { handTaggingsForResource =>
       val tags = handTaggingsForResource.map(_.tag)
       val tagsWithGeocodes = tags.filter(t => t.geocode.exists(_.isValid))
+      // TODO sort these tags by depth; a finer tag like naenae-pool should beat a coarser old like naenae
       tagsWithGeocodes.flatMap { t =>
         t.geocode.map { tagGeocode =>
           GeotaggingVote(tagGeocode, t.display_name + " tag geocode", 1)
