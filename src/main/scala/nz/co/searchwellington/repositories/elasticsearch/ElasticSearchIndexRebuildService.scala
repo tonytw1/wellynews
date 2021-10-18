@@ -3,7 +3,7 @@ package nz.co.searchwellington.repositories.elasticsearch
 import nz.co.searchwellington.ReasonableWaits
 import nz.co.searchwellington.model.Resource
 import nz.co.searchwellington.repositories.mongo.MongoRepository
-import nz.co.searchwellington.tagging.TaggingReturnsOfficerService
+import nz.co.searchwellington.tagging.IndexTagsService
 import org.apache.log4j.Logger
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
@@ -11,8 +11,9 @@ import reactivemongo.api.bson.BSONObjectID
 
 import scala.concurrent.{ExecutionContext, Future}
 
-@Component class ElasticSearchIndexRebuildService @Autowired()(mongoRepository: MongoRepository, elasticSearchIndexer: ElasticSearchIndexer,
-                                                               taggingReturnsOfficerService: TaggingReturnsOfficerService) extends ReasonableWaits {
+@Component class ElasticSearchIndexRebuildService @Autowired()(mongoRepository: MongoRepository,
+                                                               elasticSearchIndexer: ElasticSearchIndexer,
+                                                               indexTagsService: IndexTagsService) extends ReasonableWaits {
 
   private val log = Logger.getLogger(classOf[ElasticSearchIndexRebuildService])
 
@@ -63,13 +64,15 @@ import scala.concurrent.{ExecutionContext, Future}
   }
 
   private def withTags(resource: Resource)(implicit ec: ExecutionContext): Future[(Resource, Seq[String])] = {
+    // TODO this is a confusing overloading of resource.resource_tags; elastic indexer also calls out got geo taggings itself.
+    // Push down to the Elastic indexer or introduce a POJO?
     getIndexTagIdsFor(resource).map { tagIds =>
       (resource, tagIds)
     }
   }
 
   private def getIndexTagIdsFor(resource: Resource)(implicit ec: ExecutionContext): Future[Seq[String]] = {
-    taggingReturnsOfficerService.getIndexTagsForResource(resource).map { tags =>
+    indexTagsService.getIndexTagsForResource(resource).map { tags =>
       tags.map(_._id.stringify)
     }
   }

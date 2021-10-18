@@ -5,17 +5,14 @@ import nz.co.searchwellington.model._
 import nz.co.searchwellington.model.taggingvotes.{GeneratedTaggingVote, GeotaggingVote, TaggingVote}
 import nz.co.searchwellington.repositories.HandTaggingDAO
 import nz.co.searchwellington.repositories.mongo.MongoRepository
-import org.apache.log4j.Logger
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
 
-import scala.concurrent.ExecutionContext.Implicits.global
-import scala.concurrent.{Await, Future}
+import scala.concurrent.ExecutionContext.Implicits.global // TODO pass in
+import scala.concurrent.Future
 
 @Component class TaggingReturnsOfficerService @Autowired()(handTaggingDAO: HandTaggingDAO, val mongoRepository: MongoRepository)
   extends ReasonableWaits with TagAncestors {
-
-  private val log = Logger.getLogger(classOf[TaggingReturnsOfficerService])
 
   // TODO These are a different responsibility to tagging votes
   def getHandTagsForResource(resource: Tagged): Future[Seq[Tag]] = {
@@ -24,37 +21,18 @@ import scala.concurrent.{Await, Future}
     }
   }
 
-  // TODO These are a different responsibility to tagging votes
-  def getIndexTagsForResource(resource: Resource): Future[Seq[Tag]] = {
-    compileTaggingVotes(resource).map { taggingVotes =>
-      taggingVotes.map(_.tag).distinct
-    }
-  }
-
-  def getHandTaggingsForResource(resource: Tagged): Future[Seq[taggingvotes.HandTagging]] = {
-    handTaggingDAO.getHandTaggingsForResource(resource)
-  }
-
-  def getIndexTaggingsForResource(resource: Resource): Future[Seq[TaggingVote]] = {
-    compileTaggingVotes(resource)
-  }
-
-  // TODO These are a different responsibility to tagging votes
-  def getIndexGeocodeForResource(resource: Resource): Future[Option[Geocode]] = {
-    getGeotagVotesForResource(resource).map { i =>
-      i.headOption.map(_.geocode)
-    }
+  def getTaggingsVotesForResource(resource: Resource): Future[Seq[TaggingVote]] = {
+    compileTaggingVotes(resource) // TODO inline
   }
 
   def compileTaggingVotes(resource: Resource): Future[Seq[TaggingVote]] = {
-    val eventualHandTaggings = handTaggingDAO.getHandTaggingsForResource(resource)
-
     val eventualPublisherVotes = resource match {
       case p: PublishedResource =>
         val eventualAncestorTagVotes: Future[Seq[GeneratedTaggingVote]] = {
-          getHandTagsForResource(resource).map { taggings =>
-            taggings.map { rt =>
-              parentsOf(rt).map(parents => parents.map(fat => GeneratedTaggingVote(fat, "Ancestor tag of " + rt.name)))
+          handTaggingDAO.getHandTaggingsForResource(resource).map { handTaggings =>
+            val handTags = handTaggings.map(_.tag).distinct
+            handTags.map { rt =>
+              parentsOf(rt).map(parents => parents.map(fat => GeneratedTaggingVote(fat, s"Ancestor of tag ${rt.name}")))
             }
           }.flatMap(Future.sequence(_)).map(_.flatten)
         }
@@ -80,7 +58,7 @@ import scala.concurrent.{Await, Future}
     }
 
     for {
-      handTaggings <- eventualHandTaggings
+      handTaggings <- handTaggingDAO.getHandTaggingsForResource(resource)
       publisherVotes <- eventualPublisherVotes
       newsitemSpecificVotes <- eventualNewsitemSpecificVotes
     } yield {
@@ -112,7 +90,7 @@ import scala.concurrent.{Await, Future}
       }
     }
 
-    val eventualHandTaggingGeoVotes = getHandTaggingsForResource(resource).flatMap { handTaggingsForResource =>
+    val eventualHandTaggingGeoVotes = handTaggingDAO.getHandTaggingsForResource(resource).flatMap { handTaggingsForResource =>
       val tags = handTaggingsForResource.map(_.tag).toSet
       val tagsWithGeocodes = tags.filter(t => t.geocode.exists(_.isValid))
 

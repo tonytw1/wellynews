@@ -52,9 +52,9 @@ class NewsitemPageModelBuilderTest extends ReasonableWaits {
 
     when(mongoRepository.getResourceById(newsitem.id)).thenReturn(Future.successful(Some(newsitem)))
     when(frontendResourceMapper.createFrontendResourceFrom(newsitem, None)).thenReturn(Future.successful(frontendNewsitem))
-    when(taggingReturnsOfficerService.getHandTaggingsForResource(newsitem)).thenReturn(Future.successful(Seq.empty))
+    when(handTaggingDAO.getHandTaggingsForResource(newsitem)).thenReturn(Future.successful(Seq.empty))
     when(taggingReturnsOfficerService.getGeotagVotesForResource(newsitem)).thenReturn(Future.successful(Seq.empty))
-    when(taggingReturnsOfficerService.getIndexTaggingsForResource(newsitem)).thenReturn(Future.successful(Seq.empty))
+    when(taggingReturnsOfficerService.getTaggingsVotesForResource(newsitem)).thenReturn(Future.successful(Seq.empty))
 
     val mv = Await.result(modelBuilder.populateContentModel(request), TenSeconds).get
 
@@ -78,9 +78,9 @@ class NewsitemPageModelBuilderTest extends ReasonableWaits {
 
     when(mongoRepository.getResourceById(newsitem.id)).thenReturn(Future.successful(Some(newsitem)))
     when(frontendResourceMapper.createFrontendResourceFrom(newsitem, None)).thenReturn(Future.successful(frontendNewsitem))
-    when(taggingReturnsOfficerService.getHandTaggingsForResource(newsitem)).thenReturn(Future.successful(handTaggingsForNewsitem))
+    when(handTaggingDAO.getHandTaggingsForResource(newsitem)).thenReturn(Future.successful(handTaggingsForNewsitem))
     when(taggingReturnsOfficerService.getGeotagVotesForResource(newsitem)).thenReturn(Future.successful(geotagVotesForNewsitem))
-    when(taggingReturnsOfficerService.getIndexTaggingsForResource(newsitem)).thenReturn(Future.successful(indexTaggingsForNewsitem))
+    when(taggingReturnsOfficerService.getTaggingsVotesForResource(newsitem)).thenReturn(Future.successful(indexTaggingsForNewsitem))
 
     val mv = Await.result(modelBuilder.populateContentModel(request), TenSeconds).get
 
@@ -110,8 +110,8 @@ class NewsitemPageModelBuilderTest extends ReasonableWaits {
     when(mongoRepository.getResourceById(id.toString)).thenReturn(Future.successful(Some(geotaggedNewsitem))) // TODO properly exercise mapped option branch
     when(frontendResourceMapper.createFrontendResourceFrom(geotaggedNewsitem, None)).thenReturn(Future.successful(geotaggedFrontendNewsitem))
 
-    when(taggingReturnsOfficerService.getHandTaggingsForResource(geotaggedNewsitem)).thenReturn(Future.successful(Seq.empty))
-    when(taggingReturnsOfficerService.getIndexTaggingsForResource(geotaggedNewsitem)).thenReturn(Future.successful(Seq.empty))
+    when(handTaggingDAO.getHandTaggingsForResource(geotaggedNewsitem)).thenReturn(Future.successful(Seq.empty))
+    when(taggingReturnsOfficerService.getTaggingsVotesForResource(geotaggedNewsitem)).thenReturn(Future.successful(Seq.empty))
 
     val geotaggingVote = new GeotaggingVote(place, "Publisher's location", 1)
     when(taggingReturnsOfficerService.getGeotagVotesForResource(geotaggedNewsitem)).thenReturn(Future.successful(Seq(geotaggingVote)))
@@ -137,8 +137,8 @@ class NewsitemPageModelBuilderTest extends ReasonableWaits {
     when(mongoRepository.getResourceById(id.toString)).thenReturn(Future.successful(Some(newsitem))) // TODO properly exercise mapped option branch
     when(frontendResourceMapper.createFrontendResourceFrom(newsitem, None)).thenReturn(Future.successful(frontendNewsitem))
 
-    when(taggingReturnsOfficerService.getHandTaggingsForResource(newsitem)).thenReturn(Future.successful(Seq.empty))
-    when(taggingReturnsOfficerService.getIndexTaggingsForResource(newsitem)).thenReturn(Future.successful(Seq.empty))
+    when(handTaggingDAO.getHandTaggingsForResource(newsitem)).thenReturn(Future.successful(Seq.empty))
+    when(taggingReturnsOfficerService.getTaggingsVotesForResource(newsitem)).thenReturn(Future.successful(Seq.empty))
     when(taggingReturnsOfficerService.getGeotagVotesForResource(newsitem)).thenReturn(Future.successful(Seq.empty))
 
     val mv = Await.result(modelBuilder.populateContentModel(request), TenSeconds).get
@@ -157,8 +157,8 @@ class NewsitemPageModelBuilderTest extends ReasonableWaits {
     when(mongoRepository.getResourceById(newsitem.id)).thenReturn(Future.successful(Some(newsitem)))
     when(frontendResourceMapper.createFrontendResourceFrom(newsitem, None)).thenReturn(Future.successful(frontendNewsitem))
 
-    when(taggingReturnsOfficerService.getHandTaggingsForResource(newsitem)).thenReturn(Future.successful(Seq.empty))
-    when(taggingReturnsOfficerService.getIndexTaggingsForResource(newsitem)).thenReturn(Future.successful(Seq.empty))
+    when(handTaggingDAO.getHandTaggingsForResource(newsitem)).thenReturn(Future.successful(Seq.empty))
+    when(taggingReturnsOfficerService.getTaggingsVotesForResource(newsitem)).thenReturn(Future.successful(Seq.empty))
 
     val place = Geocode(address = Some("Somewhere"))
     val geotaggingVote = new GeotaggingVote(place, "Publisher's location", 1)

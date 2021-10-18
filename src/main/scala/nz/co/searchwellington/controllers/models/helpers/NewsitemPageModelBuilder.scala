@@ -1,7 +1,6 @@
 package nz.co.searchwellington.controllers.models.helpers
 
 import java.util.regex.Pattern
-
 import javax.servlet.http.HttpServletRequest
 import nz.co.searchwellington.ReasonableWaits
 import nz.co.searchwellington.controllers.models.ModelBuilder
@@ -20,11 +19,11 @@ import scala.concurrent.Future
 
 @Component class NewsitemPageModelBuilder @Autowired()(val contentRetrievalService: ContentRetrievalService,
                                                        taggingReturnsOfficerService: TaggingReturnsOfficerService,
-                                                       tagVoteDAO: HandTaggingDAO,
+                                                       handTaggingDAO: HandTaggingDAO,
                                                        mongoRepository: MongoRepository,
                                                        frontendResourceMapper: FrontendResourceMapper) extends ModelBuilder with ReasonableWaits {
 
-  val pattern = Pattern.compile("^/newsitem/(.*?)$")
+  private val pattern = Pattern.compile("^/newsitem/(.*?)$")
 
   def isValid(request: HttpServletRequest): Boolean = {
     pattern.matcher(RequestPath.getPathFrom(request)).matches()
@@ -37,9 +36,9 @@ import scala.concurrent.Future
       mongoRepository.getResourceById(id).flatMap { maybeResource =>
         maybeResource.map { resource =>
           val eventualFrontendResource = frontendResourceMapper.createFrontendResourceFrom(resource, loggedInUser)
-          val eventualHandTaggings = taggingReturnsOfficerService.getHandTaggingsForResource(resource)
+          val eventualHandTaggings = handTaggingDAO.getHandTaggingsForResource(resource)
           val eventualGeotagVotes = taggingReturnsOfficerService.getGeotagVotesForResource(resource)
-          val eventualIndexTaggings = taggingReturnsOfficerService.getIndexTaggingsForResource(resource)
+          val eventualIndexTaggings = taggingReturnsOfficerService.getTaggingsVotesForResource(resource)  // TODO this doesn't look true
           for {
             frontendResource <- eventualFrontendResource
             handTaggings <- eventualHandTaggings

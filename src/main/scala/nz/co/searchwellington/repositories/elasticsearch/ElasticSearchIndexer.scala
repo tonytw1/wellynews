@@ -110,7 +110,7 @@ class ElasticSearchIndexer @Autowired()(val showBrokenDecisionService: ShowBroke
         case _ => None
       }
 
-      val eventualGeotagVotes = taggingReturnsOfficerService.getGeotagVotesForResource(r._1)
+      val eventualGeotagVotes = taggingReturnsOfficerService.getGeotagVotesForResource(r._1)  // TODO This should be an index tags call
       eventualGeotagVotes.map { geotagVotes =>
         val indexedGeocode = geotagVotes.headOption.map(_.geocode)
         val latLong = indexedGeocode.flatMap { gc =>

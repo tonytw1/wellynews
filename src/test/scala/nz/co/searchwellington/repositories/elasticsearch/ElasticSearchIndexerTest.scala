@@ -1,13 +1,12 @@
 package nz.co.searchwellington.repositories.elasticsearch
 
 import java.util.UUID
-
 import nz.co.searchwellington.ReasonableWaits
 import nz.co.searchwellington.controllers.ShowBrokenDecisionService
 import nz.co.searchwellington.model._
 import nz.co.searchwellington.repositories.HandTaggingDAO
 import nz.co.searchwellington.repositories.mongo.MongoRepository
-import nz.co.searchwellington.tagging.TaggingReturnsOfficerService
+import nz.co.searchwellington.tagging.{IndexTagsService, TaggingReturnsOfficerService}
 import org.joda.time.{DateTime, Interval}
 import org.junit.Assert.{assertFalse, assertTrue}
 import org.junit.Test
@@ -33,6 +32,7 @@ class ElasticSearchIndexerTest extends ReasonableWaits {
 
   private val showBrokenDecisionService = mock(classOf[ShowBrokenDecisionService])
   val taggingReturnsOfficerService = new TaggingReturnsOfficerService(new HandTaggingDAO(mongoRepository), mongoRepository)
+  val indexTagsService = new IndexTagsService(taggingReturnsOfficerService)
 
   private val elasticHost = {
     var elasticHost = System.getenv("ELASTIC_HOST");
@@ -43,7 +43,7 @@ class ElasticSearchIndexerTest extends ReasonableWaits {
   }
 
   val elasticSearchIndexer = new ElasticSearchIndexer(showBrokenDecisionService, s"http://$elasticHost:9200", databaseAndIndexName, taggingReturnsOfficerService)
-  val rebuild = new ElasticSearchIndexRebuildService(mongoRepository, elasticSearchIndexer, taggingReturnsOfficerService)
+  val rebuild = new ElasticSearchIndexRebuildService(mongoRepository, elasticSearchIndexer, indexTagsService)
 
   private val loggedInUser = User()
 
