@@ -24,7 +24,7 @@ import scala.concurrent.Future
   def getTaggingsVotesForResource(resource: Resource): Future[Seq[TaggingVote]] = {
     val eventualPublisherVotes = resource match {
       case p: PublishedResource =>
-        val eventualAncestorTagVotes: Future[Seq[GeneratedTaggingVote]] = {
+        val eventualAncestorTagVotes = {
           handTaggingDAO.getHandTaggingsForResource(resource).map { handTaggings =>
             val handTags = handTaggings.map(_.tag).distinct
             handTags.map { rt =>
@@ -125,7 +125,7 @@ import scala.concurrent.Future
             parentTags <- parentsOf(publishersTagging.tag)
           } yield {
             val publisherAncestorTagVotes = parentTags.map(pat => GeneratedTaggingVote(pat, "Ancestor of publisher tag " + publishersTagging.tag.name))
-            publisherAncestorTagVotes :+ GeneratedTaggingVote(publishersTagging.tag, "Publisher tag")
+            (publisherAncestorTagVotes :+ GeneratedTaggingVote(publishersTagging.tag, "Publisher tag")).reverse
           }
         }).map(_.flatten)
       }
