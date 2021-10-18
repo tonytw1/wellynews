@@ -1,6 +1,5 @@
 package nz.co.searchwellington.tagging
 
-import nz.co.searchwellington.model.taggingvotes.GeotaggingVote
 import nz.co.searchwellington.model.{Geocode, Resource, Tag}
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
@@ -12,7 +11,7 @@ import scala.concurrent.Future
 class IndexTagsService @Autowired()(val taggingReturnsOfficerService: TaggingReturnsOfficerService) {
 
   def getIndexTagsForResource(resource: Resource): Future[Seq[Tag]] = {
-    taggingReturnsOfficerService.compileTaggingVotes(resource).map { taggingVotes =>
+    taggingReturnsOfficerService.getTaggingsVotesForResource(resource).map { taggingVotes =>
       taggingVotes.map(_.tag).distinct
     }
   }

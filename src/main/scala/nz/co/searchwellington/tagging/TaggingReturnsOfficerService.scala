@@ -22,10 +22,6 @@ import scala.concurrent.Future
   }
 
   def getTaggingsVotesForResource(resource: Resource): Future[Seq[TaggingVote]] = {
-    compileTaggingVotes(resource) // TODO inline
-  }
-
-  def compileTaggingVotes(resource: Resource): Future[Seq[TaggingVote]] = {
     val eventualPublisherVotes = resource match {
       case p: PublishedResource =>
         val eventualAncestorTagVotes: Future[Seq[GeneratedTaggingVote]] = {

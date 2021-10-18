@@ -41,7 +41,7 @@ class TaggingReturnsOfficerServiceTest extends ReasonableWaits {
     when(handTaggingDAO.getHandTaggingsForResourceId(victoriaUniversity._id)).thenReturn(Future.successful(Seq(HandTagging(user = taggingUser, tag = educationTag))))
     when(mongoRepository.getTagByObjectId(placesTag._id)).thenReturn(Future.successful(Some(placesTag)))
 
-    val votes = Await.result(taggingReturnsOfficerService.compileTaggingVotes(aroValleyNewsitem), TenSeconds)
+    val votes = Await.result(taggingReturnsOfficerService.getTaggingsVotesForResource(aroValleyNewsitem), TenSeconds)
 
     assertThat(votes.head.tag).isEqualTo(aroValleyTag) // TODO not a great assert
   }
