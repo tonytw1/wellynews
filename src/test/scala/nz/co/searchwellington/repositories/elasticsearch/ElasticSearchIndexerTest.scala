@@ -42,7 +42,7 @@ class ElasticSearchIndexerTest extends ReasonableWaits {
     elasticHost
   }
 
-  val elasticSearchIndexer = new ElasticSearchIndexer(showBrokenDecisionService, s"http://$elasticHost:9200", databaseAndIndexName, taggingReturnsOfficerService)
+  val elasticSearchIndexer = new ElasticSearchIndexer(showBrokenDecisionService, s"http://$elasticHost:9200", databaseAndIndexName, indexTagsService)
   val rebuild = new ElasticSearchIndexRebuildService(mongoRepository, elasticSearchIndexer, indexTagsService)
 
   private val loggedInUser = User()
