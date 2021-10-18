@@ -13,7 +13,7 @@ import com.sksamuel.elastic4s.{ElasticClient, ElasticProperties, Response}
 import nz.co.searchwellington.ReasonableWaits
 import nz.co.searchwellington.controllers.ShowBrokenDecisionService
 import nz.co.searchwellington.model._
-import nz.co.searchwellington.tagging.TaggingReturnsOfficerService
+import nz.co.searchwellington.tagging.IndexTagsService
 import org.apache.log4j.Logger
 import org.joda.time.format.ISODateTimeFormat
 import org.joda.time.{DateTime, Interval}
@@ -29,7 +29,7 @@ import scala.util.Try
 class ElasticSearchIndexer @Autowired()(val showBrokenDecisionService: ShowBrokenDecisionService,
                                         @Value("${elasticsearch.url}") elasticsearchUrl: String,
                                         @Value("${elasticsearch.index}") elasticsearchIndex: String,
-                                        taggingReturnsOfficerService: TaggingReturnsOfficerService)
+                                        indexTagsService: IndexTagsService) // TODO this should have been dealt with higher up
   extends ElasticFields with ModeratedQueries with ReasonableWaits {
 
   def byDateDescending(request: SearchRequest): SearchRequest = request sortByFieldDesc Date
@@ -110,10 +110,8 @@ class ElasticSearchIndexer @Autowired()(val showBrokenDecisionService: ShowBroke
         case _ => None
       }
 
-      val eventualGeotagVotes = taggingReturnsOfficerService.getGeotagVotesForResource(r._1)  // TODO This should be an index tags call
-      eventualGeotagVotes.map { geotagVotes =>
-        val indexedGeocode = geotagVotes.headOption.map(_.geocode)
-        val latLong = indexedGeocode.flatMap { gc =>
+      indexTagsService.getIndexGeocodeForResource(r._1).map { geocode =>
+        val latLong = geocode.flatMap { gc =>
           gc.latitude.flatMap { lat =>
             gc.longitude.map { lon =>
               new uk.co.eelpieconsulting.common.geo.model.LatLong(lat, lon)
