@@ -125,7 +125,7 @@ import scala.concurrent.Future
             parentTags <- parentsOf(publishersTagging.tag)
           } yield {
             val publisherAncestorTagVotes = parentTags.map(pat => GeneratedTaggingVote(pat, "Ancestor of publisher tag " + publishersTagging.tag.name))
-            (publisherAncestorTagVotes :+ GeneratedTaggingVote(publishersTagging.tag, "Publisher tag")).reverse
+             GeneratedTaggingVote(publishersTagging.tag, "Publisher tag") +: publisherAncestorTagVotes
           }
         }).map(_.flatten)
       }
