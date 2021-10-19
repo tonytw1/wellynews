@@ -2,7 +2,6 @@ package nz.co.searchwellington.repositories.elasticsearch
 
 import com.sksamuel.elastic4s.ElasticDsl._
 import com.sksamuel.elastic4s.http.JavaClient
-import com.sksamuel.elastic4s.requests.analyzers.StandardAnalyzer
 import com.sksamuel.elastic4s.requests.bulk.BulkResponse
 import com.sksamuel.elastic4s.requests.common.DistanceUnit
 import com.sksamuel.elastic4s.requests.indexes.IndexRequest
@@ -67,11 +66,11 @@ class ElasticSearchIndexer @Autowired()(val showBrokenDecisionService: ShowBroke
       try {
         val eventualCreateIndexResult = client.execute {
           createIndex(Index).mapping(properties(
-            textField(Title) analyzer StandardAnalyzer,
+            textField(Title),
             keywordField(TitleSort),
             keywordField(Type),
             dateField(Date),
-            textField(Description) analyzer StandardAnalyzer,
+            textField(Description),
             keywordField(Tags),
             keywordField(TaggingUsers),
             keywordField(Publisher),
