@@ -24,7 +24,7 @@ Specific details of RSS and Twitter have been pushed into these potentially reus
 
 - [Whakaoko](https://github.com/tonytw1/whakaoko) for RSS feed polling and aggregation.
 - [RSS to Twitter](https://github.com/tonytw1/rsstotwitter) for automatic publishing to the @wellynews Twitter account.
-- [Brownbag](https://github.com/tonytw1/rsstotwitter) for screen scraping of interesting content into RSS feeds for easier ingression
+- [Brownbag](https://github.com/tonytw1/brownbag) for screen scraping of interesting content into RSS feeds for easier ingression
 
 
 ## Model
