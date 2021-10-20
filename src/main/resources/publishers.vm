@@ -23,7 +23,7 @@
 		<h4>$current.toUpperCase()</h4>
 		<ul>
 	#end
-	<li><a href="$urlBuilder.getPublisherUrl($publisher.urlWords)">$publisher.label</a></li>
+	<li><a href="$urlBuilder.getPublisherUrl($publisher)">$publisher.label</a></li>
 #end
 </ul>
 </div>
