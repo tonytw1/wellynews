@@ -34,7 +34,7 @@
 
 		#if($feed.isScreenScraped())
 			#if($feed.publisher) 
-				<p>This feed is produced by screen scraping a page from the <a href="$feed.publisher.url">$feed.publisher.name</a> site.</p>
+				<p>This feed is produced by screen scraping a page from the <a href="$urlBuilder.getPublisherUrl($feed.publisher)">$feed.publisher.name</a> site.</p>
 			#else		
 				<p>This feed is provided by screen scraping a third parties site.</p>
 			#end		
