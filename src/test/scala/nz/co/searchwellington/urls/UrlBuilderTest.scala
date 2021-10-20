@@ -69,9 +69,6 @@ class UrlBuilderTest {
   }
 
   @Test
-  def canGenerateFrontendPublisherPageUrl(): Unit = assertEquals("/wellington-city-council", urlBuilder.getPublisherUrl("Wellington City Council"))
-
-  @Test
   def urlForFeedsShouldPointToOurFeedPage(): Unit = {
     val frontendFeed = FrontendFeed(id = UUID.randomUUID().toString, urlWords = "my-local-sports-team-match-reports")
     assertEquals("/feed/my-local-sports-team-match-reports", urlBuilder.getFeedUrl(frontendFeed))
