@@ -17,8 +17,7 @@
     <h2><a href="$urlBuilder.getPublisherUrl($publisher)">$publisher.name</a> / $dateFormatter.fullMonthYear($month.start.toDate())</h2>
 
 	<div class="main_content">
-		#set($main_heading = "$publisher.getName() newsitems")
-		#parse("includes/main_content.vm")	
+		#parse("includes/main_content.vm")
 		#parse("includes/publisher_page_links.vm")
 	</div>
 </div>
