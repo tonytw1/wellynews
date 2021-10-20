@@ -53,7 +53,7 @@ class NewWebsiteController @Autowired()(contentUpdateService: ContentUpdateServi
       Await.result(mongoRepository.getWebsiteByUrlwords(website.url_words.get), TenSeconds).fold {  // TODO naked get
         contentUpdateService.create(website)
         log.info("Created website: " + website)
-        new ModelAndView(new RedirectView(urlBuilder.getPublisherUrl(website.title.get)))
+        new ModelAndView(new RedirectView(urlBuilder.getPublisherUrl(website)))
 
       } { existing =>
         log.warn("Found existing website site same url words: " + existing.title)

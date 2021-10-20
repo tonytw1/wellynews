@@ -53,7 +53,7 @@ class NewWatchlistController @Autowired()(contentUpdateService: ContentUpdateSer
       Await.result(mongoRepository.getWebsiteByUrlwords(watchlist.url_words.get), TenSeconds).fold {  // TODO naked get
         contentUpdateService.create(watchlist)
         log.info("Created watchlist: " + watchlist)
-        new ModelAndView(new RedirectView(urlBuilder.getPublisherUrl(watchlist.title.get)))
+        new ModelAndView(new RedirectView(urlBuilder.getWatchlistUrl))
 
       } { existing => // TODO on url not url words
         log.warn("Found existing watchlist site same url words: " + existing.title)
