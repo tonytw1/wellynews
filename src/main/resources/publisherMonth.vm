@@ -15,7 +15,7 @@
 #parse("includes/rss_widget_for_publisher.vm")
 </div>
 
-<h2><a href="$urlBuilder.getPublisherUrl($publisher.urlWords)">$publisher.name</a> / $heading</h2>
+<h2><a href="$urlBuilder.getPublisherUrl($publisher.urlWords)">$publisher.name</a> / $dateFormatter.fullMonthYear($month.start.toDate())</h2>
 
 	<div class="tag_main_content">
 		#set($main_heading = "$publisher.getName() newsitems")
