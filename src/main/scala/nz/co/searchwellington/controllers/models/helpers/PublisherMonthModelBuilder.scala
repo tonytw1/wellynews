@@ -8,19 +8,21 @@ import nz.co.searchwellington.model.mappers.FrontendResourceMapper
 import nz.co.searchwellington.model.{PublisherArchiveLink, User, Website}
 import nz.co.searchwellington.repositories.ContentRetrievalService
 import org.apache.log4j.Logger
-import org.joda.time.Interval
+import org.joda.time.{DateTimeZone, Interval}
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
 import org.springframework.web.servlet.ModelAndView
+import uk.co.eelpieconsulting.common.dates.DateFormatter
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
-
 @Component class PublisherMonthModelBuilder @Autowired()(val contentRetrievalService: ContentRetrievalService, frontendResourceMapper: FrontendResourceMapper)
   extends ModelBuilder with ArchiveMonth {
 
-  val PublisherMonthPath = "/*/[0-9]+-.*?"
+  private val dateFormatter = new DateFormatter(DateTimeZone.UTC) // TODO use global
+
+  private val PublisherMonthPath = "/*/[0-9]+-.*?"
 
   private val logger = Logger.getLogger(classOf[PublisherModelBuilder])
 
@@ -41,7 +43,8 @@ import scala.concurrent.Future
           Some(new ModelAndView().
             addObject("publisher", eventualFrontendWebsite).
             addObject(MAIN_CONTENT, newsitemsForMonth.asJava).
-            addObject("heading", publisher.getTitle + " - " + month)
+            addObject("heading", publisher.getTitle + " - " + dateFormatter.fullMonthYear(month.getStart.toDate)
+          )
             addObject("month", month))
         }
 

@@ -1,13 +1,12 @@
 package nz.co.searchwellington.controllers.models.helpers
 
 import java.util.regex.Pattern
-
 import nz.co.searchwellington.ReasonableWaits
 import nz.co.searchwellington.model.Website
 import nz.co.searchwellington.model.frontend.{FrontendResource, FrontendWebsite}
 import nz.co.searchwellington.model.mappers.FrontendResourceMapper
 import nz.co.searchwellington.repositories.ContentRetrievalService
-import org.joda.time.{DateTime, Interval}
+import org.joda.time.{DateTime, DateTimeZone, Interval}
 import org.junit.Assert.{assertEquals, assertFalse, assertTrue}
 import org.junit.Test
 import org.mockito.Mockito.{mock, when}
@@ -70,14 +69,18 @@ class PublisherMonthModelBuilderTest extends ReasonableWaits with ContentFields 
     request.setAttribute("publisher", publisher)
     request.setRequestURI("/a-publisher/2020-jul")
 
-    val july = new DateTime(2020, 7, 1, 0, 0)
-    when(contentRetrievalService.getNewsitemsForPublisherInterval(publisher, new Interval(july, july.plusMonths(1)), None)).thenReturn(Future.successful(monthNewsitems))
+    val july = new DateTime(2020, 7, 1, 0, 0, DateTimeZone.UTC)
+    val month = new Interval(july, july.plusMonths(1))
+    System.out.println(month);
+
+    when(contentRetrievalService.getNewsitemsForPublisherInterval(publisher, month, None)).thenReturn(Future.successful(monthNewsitems))
     when(frontendResourceMapper.createFrontendResourceFrom(publisher, None)).thenReturn(Future.successful(FrontendWebsite(id = "123")))
 
     val mv = Await.result(modelBuilder.populateContentModel(request), TenSeconds).get
 
     import scala.collection.JavaConverters._
     assertEquals(monthNewsitems.asJava, mv.getModel.get(MAIN_CONTENT))
+    assertEquals("A publisher - July 2020", mv.getModel.get("heading"))
   }
 
 }

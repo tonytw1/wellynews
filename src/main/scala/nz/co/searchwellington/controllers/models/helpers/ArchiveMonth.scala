@@ -1,25 +1,31 @@
 package nz.co.searchwellington.controllers.models.helpers
 
-import java.text.{ParseException, SimpleDateFormat}
-import java.util.Date
+import org.joda.time.format.DateTimeFormat
+import org.joda.time.{DateTime, DateTimeZone, Interval}
 
-import org.joda.time.{DateTime, Interval}
+import java.text.SimpleDateFormat
+import java.util.Date
 
 trait ArchiveMonth {
 
+  @Deprecated // Timezone issues here
   val archiveMonthFormat = new SimpleDateFormat("yyyy-MMM")
+
+  val amf = DateTimeFormat.forPattern("yyyy-MMM").withZone(DateTimeZone.UTC)
 
   def parseYearMonth(archiveMonthString: String): Option[Interval] = {
     def intervalForMonth(month: Date): Interval = {
-      new Interval(new DateTime(month), new DateTime(month).plusMonths(1))
+      val start = new DateTime(month, DateTimeZone.UTC)
+      System.out.println("START: " + start);
+      new Interval(start, start.plusMonths(1))
     }
 
     try {
-      val month = archiveMonthFormat.parse(archiveMonthString)  // TODO This parse over matches; ie. 2021-sep2
-      Some(intervalForMonth(month))
+      val month = amf.parseDateTime(archiveMonthString)  // TODO This parse over matches; ie. 2021-sep2?
+      Some(intervalForMonth(month.toDate))
     }
     catch {
-      case _: ParseException =>
+      case _: IllegalArgumentException =>
         None
     }
   }

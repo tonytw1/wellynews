@@ -5,8 +5,8 @@ import nz.co.searchwellington.model.ArchiveLink
 import nz.co.searchwellington.model.frontend.FrontendNewsitem
 import nz.co.searchwellington.model.helpers.ArchiveLinksService
 import nz.co.searchwellington.repositories.ContentRetrievalService
-import org.joda.time.{DateTime, Interval}
-import org.junit.Assert.{assertEquals, assertTrue, assertNotNull}
+import org.joda.time.{DateTime, DateTimeZone, Interval}
+import org.junit.Assert.{assertEquals, assertTrue}
 import org.junit.{Before, Test}
 import org.mockito.Mockito.{mock, when}
 import org.springframework.mock.web.MockHttpServletRequest
@@ -39,7 +39,7 @@ class ArchiveModelBuilderTest extends ReasonableWaits with ContentFields {
 
   @Test
   def indexPageMainContentIsTheArchiveMonthNewsitems() {
-    val july = new DateTime(2020, 7, 1, 0, 0)
+    val july = new DateTime(2020, 7, 1, 0, 0, DateTimeZone.UTC)
     val monthOfJuly = new Interval(july, july.plusMonths(1))
     when(contentRetrievalService.getNewsitemsForInterval(monthOfJuly, loggedInUser)).thenReturn(Future.successful(monthNewsitems))
 
@@ -51,7 +51,7 @@ class ArchiveModelBuilderTest extends ReasonableWaits with ContentFields {
 
   @Test
   def extraContentIncludesLinksToArchiveMonths(): Unit = {
-    val july = new DateTime(2020, 7, 1, 0, 0)
+    val july = new DateTime(2020, 7, 1, 0, 0, DateTimeZone.UTC)
     val monthOfJuly = new Interval(july, july.plusMonths(1))
 
     val archiveLinks = Seq(ArchiveLink(monthOfJuly, 3))
@@ -70,7 +70,7 @@ class ArchiveModelBuilderTest extends ReasonableWaits with ContentFields {
 
   @Test
   def shouldIncludePreviousAndNextMonthLinks(): Unit = {
-    val june = new DateTime(2020, 6, 1, 0, 0)
+    val june = new DateTime(2020, 6, 1, 0, 0, DateTimeZone.UTC)
     val july = june.plusMonths(1)
     val august = july.plusMonths(1)
 
