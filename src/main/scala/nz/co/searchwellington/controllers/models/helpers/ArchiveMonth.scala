@@ -15,11 +15,11 @@ trait ArchiveMonth {
     }
 
     try {
-      val month = archiveMonthFormat.parse(archiveMonthString)
+      val month = archiveMonthFormat.parse(archiveMonthString)  // TODO This parse over matches; ie. 2021-sep2
       Some(intervalForMonth(month))
     }
     catch {
-      case e: ParseException =>
+      case _: ParseException =>
         None
     }
   }
