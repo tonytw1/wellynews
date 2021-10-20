@@ -10,19 +10,17 @@
 </div>
 
 <div class="main">
+    <div class="rss">
+        #parse("includes/rss_widget_for_publisher.vm")
+    </div>
 
-<div class="rss">
-#parse("includes/rss_widget_for_publisher.vm")
-</div>
+    <h2><a href="$urlBuilder.getPublisherUrl($publisher)">$publisher.name</a> / $dateFormatter.fullMonthYear($month.start.toDate())</h2>
 
-<h2><a href="$urlBuilder.getPublisherUrl($publisher)">$publisher.name</a> / $dateFormatter.fullMonthYear($month.start.toDate())</h2>
-
-	<div class="tag_main_content">
+	<div class="main_content">
 		#set($main_heading = "$publisher.getName() newsitems")
 		#parse("includes/main_content.vm")	
 		#parse("includes/publisher_page_links.vm")
 	</div>
-
 </div>
 
 <div class="right">
