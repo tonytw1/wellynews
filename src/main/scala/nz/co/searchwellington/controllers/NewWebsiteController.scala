@@ -16,7 +16,7 @@ import org.springframework.web.servlet.ModelAndView
 import org.springframework.web.servlet.view.RedirectView
 import org.joda.time.DateTime
 
-import scala.concurrent.Await
+import scala.concurrent.{Await, Future}
 import scala.concurrent.ExecutionContext.Implicits.global
 
 @Controller
@@ -50,17 +50,20 @@ class NewWebsiteController @Autowired()(contentUpdateService: ContentUpdateServi
       )
       val website = w.copy(url_words = urlWordsGenerator.makeUrlWordsFor(w))
 
-      Await.result(mongoRepository.getWebsiteByUrlwords(website.url_words.get), TenSeconds).fold {  // TODO naked get
-        contentUpdateService.create(website)
-        log.info("Created website: " + website)
-        new ModelAndView(new RedirectView(urlBuilder.getPublisherUrl(website)))
-
-      } { existing =>
-        log.warn("Found existing website site same url words: " + existing.title)
-        result.addError(new ObjectError("newWebsite",
-          "Found existing website with same name"))
-        renderNewWebsiteForm(newWebsite)
+      val eventualModelAndView = mongoRepository.getWebsiteByUrlwords(website.url_words.get).flatMap { maybeExistingWebsite =>
+        maybeExistingWebsite.fold {
+          contentUpdateService.create(website).map { _ =>
+            log.info("Created website: " + website)
+            new ModelAndView(new RedirectView(urlBuilder.getPublisherUrl(website)))
+          }
+        } { existing =>
+          log.warn("Found existing website site same url words: " + existing.title)
+          result.addError(new ObjectError("newWebsite",
+            "Found existing website with same name"))
+          Future.successful(renderNewWebsiteForm(newWebsite))
+        }
       }
+      Await.result(eventualModelAndView, TenSeconds)
     }
   }
 
