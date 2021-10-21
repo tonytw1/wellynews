@@ -32,6 +32,8 @@ import scala.concurrent.{ExecutionContext, Future}
   def getSubscriptionFeedItems(subscriptionId: String)(implicit ec: ExecutionContext): Future[Either[String, (Seq[FeedItem], Long)]] = {
     client.getSubscriptionFeedItems(subscriptionId).map { r =>
       Right(r)
+    }.recover {
+      case e: Throwable => Left(s"Failed to fetch feed items: {e.getMessage}")
     }
   }
 
