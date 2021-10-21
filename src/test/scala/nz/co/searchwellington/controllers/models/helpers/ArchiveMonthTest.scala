@@ -6,18 +6,25 @@ import org.junit.Test
 
 class ArchiveMonthTest extends ArchiveMonth {
 
+  private val firstOct2021 = new DateTime(2021, 10, 1, 0, 0, DateTimeZone.UTC)
+  val oct2021 = new Interval(firstOct2021, firstOct2021.plusMonths(1))
+
   @Test
   def canParseYearMonthUrlStubsIntoIntervals(): Unit = {
     val parsedInterval = parseYearMonth("2021-oct")
 
-    val oct2021 = new DateTime(2021, 10, 1, 0, 0, DateTimeZone.UTC)
-    assertEquals(Some(new Interval(oct2021, oct2021.plusMonths(1))), parsedInterval)
+    assertEquals(Some(oct2021), parsedInterval)
   }
 
   @Test
   def shouldIgnoreDatesWithTrailingCharacters(): Unit = {
     val parsedInterval = parseYearMonth("2021-oct123")
     assertEquals(None, parsedInterval)
+  }
+
+  @Test
+  def canRenderYearMonthIntervalsAsUrlStubs(): Unit = {
+    assertEquals("2021-oct", renderYearMonth(oct2021))
   }
 
 }

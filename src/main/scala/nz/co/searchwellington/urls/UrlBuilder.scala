@@ -148,15 +148,15 @@ class UrlBuilder @Autowired()(siteInformation: SiteInformation, urlWordsGenerato
   }
 
   def getArchiveLinkUrl(link: ArchiveLink): String = {
-    "/archive/" + formattedInterval(link.interval)
+    "/archive/" + renderYearMonth(link.interval)
   }
 
   def getIntervalUrl(interval: Interval): String = {
-    "/archive/" + formattedInterval(interval)
+    "/archive/" + renderYearMonth(interval)
   }
 
   def getPublisherArchiveLinkUrl(link: PublisherArchiveLink): String = {
-    "/" + link.publisher.getUrlWords + "/" + formattedInterval(link.interval)
+    "/" + link.publisher.getUrlWords + "/" + renderYearMonth(link.interval)
   }
 
   def getOpenIDCallbackUrl: String = {
@@ -235,10 +235,6 @@ class UrlBuilder @Autowired()(siteInformation: SiteInformation, urlWordsGenerato
 
   def getOsmWebsiteUrl(osmId: OsmId): String = {
     "http://www.openstreetmap.org/browse/" + osmId.getType.toString.toLowerCase + "/" + osmId.getId
-  }
-
-  private def formattedInterval(interval: Interval) = {
-    archiveMonthFormat.format(interval.getStart.toDate).toLowerCase
   }
 
   def getDiscoveredFeeds(): String = {
