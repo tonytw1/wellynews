@@ -16,7 +16,6 @@ trait ArchiveMonth {
   def parseYearMonth(archiveMonthString: String): Option[Interval] = {
     def intervalForMonth(month: Date): Interval = {
       val start = new DateTime(month, DateTimeZone.UTC)
-      System.out.println("START: " + start);
       new Interval(start, start.plusMonths(1))
     }
 
