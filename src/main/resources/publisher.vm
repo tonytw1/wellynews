@@ -61,15 +61,17 @@
 </div>
 
 <div class="right">
-    <div class="box">
-        <h2>Archive</h2>
-        <p>$publisher.name has published newsitems during these months.<p>
-        <ul>
-            #foreach ($link in $publisher_archive_links)
-                <li><a href="$urlBuilder.getPublisherArchiveLinkUrl($link)">$dateFormatter.fullMonthYear($link.month)</a> ($link.count)</li>
-            #end
-        </ul>
-    </div>
+    #if($publisher_archive_links)
+        <div class="box">
+            <h2>Archive</h2>
+            <p>$publisher.name has published newsitems during these months.<p>
+            <ul>
+                #foreach ($link in $publisher_archive_links)
+                    <li><a href="$urlBuilder.getPublisherArchiveLinkUrl($link)">$dateFormatter.fullMonthYear($link.month)</a> ($link.count)</li>
+                #end
+            </ul>
+        </div>
+    #end
     <div class="box">
         #parse("includes/latest_newsitems.vm")
     </div>

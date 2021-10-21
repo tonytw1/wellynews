@@ -109,8 +109,10 @@ import scala.concurrent.Future
       if (relatedTagsForPublisher.nonEmpty) {
         mv.addObject("related_tags", relatedTagsForPublisher.asJava)
       }
-      mv.addObject("latest_newsitems", latestNewsitems.asJava)
-      mv.addObject("publisher_archive_links", publisherArchiveLinks.asJava)
+      if (publisherArchiveLinks.nonEmpty) {
+        mv.addObject("publisher_archive_links", publisherArchiveLinks.asJava)
+      }
+      mv.addObject("latest_newsitems", latestNewsitems.asJava)  // TODO use wrapper
     }
   }
 
