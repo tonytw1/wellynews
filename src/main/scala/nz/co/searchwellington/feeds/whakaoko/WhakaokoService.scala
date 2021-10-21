@@ -33,7 +33,7 @@ import scala.concurrent.{ExecutionContext, Future}
     client.getSubscriptionFeedItems(subscriptionId).map { r =>
       Right(r)
     }.recover {
-      case e: Throwable => Left(s"Failed to fetch feed items: {e.getMessage}")
+      case e: Throwable => Left(s"Failed to fetch feed items: ${e.getMessage}")
     }
   }
 
