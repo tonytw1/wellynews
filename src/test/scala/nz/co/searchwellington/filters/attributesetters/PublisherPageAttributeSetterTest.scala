@@ -43,14 +43,6 @@ class PublisherPageAttributeSetterTest {
     assertEquals(publisher, request.getAttribute("publisher"))
   }
 
-  @Test def shouldSetPublisherAttributeForPublisherEditPath(): Unit = {
-    request.setRequestURI("/wellington-city-council/edit")
-
-    pageAttributeSetter.setAttributes(request)
-
-    assertEquals(publisher, request.getAttribute("publisher"))
-  }
-
   @Test def shouldSetPublisherAttributeForPublisherRssPath(): Unit = {
     request.setRequestURI("/wellington-city-council/rss")
 
