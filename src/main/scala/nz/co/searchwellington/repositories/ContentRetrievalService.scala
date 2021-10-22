@@ -222,6 +222,15 @@ import scala.concurrent.Future
       loggedInUser = loggedInUser
     ).flatMap(i => fetchByIds(i._1, loggedInUser))
   }
+  def getOwnedByCount(loggedInUser: User): Future[Long] = { // TODO Almost certainly the same call as above
+    elasticSearchIndexer.getResources(
+      ResourceQuery(
+        owner = Some(loggedInUser._id),
+        maxItems = MAX_NEWSITEMS
+      ),
+      loggedInUser = Some(loggedInUser)
+    ).map(i => i._2)
+  }
 
   def getTaggedBy(user: User, loggedInUser: Option[User]): Future[Seq[FrontendResource]] = {
     val taggedByUser = ResourceQuery(
@@ -328,10 +337,6 @@ import scala.concurrent.Future
   }
 
   def getTagNamesStartingWith(q: String, loggedInUser: Option[User]): Future[Seq[String]] = tagDAO.getTagNamesStartingWith(q)
-
-  def getOwnedByCount(loggedInUser: User): Int = {
-    0 // TODO implement via Elastic
-  }
 
   def getFeaturedTags: Future[Seq[Tag]] = tagDAO.getFeaturedTags
 

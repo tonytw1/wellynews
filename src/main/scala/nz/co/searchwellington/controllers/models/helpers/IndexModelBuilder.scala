@@ -9,7 +9,6 @@ import nz.co.searchwellington.model.frontend.FrontendResource
 import nz.co.searchwellington.model.helpers.ArchiveLinksService
 import nz.co.searchwellington.repositories.ContentRetrievalService
 import nz.co.searchwellington.urls.UrlBuilder
-import org.apache.log4j.Logger
 import org.joda.time.{DateTime, Interval, YearMonth}
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
@@ -24,8 +23,6 @@ import scala.concurrent.Future
                                                 val urlBuilder: UrlBuilder, archiveLinksService: ArchiveLinksService,
                                                 commonAttributesModelBuilder: CommonAttributesModelBuilder) extends ModelBuilder
   with CommonSizes with Pagination with ReasonableWaits {
-
-  private val log = Logger.getLogger(classOf[IndexModelBuilder])
 
   private val MAX_OWNED_TO_SHOW_IN_RHS = 4
 
@@ -65,13 +62,22 @@ import scala.concurrent.Future
   def populateExtraModelContent(request: HttpServletRequest, mv: ModelAndView, loggedInUser: Option[User]): Future[ModelAndView] = {
     def populateUserOwnedResources(mv: ModelAndView, l: Option[User]) {
       l.map { loggedInUser =>
-        val ownedCount = contentRetrievalService.getOwnedByCount(loggedInUser)
-        if (ownedCount > 0) {
-          mv.addObject("owned", contentRetrievalService.getOwnedBy(loggedInUser, Some(loggedInUser)))
-          if (ownedCount > MAX_OWNED_TO_SHOW_IN_RHS) {
-            mv.addObject("owned_moreurl", urlBuilder.getProfileUrlFromProfileName(loggedInUser.getProfilename))
+        val eventualOwnedCount = contentRetrievalService.getOwnedByCount(loggedInUser)
+        val eventualOwned = contentRetrievalService.getOwnedBy(loggedInUser, Some(loggedInUser))
+        for {
+          ownedCount <- eventualOwnedCount
+          owned <- eventualOwned
+        } yield {
+          if (ownedCount > 0) {
+            mv.addObject("owned", owned.asJava)
+            if (ownedCount > MAX_OWNED_TO_SHOW_IN_RHS) {
+              mv.addObject("owned_moreurl", urlBuilder.getProfileUrlFromProfileName(loggedInUser.getProfilename))
+            }
           }
+          mv
         }
+      }.getOrElse{
+        Future.successful(mv)
       }
     }
 
