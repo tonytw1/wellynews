@@ -8,6 +8,7 @@ import org.springframework.stereotype.Component
 
 import scala.concurrent.{Await, ExecutionContext}
 
+@Deprecated
 @Component class HibernateResourceDAO @Autowired() (mongoRepository: MongoRepository) extends ReasonableWaits {
 
   def loadFeedByUrlWords(urlWords: String)(implicit ec: ExecutionContext): Option[Feed] = {
@@ -22,11 +23,6 @@ import scala.concurrent.{Await, ExecutionContext}
   def getOwnedByUserCount(user: User): Int = {
     // return (sessionFactory.getCurrentSession.createQuery("select count(*) from Resource where owner = " + user.getId).iterate.next.asInstanceOf[Long]).intValue
     0 // TODO
-  }
-
-  def loadNewsitemByHeadlineAndPublisherWithinLastMonth(name: String, publisher: Website): Resource = {
-    // return sessionFactory.getCurrentSession.createCriteria(classOf[Newsitem]).add(Restrictions.eq("name", name)).add(Restrictions.eq("publisher", publisher)).setMaxResults(1).uniqueResult.asInstanceOf[Resource]
-    null
   }
 
 }
