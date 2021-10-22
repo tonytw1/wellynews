@@ -1,12 +1,11 @@
 package nz.co.searchwellington.controllers.admin
 
-import javax.servlet.http.{HttpServletRequest, HttpServletResponse}
 import nz.co.searchwellington.ReasonableWaits
 import nz.co.searchwellington.controllers.{CommonModelObjectsService, LoggedInUserFilter, RequiringLoggedInUser}
 import nz.co.searchwellington.filters.AdminRequestFilter
 import nz.co.searchwellington.model.{Newsitem, Resource, User, Website}
 import nz.co.searchwellington.modification.ContentUpdateService
-import nz.co.searchwellington.repositories.{ContentRetrievalService, HibernateResourceDAO}
+import nz.co.searchwellington.repositories.ContentRetrievalService
 import nz.co.searchwellington.repositories.mongo.MongoRepository
 import nz.co.searchwellington.urls.UrlParser
 import org.apache.log4j.Logger
@@ -15,12 +14,12 @@ import org.springframework.stereotype.Controller
 import org.springframework.web.bind.annotation.{RequestMapping, RequestMethod}
 import org.springframework.web.servlet.ModelAndView
 
+import javax.servlet.http.{HttpServletRequest, HttpServletResponse}
 import scala.concurrent.Await
 import scala.concurrent.ExecutionContext.Implicits.global
 
 @Controller class PublisherAutoGatherController @Autowired()(requestFilter: AdminRequestFilter,
                                                              mongoRepository: MongoRepository,
-                                                             resourceDAO: HibernateResourceDAO,
                                                              contentUpdateService: ContentUpdateService,
                                                              urlParser: UrlParser,
                                                              val contentRetrievalService: ContentRetrievalService,
@@ -78,8 +77,8 @@ import scala.concurrent.ExecutionContext.Implicits.global
   }
 
   private def getPossibleAutotagResources(publisher: Resource): Seq[Resource] = {
-    val publishersUrlStem = urlParser.extractHostnameFrom(publisher.page)
-    resourceDAO.getNewsitemsMatchingStem(publishersUrlStem)
+    val publishersHostname = urlParser.extractHostnameFrom(publisher.page)
+    Await.result(mongoRepository.getNewsitemsMatchingHostname(publishersHostname), TenSeconds)
   }
 
   private def needsPublisher(resource: Newsitem, proposedPublisher: Website): Boolean = {

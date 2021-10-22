@@ -404,6 +404,11 @@ class MongoRepository @Autowired()(@Value("${mongo.uri}") mongoUri: String) exte
     Future.successful(Seq.empty) // TODO implement
   }
 
+  def getNewsitemsMatchingHostname(stem: String): Future[Seq[Resource]] = {
+    // sessionFactory.getCurrentSession.createCriteria(classOf[Newsitem]).add(Restrictions.sqlRestriction(" page like \"%" + stem + "%\" ")).addOrder(Order.asc("name")).list.asInstanceOf[List[Resource]]
+    Future.successful(Seq.empty) // TODO implement
+  }
+
   private val noProjection: Option[BSONDocument] = None
   private val idOnlyProjection = BSONDocument("_id" -> 1)
 }
