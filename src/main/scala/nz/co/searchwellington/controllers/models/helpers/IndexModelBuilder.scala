@@ -60,7 +60,7 @@ import scala.concurrent.Future
   }
 
   def populateExtraModelContent(request: HttpServletRequest, mv: ModelAndView, loggedInUser: Option[User]): Future[ModelAndView] = {
-    def populateUserOwnedResources(mv: ModelAndView, l: Option[User]) {
+    def populateUserOwnedResources(mv: ModelAndView, l: Option[User]): Future[ModelAndView] = {
       l.map { loggedInUser =>
         val eventualOwnedCount = contentRetrievalService.getOwnedByCount(loggedInUser)
         val eventualOwned = contentRetrievalService.getOwnedBy(loggedInUser, Some(loggedInUser))
@@ -76,7 +76,7 @@ import scala.concurrent.Future
           }
           mv
         }
-      }.getOrElse{
+      }.getOrElse {
         Future.successful(mv)
       }
     }
@@ -86,7 +86,7 @@ import scala.concurrent.Future
     val eventualArchiveStatistics = contentRetrievalService.getArchiveCounts(loggedInUser)
     val eventualGeocoded = contentRetrievalService.getGeocodedNewsitems(0, MAX_NUMBER_OF_GEOTAGGED_TO_SHOW, loggedInUser)
 
-    for {
+    (for {
       websites <- eventualWebsites
       archiveMonths <- eventualArchiveMonths
       archiveStatistics <- eventualArchiveStatistics
@@ -95,9 +95,10 @@ import scala.concurrent.Future
     } yield {
       populateSecondaryJustin(mv, websites._1)
       populateGeocoded(mv, geocoded)
-      // populateUserOwnedResources(mv, loggedInUserFilter.getLoggedInUser)
       archiveLinksService.populateArchiveLinks(mv, archiveMonths, archiveStatistics)
       mv
+    }).flatMap { mv =>
+      populateUserOwnedResources(mv, loggedInUser)  // TODO weird wiring
     }
   }
 
