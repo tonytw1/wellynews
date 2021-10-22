@@ -1,10 +1,7 @@
 package nz.co.searchwellington.controllers.models.helpers
 
-import java.util.regex.Pattern
-
-import javax.servlet.http.HttpServletRequest
 import nz.co.searchwellington.ReasonableWaits
-import nz.co.searchwellington.controllers.models.{ContentModelBuilderService, ModelBuilder}
+import nz.co.searchwellington.controllers.models.ModelBuilder
 import nz.co.searchwellington.filters.RequestPath
 import nz.co.searchwellington.model.User
 import nz.co.searchwellington.repositories.ContentRetrievalService
@@ -14,6 +11,8 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
 import org.springframework.web.servlet.ModelAndView
 
+import java.util.regex.Pattern
+import javax.servlet.http.HttpServletRequest
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
@@ -50,7 +49,7 @@ import scala.concurrent.Future
     userByPath(path).flatMap { maybeUser =>
       maybeUser.map{ user =>
         for {
-          submissions <- contentRetrievalService.getOwnedBy(user, loggedInUser)
+          submissions <- contentRetrievalService.getOwnedBy(user, loggedInUser, MAX_NEWSITEMS)
           tagged <- contentRetrievalService.getTaggedBy(user, loggedInUser)
           mv = {
             import scala.collection.JavaConverters._

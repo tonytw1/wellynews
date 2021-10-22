@@ -63,7 +63,7 @@ import scala.concurrent.Future
     def populateUserOwnedResources(mv: ModelAndView, l: Option[User]): Future[ModelAndView] = {
       l.map { loggedInUser =>
         val eventualOwnedCount = contentRetrievalService.getOwnedByCount(loggedInUser)
-        val eventualOwned = contentRetrievalService.getOwnedBy(loggedInUser, Some(loggedInUser))
+        val eventualOwned = contentRetrievalService.getOwnedBy(loggedInUser, Some(loggedInUser), MAX_OWNED_TO_SHOW_IN_RHS)
         for {
           ownedCount <- eventualOwnedCount
           owned <- eventualOwned
