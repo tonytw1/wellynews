@@ -24,7 +24,6 @@ import scala.concurrent.{Await, Future}
   def performDelete(resource: Resource): Boolean = {
     try {
       log.info("Deleting resource: " + resource)
-      handTaggingDAO.clearTags(resource) // TODO does nothing
 
       // Resource type specific actions
       resource match {

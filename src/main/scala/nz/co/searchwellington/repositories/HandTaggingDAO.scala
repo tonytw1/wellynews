@@ -40,12 +40,6 @@ import scala.concurrent.ExecutionContext.Implicits.global
     getHandTaggingsForResourceByUser(resource, user).map(tagging => tagging.tag).toSet
   }
 
-  def clearTags(resource: Resource) {
-    for (handTagging <- this.getHandTaggingsForResource(resource)) {
-      // TODO sessionFactory.getCurrentSession.delete(handTagging)
-    }
-  }
-
   private def getHandTaggingsForResourceByUser(resource: Resource, user: User): Seq[HandTagging] = {
     // sessionFactory.getCurrentSession.createCriteria(classOf[HandTagging]).add(Restrictions.eq("resource", resource)).add(Restrictions.eq("user", user)).setCacheable(true).list.asInstanceOf[java.util.List[HandTagging]]
     Seq() // TODO
