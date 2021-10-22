@@ -198,7 +198,7 @@ class UrlBuilder @Autowired()(siteInformation: SiteInformation, urlWordsGenerato
   }
 
   def getSearchUrlFor(q: String): String = {
-    getSearchUrlFor(q);
+    getSearchUrlFor(q, None, None);
   }
 
   def getSearchUrlFor(keywords: String, page: Option[Int] = None, tag: Option[Tag] = None, publisher: Option[Website] = None): String = {
