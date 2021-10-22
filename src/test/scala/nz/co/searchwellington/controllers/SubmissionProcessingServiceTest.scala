@@ -66,16 +66,4 @@ class SubmissionProcessingServiceTest {
     //verify(resource).setName("The quick brown fox jumped over the lazy dog")
   }
 
-  @Test
-  @throws[Exception]
-  def shouldPopulateAcceptanceFieldsOnInitalSubmission {
-    request.addParameter("acceptedFromFeed", urlWordsGenerator.makeUrlWordsFromName(FEED_NAME))
-    when(resourceDAO.loadFeedByUrlWords("a-feed")).thenReturn(Some(feed))
-
-    submissionProcessingService.processAcceptance(request, resource, loggedInUser)
-
-    //verify(resource).setFeed(feed)
-    //verify(resource).setAcceptedBy(loggedInUser)
-  }
-
 }

@@ -153,21 +153,6 @@ import scala.concurrent.ExecutionContext.Implicits.global
     }
   }
 
-  def processAcceptance(request: HttpServletRequest, editResource: Resource, loggedInUser: User) {
-    if (editResource.isInstanceOf[Newsitem]) {
-      if (!Strings.isNullOrEmpty(request.getParameter("acceptedFromFeed"))) {
-        val acceptedFromFeedUrlWords: String = request.getParameter("acceptedFromFeed")
-        log.info("Item was accepted from a feed with url words: " + acceptedFromFeedUrlWords)
-        resourceDAO.loadFeedByUrlWords(acceptedFromFeedUrlWords).map { feed =>
-          log.info("Setting accepted from feed to: " + feed.title)
-          // (editResource.asInstanceOf[Newsitem]).setFeed(feed)
-          // (editResource.asInstanceOf[Newsitem]).setAcceptedBy(loggedInUser)
-          // (editResource.asInstanceOf[Newsitem]).setAccepted(DateTime.now.toDate)
-        }
-      }
-    }
-  }
-
   private def processAdditionalTags(request: HttpServletRequest, editResource: Resource, user: User) {
     val additionalTagString: String = request.getParameter("additional_tags").trim
     log.debug("Found additional tag string: " + additionalTagString)

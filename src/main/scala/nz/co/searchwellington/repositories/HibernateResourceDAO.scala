@@ -6,14 +6,8 @@ import nz.co.searchwellington.repositories.mongo.MongoRepository
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
 
-import scala.concurrent.{Await, ExecutionContext}
-
 @Deprecated
 @Component class HibernateResourceDAO @Autowired() (mongoRepository: MongoRepository) extends ReasonableWaits {
-
-  def loadFeedByUrlWords(urlWords: String)(implicit ec: ExecutionContext): Option[Feed] = {
-    Await.result(mongoRepository.getFeedByUrlwords(urlWords), TenSeconds)
-  }
 
   @SuppressWarnings(Array("unchecked")) def getNewsitemsMatchingStem(stem: String): Seq[Resource] = {
     // sessionFactory.getCurrentSession.createCriteria(classOf[Newsitem]).add(Restrictions.sqlRestriction(" page like \"%" + stem + "%\" ")).addOrder(Order.asc("name")).list.asInstanceOf[List[Resource]]

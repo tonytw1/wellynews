@@ -266,7 +266,7 @@ import scala.concurrent.ExecutionContext.Implicits.global
         submissionProcessingService.processPublisher(request, editResource)
         if (editResource.`type` == "N") {
           submissionProcessingService.processImage(request, editResource.asInstanceOf[Newsitem], loggedInUser)
-          submissionProcessingService.processAcceptance(request, editResource, loggedInUser)
+          //submissionProcessingService.processAcceptance(request, editResource, loggedInUser)
         }
         if (editResource.`type` == "W" || editResource.`type` == "F") {
           editResource.title.map { t =>
