@@ -36,13 +36,4 @@ import scala.concurrent.ExecutionContext.Implicits.global
     }
   }
 
-  def getHandpickedTagsForThisResourceByUser(user: User, resource: Resource): Set[Tag] = {
-    getHandTaggingsForResourceByUser(resource, user).map(tagging => tagging.tag).toSet
-  }
-
-  private def getHandTaggingsForResourceByUser(resource: Resource, user: User): Seq[HandTagging] = {
-    // sessionFactory.getCurrentSession.createCriteria(classOf[HandTagging]).add(Restrictions.eq("resource", resource)).add(Restrictions.eq("user", user)).setCacheable(true).list.asInstanceOf[java.util.List[HandTagging]]
-    Seq() // TODO
-  }
-
 }
