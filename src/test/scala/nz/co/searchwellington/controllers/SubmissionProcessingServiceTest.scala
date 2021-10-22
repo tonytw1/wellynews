@@ -5,7 +5,7 @@ import nz.co.searchwellington.feeds.PlaceToGeocodeMapper
 import nz.co.searchwellington.geocoding.osm.{GeoCodeService, OsmIdParser}
 import nz.co.searchwellington.model.{Feed, Newsitem, UrlWordsGenerator, User}
 import nz.co.searchwellington.repositories.mongo.MongoRepository
-import nz.co.searchwellington.repositories.{HandTaggingDAO, HibernateResourceDAO, TagDAO}
+import nz.co.searchwellington.repositories.{HandTaggingDAO, TagDAO}
 import nz.co.searchwellington.urls.UrlCleaner
 import org.apache.struts.mock.MockHttpServletRequest
 import org.joda.time.DateTime
@@ -25,7 +25,6 @@ class SubmissionProcessingServiceTest {
   @Mock val tagDAO: TagDAO = null
   @Mock val mongoRepository: MongoRepository = null
   @Mock val tagVoteDAO: HandTaggingDAO = null
-  @Mock val resourceDAO: HibernateResourceDAO = null
   @Mock val resource: Newsitem = null
   val feed = Feed(id = UUID.randomUUID().toString, title = Some(FEED_NAME))
   @Mock val loggedInUser: User = null
@@ -42,7 +41,7 @@ class SubmissionProcessingServiceTest {
     request = new MockHttpServletRequest
     urlWordsGenerator = new UrlWordsGenerator
     submissionProcessingService = new SubmissionProcessingService(tagDAO, tagVoteDAO,
-      resourceDAO, urlProcessor, osmIdParser, placeToGeocodeMapper, mongoRepository)
+      urlProcessor, osmIdParser, placeToGeocodeMapper, mongoRepository)
   }
 
   @Test

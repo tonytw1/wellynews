@@ -17,7 +17,7 @@ import uk.co.eelpieconsulting.common.geo.model.LatLong
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
-@Component class ContentRetrievalService @Autowired()(resourceDAO: HibernateResourceDAO, tagDAO: TagDAO,
+@Component class ContentRetrievalService @Autowired()(tagDAO: TagDAO,
                                                       frontendResourceMapper: FrontendResourceMapper,
                                                       elasticSearchIndexer: ElasticSearchIndexer,
                                                       mongoRepository: MongoRepository) extends ReasonableWaits with CommonSizes {
@@ -85,7 +85,7 @@ import scala.concurrent.Future
   def getNewsitemKeywordSearchRelatedTags(keywords: String, loggedInUser: Option[User]): Future[Seq[TagContentCount]] = {
     val newsitemsByKeywords = ResourceQuery(`type` = newsitems, q = Some(keywords), publisher = None, tags = None)
 
-    val tagAggregation = elasticSearchIndexer.getAggregationFor(newsitemsByKeywords, elasticSearchIndexer.Tags, loggedInUser);
+    val tagAggregation = elasticSearchIndexer.getAggregationFor(newsitemsByKeywords, elasticSearchIndexer.Tags, loggedInUser)
 
     // TODO duplication
     def toTagContentCount(facet: (String, Long)): Future[Option[TagContentCount]] = {
@@ -103,7 +103,7 @@ import scala.concurrent.Future
   def getNewsitemKeywordSearchRelatedPublishers(keywords: String, loggedInUser: Option[User]): Future[Seq[PublisherContentCount]] = {
     val newsitemsByKeywords = ResourceQuery(`type` = newsitems, q = Some(keywords), publisher = None, tags = None)
 
-    val publisherAggregation = elasticSearchIndexer.getAggregationFor(newsitemsByKeywords, elasticSearchIndexer.Publisher, loggedInUser);
+    val publisherAggregation = elasticSearchIndexer.getAggregationFor(newsitemsByKeywords, elasticSearchIndexer.Publisher, loggedInUser)
 
     // TODO duplication
     def toPublisherContentCount(facet: (String, Long)): Future[Option[PublisherContentCount]] = {
@@ -153,7 +153,7 @@ import scala.concurrent.Future
   }
 
   def getGeotaggedNewsitemsForTag(tag: Tag, maxItems: Int, loggedInUser: Option[User]): Future[Seq[FrontendResource]] = {
-    val geotaggedNewsitemsForTag = ResourceQuery(`type` = newsitems, geocoded = Some(true), tags = Some(Set(tag)), maxItems = 30) // TOOD page size
+    val geotaggedNewsitemsForTag = ResourceQuery(`type` = newsitems, geocoded = Some(true), tags = Some(Set(tag)), maxItems = maxItems) // TODO page size
     elasticSearchIndexer.getResources(geotaggedNewsitemsForTag, loggedInUser = loggedInUser).flatMap(i => fetchByIds(i._1, loggedInUser))
   }
 
@@ -330,7 +330,7 @@ import scala.concurrent.Future
   def getTagNamesStartingWith(q: String, loggedInUser: Option[User]): Future[Seq[String]] = tagDAO.getTagNamesStartingWith(q)
 
   def getOwnedByCount(loggedInUser: User): Int = {
-    resourceDAO.getOwnedByUserCount(loggedInUser)
+    0 // TODO implement via Elastic
   }
 
   def getFeaturedTags: Future[Seq[Tag]] = tagDAO.getFeaturedTags

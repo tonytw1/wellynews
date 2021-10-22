@@ -7,7 +7,7 @@ import nz.co.searchwellington.feeds.PlaceToGeocodeMapper
 import nz.co.searchwellington.geocoding.osm.OsmIdParser
 import nz.co.searchwellington.model._
 import nz.co.searchwellington.repositories.mongo.MongoRepository
-import nz.co.searchwellington.repositories.{HandTaggingDAO, HibernateResourceDAO, TagDAO}
+import nz.co.searchwellington.repositories.{HandTaggingDAO, TagDAO}
 import nz.co.searchwellington.utils.{StringWrangling, UrlFilters}
 import org.apache.commons.lang.{StringEscapeUtils, StringUtils}
 import org.apache.log4j.Logger
@@ -21,7 +21,7 @@ import scala.concurrent.Await
 import scala.concurrent.ExecutionContext.Implicits.global
 
 @Component class SubmissionProcessingService @Autowired()(tagDAO: TagDAO,
-                                                          tagVoteDAO: HandTaggingDAO, resourceDAO: HibernateResourceDAO, urlProcessor: UrlProcessor,
+                                                          tagVoteDAO: HandTaggingDAO, urlProcessor: UrlProcessor,
                                                           osmIdParser: OsmIdParser, placeToGeocodeMapper: PlaceToGeocodeMapper,
                                                           mongoRepository: MongoRepository) extends ReasonableWaits with StringWrangling {
 
