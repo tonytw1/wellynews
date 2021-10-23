@@ -391,10 +391,9 @@ class MongoRepository @Autowired()(@Value("${mongo.uri}") mongoUri: String) exte
           case BSONString("W") => b.asOpt[Website]
           case BSONString("F") => b.asOpt[Feed]
           case BSONString("L") => b.asOpt[Watchlist]
-          case _ => {
+          case _ =>
             log.warn("Resource had unexpected type: " + `type`)
             None
-          }
         }
       }
     }
