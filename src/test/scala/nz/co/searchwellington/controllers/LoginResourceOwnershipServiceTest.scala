@@ -16,23 +16,24 @@ class LoginResourceOwnershipServiceTest {
   private val previousOwner =  mock(classOf[User])
   private val newOwner =  mock(classOf[User])
 
-  private val resourcesOwnedByUser = Seq.empty  // TODO content
+  private val resourcesOwnedByUser = Seq.empty  // TODO non empty for actual usefulness
 
   private val loginResourceOwnershipService = new LoginResourceOwnershipService(mongoRepository, handTaggingService)
 
   @Test
   def shouldDeletePreviousUserAfterReassigningResources() {
-    when(mongoRepository.getResourcesOwnedBy(previousOwner)).thenReturn(Future.successful(resourcesOwnedByUser))
+    when(mongoRepository.getResourcesIdsOwnedBy(previousOwner)).thenReturn(Future.successful(resourcesOwnedByUser))
     when(handTaggingService.transferVotes(previousOwner, newOwner)).thenReturn(Future.successful(true))
 
     loginResourceOwnershipService.reassignOwnership(previousOwner, newOwner)
 
+    println("DONE")
     verify(mongoRepository).removeUser(previousOwner)
   }
 
   @Test
   def shouldTransferAllTaggingVotesWhenReassigningUser() {
-    when(mongoRepository.getResourcesOwnedBy(previousOwner)).thenReturn(Future.successful(resourcesOwnedByUser))
+    when(mongoRepository.getResourcesIdsOwnedBy(previousOwner)).thenReturn(Future.successful(resourcesOwnedByUser))
     when(handTaggingService.transferVotes(previousOwner, newOwner)).thenReturn(Future.successful(true))
 
     loginResourceOwnershipService.reassignOwnership(previousOwner, newOwner)

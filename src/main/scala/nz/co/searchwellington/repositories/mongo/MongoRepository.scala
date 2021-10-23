@@ -335,6 +335,11 @@ class MongoRepository @Autowired()(@Value("${mongo.uri}") mongoUri: String) exte
     allResourceIdsFor(byTaggingUser)
   }
 
+  def getResourcesIdsOwnedBy(owner: User)(implicit ec: ExecutionContext): Future[Seq[BSONObjectID]] = {
+    val byOwner = BSONDocument("owner" -> owner._id)
+    allResourceIdsFor(byOwner)
+  }
+
   private def allResourceIdsFor(selector: BSONDocument)(implicit ec: ExecutionContext): Future[Seq[BSONObjectID]] = {
     resourceCollection.find(selector, noProjection).
       cursor[BSONDocument]().
@@ -397,10 +402,6 @@ class MongoRepository @Autowired()(@Value("${mongo.uri}") mongoUri: String) exte
         }
       }
     }
-  }
-
-  def getResourcesOwnedBy(owner: User): Future[Seq[Resource]] = {
-    Future.successful(Seq.empty) // TODO implement
   }
 
   def getNewsitemsMatchingHostname(stem: String): Future[Seq[Resource]] = {
