@@ -74,7 +74,7 @@ import scala.concurrent.Future
     Future.successful(mv)
   }
 
-  def getViewName(mv: ModelAndView) = "profile"
+  def getViewName(mv: ModelAndView) = "viewProfile"
 
   /*
   def selectView: String = {
