@@ -18,13 +18,14 @@ import scala.concurrent.{Await, Future}
 
   private val log = Logger.getLogger(classOf[LinkCheckerScheduler])
 
-  //@Scheduled(fixedRate = 86400000)
+  @Scheduled(fixedRate = 86400000, initialDelay = 600000)
   def queueWatchlistItems {
     log.info("Queuing watchlist items for checking.")
-    Await.result(mongoRepository.getAllWatchlists, TenSeconds).foreach { w =>
-      log.info("Queuing watchlist item for checking: " + w.title)
-      linkCheckerQueue.add(w._id.stringify)
+    val eventuallyQueued = mongoRepository.getAllWatchlists.map { watchlists =>
+      watchlists.map(_._id).map(queueBsonIDs)
     }
+    val queued= Await.result(eventuallyQueued, TenSeconds)
+    log.info("Queued watchlists: " + queued.flatten.size)
   }
 
   @Scheduled(cron = "0 */10 * * * *")
@@ -36,13 +37,13 @@ import scala.concurrent.{Await, Future}
     def lastScannedOverAMonthAgo = mongoRepository.getNotCheckedSince(DateTime.now.minusMonths(1), numberOfItemsToQueue)
     val selectors = Seq(neverScanned, lastScannedOverAMonthAgo)
 
-    val eventualQueued: Future[Seq[Seq[String]]] = Future.sequence(selectors.map { selector =>
+    val eventuallyQueued = Future.sequence(selectors.map { selector =>
       selector.map { ids =>
         ids.map(queueBsonIDs)
       }
     })
 
-    val queued= Await.result(eventualQueued, TenSeconds)
+    val queued= Await.result(eventuallyQueued, TenSeconds)
     log.info("Queued: " + queued.flatten.size)
   }
 
