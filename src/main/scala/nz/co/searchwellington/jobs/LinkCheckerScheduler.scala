@@ -19,7 +19,7 @@ import scala.concurrent.{Await, Future}
   private val log = Logger.getLogger(classOf[LinkCheckerScheduler])
 
   @Scheduled(fixedRate = 86400000, initialDelay = 600000)
-  def queueWatchlistItems {
+  def queueWatchlistItems(): Unit = {
     log.info("Queuing watchlist items for checking.")
     val eventuallyQueued = mongoRepository.getAllWatchlists.map { watchlists =>
       watchlists.map(_._id).map(queueBsonIDs)
@@ -29,7 +29,7 @@ import scala.concurrent.{Await, Future}
   }
 
   @Scheduled(cron = "0 */10 * * * *")
-  def queueExpiredItems {
+  def queueExpiredItems(): Unit = {
     val numberOfItemsToQueue = 100
 
     log.info("Queuing items")
