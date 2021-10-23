@@ -30,17 +30,11 @@ import scala.concurrent.{Await, ExecutionContext, Future}
       }
     }
 
-    println("Owners")
     Await.result(eventualOwnerChanges, TenSeconds)
 
-    println("Votes")
-    // Await.result(handTaggingService.transferVotes(previousOwner, newOwner), TenSeconds)
+    Await.result(handTaggingService.transferVotes(previousOwner, newOwner), TenSeconds)
 
-    println("Remove")
     Await.result(mongoRepository.removeUser(previousOwner), TenSeconds)
-
-    println("Done")
-
   }
 
 }
