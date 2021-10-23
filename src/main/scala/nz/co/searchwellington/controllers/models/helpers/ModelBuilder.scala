@@ -1,12 +1,11 @@
-package nz.co.searchwellington.controllers.models
+package nz.co.searchwellington.controllers.models.helpers
 
-import javax.servlet.http.HttpServletRequest
 import nz.co.searchwellington.controllers.CommonModelObjectsService
-import nz.co.searchwellington.controllers.models.helpers.ContentFields
 import nz.co.searchwellington.model.User
 import nz.co.searchwellington.repositories.ContentRetrievalService
 import org.springframework.web.servlet.ModelAndView
 
+import javax.servlet.http.HttpServletRequest
 import scala.concurrent.Future
 
 trait ModelBuilder extends ContentFields with CommonModelObjectsService {

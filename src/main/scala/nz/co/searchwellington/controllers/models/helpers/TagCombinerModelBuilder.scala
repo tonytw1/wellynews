@@ -1,9 +1,6 @@
 package nz.co.searchwellington.controllers.models.helpers
 
-import java.util.List
-import javax.servlet.http.HttpServletRequest
 import nz.co.searchwellington.ReasonableWaits
-import nz.co.searchwellington.controllers.models.ModelBuilder
 import nz.co.searchwellington.controllers.RssUrlBuilder
 import nz.co.searchwellington.model.{Resource, Tag, User}
 import nz.co.searchwellington.repositories.ContentRetrievalService
@@ -14,6 +11,8 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
 import org.springframework.web.servlet.ModelAndView
 
+import java.util.List
+import javax.servlet.http.HttpServletRequest
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 

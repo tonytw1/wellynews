@@ -1,8 +1,6 @@
 package nz.co.searchwellington.controllers.models.helpers
 
-import javax.servlet.http.HttpServletRequest
 import nz.co.searchwellington.ReasonableWaits
-import nz.co.searchwellington.controllers.models.ModelBuilder
 import nz.co.searchwellington.filters.RequestPath
 import nz.co.searchwellington.model.helpers.ArchiveLinksService
 import nz.co.searchwellington.model.{ArchiveLink, PublisherArchiveLink, User}
@@ -13,6 +11,7 @@ import org.springframework.stereotype.Component
 import org.springframework.web.servlet.ModelAndView
 import uk.co.eelpieconsulting.common.dates.DateFormatter
 
+import javax.servlet.http.HttpServletRequest
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 

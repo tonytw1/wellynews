@@ -1,7 +1,7 @@
 package nz.co.searchwellington.controllers.models.helpers
 
 import nz.co.searchwellington.ReasonableWaits
-import nz.co.searchwellington.controllers.models.{ContentModelBuilderService, ModelBuilder}
+import nz.co.searchwellington.controllers.models.ContentModelBuilderService
 import nz.co.searchwellington.repositories.ContentRetrievalService
 import org.junit.Assert.assertEquals
 import org.junit.{Before, Test}

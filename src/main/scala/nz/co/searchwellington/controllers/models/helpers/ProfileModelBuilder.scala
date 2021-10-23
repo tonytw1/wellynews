@@ -1,7 +1,6 @@
 package nz.co.searchwellington.controllers.models.helpers
 
 import nz.co.searchwellington.ReasonableWaits
-import nz.co.searchwellington.controllers.models.ModelBuilder
 import nz.co.searchwellington.filters.RequestPath
 import nz.co.searchwellington.model.User
 import nz.co.searchwellington.repositories.ContentRetrievalService
