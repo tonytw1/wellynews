@@ -13,7 +13,7 @@ import scala.concurrent.{Await, ExecutionContext, Future}
 @Component class LoginResourceOwnershipService @Autowired()(mongoRepository: MongoRepository, handTaggingService: HandTaggingService)
   extends ReasonableWaits {
 
-  // Typically used when an anonymous session user later signs into their actually account.
+  // Typically used when an anonymous session user later signs into their actual account.
   // Reassign the session submissions to their long running account so that they don't lose them.
   def reassignOwnership(previousOwner: User, newOwner: User)(implicit ec: ExecutionContext) {
     val eventualOwnerChanges = mongoRepository.getResourcesIdsOwnedBy(previousOwner).flatMap { rids =>
