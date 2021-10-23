@@ -213,22 +213,12 @@ import scala.concurrent.Future
     elasticSearchIndexer.getResources(acceptNewsitems, elasticSearchIndexer.byAcceptedDate, loggedInUser = loggedInUser).flatMap(r => buildFrontendResourcesFor(r, loggedInUser))
   }
 
-  def getOwnedBy(user: User, loggedInUser: Option[User], maxItems: Int): Future[Seq[FrontendResource]] = {
-    elasticSearchIndexer.getResources(
-      ResourceQuery(
-        owner = Some(user._id),
-        maxItems = maxItems
-      ),
-      loggedInUser = loggedInUser
-    ).flatMap(i => fetchByIds(i._1, loggedInUser))
-  }
-  def getOwnedByCount(loggedInUser: User): Future[Long] = { // TODO Almost certainly the same call as above
-    elasticSearchIndexer.getResources(
-      ResourceQuery(
-        owner = Some(loggedInUser._id)
-      ),
-      loggedInUser = Some(loggedInUser)
-    ).map(i => i._2)
+  def getOwnedBy(user: User, loggedInUser: Option[User], maxItems: Int): Future[(Seq[FrontendResource], Long)] = {
+    val ownedBy = ResourceQuery(
+      owner = Some(user._id),
+      maxItems = maxItems
+    )
+    elasticSearchIndexer.getResources(ownedBy, elasticSearchIndexer.byDateDescending, loggedInUser = loggedInUser).flatMap(r => buildFrontendResourcesFor(r, loggedInUser))
   }
 
   def getTaggedBy(user: User, loggedInUser: Option[User]): Future[Seq[FrontendResource]] = {

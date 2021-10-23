@@ -56,7 +56,7 @@ import scala.concurrent.Future
             new ModelAndView().
               addObject("heading", "User profile").
               addObject("profileuser", user).
-              addObject(MAIN_CONTENT, submissions.asJava).
+              addObject(MAIN_CONTENT, submissions._1.asJava).
               addObject("tagged", tagged.asJava)
           }
           withNewsitems <- withLatestNewsitems(mv, loggedInUser)

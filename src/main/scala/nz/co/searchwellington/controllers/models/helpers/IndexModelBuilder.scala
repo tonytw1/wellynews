@@ -62,15 +62,13 @@ import scala.concurrent.Future
   def populateExtraModelContent(request: HttpServletRequest, mv: ModelAndView, loggedInUser: Option[User]): Future[ModelAndView] = {
     def populateUserOwnedResources(mv: ModelAndView, l: Option[User]): Future[ModelAndView] = {
       l.map { loggedInUser =>
-        val eventualOwnedCount = contentRetrievalService.getOwnedByCount(loggedInUser)
         val eventualOwned = contentRetrievalService.getOwnedBy(loggedInUser, Some(loggedInUser), MAX_OWNED_TO_SHOW_IN_RHS)
         for {
-          ownedCount <- eventualOwnedCount
           owned <- eventualOwned
         } yield {
-          if (ownedCount > 0) {
-            mv.addObject("owned", owned.asJava)
-            if (ownedCount > MAX_OWNED_TO_SHOW_IN_RHS) {
+          if (owned._2 > 0) {
+            mv.addObject("owned", owned._1.asJava)
+            if (owned._2 > MAX_OWNED_TO_SHOW_IN_RHS) {
               mv.addObject("owned_moreurl", urlBuilder.getProfileUrlFromProfileName(loggedInUser.getProfilename))
             }
           }
@@ -102,13 +100,13 @@ import scala.concurrent.Future
     }
   }
 
-  private def populateGeocoded(mv: ModelAndView, geocoded: Seq[FrontendResource]) {
+  private def populateGeocoded(mv: ModelAndView, geocoded: Seq[FrontendResource]): Unit = {
     if (geocoded.nonEmpty) {
       mv.addObject("geocoded", geocoded.asJava)
     }
   }
 
-  private def populateSecondaryJustin(mv: ModelAndView, websites: Seq[FrontendResource]) {
+  private def populateSecondaryJustin(mv: ModelAndView, websites: Seq[FrontendResource]): Unit = {
     mv.addObject("secondary_heading", "Just In")
     mv.addObject("secondary_description", "New additions.")
     mv.addObject("secondary_content", websites.asJava)
