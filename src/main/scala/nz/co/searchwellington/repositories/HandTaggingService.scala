@@ -76,7 +76,7 @@ import scala.concurrent.{Await, Future}
 
       eventualResourcesToTransfer.flatMap { resourcesToTransfer =>
         val eventualTransferOutcomes = resourcesToTransfer.map { resource =>
-          val updatedResource = transferTaggings(resource) // TODO blocking
+          val updatedResource = transferTaggings(resource)
           mongoRepository.saveResource(updatedResource).flatMap { saveWriteResult =>
             frontendContentUpdater.update(updatedResource)
           }
