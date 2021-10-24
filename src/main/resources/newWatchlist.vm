@@ -28,6 +28,11 @@
                 <input name="${status.expression}" class="title" value="$!{status.value}" />
                 <br />
 
+                #springBind("newWatchlist.publisher")
+                <label for="${status.expression}">Publisher:</label>
+                <input id="publisher" name="${status.expression}" class="title" value="$!{status.value}" />
+                <br />
+
 				<input type="submit" value="Submit" />
 			</fieldset>
 		</form>
