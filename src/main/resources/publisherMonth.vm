@@ -18,7 +18,6 @@
 
 	<div class="main_content">
 		#parse("includes/main_content.vm")
-		#parse("includes/publisher_page_links.vm")
 	</div>
 </div>
 
