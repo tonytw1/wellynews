@@ -25,7 +25,7 @@ import scala.concurrent.ExecutionContext.Implicits.global
     if (matcher.matches) {
       val left = matcher.group(1)
       val right = matcher.group(2)
-      log.info("Path matches combiner pattern for '" + left + "', '" + right + "'")
+      log.debug("Path matches combiner pattern for '" + left + "', '" + right + "'")
 
       Await.result(mongoRepository.getTagByUrlWords(right), TenSeconds).map { rightHandTag =>
 
@@ -58,7 +58,7 @@ import scala.concurrent.ExecutionContext.Implicits.global
     if (matcher.matches) {
       val left = matcher.group(1)
       val right = matcher.group(2)
-      log.info("Path matches combiner pattern for '" + left + "', '" + right + "'")
+      log.debug("Path matches combiner pattern for '" + left + "', '" + right + "'")
 
       Await.result(mongoRepository.getTagByUrlWords(right), TenSeconds).map { rightHandTag =>
 
