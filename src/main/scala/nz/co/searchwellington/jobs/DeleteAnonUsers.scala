@@ -19,9 +19,9 @@ import scala.concurrent.Future
   @Scheduled(fixedRate = 60000, initialDelay = 60000)
   def deleteAnonUsers(): Unit = {
     log.info("Deleting anon users")
-    val eventualToExamine: Future[Seq[User]] = mongoRepository.getAllUsers().map { users: Seq[User] =>
+    val eventualToExamine = mongoRepository.getAllUsers().map { users =>
       log.info(s"Filtering ${users.size} total users")
-      val anonUsers = users.filter(_.name.exists(_.startsWith("anon")))
+      val anonUsers = users.filter(_.profilename.exists(_.startsWith("anon")))
       anonUsers.take(100)
     }
     eventualToExamine.map { anonUsers =>
