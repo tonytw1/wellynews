@@ -18,7 +18,9 @@ import scala.concurrent.Future
   // Typically these will be spammers who's spam contributions have been deleted
   @Scheduled(fixedRate = 60000, initialDelay = 60000)
   def deleteAnonUsers(): Unit = {
+    log.info("Deleting anon users")
     val eventualToExamine: Future[Seq[User]] = mongoRepository.getAllUsers().map { users: Seq[User] =>
+      log.info(s"Filtering ${users.size} total users")
       val anonUsers = users.filter(_.name.exists(_.startsWith("anon")))
       anonUsers.take(100)
     }
