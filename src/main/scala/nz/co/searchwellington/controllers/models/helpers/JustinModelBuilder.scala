@@ -51,6 +51,6 @@ import scala.concurrent.Future
     withLatestNewsitems(mv, loggedInUser)
   }
 
-  def getViewName(mv: ModelAndView) = "justin"
+  def getViewName(mv: ModelAndView, loggedInUser: Option[User]): String = "justin"
 
 }

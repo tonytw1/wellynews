@@ -32,7 +32,7 @@ import scala.concurrent.Future
       path.matches("^/rss$")
   }
 
-  def getViewName(mv: ModelAndView): String = "index"
+  def getViewName(mv: ModelAndView, loggedInUser: Option[User]): String = "index"
 
   def populateContentModel(request: HttpServletRequest, loggedInUser: Option[User]): Future[Option[ModelAndView]] = {
 

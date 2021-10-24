@@ -116,7 +116,7 @@ import scala.concurrent.Future
     }
   }
 
-  def getViewName(mv: ModelAndView): String = "publisher"
+  def getViewName(mv: ModelAndView, loggedInUser: Option[User]): String = "publisher"
 
   private def populateGeotaggedItems(mv: ModelAndView, mainContent: Seq[FrontendResource]) {
     val geotaggedNewsitems = geotaggedNewsitemExtractor.extractGeotaggedItems(mainContent)

@@ -18,6 +18,6 @@ trait ModelBuilder extends ContentFields with CommonModelObjectsService {
 
   def populateExtraModelContent(request: HttpServletRequest, mv: ModelAndView, loggedInUser: Option[User]): Future[ModelAndView]
 
-  def getViewName(mv: ModelAndView): String
+  def getViewName(mv: ModelAndView, loggedInUser: Option[User]): String
 
 }

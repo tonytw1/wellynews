@@ -71,6 +71,6 @@ import scala.concurrent.Future
     eventualWithExtras.flatMap(withLatestNewsitems(_, loggedInUser))
   }
 
-  def getViewName(mv: ModelAndView): String = "publisherTagCombiner"
+  def getViewName(mv: ModelAndView, loggedInUser: Option[User]): String = "publisherTagCombiner"
 
 }

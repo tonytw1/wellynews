@@ -116,6 +116,6 @@ import scala.concurrent.Future
     }
   }
 
-  def getViewName(mv: ModelAndView) = "viewfeed"
+  def getViewName(mv: ModelAndView, loggedInUser: Option[User]): String = "viewfeed"
 
 }

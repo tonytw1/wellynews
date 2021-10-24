@@ -34,7 +34,7 @@ class ContentModelBuilderService(viewFactory: ViewFactory,
 
           } else {
             mb.populateExtraModelContent(request, mv, loggedInUser).flatMap { mv =>
-              mv.setViewName(mb.getViewName(mv))
+              mv.setViewName(mb.getViewName(mv, loggedInUser))
               withCommonLocal(mv).map { mv =>
                 Some(mv)
               }

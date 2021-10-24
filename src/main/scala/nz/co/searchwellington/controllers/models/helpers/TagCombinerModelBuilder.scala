@@ -96,7 +96,7 @@ import scala.concurrent.Future
     eventualWithExtras.flatMap(withLatestNewsitems(_, loggedInUser))
   }
 
-  def getViewName(mv: ModelAndView): String = {
+  def getViewName(mv: ModelAndView, loggedInUser: Option[User]): String = {
     val taggedNewsitemsCount = mv.getModel.get("main_content_total").asInstanceOf[Long]
     val taggedWebsites = mv.getModel.get("websites").asInstanceOf[List[Resource]]
     val isOneContentType = taggedNewsitemsCount == 0 || taggedWebsites.size == 0

@@ -59,6 +59,6 @@ import scala.concurrent.Future
     Future.successful(mv)
   }
 
-  def getViewName(mv: ModelAndView): String = "tagGeotagged"
+  def getViewName(mv: ModelAndView, loggedInUser: Option[User]): String = "tagGeotagged"
 
 }

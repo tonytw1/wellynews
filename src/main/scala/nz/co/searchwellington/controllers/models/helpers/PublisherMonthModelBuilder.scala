@@ -73,7 +73,7 @@ import scala.concurrent.Future
     Future.successful(mv)
   }
 
-  override def getViewName(mv: ModelAndView): String = "publisherMonth"
+  override def getViewName(mv: ModelAndView, loggedInUser: Option[User]): String = "publisherMonth"
 
   private def parseMonth(publisher: Website, path: String): Option[Interval] = {
     publisher.url_words.flatMap { publisherUrlWords =>

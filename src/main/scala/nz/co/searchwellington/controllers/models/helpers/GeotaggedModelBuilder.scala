@@ -106,7 +106,7 @@ import scala.concurrent.Future
     withLatestNewsitems(mv, loggedInUser)
   }
 
-  def getViewName(mv: ModelAndView): String = "geocoded"
+  def getViewName(mv: ModelAndView, loggedInUser: Option[User]): String = "geocoded"
 
   private def setRssUrlForLocation(mv: ModelAndView, place: Place, radius: Double) {
     commonAttributesModelBuilder.setRss(mv, rssUrlBuilder.getRssTitleForPlace(place, radius), rssUrlBuilder.getRssUrlForPlace(place, radius))

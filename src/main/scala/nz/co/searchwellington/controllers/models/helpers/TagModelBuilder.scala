@@ -137,7 +137,7 @@ import scala.concurrent.Future
     }
   }
 
-  def getViewName(mv: ModelAndView): String = {
+  def getViewName(mv: ModelAndView, loggedInUser: Option[User]): String = {
     val mainContent = mv.getModel.get(MAIN_CONTENT).asInstanceOf[List[Resource]]
     val taggedWebsites = mv.getModel.get(WEBSITES).asInstanceOf[List[Resource]]
     val tagWatchlist = mv.getModel.get(TAG_WATCHLIST).asInstanceOf[List[Resource]]
