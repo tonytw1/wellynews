@@ -16,7 +16,7 @@ trait ArchiveMonth {
     }
 
     try {
-      val month = archiveMonthFormat.parseDateTime(archiveMonthString)  // TODO This parse over matches; ie. 2021-sep2?
+      val month = archiveMonthFormat.parseDateTime(archiveMonthString)
       Some(intervalForMonth(month.toDate))
     }
     catch {
