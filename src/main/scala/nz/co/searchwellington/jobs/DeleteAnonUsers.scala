@@ -1,6 +1,5 @@
 package nz.co.searchwellington.jobs
 
-import nz.co.searchwellington.model.User
 import nz.co.searchwellington.repositories.mongo.MongoRepository
 import org.apache.log4j.Logger
 import org.springframework.beans.factory.annotation.Autowired
@@ -8,7 +7,6 @@ import org.springframework.scheduling.annotation.Scheduled
 import org.springframework.stereotype.Component
 
 import scala.concurrent.ExecutionContext.Implicits.global
-import scala.concurrent.Future
 
 @Component class DeleteAnonUsers @Autowired()(mongoRepository: MongoRepository) {
 
@@ -30,9 +28,10 @@ import scala.concurrent.Future
           tagged <- mongoRepository.getResourceIdsByTaggingUser(user)
           owned <- mongoRepository.getResourcesIdsOwnedBy(user)
         } yield {
-          log.info(s"Anon user ${user.name} owns $owned.size and has tagged $tagged")
-          if (owned.size + tagged.size == 0) {
-            log.info(s"Anon user ${user.name} can be deleted")
+          val total = owned.size + tagged.size
+          log.info(s"Anon user ${user.profilename.getOrElse(user._id)} owns ${owned.size} and has tagged ${tagged.size} for $total submissions.")
+          if (total == 0) {
+            log.info(s"Anon user ${user.profilename.getOrElse(user._id)} has ${total} submissions and can be deleted")
           }
         }
       }
