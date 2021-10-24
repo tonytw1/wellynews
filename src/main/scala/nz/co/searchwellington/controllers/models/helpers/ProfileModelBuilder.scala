@@ -1,7 +1,6 @@
 package nz.co.searchwellington.controllers.models.helpers
 
 import nz.co.searchwellington.ReasonableWaits
-import nz.co.searchwellington.controllers.models.ModelBuilder
 import nz.co.searchwellington.filters.RequestPath
 import nz.co.searchwellington.model.User
 import nz.co.searchwellington.repositories.ContentRetrievalService
@@ -75,20 +74,16 @@ import scala.concurrent.Future
     Future.successful(mv)
   }
 
-  def getViewName(mv: ModelAndView) = "profile"
-
-  /*
-  def selectView: String = {
-    loggedInUser.map { u =>
-      if (u.getId == user.getId) {
-        "profile"
-      } else {
-        "viewProfile"
+  def getViewName(mv: ModelAndView, loggedInUser: Option[User]): String = {
+    loggedInUser.flatMap { user =>
+      Option(mv.getModel.get("profileuser").asInstanceOf[User]).map { profileUser =>
+        if (user == profileUser) {
+          "profile"
+        } else {
+          "viewProfile"
+        }
       }
-    }.getOrElse {
-      "viewProfile"
-    }
+    }.getOrElse("viewProfile")
   }
-  */
 
 }

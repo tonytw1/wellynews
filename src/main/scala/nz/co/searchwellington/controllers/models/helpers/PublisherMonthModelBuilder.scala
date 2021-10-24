@@ -1,7 +1,5 @@
 package nz.co.searchwellington.controllers.models.helpers
 
-import javax.servlet.http.HttpServletRequest
-import nz.co.searchwellington.controllers.models.ModelBuilder
 import nz.co.searchwellington.filters.RequestPath
 import nz.co.searchwellington.model.frontend.FrontendResource
 import nz.co.searchwellington.model.mappers.FrontendResourceMapper
@@ -14,6 +12,7 @@ import org.springframework.stereotype.Component
 import org.springframework.web.servlet.ModelAndView
 import uk.co.eelpieconsulting.common.dates.DateFormatter
 
+import javax.servlet.http.HttpServletRequest
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
@@ -74,7 +73,7 @@ import scala.concurrent.Future
     Future.successful(mv)
   }
 
-  override def getViewName(mv: ModelAndView): String = "publisherMonth"
+  override def getViewName(mv: ModelAndView, loggedInUser: Option[User]): String = "publisherMonth"
 
   private def parseMonth(publisher: Website, path: String): Option[Interval] = {
     publisher.url_words.flatMap { publisherUrlWords =>

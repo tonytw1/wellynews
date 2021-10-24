@@ -1,8 +1,6 @@
 package nz.co.searchwellington.controllers.models.helpers
 
-import javax.servlet.http.HttpServletRequest
 import nz.co.searchwellington.ReasonableWaits
-import nz.co.searchwellington.controllers.models.ModelBuilder
 import nz.co.searchwellington.controllers.RssUrlBuilder
 import nz.co.searchwellington.model.mappers.FrontendResourceMapper
 import nz.co.searchwellington.model.{Tag, User, Website}
@@ -14,6 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
 import org.springframework.web.servlet.ModelAndView
 
+import javax.servlet.http.HttpServletRequest
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
@@ -72,6 +71,6 @@ import scala.concurrent.Future
     eventualWithExtras.flatMap(withLatestNewsitems(_, loggedInUser))
   }
 
-  def getViewName(mv: ModelAndView): String = "publisherTagCombiner"
+  def getViewName(mv: ModelAndView, loggedInUser: Option[User]): String = "publisherTagCombiner"
 
 }

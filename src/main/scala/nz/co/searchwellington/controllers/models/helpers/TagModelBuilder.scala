@@ -1,9 +1,6 @@
 package nz.co.searchwellington.controllers.models.helpers
 
-import java.util.List
-import javax.servlet.http.HttpServletRequest
 import nz.co.searchwellington.ReasonableWaits
-import nz.co.searchwellington.controllers.models.ModelBuilder
 import nz.co.searchwellington.controllers.RssUrlBuilder
 import nz.co.searchwellington.feeds.{FeedItemActionDecorator, RssfeedNewsitemService}
 import nz.co.searchwellington.model.mappers.FrontendResourceMapper
@@ -15,6 +12,8 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
 import org.springframework.web.servlet.ModelAndView
 
+import java.util.List
+import javax.servlet.http.HttpServletRequest
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
@@ -138,7 +137,7 @@ import scala.concurrent.Future
     }
   }
 
-  def getViewName(mv: ModelAndView): String = {
+  def getViewName(mv: ModelAndView, loggedInUser: Option[User]): String = {
     val mainContent = mv.getModel.get(MAIN_CONTENT).asInstanceOf[List[Resource]]
     val taggedWebsites = mv.getModel.get(WEBSITES).asInstanceOf[List[Resource]]
     val tagWatchlist = mv.getModel.get(TAG_WATCHLIST).asInstanceOf[List[Resource]]

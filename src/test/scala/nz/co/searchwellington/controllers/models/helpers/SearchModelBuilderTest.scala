@@ -1,8 +1,7 @@
 package nz.co.searchwellington.controllers.models.helpers
 
 import nz.co.searchwellington.ReasonableWaits
-import nz.co.searchwellington.controllers.models.SearchModelBuilder
-import nz.co.searchwellington.model.frontend.{FrontendNewsitem, FrontendResource, FrontendWebsite}
+import nz.co.searchwellington.model.frontend.{FrontendNewsitem, FrontendWebsite}
 import nz.co.searchwellington.model.mappers.FrontendResourceMapper
 import nz.co.searchwellington.model.{PublisherContentCount, Tag, TagContentCount, Website}
 import nz.co.searchwellington.repositories.ContentRetrievalService

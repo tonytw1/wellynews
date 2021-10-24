@@ -52,14 +52,11 @@
 	
 </div>
 
-
 <div class="right">
 	<div class="box">
 	#parse("includes/latest_newsitems.vm")
 	<br clear="all"/>
-</div>
-
-
+    </div>
 </div>
 
 </div>

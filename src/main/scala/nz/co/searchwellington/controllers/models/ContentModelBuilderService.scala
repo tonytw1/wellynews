@@ -1,8 +1,7 @@
 package nz.co.searchwellington.controllers.models
 
-import javax.servlet.http.HttpServletRequest
 import nz.co.searchwellington.controllers.CommonModelObjectsService
-import nz.co.searchwellington.controllers.models.helpers.ContentFields
+import nz.co.searchwellington.controllers.models.helpers.{ContentFields, ModelBuilder}
 import nz.co.searchwellington.filters.RequestPath
 import nz.co.searchwellington.model.User
 import nz.co.searchwellington.repositories.ContentRetrievalService
@@ -10,6 +9,7 @@ import org.apache.log4j.Logger
 import org.springframework.web.servlet.ModelAndView
 import uk.co.eelpieconsulting.common.views.ViewFactory
 
+import javax.servlet.http.HttpServletRequest
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
@@ -34,7 +34,7 @@ class ContentModelBuilderService(viewFactory: ViewFactory,
 
           } else {
             mb.populateExtraModelContent(request, mv, loggedInUser).flatMap { mv =>
-              mv.setViewName(mb.getViewName(mv))
+              mv.setViewName(mb.getViewName(mv, loggedInUser))
               withCommonLocal(mv).map { mv =>
                 Some(mv)
               }

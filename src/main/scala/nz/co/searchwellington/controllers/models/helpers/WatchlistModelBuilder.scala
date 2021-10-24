@@ -1,8 +1,6 @@
 package nz.co.searchwellington.controllers.models.helpers
 
-import javax.servlet.http.HttpServletRequest
 import nz.co.searchwellington.controllers.RssUrlBuilder
-import nz.co.searchwellington.controllers.models.ModelBuilder
 import nz.co.searchwellington.filters.RequestPath
 import nz.co.searchwellington.model.User
 import nz.co.searchwellington.repositories.ContentRetrievalService
@@ -11,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
 import org.springframework.web.servlet.ModelAndView
 
+import javax.servlet.http.HttpServletRequest
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
@@ -52,6 +51,6 @@ import scala.concurrent.Future
     withLatestNewsitems(mv, loggedInUser)
   }
 
-  def getViewName(mv: ModelAndView): String = "watchlist"
+  def getViewName(mv: ModelAndView, loggedInUser: Option[User]): String = "watchlist"
 
 }
