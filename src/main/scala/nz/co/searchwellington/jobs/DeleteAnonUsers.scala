@@ -20,7 +20,7 @@ import scala.concurrent.ExecutionContext.Implicits.global
     val eventualToExamine = mongoRepository.getAllUsers().map { users =>
       log.info(s"Filtering ${users.size} total users")
       val anonUsers = users.filter(_.profilename.exists(_.startsWith("anon")))
-      anonUsers.take(100)
+      anonUsers.take(1000)
     }
     eventualToExamine.map { anonUsers =>
       anonUsers.map { user =>
