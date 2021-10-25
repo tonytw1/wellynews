@@ -1,5 +1,6 @@
 package nz.co.searchwellington.jobs
 
+import nz.co.searchwellington.model.User
 import nz.co.searchwellington.repositories.mongo.MongoRepository
 import org.apache.log4j.Logger
 import org.springframework.beans.factory.annotation.Autowired
@@ -16,10 +17,14 @@ import scala.concurrent.ExecutionContext.Implicits.global
   // Typically these will be spammers who's spam contributions have been deleted
   @Scheduled(fixedRate = 60000, initialDelay = 60000)
   def deleteAnonUsers(): Unit = {
+    def isAnonUser(user: User) = {
+      user.profilename.exists(_.startsWith("anon")) && user.openid.isEmpty && user.twitterid.isEmpty && !user.admin
+    }
+
     log.info("Deleting anon users")
     val eventualToExamine = mongoRepository.getAllUsers().map { users =>
       log.info(s"Filtering ${users.size} total users")
-      val anonUsers = users.filter(_.profilename.exists(_.startsWith("anon")))
+      val anonUsers = users.filter(isAnonUser)
       anonUsers.take(1000)
     }
     eventualToExamine.map { anonUsers =>
@@ -38,4 +43,5 @@ import scala.concurrent.ExecutionContext.Implicits.global
       }
     }
   }
+
 }
