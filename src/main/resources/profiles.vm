@@ -3,8 +3,6 @@
 <div class="page">
 #parse("includes/topbar.vm")
 
-
-
 <div class="left">
 #parse("includes/tag_tree.vm")
 </div>
@@ -12,34 +10,23 @@
 <div class="main">
 <h2>$heading</h2>
 
-
 <ul>
 #set($letter = "")
-#foreach ($profile in $profiles) 
-	#if ($profile.isUnlinkedAccount()) 
-	
-	#else
-		#if ($profile.profilename)  
-			#set($current = $profile.profilename.substring(0, 1).toUpperCase())
-			#if ($current != $letter)
-				#set($letter = $current)		
-				</ul>
-				<h4>$current.toUpperCase()</h4>
-				<ul>
-			#end
-			<li><a href="$urlBuilder.getProfileUrl($profile)">$profile.profilename</a></li>
-		#end
-	#end
-#end
+    #foreach ($profile in $profiles)
+        #if ($profile.profilename)
+            #set($current = $profile.profilename.substring(0, 1).toUpperCase())
+            #if ($current != $letter)
+                #set($letter = $current)
+                </ul>
+                <h4>$current.toUpperCase()</h4>
+                <ul>
+            #end
+            <li><a href="$urlBuilder.getProfileUrl($profile)">$profile.profilename</a></li>
+        #end
+    #end
 </ul>
 
-
-
-
 </div>
-
-
-
 
 <div class="right">
 
@@ -49,7 +36,6 @@
 <br clear="all"/>
 
 </div>
-
 
 </div>
 
