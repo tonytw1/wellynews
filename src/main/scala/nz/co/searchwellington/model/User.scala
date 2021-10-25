@@ -22,7 +22,7 @@ case class User(_id: BSONObjectID = BSONObjectID.generate,
 
   def getTwitterId: Int = twitterid.getOrElse(0)
 
-  def isUnlinkedAccount: Boolean = openid == null && twitterid == null
+  def isUnlinkedAccount: Boolean = openid.isEmpty && twitterid.isEmpty
 
   def getProfilename: String = profilename.orNull
 
