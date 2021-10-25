@@ -374,7 +374,9 @@ class MongoRepository @Autowired()(@Value("${mongo.uri}") mongoUri: String) exte
   }
 
   def getAllUsers()(implicit ec: ExecutionContext): Future[Seq[User]] = {
-    userCollection.find(BSONDocument.empty, noProjection).cursor[User]().collect[List](AllDocuments, Cursor.FailOnError[List[User]]())
+    userCollection.find(BSONDocument.empty, noProjection).
+      sort(BSONDocument("profilename" -> 1)).
+      cursor[User]().collect[List](AllDocuments, Cursor.FailOnError[List[User]]())
   }
 
   def getUserByObjectId(objectId: BSONObjectID)(implicit ec: ExecutionContext): Future[Option[User]] = {
