@@ -51,6 +51,8 @@ class ProfileControllerTest extends ReasonableWaits {
     when(mongoRepository.getAllUsers).thenReturn(Future.successful(allActiveUsers))
     when(contentRetrievalService.getTopLevelTags).thenReturn(Future.successful(Seq.empty))
     when(contentRetrievalService.getFeaturedTags).thenReturn(Future.successful(Seq.empty))
+    when(loggedInUserFilter.getLoggedInUser).thenReturn(None)
+    when(contentRetrievalService.getLatestNewsitems(maxItems = 5, loggedInUser = None)).thenReturn(Future.successful(Seq.empty))
 
     val mv = controller.profiles
 
