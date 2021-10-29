@@ -52,7 +52,7 @@ class ProfileControllerTest extends ReasonableWaits {
     when(contentRetrievalService.getTopLevelTags).thenReturn(Future.successful(Seq.empty))
     when(contentRetrievalService.getFeaturedTags).thenReturn(Future.successful(Seq.empty))
 
-    val mv = controller.profiles(request, response)
+    val mv = controller.profiles
 
     import scala.collection.JavaConverters._
     assertEquals(allActiveUsers.asJava, mv.getModel.get("profiles"))
