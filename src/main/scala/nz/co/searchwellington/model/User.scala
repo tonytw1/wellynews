@@ -1,9 +1,9 @@
 package nz.co.searchwellington.model
 
-import java.util.UUID
-
 import nz.co.searchwellington.model.taggingvotes.voters.TaggingVoter
 import reactivemongo.api.bson.BSONObjectID
+
+import java.util.{Date, UUID}
 
 case class User(_id: BSONObjectID = BSONObjectID.generate,
                 id: String = UUID.randomUUID.toString,
@@ -14,7 +14,9 @@ case class User(_id: BSONObjectID = BSONObjectID.generate,
                 twitterid: Option[Int] = None,
                 url: Option[String] = None,
                 apikey: Option[String] = None,
-                admin: Boolean = false) extends TaggingVoter {
+                admin: Boolean = false,
+                created: Option[Date] = None
+               ) extends TaggingVoter {
 
   def getId: String = id
 
