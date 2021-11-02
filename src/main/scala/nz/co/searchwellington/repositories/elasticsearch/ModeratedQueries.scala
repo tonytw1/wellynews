@@ -27,7 +27,7 @@ trait ModeratedQueries extends ElasticFields {
       val contentIsOk = termQuery(HttpStatus, 200)
       val contentIsApproved = termQuery(Held, false)
       val contentIsPublic = must(contentIsOk, contentIsApproved)
-      // val isContentOwner = ???
+      // val isContentOwner = TODO reimplement
       must(query, contentIsPublic)
 
     } else {
