@@ -1,6 +1,5 @@
 package nz.co.searchwellington.linkchecking
 
-import java.net.{URL, UnknownHostException}
 import io.micrometer.core.instrument.MeterRegistry
 import nz.co.searchwellington.ReasonableWaits
 import nz.co.searchwellington.http.RobotsAwareHttpFetcher
@@ -14,6 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
 import reactivemongo.api.bson.BSONObjectID
 
+import java.net.{URL, UnknownHostException}
 import scala.concurrent.{Await, ExecutionContext, Future}
 import scala.util.Try
 
@@ -46,7 +46,7 @@ import scala.util.Try
 
     val y: Future[Boolean] = eventualMaybeResourceWithUrl.flatMap { maybeResourceWithUrl =>
       val a = maybeResourceWithUrl.map { resource =>
-        log.info("Checking: " + resource.title + " (" + resource.page + ")")
+        log.info("Checking: " + resource.title.getOrElse(resource.page) + " (" + resource.page + ")")
 
         val j = checkResource(resource)
 
