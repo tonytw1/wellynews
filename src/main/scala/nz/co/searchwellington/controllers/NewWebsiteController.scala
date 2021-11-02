@@ -53,9 +53,14 @@ class NewWebsiteController @Autowired()(contentUpdateService: ContentUpdateServi
       val eventualModelAndView = mongoRepository.getWebsiteByUrlwords(website.url_words.get).flatMap { maybeExistingWebsite =>
         maybeExistingWebsite.fold {
           val withSubmittingUser = withEnsuredSubmittingUser(website, loggedInUser)
-          contentUpdateService.create(withSubmittingUser).map { _ =>
-            log.info("Created website: " + withSubmittingUser)
-            new ModelAndView(new RedirectView(urlBuilder.getPublisherUrl(withSubmittingUser)))
+          contentUpdateService.create(withSubmittingUser._1).map { _ =>
+            log.info("Created website: " + withSubmittingUser._1)
+
+            // TODO spike; can we use the request on an non request thread if we pass it
+            log.info("Setting signed in user: " + withSubmittingUser._2)
+            request.getSession.setAttribute("user",  withSubmittingUser._2)
+
+            new ModelAndView(new RedirectView(urlBuilder.getPublisherUrl(withSubmittingUser._1)))
           }
         } { existing =>
           log.warn("Found existing website site same url words: " + existing.title)
@@ -79,7 +84,7 @@ class NewWebsiteController @Autowired()(contentUpdateService: ContentUpdateServi
       addObject("newWebsite", newWebsite)
   }
 
-  def withEnsuredSubmittingUser(website: Website, loggedInUser: Option[User]): Website = {
+  def withEnsuredSubmittingUser(website: Website, loggedInUser: Option[User]): (Website, User) = {
     def createAnonUser: User = {
       log.info("Creating new anon user for resource submission")
       //loggedInUserFilter.setLoggedInUser(request, loggedInUser) // TODO push up side effect; this needs to happen on the request thread
@@ -88,7 +93,7 @@ class NewWebsiteController @Autowired()(contentUpdateService: ContentUpdateServi
     }
 
     val submittingUser = loggedInUser.getOrElse(createAnonUser)
-    website.copy(owner = Some(submittingUser._id), held = submissionShouldBeHeld(Some(submittingUser)))
+    (website.copy(owner = Some(submittingUser._id), held = submissionShouldBeHeld(Some(submittingUser))), submittingUser)
   }
 
 }
