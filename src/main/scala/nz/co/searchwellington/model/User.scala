@@ -42,4 +42,6 @@ case class User(_id: BSONObjectID = BSONObjectID.generate,
 
   def getDisplayName: String = profilename.getOrElse(id)
 
+  def getCreated: Date = created.orNull
+
 }

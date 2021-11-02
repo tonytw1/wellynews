@@ -13,7 +13,11 @@
 	
 	#if ($profileuser.name)
 		<p>Name: $profileuser.name</p>
-	#end		
+	#end
+
+	#if ($profilefile.created)
+	    <p>Created: $profileuser.created</p>
+	#end
 		
 	#if ($profileuser.url)
 		<p>Blog or website: <a href="$profileuser.url">$profileuser.url</a></p>
