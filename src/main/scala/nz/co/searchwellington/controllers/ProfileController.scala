@@ -1,13 +1,9 @@
 package nz.co.searchwellington.controllers
 
-import javax.servlet.http.{HttpServletRequest, HttpServletResponse}
 import nz.co.searchwellington.ReasonableWaits
-import nz.co.searchwellington.filters.RequestPath
-import nz.co.searchwellington.model.User
 import nz.co.searchwellington.repositories.ContentRetrievalService
 import nz.co.searchwellington.repositories.mongo.MongoRepository
 import nz.co.searchwellington.urls.UrlBuilder
-import org.apache.log4j.Logger
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.core.annotation.Order
 import org.springframework.stereotype.Controller
@@ -15,8 +11,9 @@ import org.springframework.web.bind.annotation.{RequestMapping, RequestMethod}
 import org.springframework.web.servlet.ModelAndView
 import org.springframework.web.servlet.view.RedirectView
 
-import scala.concurrent.{Await, Future}
+import javax.servlet.http.{HttpServletRequest, HttpServletResponse}
 import scala.concurrent.ExecutionContext.Implicits.global
+import scala.concurrent.{Await, Future}
 
 @Order(3)
 @Controller
@@ -26,6 +23,8 @@ class ProfileController @Autowired()(mongoRepository: MongoRepository, loggedInU
 
   @RequestMapping(Array("/profiles"))
   def profiles: ModelAndView = {
+    val loggedInUser = loggedInUserFilter.getLoggedInUser
+
     Await.result(for {
       users <- mongoRepository.getAllUsers
       mv = {
@@ -35,7 +34,7 @@ class ProfileController @Autowired()(mongoRepository: MongoRepository, loggedInU
           addObject("profiles", users.asJava)
       }
       w <- withCommonLocal(mv)
-      n <- withLatestNewsitems(w, loggedInUserFilter.getLoggedInUser)
+      n <- withLatestNewsitems(w, loggedInUser)
     } yield {
       n
     }, TenSeconds)
