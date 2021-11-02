@@ -36,6 +36,8 @@ class NewWebsiteController @Autowired()(contentUpdateService: ContentUpdateServi
 
   @RequestMapping(value = Array("/new-website"), method = Array(RequestMethod.POST))
   def submit(@Valid @ModelAttribute("newWebsite") newWebsite: NewWebsite, result: BindingResult, request: HttpServletRequest): ModelAndView = {
+    val loggedInUser = loggedInUserFilter.getLoggedInUser
+
     if (result.hasErrors) {
       log.warn("New website submission has errors: " + result)
       renderNewWebsiteForm(newWebsite)
@@ -50,7 +52,7 @@ class NewWebsiteController @Autowired()(contentUpdateService: ContentUpdateServi
 
       val eventualModelAndView = mongoRepository.getWebsiteByUrlwords(website.url_words.get).flatMap { maybeExistingWebsite =>
         maybeExistingWebsite.fold {
-          val withSubmittingUser = withEnsuredSubmittingUser(website, request)
+          val withSubmittingUser = withEnsuredSubmittingUser(website, loggedInUser)
           contentUpdateService.create(withSubmittingUser).map { _ =>
             log.info("Created website: " + withSubmittingUser)
             new ModelAndView(new RedirectView(urlBuilder.getPublisherUrl(withSubmittingUser)))
@@ -62,6 +64,7 @@ class NewWebsiteController @Autowired()(contentUpdateService: ContentUpdateServi
           Future.successful(renderNewWebsiteForm(newWebsite))
         }
       }
+
       Await.result(eventualModelAndView, TenSeconds)
     }
   }
@@ -76,16 +79,15 @@ class NewWebsiteController @Autowired()(contentUpdateService: ContentUpdateServi
       addObject("newWebsite", newWebsite)
   }
 
-  def withEnsuredSubmittingUser(website: Website, request: HttpServletRequest): Website = {
-    def createAndSetAnonUser(request: HttpServletRequest): User = {
+  def withEnsuredSubmittingUser(website: Website, loggedInUser: Option[User]): Website = {
+    def createAnonUser: User = {
       log.info("Creating new anon user for resource submission")
-      val loggedInUser: User = anonUserService.createAnonUser
-      loggedInUserFilter.setLoggedInUser(request, loggedInUser)
-      loggedInUserFilter.loadLoggedInUser(request)
-      loggedInUser
+      //loggedInUserFilter.setLoggedInUser(request, loggedInUser) // TODO push up side effect; this needs to happen on the request thread
+      //loggedInUserFilter.loadLoggedInUser(request)
+      anonUserService.createAnonUser
     }
 
-    val submittingUser = loggedInUserFilter.getLoggedInUser.getOrElse(createAndSetAnonUser(request))
+    val submittingUser = loggedInUser.getOrElse(createAnonUser)
     website.copy(owner = Some(submittingUser._id), held = submissionShouldBeHeld(Some(submittingUser)))
   }
 
