@@ -15,7 +15,7 @@
 		<p>Name: $profileuser.name</p>
 	#end
 
-	#if ($profilefile.created)
+	#if ($profileuser.created)
 	    <p>Created: $profileuser.created</p>
 	#end
 		
