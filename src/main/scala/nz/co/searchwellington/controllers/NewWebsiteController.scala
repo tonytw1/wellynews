@@ -50,12 +50,7 @@ class NewWebsiteController @Autowired()(contentUpdateService: ContentUpdateServi
 
       val eventualModelAndView = mongoRepository.getWebsiteByUrlwords(website.url_words.get).flatMap { maybeExistingWebsite =>
         maybeExistingWebsite.fold {
-
-          val submittingUser = loggedInUserFilter.getLoggedInUser.getOrElse {
-            createAndSetAnonUser(request)
-          }
-          val withSubmittingUser = website.copy(owner = Some(submittingUser._id), held = submissionShouldBeHeld(Some(submittingUser)))
-
+          val withSubmittingUser = withEnsuredSubmittingUser(website, request)
           contentUpdateService.create(withSubmittingUser).map { _ =>
             log.info("Created website: " + withSubmittingUser)
             new ModelAndView(new RedirectView(urlBuilder.getPublisherUrl(withSubmittingUser)))
@@ -81,12 +76,17 @@ class NewWebsiteController @Autowired()(contentUpdateService: ContentUpdateServi
       addObject("newWebsite", newWebsite)
   }
 
-  private def createAndSetAnonUser(request: HttpServletRequest): User = {
-    log.info("Creating new anon user for resource submission")
-    val loggedInUser: User = anonUserService.createAnonUser
-    loggedInUserFilter.setLoggedInUser(request, loggedInUser)
-    loggedInUserFilter.loadLoggedInUser(request)
-    loggedInUser
+  def withEnsuredSubmittingUser(website: Website, request: HttpServletRequest): Website = {
+    def createAndSetAnonUser(request: HttpServletRequest): User = {
+      log.info("Creating new anon user for resource submission")
+      val loggedInUser: User = anonUserService.createAnonUser
+      loggedInUserFilter.setLoggedInUser(request, loggedInUser)
+      loggedInUserFilter.loadLoggedInUser(request)
+      loggedInUser
+    }
+
+    val submittingUser = loggedInUserFilter.getLoggedInUser.getOrElse(createAndSetAnonUser(request))
+    website.copy(owner = Some(submittingUser._id), held = submissionShouldBeHeld(Some(submittingUser)))
   }
 
 }
