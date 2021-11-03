@@ -21,7 +21,7 @@ case class FrontendNewsitem(id: String,
                             owner: String = null,
                             place: Option[Geocode] = None,
                             held: Boolean = false,
-                            publisher: Option[Website] = None,
+                            publisher: Option[Website] = None,  // TODO why not a frontend website
                             acceptedFrom: Option[FrontendFeed] = None,
                             acceptedBy: Option[User] = None, // TODO Frontend user
                             accepted: Date = null,

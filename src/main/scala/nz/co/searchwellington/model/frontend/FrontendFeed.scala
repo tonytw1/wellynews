@@ -43,5 +43,6 @@ case class FrontendFeed(id: String,
   }
 
   def getPublisher: FrontendWebsite = publisher.orNull
+  def getPublisherName: String = publisher.map(_.name).orNull
 
 }
