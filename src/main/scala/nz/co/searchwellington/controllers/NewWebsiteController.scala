@@ -52,7 +52,7 @@ class NewWebsiteController @Autowired()(contentUpdateService: ContentUpdateServi
       val eventualModelAndView = mongoRepository.getWebsiteByUrlwords(website.url_words.get).flatMap { maybeExistingWebsite =>
         maybeExistingWebsite.fold {
           val submittingUser = ensuredSubmittingUser(loggedInUser)
-          val withSubmittingUser = website.copy(owner = Some(submittingUser._id), held = submissionShouldBeHeld(Some(submittingUser))))
+          val withSubmittingUser = website.copy(owner = Some(submittingUser._id), held = submissionShouldBeHeld(Some(submittingUser)))
           contentUpdateService.create(withSubmittingUser).map { _ =>
             log.info("Created website: " + withSubmittingUser)
             setSignedInUser(request, submittingUser)
@@ -95,7 +95,7 @@ class NewWebsiteController @Autowired()(contentUpdateService: ContentUpdateServi
     Option(sessionUser)
   }
 
-  private def setSignedInUser(request: HttpServletRequest, user: User) = {
+  private def setSignedInUser(request: HttpServletRequest, user: User): Unit = {
     log.info("Setting signed in user: " + user)
     request.getSession.setAttribute("user", user)
   }
