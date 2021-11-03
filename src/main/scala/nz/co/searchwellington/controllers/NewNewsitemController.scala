@@ -66,6 +66,7 @@ class NewNewsitemController @Autowired()(contentUpdateService: ContentUpdateServ
 
       contentUpdateService.create(withSubmittingUser)
       log.info("Created newsitem: " + withSubmittingUser)
+      setSignedInUser(request, submittingUser)
       exitFromNewsitemSubmit(withSubmittingUser, maybePublisher)
     }
   }

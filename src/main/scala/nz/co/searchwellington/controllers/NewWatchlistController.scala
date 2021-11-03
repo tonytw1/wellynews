@@ -60,6 +60,7 @@ class NewWatchlistController @Autowired()(contentUpdateService: ContentUpdateSer
 
         contentUpdateService.create(withSubmittingUser)
         log.info("Created watchlist: " + withSubmittingUser)
+        setSignedInUser(request, submittingUser)
         new ModelAndView(new RedirectView(urlBuilder.getWatchlistUrl))
 
       } { existing => // TODO on url not url words

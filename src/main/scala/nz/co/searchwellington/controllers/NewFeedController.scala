@@ -99,7 +99,7 @@ class NewFeedController @Autowired()(contentUpdateService: ContentUpdateService,
 
           val created = Await.result(eventuallyCreated, TenSeconds)
           log.info("Created feed: " + created)
-
+          setSignedInUser(request, submittingUser)
           new ModelAndView(new RedirectView(urlBuilder.getFeedUrl(withSubmittingUser)))
 
         } else {
