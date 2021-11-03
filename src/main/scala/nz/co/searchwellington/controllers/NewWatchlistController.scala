@@ -1,6 +1,5 @@
 package nz.co.searchwellington.controllers
 
-import javax.validation.Valid
 import nz.co.searchwellington.ReasonableWaits
 import nz.co.searchwellington.forms.NewWatchlist
 import nz.co.searchwellington.model.{UrlWordsGenerator, User, Watchlist}
@@ -16,6 +15,7 @@ import org.springframework.web.bind.annotation.{ModelAttribute, RequestMapping, 
 import org.springframework.web.servlet.ModelAndView
 import org.springframework.web.servlet.view.RedirectView
 
+import javax.validation.Valid
 import scala.concurrent.Await
 import scala.concurrent.ExecutionContext.Implicits.global
 
@@ -23,7 +23,9 @@ import scala.concurrent.ExecutionContext.Implicits.global
 class NewWatchlistController @Autowired()(contentUpdateService: ContentUpdateService,
                                           mongoRepository: MongoRepository,
                                           urlWordsGenerator: UrlWordsGenerator, urlBuilder: UrlBuilder,
-                                          loggedInUserFilter: LoggedInUserFilter) extends ReasonableWaits {
+                                          loggedInUserFilter: LoggedInUserFilter,
+                                          val anonUserService: AnonUserService) extends ReasonableWaits
+                                          with EnsuredSubmitter {
 
   private val log = Logger.getLogger(classOf[NewWatchlistController])
 
@@ -42,10 +44,15 @@ class NewWatchlistController @Autowired()(contentUpdateService: ContentUpdateSer
       log.info("Got valid new watchlist submission: " + newWatchlist)
       val owner = loggedInUserFilter.getLoggedInUser
 
+      val maybePublisher = trimToOption(newWatchlist.getPublisher).flatMap { publisherName =>
+        Await.result(mongoRepository.getWebsiteByName(publisherName), TenSeconds)
+      }
+
       val w = Watchlist(title = Some(newWatchlist.getTitle),
         page = newWatchlist.getUrl,
         owner = owner.map(_._id),
         date = Some(DateTime.now.toDate),
+        publisher = maybePublisher.map(_._id),
         held = submissionShouldBeHeld(owner)
       )
       val watchlist = w.copy(url_words = urlWordsGenerator.makeUrlWordsFor(w))

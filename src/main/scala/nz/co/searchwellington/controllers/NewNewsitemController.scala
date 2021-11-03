@@ -2,7 +2,7 @@ package nz.co.searchwellington.controllers
 
 import nz.co.searchwellington.ReasonableWaits
 import nz.co.searchwellington.forms.NewNewsitem
-import nz.co.searchwellington.model.{Newsitem, User, Website}
+import nz.co.searchwellington.model.{Newsitem, Website}
 import nz.co.searchwellington.modification.ContentUpdateService
 import nz.co.searchwellington.repositories.mongo.MongoRepository
 import nz.co.searchwellington.urls.UrlBuilder
@@ -49,12 +49,7 @@ class NewNewsitemController @Autowired()(contentUpdateService: ContentUpdateServ
 
       val parsedDate = dateFormatter.parseDateTime(newNewsitem.getDate)
 
-      val publisherName = if (newNewsitem.getPublisher.trim.nonEmpty) {
-        Some(newNewsitem.getPublisher.trim)
-      } else {
-        None
-      }
-      val publisher: Option[Website] = publisherName.flatMap { publisherName =>
+      val maybePublisher = trimToOption(newNewsitem.getPublisher).flatMap { publisherName =>
         Await.result(mongoRepository.getWebsiteByName(publisherName), TenSeconds)
       }
 
@@ -62,7 +57,7 @@ class NewNewsitemController @Autowired()(contentUpdateService: ContentUpdateServ
         title = Some(newNewsitem.getTitle),
         page = newNewsitem.getUrl,
         date = Some(parsedDate.toDate),
-        publisher = publisher.map(_._id),
+        publisher = maybePublisher.map(_._id),
         description = Some(newNewsitem.getDescription.trim)
       )
 
@@ -71,7 +66,7 @@ class NewNewsitemController @Autowired()(contentUpdateService: ContentUpdateServ
 
       contentUpdateService.create(withSubmittingUser)
       log.info("Created newsitem: " + withSubmittingUser)
-      exitFromNewsitemSubmit(withSubmittingUser, publisher)
+      exitFromNewsitemSubmit(withSubmittingUser, maybePublisher)
     }
   }
 
