@@ -5,6 +5,7 @@ import nz.co.searchwellington.model.{Newsitem, User, Website}
 import nz.co.searchwellington.modification.ContentUpdateService
 import nz.co.searchwellington.repositories.mongo.MongoRepository
 import nz.co.searchwellington.urls.UrlBuilder
+import org.apache.struts.mock.MockHttpServletRequest
 import org.joda.time.DateTime
 import org.junit.Assert.assertEquals
 import org.junit.Test
@@ -13,20 +14,20 @@ import org.mockito.{ArgumentCaptor, Matchers}
 import org.springframework.validation.BindingResult
 import reactivemongo.api.bson.BSONObjectID
 
-import scala.concurrent.Future
+import scala.concurrent.{ExecutionContext, Future}
 
 class NewNewsitemControllerTest {
 
   private val contentUpdateService = mock(classOf[ContentUpdateService])
-  private val loggedInUserFilter = mock(classOf[LoggedInUserFilter])
   private val mongoRepository = mock(classOf[MongoRepository])
   private val urlBuilder = mock(classOf[UrlBuilder])
+  private val anonUserService = mock(classOf[AnonUserService])
 
-  val controller = new NewNewsitemController(contentUpdateService, loggedInUserFilter, mongoRepository, urlBuilder)
+  val controller = new NewNewsitemController(contentUpdateService, mongoRepository, urlBuilder, anonUserService)
 
   @Test
   def canSubmitNewsitems(): Unit = {
-    implicit val ec = scala.concurrent.ExecutionContext.Implicits.global
+    implicit val ec: ExecutionContext = scala.concurrent.ExecutionContext.Implicits.global
 
     val newNewsitemSubmission = new NewNewsitem()
     newNewsitemSubmission.setTitle("A newsitem")
@@ -36,13 +37,14 @@ class NewNewsitemControllerTest {
     newNewsitemSubmission.setDescription("Something interesting")
 
     val publisher = Website(_id = BSONObjectID.generate(), title = Some("A publisher"))
-    when(loggedInUserFilter.getLoggedInUser).thenReturn(Some(User()))
     when(mongoRepository.getWebsiteByName("A publisher")).thenReturn(Future.successful(Some(publisher)))
 
     val bindingResultWithNoErrors = mock(classOf[BindingResult])
     val createdNewsitem = ArgumentCaptor.forClass(classOf[Newsitem])
 
-    controller.submit(newNewsitemSubmission, bindingResultWithNoErrors)
+    val request = new MockHttpServletRequest
+    request.getSession().setAttribute("user", User())
+    controller.submit(newNewsitemSubmission, bindingResultWithNoErrors, request)
 
     verify(contentUpdateService).create(createdNewsitem.capture)(Matchers.eq(ec))
     assertEquals(Some("A newsitem"), createdNewsitem.getValue.title)

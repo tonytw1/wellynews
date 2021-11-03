@@ -24,7 +24,7 @@ import scala.concurrent.{Await, Future}
 class NewWebsiteController @Autowired()(contentUpdateService: ContentUpdateService,
                                         mongoRepository: MongoRepository,
                                         urlWordsGenerator: UrlWordsGenerator, urlBuilder: UrlBuilder,
-                                        anonUserService: AnonUserService) extends ReasonableWaits {
+                                        val anonUserService: AnonUserService) extends ReasonableWaits with EnsuredSubmitter {
 
   private val log = Logger.getLogger(classOf[NewWebsiteController])
 
@@ -70,34 +70,10 @@ class NewWebsiteController @Autowired()(contentUpdateService: ContentUpdateServi
     }
   }
 
-  private def submissionShouldBeHeld(owner: Option[User]) = {
-    !owner.exists(_.isAdmin)
-  }
-
   private def renderNewWebsiteForm(newWebsite: nz.co.searchwellington.forms.NewWebsite): ModelAndView = {
     new ModelAndView("newWebsite").
       addObject("heading", "Adding a website").
       addObject("newWebsite", newWebsite)
-  }
-
-  def ensuredSubmittingUser(loggedInUser: Option[User]): User = {
-    def createAnonUser: User = {
-      log.info("Creating new anon user for resource submission")
-      anonUserService.createAnonUser
-    }
-    loggedInUser.getOrElse(createAnonUser)
-  }
-
-  // TODO Spike In a Scala  / functional code base replacing the Spring request scoped loggedInUserFilter with
-  // a trait and injecting the request into all calling controllers might be a better fit
-  def getLoggedInUser(request: HttpServletRequest): Option[User] = {
-    val sessionUser = request.getSession.getAttribute("user").asInstanceOf[User]
-    Option(sessionUser)
-  }
-
-  private def setSignedInUser(request: HttpServletRequest, user: User): Unit = {
-    log.info("Setting signed in user: " + user)
-    request.getSession.setAttribute("user", user)
   }
 
 }

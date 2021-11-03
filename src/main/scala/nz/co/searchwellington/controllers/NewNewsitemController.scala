@@ -16,14 +16,16 @@ import org.springframework.web.bind.annotation.{ModelAttribute, RequestMapping, 
 import org.springframework.web.servlet.ModelAndView
 import org.springframework.web.servlet.view.RedirectView
 
+import javax.servlet.http.HttpServletRequest
 import javax.validation.Valid
 import scala.concurrent.Await
 import scala.concurrent.ExecutionContext.Implicits.global
 
 @Controller
 class NewNewsitemController @Autowired()(contentUpdateService: ContentUpdateService,
-                                         loggedInUserFilter: LoggedInUserFilter,
-                                         mongoRepository: MongoRepository, urlBuilder: UrlBuilder) extends ReasonableWaits {
+                                         mongoRepository: MongoRepository, urlBuilder: UrlBuilder,
+                                         val anonUserService: AnonUserService) extends ReasonableWaits
+                                         with EnsuredSubmitter {
 
   private val log = Logger.getLogger(classOf[NewNewsitemController])
   private val dateFormatter = ISODateTimeFormat.basicDate()
@@ -36,14 +38,14 @@ class NewNewsitemController @Autowired()(contentUpdateService: ContentUpdateServ
   }
 
   @RequestMapping(value = Array("/new-newsitem"), method = Array(RequestMethod.POST))
-  def submit(@Valid @ModelAttribute("newNewsitem") newNewsitem: NewNewsitem, result: BindingResult): ModelAndView = {
+  def submit(@Valid @ModelAttribute("newNewsitem") newNewsitem: NewNewsitem, result: BindingResult, request: HttpServletRequest): ModelAndView = {
+    val loggedInUser = getLoggedInUser(request)
     if (result.hasErrors) {
       log.warn("New newsitem submission has errors: " + result)
       renderNewNewsitemForm(newNewsitem)
 
     } else {
       log.info("Got valid new newsitem submission: " + newNewsitem)
-      val owner = loggedInUserFilter.getLoggedInUser
 
       val parsedDate = dateFormatter.parseDateTime(newNewsitem.getDate)
 
@@ -59,22 +61,18 @@ class NewNewsitemController @Autowired()(contentUpdateService: ContentUpdateServ
       val newsitem = Newsitem(
         title = Some(newNewsitem.getTitle),
         page = newNewsitem.getUrl,
-        owner = owner.map(_._id),
         date = Some(parsedDate.toDate),
-        held = submissionShouldBeHeld(owner),
         publisher = publisher.map(_._id),
         description = Some(newNewsitem.getDescription.trim)
       )
 
-      contentUpdateService.create(newsitem)
-      log.info("Created newsitem: " + newsitem)
+      val submittingUser = ensuredSubmittingUser(loggedInUser)
+      val withSubmittingUser = newsitem.copy(owner = Some(submittingUser._id), held = submissionShouldBeHeld(Some(submittingUser)))
 
-      exitFromNewsitemSubmit(newsitem, publisher)
+      contentUpdateService.create(withSubmittingUser)
+      log.info("Created newsitem: " + withSubmittingUser)
+      exitFromNewsitemSubmit(withSubmittingUser, publisher)
     }
-  }
-
-  private def submissionShouldBeHeld(owner: Option[User]): Boolean = {
-    !owner.exists(_.isAdmin)
   }
 
   private def renderNewNewsitemForm(newNewsitem: nz.co.searchwellington.forms.NewNewsitem): ModelAndView = {
