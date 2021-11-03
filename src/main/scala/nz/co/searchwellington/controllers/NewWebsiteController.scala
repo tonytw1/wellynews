@@ -24,7 +24,6 @@ import scala.concurrent.{Await, Future}
 class NewWebsiteController @Autowired()(contentUpdateService: ContentUpdateService,
                                         mongoRepository: MongoRepository,
                                         urlWordsGenerator: UrlWordsGenerator, urlBuilder: UrlBuilder,
-                                        loggedInUserFilter: LoggedInUserFilter,
                                         anonUserService: AnonUserService) extends ReasonableWaits {
 
   private val log = Logger.getLogger(classOf[NewWebsiteController])
@@ -52,11 +51,12 @@ class NewWebsiteController @Autowired()(contentUpdateService: ContentUpdateServi
 
       val eventualModelAndView = mongoRepository.getWebsiteByUrlwords(website.url_words.get).flatMap { maybeExistingWebsite =>
         maybeExistingWebsite.fold {
-          val withSubmittingUser = withEnsuredSubmittingUser(website, loggedInUser)
-          contentUpdateService.create(withSubmittingUser._1).map { _ =>
-            log.info("Created website: " + withSubmittingUser._1)
-            setSignedInUser(request, withSubmittingUser._2)
-            new ModelAndView(new RedirectView(urlBuilder.getPublisherUrl(withSubmittingUser._1)))
+          val submittingUser = ensuredSubmittingUser(loggedInUser)
+          val withSubmittingUser = website.copy(owner = Some(submittingUser._id), held = submissionShouldBeHeld(Some(submittingUser))))
+          contentUpdateService.create(withSubmittingUser).map { _ =>
+            log.info("Created website: " + withSubmittingUser)
+            setSignedInUser(request, submittingUser)
+            new ModelAndView(new RedirectView(urlBuilder.getPublisherUrl(withSubmittingUser)))
           }
         } { existing =>
           log.warn("Found existing website site same url words: " + existing.title)
@@ -80,16 +80,12 @@ class NewWebsiteController @Autowired()(contentUpdateService: ContentUpdateServi
       addObject("newWebsite", newWebsite)
   }
 
-  def withEnsuredSubmittingUser(website: Website, loggedInUser: Option[User]): (Website, User) = {
+  def ensuredSubmittingUser(loggedInUser: Option[User]): User = {
     def createAnonUser: User = {
       log.info("Creating new anon user for resource submission")
-      //loggedInUserFilter.setLoggedInUser(request, loggedInUser) // TODO push up side effect; this needs to happen on the request thread
-      //loggedInUserFilter.loadLoggedInUser(request)
       anonUserService.createAnonUser
     }
-
-    val submittingUser = loggedInUser.getOrElse(createAnonUser)
-    (website.copy(owner = Some(submittingUser._id), held = submissionShouldBeHeld(Some(submittingUser))), submittingUser)
+    loggedInUser.getOrElse(createAnonUser)
   }
 
   // TODO Spike In a Scala  / functional code base replacing the Spring request scoped loggedInUserFilter with
