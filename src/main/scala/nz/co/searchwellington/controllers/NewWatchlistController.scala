@@ -2,7 +2,7 @@ package nz.co.searchwellington.controllers
 
 import nz.co.searchwellington.ReasonableWaits
 import nz.co.searchwellington.forms.NewWatchlist
-import nz.co.searchwellington.model.{UrlWordsGenerator, User, Watchlist}
+import nz.co.searchwellington.model.{UrlWordsGenerator, Watchlist}
 import nz.co.searchwellington.modification.ContentUpdateService
 import nz.co.searchwellington.repositories.mongo.MongoRepository
 import nz.co.searchwellington.urls.UrlBuilder
@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.{ModelAttribute, RequestMapping, 
 import org.springframework.web.servlet.ModelAndView
 import org.springframework.web.servlet.view.RedirectView
 
+import javax.servlet.http.HttpServletRequest
 import javax.validation.Valid
 import scala.concurrent.Await
 import scala.concurrent.ExecutionContext.Implicits.global
@@ -23,7 +24,6 @@ import scala.concurrent.ExecutionContext.Implicits.global
 class NewWatchlistController @Autowired()(contentUpdateService: ContentUpdateService,
                                           mongoRepository: MongoRepository,
                                           urlWordsGenerator: UrlWordsGenerator, urlBuilder: UrlBuilder,
-                                          loggedInUserFilter: LoggedInUserFilter,
                                           val anonUserService: AnonUserService) extends ReasonableWaits
                                           with EnsuredSubmitter {
 
@@ -35,31 +35,32 @@ class NewWatchlistController @Autowired()(contentUpdateService: ContentUpdateSer
   }
 
   @RequestMapping(value = Array("/new-watchlist"), method = Array(RequestMethod.POST))
-  def submit(@Valid @ModelAttribute("newWatchlist") newWatchlist: NewWatchlist, result: BindingResult): ModelAndView = {
+  def submit(@Valid @ModelAttribute("newWatchlist") newWatchlist: NewWatchlist, result: BindingResult, request: HttpServletRequest): ModelAndView = {
+    val loggedInUser = getLoggedInUser(request)
     if (result.hasErrors) {
       log.warn("New website submission has errors: " + result)
       renderNewWatchlistForm(newWatchlist)
 
     } else {
       log.info("Got valid new watchlist submission: " + newWatchlist)
-      val owner = loggedInUserFilter.getLoggedInUser
-
       val maybePublisher = trimToOption(newWatchlist.getPublisher).flatMap { publisherName =>
         Await.result(mongoRepository.getWebsiteByName(publisherName), TenSeconds)
       }
 
       val w = Watchlist(title = Some(newWatchlist.getTitle),
         page = newWatchlist.getUrl,
-        owner = owner.map(_._id),
         date = Some(DateTime.now.toDate),
-        publisher = maybePublisher.map(_._id),
-        held = submissionShouldBeHeld(owner)
+        publisher = maybePublisher.map(_._id)
       )
       val watchlist = w.copy(url_words = urlWordsGenerator.makeUrlWordsFor(w))
 
       Await.result(mongoRepository.getWebsiteByUrlwords(watchlist.url_words.get), TenSeconds).fold {  // TODO naked get
-        contentUpdateService.create(watchlist)
-        log.info("Created watchlist: " + watchlist)
+
+        val submittingUser = ensuredSubmittingUser(loggedInUser)
+        val withSubmittingUser = w.copy(owner = Some(submittingUser._id), held = submissionShouldBeHeld(Some(submittingUser)))
+
+        contentUpdateService.create(withSubmittingUser)
+        log.info("Created watchlist: " + withSubmittingUser)
         new ModelAndView(new RedirectView(urlBuilder.getWatchlistUrl))
 
       } { existing => // TODO on url not url words
@@ -69,10 +70,6 @@ class NewWatchlistController @Autowired()(contentUpdateService: ContentUpdateSer
         renderNewWatchlistForm(newWatchlist)
       }
     }
-  }
-
-  private def submissionShouldBeHeld(owner: Option[User]) = {
-    !owner.exists(_.isAdmin)
   }
 
   private def renderNewWatchlistForm(newWatchlist: nz.co.searchwellington.forms.NewWatchlist): ModelAndView = {
