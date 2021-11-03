@@ -22,27 +22,20 @@ case class FrontendFeed(id: String,
                         latestItemDate: Date = null,
                         acceptancePolicy: FeedAcceptancePolicy = null,
                         lastRead: Option[Date] = None,
-                        publisher: Option[FrontendWebsite] = None,
+                        publisherName: Option[String] = None,
                         lastScanned: Option[Date] = None,
                         lastChanged: Option[Date] = None,
                         actions: Seq[Action] = Seq.empty
                        ) extends FrontendResource {
 
   @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ssXXX")
-  def getLatestItemDate: Date = {
-    latestItemDate
-  }
+  def getLatestItemDate: Date = latestItemDate
 
-  def getAcceptancePolicy: FeedAcceptancePolicy = {
-    acceptancePolicy
-  }
+  def getAcceptancePolicy: FeedAcceptancePolicy = acceptancePolicy
 
   @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ssXXX")
-  def getLastRead: Date = {
-    lastRead.orNull
-  }
+  def getLastRead: Date = lastRead.orNull
 
-  def getPublisher: FrontendWebsite = publisher.orNull
-  def getPublisherName: String = publisher.map(_.name).orNull
+  def getPublisherName: String = publisherName.orNull
 
 }

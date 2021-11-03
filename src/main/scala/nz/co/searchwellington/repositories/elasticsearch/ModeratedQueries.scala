@@ -10,7 +10,6 @@ trait ModeratedQueries extends ElasticFields {
   def showBrokenDecisionService: ShowBrokenDecisionService
 
   def withModeration(query: Query, loggedInUser: Option[User]): Query = {
-
     if (!showBrokenDecisionService.shouldShowBroken(loggedInUser)) {
       val contentIsOk = termQuery(HttpStatus, 200)
       val contentIsApproved = termQuery(Held, false)

@@ -86,7 +86,7 @@ import scala.concurrent.{ExecutionContext, Future}
             accepted = n.accepted.orNull,
             image = null, // TODO
             urlWords = n.url_words.orNull,
-            publisher = publisher.map(_.asInstanceOf[Website]), // TODO should be frontend resource or string? TODO remove instance of
+            publisherName = publisher.flatMap(_.title),
             httpStatus = n.http_status,
             lastScanned = n.last_scanned,
             lastChanged = n.last_changed
@@ -94,20 +94,14 @@ import scala.concurrent.{ExecutionContext, Future}
         }
 
       case f: Feed =>
-        val eventualFrontendPublisher = f.publisher.map { pid =>
-          mongoRepository.getResourceByObjectId(pid).flatMap { po =>
-            po.map { p =>
-              createFrontendResourceFrom(p, None).map(i => Some(i.asInstanceOf[FrontendWebsite]))
-            }.getOrElse {
-              Future.successful(None)
-            }
-          }
+        val eventualPublisher = f.publisher.map { pid =>
+          mongoRepository.getResourceByObjectId(pid)
         }.getOrElse {
           Future.successful(None)
         }
 
         for {
-          frontendPublisher <- eventualFrontendPublisher
+          publisher <- eventualPublisher
 
         } yield {
           FrontendFeed(
@@ -122,7 +116,7 @@ import scala.concurrent.{ExecutionContext, Future}
             latestItemDate = f.getLatestItemDate,
             lastRead = f.last_read,
             acceptancePolicy = f.acceptance,
-            publisher = frontendPublisher,
+            publisherName = publisher.flatMap(_.title),
             httpStatus = f.http_status,
             lastScanned = f.last_scanned,
             lastChanged = f.last_changed
@@ -130,22 +124,15 @@ import scala.concurrent.{ExecutionContext, Future}
         }
 
       case l: Watchlist =>
-
-        val eventualFrontendPublisher = l.publisher.map { pid =>
-          mongoRepository.getResourceByObjectId(pid).flatMap { po =>
-            po.map { p =>
-              createFrontendResourceFrom(p, None).map(i => Some(i.asInstanceOf[FrontendWebsite]))
-            }.getOrElse {
-              Future.successful(None)
-            }
-          }
+        val eventualPublisher = l.publisher.map { pid =>
+          mongoRepository.getResourceByObjectId(pid)
         }.getOrElse {
           Future.successful(None)
         }
 
-        for {
 
-          frontendPublisher <- eventualFrontendPublisher
+        for {
+          publisher <- eventualPublisher
         } yield {
           FrontendWatchlist(
             id = l.id,
@@ -153,7 +140,7 @@ import scala.concurrent.{ExecutionContext, Future}
             name = l.title.getOrElse(""),
             url = l.page,
             date = l.date.orNull,
-            publisher = frontendPublisher,
+            publisherName = publisher.flatMap(_.title),
             description = l.description.orNull,
             place = place,
             httpStatus = l.http_status,
