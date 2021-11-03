@@ -20,4 +20,10 @@ case class FrontendWatchlist(id: String,
                              held: Boolean = false,
                              lastScanned: Option[Date],
                              lastChanged: Option[Date],
-                             actions: Seq[Action] = Seq.empty) extends FrontendResource
+                             publisher: Option[FrontendWebsite] = None,
+                             actions: Seq[Action] = Seq.empty) extends FrontendResource {
+
+  def getPublisher: FrontendWebsite = publisher.orNull
+
+}
+

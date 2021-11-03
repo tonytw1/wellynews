@@ -130,18 +130,35 @@ import scala.concurrent.{ExecutionContext, Future}
         }
 
       case l: Watchlist =>
-        Future.successful {
+
+        val eventualFrontendPublisher = l.publisher.map { pid =>
+          mongoRepository.getResourceByObjectId(pid).flatMap { po =>
+            po.map { p =>
+              createFrontendResourceFrom(p, None).map(i => Some(i.asInstanceOf[FrontendWebsite]))
+            }.getOrElse {
+              Future.successful(None)
+            }
+          }
+        }.getOrElse {
+          Future.successful(None)
+        }
+
+        for {
+
+          frontendPublisher <- eventualFrontendPublisher
+        } yield {
           FrontendWatchlist(
             id = l.id,
             `type` = l.`type`,
             name = l.title.getOrElse(""),
             url = l.page,
             date = l.date.orNull,
+            publisher = frontendPublisher,
             description = l.description.orNull,
             place = place,
             httpStatus = l.http_status,
             lastScanned = l.last_scanned,
-            lastChanged = l.last_changed
+            lastChanged = l.last_changed,
           )
         }
 
