@@ -17,7 +17,7 @@ trait ModeratedQueries extends ElasticFields {
       val contentIsPublic = must(contentIsOk, contentIsApproved)
 
       val moderationClause = loggedInUser.map { user: User =>
-        val isContentOwner = termQuery(Owner, user._id)
+        val isContentOwner = termQuery(Owner, user._id.stringify)
         should(contentIsPublic, isContentOwner).minimumShouldMatch(1)
       }.getOrElse {
         contentIsPublic
