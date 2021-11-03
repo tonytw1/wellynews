@@ -36,7 +36,7 @@ class NewWebsiteController @Autowired()(contentUpdateService: ContentUpdateServi
 
   @RequestMapping(value = Array("/new-website"), method = Array(RequestMethod.POST))
   def submit(@Valid @ModelAttribute("newWebsite") newWebsite: NewWebsite, result: BindingResult, request: HttpServletRequest): ModelAndView = {
-    val loggedInUser = loggedInUserFilter.getLoggedInUser
+    val loggedInUser = getLoggedInUser(request)
 
     if (result.hasErrors) {
       log.warn("New website submission has errors: " + result)
@@ -55,11 +55,7 @@ class NewWebsiteController @Autowired()(contentUpdateService: ContentUpdateServi
           val withSubmittingUser = withEnsuredSubmittingUser(website, loggedInUser)
           contentUpdateService.create(withSubmittingUser._1).map { _ =>
             log.info("Created website: " + withSubmittingUser._1)
-
-            // TODO spike; can we use the request on an non request thread if we pass it
-            log.info("Setting signed in user: " + withSubmittingUser._2)
-            request.getSession.setAttribute("user",  withSubmittingUser._2)
-
+            setSignedInUser(request, withSubmittingUser._2)
             new ModelAndView(new RedirectView(urlBuilder.getPublisherUrl(withSubmittingUser._1)))
           }
         } { existing =>
@@ -94,6 +90,18 @@ class NewWebsiteController @Autowired()(contentUpdateService: ContentUpdateServi
 
     val submittingUser = loggedInUser.getOrElse(createAnonUser)
     (website.copy(owner = Some(submittingUser._id), held = submissionShouldBeHeld(Some(submittingUser))), submittingUser)
+  }
+
+  // TODO Spike In a Scala  / functional code base replacing the Spring request scoped loggedInUserFilter with
+  // a trait and injecting the request into all calling controllers might be a better fit
+  def getLoggedInUser(request: HttpServletRequest): Option[User] = {
+    val sessionUser = request.getSession.getAttribute("user").asInstanceOf[User]
+    Option(sessionUser)
+  }
+
+  private def setSignedInUser(request: HttpServletRequest, user: User) = {
+    log.info("Setting signed in user: " + user)
+    request.getSession.setAttribute("user", user)
   }
 
 }
