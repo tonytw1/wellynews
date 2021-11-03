@@ -1,10 +1,9 @@
 package nz.co.searchwellington.controllers
 
-import javax.validation.Valid
 import nz.co.searchwellington.ReasonableWaits
 import nz.co.searchwellington.feeds.whakaoko.WhakaokoService
 import nz.co.searchwellington.forms.NewFeed
-import nz.co.searchwellington.model.{Feed, Resource, UrlWordsGenerator, User}
+import nz.co.searchwellington.model.{Feed, UrlWordsGenerator, User}
 import nz.co.searchwellington.modification.ContentUpdateService
 import nz.co.searchwellington.repositories.mongo.MongoRepository
 import nz.co.searchwellington.urls.UrlBuilder
@@ -17,7 +16,9 @@ import org.springframework.web.bind.annotation.{ModelAttribute, RequestMapping, 
 import org.springframework.web.servlet.ModelAndView
 import org.springframework.web.servlet.view.RedirectView
 
-import scala.concurrent.{Await, Future}
+import javax.servlet.http.HttpServletRequest
+import javax.validation.Valid
+import scala.concurrent.Await
 import scala.concurrent.ExecutionContext.Implicits.global
 
 @Controller
@@ -25,7 +26,8 @@ class NewFeedController @Autowired()(contentUpdateService: ContentUpdateService,
                                      mongoRepository: MongoRepository,
                                      urlWordsGenerator: UrlWordsGenerator, urlBuilder: UrlBuilder,
                                      whakaokoService: WhakaokoService,
-                                     loggedInUserFilter: LoggedInUserFilter) extends ReasonableWaits with AcceptancePolicyOptions {
+                                     val anonUserService: AnonUserService) extends ReasonableWaits with EnsuredSubmitter
+  with AcceptancePolicyOptions {
 
   private val log = Logger.getLogger(classOf[NewFeedController])
 
@@ -54,8 +56,8 @@ class NewFeedController @Autowired()(contentUpdateService: ContentUpdateService,
   }
 
   @RequestMapping(value = Array("/new-feed"), method = Array(RequestMethod.POST))
-  def submit(@Valid @ModelAttribute("newFeed") newFeed: NewFeed, result: BindingResult): ModelAndView = {
-
+  def submit(@Valid @ModelAttribute("newFeed") newFeed: NewFeed, result: BindingResult, request: HttpServletRequest): ModelAndView = {
+    val loggedInUser = getLoggedInUser(request)
     if (!result.hasErrors) {
       log.info("Got valid new feed submission: " + newFeed)
 
@@ -69,15 +71,13 @@ class NewFeedController @Autowired()(contentUpdateService: ContentUpdateService,
           Await.result(mongoRepository.getWebsiteByName(publisherName), TenSeconds)
         }
 
-        val owner = loggedInUserFilter.getLoggedInUser
+        val owner = getLoggedInUser(request)
 
         val f = Feed(title = Some(newFeed.getTitle),
           page = newFeed.getUrl,
           publisher = publisher.map(_._id),
           acceptance = newFeed.getAcceptancePolicy,
-          owner = owner.map(_._id),
           date = Some(DateTime.now.toDate),
-          held = submissionShouldBeHeld(owner)
         )
         val feed = f.copy(url_words = urlWordsGenerator.makeUrlWordsFor(f, publisher))
 
@@ -87,10 +87,12 @@ class NewFeedController @Autowired()(contentUpdateService: ContentUpdateService,
         }
 
         if (!result.hasErrors) {
+          val submittingUser = ensuredSubmittingUser(loggedInUser)
+          val withSubmittingUser = feed.copy(owner = Some(submittingUser._id), held = submissionShouldBeHeld(Some(submittingUser)))
 
-          val eventuallyCreated = whakaokoService.createFeedSubscription(feed.page).map { maybeSubscription =>
-            feed.whakaokoSubscription = maybeSubscription
-            feed
+          val eventuallyCreated = whakaokoService.createFeedSubscription(withSubmittingUser.page).map { maybeSubscription =>
+            withSubmittingUser.whakaokoSubscription = maybeSubscription
+            withSubmittingUser
           }.flatMap { withWhakaokoSubscription =>
             contentUpdateService.create(withWhakaokoSubscription)
           }
@@ -98,7 +100,7 @@ class NewFeedController @Autowired()(contentUpdateService: ContentUpdateService,
           val created = Await.result(eventuallyCreated, TenSeconds)
           log.info("Created feed: " + created)
 
-          new ModelAndView(new RedirectView(urlBuilder.getFeedUrl(feed)))
+          new ModelAndView(new RedirectView(urlBuilder.getFeedUrl(withSubmittingUser)))
 
         } else {
           log.warn("New feed submission has errors: " + result)
@@ -122,11 +124,6 @@ class NewFeedController @Autowired()(contentUpdateService: ContentUpdateService,
       addObject("heading", "Adding a feed").
       addObject("acceptancePolicyOptions", acceptancePolicyOptions.asJava).
       addObject("newFeed", newFeed)
-  }
-
-  // TODO duplication
-  private def submissionShouldBeHeld(owner: Option[User]): Boolean = {
-    !owner.exists(_.isAdmin)
   }
 
 }
