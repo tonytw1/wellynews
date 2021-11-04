@@ -1,7 +1,6 @@
 package nz.co.searchwellington.feeds.whakaoko
 
 import nz.co.searchwellington.feeds.whakaoko.model.{FeedItem, Subscription}
-import nz.co.searchwellington.model.Feed
 import org.apache.log4j.Logger
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
@@ -9,6 +8,13 @@ import org.springframework.stereotype.Component
 import scala.concurrent.{ExecutionContext, Future}
 
 @Component class WhakaokoService @Autowired()(client: WhakaokoClient) {
+
+  /*
+   Whakaoko (https://github.com/tonytw1/whakaoko) is an RSS reading and aggregation service.
+   It allows us to subscribe to an RSS feed URL and get the feed items back in JSON format.
+   Multiple RSS feed subscriptions can be aggregated into a channel.
+   This package handles the interactions with Whakaoko.
+  */
 
   private val log = Logger.getLogger(classOf[WhakaokoService])
 
@@ -21,12 +27,8 @@ import scala.concurrent.{ExecutionContext, Future}
 
   def getSubscriptions()(implicit ec: ExecutionContext): Future[Seq[Subscription]] = client.getChannelSubscriptions() // TODO catch errors
 
-  def getWhakaokoSubscriptionFor(feed: Feed)(implicit ec: ExecutionContext): Future[Option[Subscription]] = { // TODO catch errors
-    feed.whakaokoSubscription.map { sid =>
-      client.getSubscription(sid)
-    }.getOrElse{
-      Future.successful(None)
-    }
+  def getSubscription(subscriptionID: String)(implicit ec: ExecutionContext): Future[Option[Subscription]] = { // TODO catch errors
+    client.getSubscription(subscriptionID)
   }
 
   def getSubscriptionFeedItems(subscriptionId: String)(implicit ec: ExecutionContext): Future[Either[String, (Seq[FeedItem], Long)]] = {

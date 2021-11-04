@@ -29,7 +29,8 @@ class FeedModelBuilderTest extends ReasonableWaits with ContentFields {
   private val commonAttributesModelBuilder = mock(classOf[CommonAttributesModelBuilder])
   private val whakaokoService = mock(classOf[WhakaokoService])
 
-  var feed = Feed(id = UUID.randomUUID().toString, page = "http://localhost/a-feed")
+  private val whakaokoSubscription = Subscription(id = "a-whakaoko-subscription-id", name = None, channelId = "", url = "http://somewhere/rss", lastRead = None, latestItemDate = None)
+  private val feed = Feed(id = UUID.randomUUID().toString, page = "http://localhost/a-feed", whakaokoSubscription = Some("a-whakaoko-subscription-id"))
 
   private val feedItem = mock(classOf[FeedItem])
   private val anotherFeedItem = mock(classOf[FeedItem])
@@ -84,7 +85,7 @@ class FeedModelBuilderTest extends ReasonableWaits with ContentFields {
   @Test
   def shouldPopulateFrontendFeedFromRequestAttribute {
     when(frontendResourceMapper.createFrontendResourceFrom(feed, None)).thenReturn(Future.successful(frontendFeed))
-    when(whakaokoService.getWhakaokoSubscriptionFor(Matchers.any())(Matchers.any())).thenReturn(Future.successful(None))
+    when(whakaokoService.getSubscription(Matchers.eq("a-whakaoko-subscription-id"))(Matchers.any())).thenReturn(Future.successful(Some(whakaokoSubscription)))
 
     val mv = Await.result(modelBuilder.populateContentModel(request), TenSeconds).get
 
@@ -95,7 +96,7 @@ class FeedModelBuilderTest extends ReasonableWaits with ContentFields {
   def shouldPopulateMainContentWithFeedItemsDecoratedWithLocalCopySuppressionInformation {
     when(frontendResourceMapper.createFrontendResourceFrom(feed, None)).thenReturn(Future.successful(frontendFeed))
     when(whakaokoFeedReader.fetchFeedItems(feed)).thenReturn(Future.successful(Right(((feeditems, feeditems.size.toLong), subscription))))
-    when(whakaokoService.getWhakaokoSubscriptionFor(Matchers.any())(Matchers.any())).thenReturn(Future.successful(None))
+    when(whakaokoService.getSubscription(Matchers.eq("a-whakaoko-subscription-id"))(Matchers.any())).thenReturn(Future.successful(Some(whakaokoSubscription)))
 
     val mv = Await.result(modelBuilder.populateContentModel(request), TenSeconds).get
 
@@ -105,11 +106,9 @@ class FeedModelBuilderTest extends ReasonableWaits with ContentFields {
 
   @Test
   def shouldPushGeotaggedFeeditemsOntoTheModelAsFrontendNewsitemsSeperately {
-    val whakaokoSubscription = Subscription(id = "a-subscription", name = None, channelId = "", url = "http://somewhere/rss", lastRead = None, latestItemDate = None)
-
     when(frontendResourceMapper.createFrontendResourceFrom(feed, None)).thenReturn(Future.successful(frontendFeed))
     when(contentRetrievalService.getAllFeedsOrderedByLatestItemDate(loggedInUser)).thenReturn(Future.successful(Seq()))
-    when(whakaokoService.getWhakaokoSubscriptionFor(Matchers.any())(Matchers.any())).thenReturn(Future.successful(Some(whakaokoSubscription)))
+    when(whakaokoService.getSubscription(Matchers.eq("a-whakaoko-subscription-id"))(Matchers.any())).thenReturn(Future.successful(Some(whakaokoSubscription)))
 
     val mv = Await.result(modelBuilder.populateContentModel(request), TenSeconds).get
 

@@ -92,10 +92,13 @@ import scala.concurrent.Future
     feedOnRequest.map { feed =>
       val eventualFrontendFeed = frontendResourceMapper.createFrontendResourceFrom(feed, loggedInUser)
       val eventualFeedItems = feedItemsFor(feed)
+      val eventualMaybeSubscription = feed.whakaokoSubscription.map(subscriptionId => whakaokoService.getSubscription(subscriptionId)).getOrElse(Future.successful(None))
+
       for {
         frontendFeed <- eventualFrontendFeed
         feedItems <- eventualFeedItems
-        maybeSubscription <- whakaokoService.getWhakaokoSubscriptionFor(feed)
+        maybeSubscription <- eventualMaybeSubscription
+
       } yield {
         val mv = new ModelAndView().
           addObject("feed", frontendFeed).

@@ -11,21 +11,21 @@ import scala.concurrent.{ExecutionContext, Future}
 
 @Component class WhakaokoFeedReader @Autowired()(whakaokoService: WhakaokoService) extends ReasonableWaits {
 
-  /*
-    Whakaoko (https://github.com/tonytw1/whakaoko) is an RSS reading and aggregation service.
-    It allows us to subscribe to an RSS feed URL and get the feed items back in JSON format.
-    Multiple RSS feed subscriptions can be aggregated into a channel.
-    This package handles the interactions with Whakaoko.
-   */
-
   private val log = Logger.getLogger(classOf[WhakaokoFeedReader])
 
   def fetchChannelFeedItems(page: Int)(implicit ec: ExecutionContext): Future[Seq[FeedItem]] = whakaokoService.getChannelFeedItems(page)
 
   def fetchFeedItems(feed: Feed)(implicit ec: ExecutionContext): Future[Either[String, ((Seq[FeedItem], Long), Subscription)]] = {
     log.debug("Fetching feed items for feed with url: " + feed.page)
-    whakaokoService.getWhakaokoSubscriptionFor(feed).flatMap { mayBeSubscription =>
-      mayBeSubscription.map { subscription =>
+
+    val eventualMaybeWhakaokoSubscription: Future[Option[Subscription]] = feed.whakaokoSubscription.map { subscripitonId =>
+      whakaokoService.getSubscription(subscripitonId)
+    }.getOrElse{
+      Future.successful(None)
+    }
+
+    eventualMaybeWhakaokoSubscription.flatMap { maybeWhakaokoSubscription =>
+      maybeWhakaokoSubscription.map { subscription =>
         log.debug("Feed mapped to whakaoko subscription: " + subscription.id)
         whakaokoService.getSubscriptionFeedItems(subscription.id).map { result =>
           result.fold(
@@ -39,8 +39,8 @@ import scala.concurrent.{ExecutionContext, Future}
         }
 
       }.getOrElse {
-        log.warn("No whakaoko subscription found for feed url: " + feed)
-        Future.successful(Left("No whakaoko subscription found for feed url"))
+        log.warn("No whakaoko subscription found for feed: " + feed)
+        Future.successful(Left("No whakaoko subscription found for feed"))
       }
     }
   }
