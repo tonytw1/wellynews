@@ -23,7 +23,7 @@ import scala.concurrent.{ExecutionContext, Future}
 
     def decorateFeedItemsWithFeeds(feedItems: Seq[FeedItem], subscriptions: Seq[Subscription]): Future[Seq[(FeedItem, Feed)]] = {
       val eventualMaybeFeedsBySubscriptionId = Future.sequence(subscriptions.map { s =>
-        mongoRepository.getFeedByUrl(s.url).map { fo =>
+        mongoRepository.getFeedByUrl(s.url).map { fo => // TODO By Whakaoko id not url!
           (s.id, fo)
         }
       })
@@ -62,14 +62,6 @@ import scala.concurrent.{ExecutionContext, Future}
 
   def getFeedItemsAndDetailsFor(feed: Feed)(implicit ec: ExecutionContext): Future[Either[String, ((Seq[FeedItem], Long), Subscription)]] = {
     whakaokoFeedReader.fetchFeedItems(feed)
-  }
-
-  def getLatestPublicationDate(feed: Feed)(implicit ec: ExecutionContext): Future[Option[Date]] = {
-    getFeedItemsAndDetailsFor(feed).map { r =>
-      r.toOption.flatMap { right =>
-        latestPublicationDateOf(right._1._1)
-      }
-    }
   }
 
   def latestPublicationDateOf(feedItems: Seq[FeedItem]): Option[Date] = {
