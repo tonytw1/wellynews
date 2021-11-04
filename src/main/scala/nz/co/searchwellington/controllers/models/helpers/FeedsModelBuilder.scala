@@ -46,7 +46,13 @@ import scala.concurrent.Future
   }
 
   def populateExtraModelContent(request: HttpServletRequest, mv: ModelAndView, loggedInUser: Option[User]): Future[ModelAndView] = {
-    val eventualSuggestedFeedNewsitems = suggestedFeeditemsService.getSuggestionFeednewsitems(6, loggedInUser)
+    val eventualSuggestedFeedNewsitems = {
+      if (loggedInUser.exists(_.isAdmin)) {
+        suggestedFeeditemsService.getSuggestionFeednewsitems(6, loggedInUser)
+      } else {
+        Future.successful(Seq.empty)
+      }
+    }
     val eventualDiscoveredFeedOccurrences = {
       if (loggedInUser.exists(_.isAdmin)) {
         contentRetrievalService.getDiscoveredFeeds  // TODO queries for all
