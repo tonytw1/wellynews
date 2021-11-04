@@ -72,15 +72,16 @@ class WhakaokoClient @Autowired()(@Value("${whakaoko.url}") whakaokoUrl: String,
     }
   }
 
-  def getChannelFeedItems(page: Int)(implicit ec: ExecutionContext): Future[Seq[FeedItem]] = {
+  def getChannelFeedItems(page: Int, subscriptions: Option[Seq[String]])(implicit ec: ExecutionContext): Future[Seq[FeedItem]] = {
     log.info("Fetching channel items page: " + page)
     val channelItemsUrl = whakaokoUrl + "/" + "/channels/" + whakaokoChannel + "/items"
     val start = DateTime.now()
-
-    withWhakaokoAuth(wsClient.url(channelItemsUrl)).
+    val self = withWhakaokoAuth(wsClient.url(channelItemsUrl)).
       addQueryStringParameters("page" -> page.toString).
-      withRequestTimeout(TenSeconds).
-      get.map { r =>
+      addQueryStringParameters("subscriptions" -> subscriptions.getOrElse(Seq.empty).mkString(",")). // TODO This is an Option - decide
+      withRequestTimeout(TenSeconds)
+    log.info("Calling: " + self.toString)
+    self.get.map { r =>
         log.info("Channel channel items returned after: " + new Duration(start, DateTime.now).getMillis)
         r.status match {
           case HttpStatus.SC_OK => Json.parse(r.body).as[Seq[FeedItem]]

@@ -2,9 +2,9 @@ package nz.co.searchwellington.feeds.suggesteditems
 
 import nz.co.searchwellington.ReasonableWaits
 import nz.co.searchwellington.feeds.FeedReaderRunner
-import nz.co.searchwellington.feeds.whakaoko.{WhakaokoFeedReader, WhakaokoService}
+import nz.co.searchwellington.feeds.whakaoko.WhakaokoService
 import nz.co.searchwellington.feeds.whakaoko.model.{FeedItem, Subscription}
-import nz.co.searchwellington.model.Feed
+import nz.co.searchwellington.model.{Feed, FeedAcceptancePolicy}
 import nz.co.searchwellington.repositories.mongo.MongoRepository
 import org.apache.log4j.Logger
 import org.springframework.beans.factory.annotation.Autowired
@@ -50,8 +50,14 @@ import scala.concurrent.{ExecutionContext, Future}
       }
     }
 
+    val eventualSuggestedFeeds = mongoRepository.getAllFeeds().map { fs: Seq[Feed] =>
+      fs.filter(feed => feed.acceptance == FeedAcceptancePolicy.SUGGEST)
+    }
+
     for {
-      channelFeedItems <- whakaokoService.getChannelFeedItems(page)
+      suggestedFeeds <- eventualSuggestedFeeds
+      subscriptionIds = suggestedFeeds.flatMap(_.whakaokoSubscription)
+      channelFeedItems <- whakaokoService.getChannelFeedItems(page, Some(subscriptionIds))
       channelFeedItemsWithFeeds <- decorateFeedItemsWithFeeds(channelFeedItems, subscriptions)
 
     } yield {

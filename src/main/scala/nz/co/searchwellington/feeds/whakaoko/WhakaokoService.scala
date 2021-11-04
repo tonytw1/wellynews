@@ -39,7 +39,7 @@ import scala.concurrent.{ExecutionContext, Future}
     }
   }
 
-  def getChannelFeedItems(page: Int)(implicit ec: ExecutionContext): Future[Seq[FeedItem]] = client.getChannelFeedItems(page)
+  def getChannelFeedItems(page: Int, subscriptions: Option[Seq[String]])(implicit ec: ExecutionContext): Future[Seq[FeedItem]] = client.getChannelFeedItems(page, subscriptions)
 
   def updateSubscriptionName(subscriptionId: String, title: String)(implicit ec: ExecutionContext): Future[Unit] = {
       client.updateSubscriptionName(subscriptionId, title)
