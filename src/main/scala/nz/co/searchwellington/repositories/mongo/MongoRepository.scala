@@ -212,6 +212,10 @@ class MongoRepository @Autowired()(@Value("${mongo.uri}") mongoUri: String) exte
     getResourceBy(BSONDocument("type" -> "F", "page" -> url)).map(ro => ro.map(r => r.asInstanceOf[Feed]))
   }
 
+  def getFeedByWhakaokoSubscriptionId(subscriptionId: String)(implicit ec: ExecutionContext) = {
+    getResourceBy(BSONDocument("type" -> "F", "whakaokoSubscription" -> subscriptionId)).map(ro => ro.map(r => r.asInstanceOf[Feed]))
+  }
+
   def getFeedByUrlwords(urlWords: String)(implicit ec: ExecutionContext): Future[Option[Feed]] = {
     getResourceBy(BSONDocument("type" -> "F", "url_words" -> urlWords)).map(ro => ro.map(r => r.asInstanceOf[Feed]))
   }

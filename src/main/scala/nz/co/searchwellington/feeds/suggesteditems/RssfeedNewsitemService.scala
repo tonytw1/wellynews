@@ -18,12 +18,13 @@ import scala.concurrent.{ExecutionContext, Future}
 
   private val log = Logger.getLogger(classOf[FeedReaderRunner])
 
-  def getChannelFeedItems(page: Int, subscriptions: Seq[Subscription])(implicit ec: ExecutionContext): Future[Seq[(FeedItem, Feed)]] = {
+  // Appears to be enhancing the getChannelFeedItems call by decorating the feed items with the feed
+  def getChannelFeedItemsDecoratedWithFeeds(page: Int, subscriptions: Seq[Subscription])(implicit ec: ExecutionContext): Future[Seq[(FeedItem, Feed)]] = {
 
     def decorateFeedItemsWithFeeds(feedItems: Seq[FeedItem], subscriptions: Seq[Subscription]): Future[Seq[(FeedItem, Feed)]] = {
-      val eventualMaybeFeedsBySubscriptionId = Future.sequence(subscriptions.map { s =>
-        mongoRepository.getFeedByUrl(s.url).map { fo => // TODO By Whakaoko id not url!
-          (s.id, fo)
+      val eventualMaybeFeedsBySubscriptionId = Future.sequence(subscriptions.map { subscription =>
+        mongoRepository.getFeedByWhakaokoSubscriptionId(subscription.id).map { fo =>
+          (subscription.id, fo)
         }
       })
 

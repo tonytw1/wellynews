@@ -38,7 +38,7 @@ import scala.concurrent.{ExecutionContext, Future}
 
       def paginateChannelFeedItems(page: Int = 1, output: Seq[Newsitem] = Seq.empty): Future[Seq[Newsitem]] = {
         log.info("Fetching filter page: " + page + "/" + output.size)
-        rssfeedNewsitemService.getChannelFeedItems(page, subscriptions).flatMap { channelFeedItems =>
+        rssfeedNewsitemService.getChannelFeedItemsDecoratedWithFeeds(page, subscriptions).flatMap { channelFeedItems =>
           log.info("Found " + channelFeedItems.size + " channel newsitems on page " + page)
 
           // Filter by feed acceptance policy
