@@ -11,6 +11,7 @@ import org.joda.time.DateTime
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
 
+import java.util.Date
 import scala.concurrent.{Await, ExecutionContext, Future}
 
 @Component class FeedReader @Autowired()(rssfeedNewsitemService: RssfeedNewsitemService,
@@ -77,7 +78,7 @@ import scala.concurrent.{Await, ExecutionContext, Future}
 
             contentUpdateService.update(feed.copy(
               last_read = Some(DateTime.now.toDate),
-              latestItemDate = rssfeedNewsitemService.latestPublicationDateOf(feedNewsitems._1),
+              latestItemDate = latestPublicationDateOf(feedNewsitems._1),
               http_status = inferredHttpStatus,
               whakaokoSubscription = Some(r._2.id)
             )).map { _ =>
@@ -118,6 +119,15 @@ import scala.concurrent.{Await, ExecutionContext, Future}
       val accepted = processed.flatten
       log.debug("Processed feed items " + processed.size + " and accepted " + accepted.size)
       accepted
+    }
+  }
+
+  private def latestPublicationDateOf(feedItems: Seq[FeedItem]): Option[Date] = {
+    val publicationDates = feedItems.flatMap(fi => fi.date.map(_.toDate))
+    if (publicationDates.nonEmpty) {
+      Some(publicationDates.max)
+    } else {
+      None
     }
   }
 

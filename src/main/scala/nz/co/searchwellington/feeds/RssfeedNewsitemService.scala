@@ -64,13 +64,4 @@ import scala.concurrent.{ExecutionContext, Future}
     whakaokoFeedReader.fetchFeedItems(feed)
   }
 
-  def latestPublicationDateOf(feedItems: Seq[FeedItem]): Option[Date] = {
-    val publicationDates = feedItems.flatMap(fi => fi.date.map(_.toDate))
-    if (publicationDates.nonEmpty) {
-      Some(publicationDates.max)
-    } else {
-      None
-    }
-  }
-
 }
