@@ -30,16 +30,16 @@ class AcceptFeedItemController @Autowired()(mongoRepository: MongoRepository,
     val eventualModelAndView = loggedInUserFilter.getLoggedInUser.map { loggedInUser =>
       mongoRepository.getFeedByUrlwords(feed).flatMap { fo =>
         fo.map { feed =>
-          val eventualFeedItem = whakaokoFeedReader.fetchFeedItems(feed).map { fis =>
+          val eventualFeedItemToAccept = whakaokoFeedReader.fetchFeedItems(feed).map { fis =>
             fis.fold({ l =>
               log.warn("Could not read feed items: " + l)
               None
             }, { r =>
-              r._1._1.find(fi => fi.url == url)
+              r._1.find(fi => fi.url == url)
             })
           }
 
-          eventualFeedItem.flatMap { maybeFeedItem =>
+          eventualFeedItemToAccept.flatMap { maybeFeedItem =>
             maybeFeedItem.map { feedItemToAccept =>
               feedReaderUpdateService.acceptFeeditem(loggedInUser, feedItemToAccept, feed).map { accepted =>
                 log.info("Accepted newsitem: " + accepted.title)

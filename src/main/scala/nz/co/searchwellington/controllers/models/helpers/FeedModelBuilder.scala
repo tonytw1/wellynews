@@ -35,7 +35,7 @@ import scala.concurrent.Future
 
   def populateContentModel(request: HttpServletRequest, loggedInUser: Option[User]): Future[Option[ModelAndView]] = {
 
-    def populateGeotaggedFeedItems(mv: ModelAndView, feedNewsitems: Seq[FrontendResource]) {
+    def populateGeotaggedFeedItems(mv: ModelAndView, feedNewsitems: Seq[FrontendResource]): Unit = {
       val geotaggedItems = geotaggedNewsitemExtractor.extractGeotaggedItems(feedNewsitems)
       if (geotaggedItems.nonEmpty) {
         log.info("Adding " + geotaggedItems.size + " geotagged feed items")
@@ -50,9 +50,7 @@ import scala.concurrent.Future
       whakaokoFeedReader.fetchFeedItems(feed).flatMap { feedItemsForFeed =>
         feedItemsForFeed.fold({ l =>
           Future.successful(Left(l))
-        }, {
-          result =>
-            val feedItems = result._1
+        }, { feedItems =>
             val feedNewsitems = feedItems._1.map(i => feeditemToNewsitemService.makeNewsitemFromFeedItem(i, feed))
             val totalCount = feedItems._2
 

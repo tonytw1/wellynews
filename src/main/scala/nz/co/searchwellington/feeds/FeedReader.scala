@@ -59,8 +59,7 @@ import scala.concurrent.{Await, ExecutionContext, Future}
           log.warn("Could new get feed items for feed + '" + feed.title + "':" + l)
           Future.successful()
 
-        }, { r =>
-          val feedNewsitems = r._1
+        }, { feedNewsitems =>
           log.debug("Feed contains " + feedNewsitems._1.size + " items from " + feedNewsitems._2 + " total items")
           val inferredHttpStatus = if (feedNewsitems._1.nonEmpty) 200 else -3
 
@@ -78,8 +77,7 @@ import scala.concurrent.{Await, ExecutionContext, Future}
             contentUpdateService.update(feed.copy(
               last_read = Some(DateTime.now.toDate),
               latestItemDate = latestPublicationDateOf(feedNewsitems._1),
-              http_status = inferredHttpStatus,
-              whakaokoSubscription = Some(r._2.id)
+              http_status = inferredHttpStatus
             )).map { _ =>
               Unit
             }

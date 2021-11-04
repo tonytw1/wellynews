@@ -61,7 +61,7 @@ class FeedModelBuilderTest extends ReasonableWaits with ContentFields {
 
   @Before
   def setUp {
-    when(whakaokoFeedReader.fetchFeedItems(feed)).thenReturn(Future.successful(Right(((feeditems, feeditems.size.toLong), subscription))))
+    when(whakaokoFeedReader.fetchFeedItems(feed)).thenReturn(Future.successful(Right((feeditems, feeditems.size.toLong))))
 
     when(feeditemToNewsitemService.makeNewsitemFromFeedItem(feedItem, feed)).thenReturn(newsItem)
     when(feeditemToNewsitemService.makeNewsitemFromFeedItem(anotherFeedItem, feed)).thenReturn(anotherNewsitem)
@@ -95,7 +95,7 @@ class FeedModelBuilderTest extends ReasonableWaits with ContentFields {
   @Test
   def shouldPopulateMainContentWithFeedItemsDecoratedWithLocalCopySuppressionInformation {
     when(frontendResourceMapper.createFrontendResourceFrom(feed, None)).thenReturn(Future.successful(frontendFeed))
-    when(whakaokoFeedReader.fetchFeedItems(feed)).thenReturn(Future.successful(Right(((feeditems, feeditems.size.toLong), subscription))))
+    when(whakaokoFeedReader.fetchFeedItems(feed)).thenReturn(Future.successful(Right((feeditems, feeditems.size.toLong))))
     when(whakaokoService.getSubscription(Matchers.eq("a-whakaoko-subscription-id"))(Matchers.any())).thenReturn(Future.successful(Some(whakaokoSubscription)))
 
     val mv = Await.result(modelBuilder.populateContentModel(request), TenSeconds).get
