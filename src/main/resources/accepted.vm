@@ -8,7 +8,7 @@
 </div>
 
 <div class="main">
-<h2>$heading</h2>
+<h2><a href="${siteInformation.url}/feeds">Feeds</a> / $heading</h2>
 
 <p>These newsitems have been accepted from feeds recently.</p>
 
