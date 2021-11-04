@@ -45,9 +45,9 @@ import scala.concurrent.Future
   }
 
   def populateExtraModelContent(request: HttpServletRequest, mv: ModelAndView, loggedInUser: Option[User]): Future[ModelAndView] = {
+    val eventualSuggestedFeedNewsitems = suggestedFeeditemsService.getSuggestionFeednewsitems(6, loggedInUser)
     val eventualDiscoveredFeedOccurrences = contentRetrievalService.getDiscoveredFeeds
     val eventualCurrentFeeds = contentRetrievalService.getAllFeedsOrderedByLatestItemDate(loggedInUser)
-    val eventualSuggestedFeedNewsitems = suggestedFeeditemsService.getSuggestionFeednewsitems(6, loggedInUser)
 
     for {
       suggestedFeednewsitems <- eventualSuggestedFeedNewsitems
