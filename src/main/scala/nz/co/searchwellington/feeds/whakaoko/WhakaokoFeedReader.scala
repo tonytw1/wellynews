@@ -13,8 +13,6 @@ import scala.concurrent.{ExecutionContext, Future}
 
   private val log = Logger.getLogger(classOf[WhakaokoFeedReader])
 
-  def fetchChannelFeedItems(page: Int)(implicit ec: ExecutionContext): Future[Seq[FeedItem]] = whakaokoService.getChannelFeedItems(page)
-
   def fetchFeedItems(feed: Feed)(implicit ec: ExecutionContext): Future[Either[String, (Seq[FeedItem], Long)]] = {
     log.debug("Fetching feed items for feed with url: " + feed.page)
 

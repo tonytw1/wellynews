@@ -2,7 +2,7 @@ package nz.co.searchwellington.feeds.suggesteditems
 
 import nz.co.searchwellington.ReasonableWaits
 import nz.co.searchwellington.feeds.FeedReaderRunner
-import nz.co.searchwellington.feeds.whakaoko.WhakaokoFeedReader
+import nz.co.searchwellington.feeds.whakaoko.{WhakaokoFeedReader, WhakaokoService}
 import nz.co.searchwellington.feeds.whakaoko.model.{FeedItem, Subscription}
 import nz.co.searchwellington.model.Feed
 import nz.co.searchwellington.repositories.mongo.MongoRepository
@@ -12,7 +12,7 @@ import org.springframework.stereotype.Component
 
 import scala.concurrent.{ExecutionContext, Future}
 
-@Component class RssfeedNewsitemService @Autowired()(whakaokoFeedReader: WhakaokoFeedReader,
+@Component class RssfeedNewsitemService @Autowired()(whakaokoService: WhakaokoService,
                                                      mongoRepository: MongoRepository)
   extends ReasonableWaits {
 
@@ -50,7 +50,7 @@ import scala.concurrent.{ExecutionContext, Future}
     }
 
     for {
-      channelFeedItems <- whakaokoFeedReader.fetchChannelFeedItems(page)
+      channelFeedItems <- whakaokoService.getChannelFeedItems(page)
       channelFeedItemsWithFeeds <- decorateFeedItemsWithFeeds(channelFeedItems, subscriptions)
 
     } yield {
