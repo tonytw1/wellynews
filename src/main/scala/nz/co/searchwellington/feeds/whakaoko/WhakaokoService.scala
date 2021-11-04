@@ -19,9 +19,9 @@ import scala.concurrent.{ExecutionContext, Future}
     }
   }
 
-  def getSubscriptions()(implicit ec: ExecutionContext): Future[Seq[Subscription]] = client.getChannelSubscriptions()
+  def getSubscriptions()(implicit ec: ExecutionContext): Future[Seq[Subscription]] = client.getChannelSubscriptions() // TODO catch errors
 
-  def getWhakaokoSubscriptionFor(feed: Feed)(implicit ec: ExecutionContext): Future[Option[Subscription]] = {
+  def getWhakaokoSubscriptionFor(feed: Feed)(implicit ec: ExecutionContext): Future[Option[Subscription]] = { // TODO catch errors
     feed.whakaokoSubscription.map { sid =>
       client.getSubscription(sid)
     }.getOrElse{
