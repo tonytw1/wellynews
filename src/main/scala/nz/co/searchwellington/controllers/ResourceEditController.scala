@@ -1,11 +1,12 @@
 package nz.co.searchwellington.controllers
 
 import java.util.UUID
-
 import com.google.common.base.Strings
+import nz.co.searchwellington.feeds.suggesteditems.RssfeedNewsitemService
+
 import javax.servlet.http.{HttpServletRequest, HttpServletResponse}
 import nz.co.searchwellington.feeds.whakaoko.WhakaokoService
-import nz.co.searchwellington.feeds.{FeedItemAcceptor, FeeditemToNewsitemService, RssfeedNewsitemService}
+import nz.co.searchwellington.feeds.{FeedItemAcceptor, FeeditemToNewsitemService}
 import nz.co.searchwellington.filters.AdminRequestFilter
 import nz.co.searchwellington.model._
 import nz.co.searchwellington.model.mappers.FrontendResourceMapper

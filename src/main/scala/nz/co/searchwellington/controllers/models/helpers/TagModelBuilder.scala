@@ -2,8 +2,6 @@ package nz.co.searchwellington.controllers.models.helpers
 
 import nz.co.searchwellington.ReasonableWaits
 import nz.co.searchwellington.controllers.RssUrlBuilder
-import nz.co.searchwellington.feeds.{FeedItemActionDecorator, RssfeedNewsitemService}
-import nz.co.searchwellington.model.mappers.FrontendResourceMapper
 import nz.co.searchwellington.model.{Resource, Tag, User}
 import nz.co.searchwellington.repositories.{ContentRetrievalService, TagDAO}
 import nz.co.searchwellington.tagging.RelatedTagsService
@@ -18,10 +16,9 @@ import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
 @Component class TagModelBuilder @Autowired()(rssUrlBuilder: RssUrlBuilder, val urlBuilder: UrlBuilder,
-                                              relatedTagsService: RelatedTagsService, rssfeedNewsitemService: RssfeedNewsitemService,
-                                              val contentRetrievalService: ContentRetrievalService, feedItemLocalCopyDecorator: FeedItemActionDecorator,
-                                              commonAttributesModelBuilder: CommonAttributesModelBuilder, tagDAO: TagDAO,
-                                              frontendResourceMapper: FrontendResourceMapper) extends ModelBuilder
+                                              relatedTagsService: RelatedTagsService,
+                                              val contentRetrievalService: ContentRetrievalService,
+                                              commonAttributesModelBuilder: CommonAttributesModelBuilder, tagDAO: TagDAO) extends ModelBuilder
   with CommonSizes with Pagination with ReasonableWaits {
 
   private val PAGE = "page"

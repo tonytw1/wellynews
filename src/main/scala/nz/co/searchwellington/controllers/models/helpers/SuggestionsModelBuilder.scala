@@ -2,9 +2,10 @@ package nz.co.searchwellington.controllers.models.helpers
 
 import nz.co.searchwellington.ReasonableWaits
 import nz.co.searchwellington.controllers.RssUrlBuilder
+import nz.co.searchwellington.feeds.suggesteditems.SuggestedFeeditemsService
 import nz.co.searchwellington.filters.RequestPath
 import nz.co.searchwellington.model.User
-import nz.co.searchwellington.repositories.{ContentRetrievalService, SuggestedFeeditemsService}
+import nz.co.searchwellington.repositories.ContentRetrievalService
 import nz.co.searchwellington.urls.UrlBuilder
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component

@@ -1,11 +1,12 @@
-package nz.co.searchwellington.repositories
+package nz.co.searchwellington.feeds.suggesteditems
 
 import nz.co.searchwellington.ReasonableWaits
 import nz.co.searchwellington.feeds.whakaoko.WhakaokoService
-import nz.co.searchwellington.feeds.{FeedItemActionDecorator, FeeditemToNewsitemService, RssfeedNewsitemService}
+import nz.co.searchwellington.feeds.{FeedItemActionDecorator, FeeditemToNewsitemService}
 import nz.co.searchwellington.model.frontend.FrontendResource
 import nz.co.searchwellington.model.mappers.FrontendResourceMapper
 import nz.co.searchwellington.model.{FeedAcceptancePolicy, Newsitem, User}
+import nz.co.searchwellington.repositories.SuppressionDAO
 import nz.co.searchwellington.repositories.mongo.MongoRepository
 import org.apache.log4j.Logger
 import org.springframework.beans.factory.annotation.Autowired

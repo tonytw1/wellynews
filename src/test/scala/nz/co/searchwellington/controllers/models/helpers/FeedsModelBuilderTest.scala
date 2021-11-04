@@ -1,11 +1,11 @@
 package nz.co.searchwellington.controllers.models.helpers
 
 import java.util.UUID
-
 import nz.co.searchwellington.ReasonableWaits
+import nz.co.searchwellington.feeds.suggesteditems.SuggestedFeeditemsService
 import nz.co.searchwellington.model.{DiscoveredFeed, FeedAcceptancePolicy}
 import nz.co.searchwellington.model.frontend.{FrontendFeed, FrontendNewsitem}
-import nz.co.searchwellington.repositories.{ContentRetrievalService, SuggestedFeeditemsService}
+import nz.co.searchwellington.repositories.ContentRetrievalService
 import nz.co.searchwellington.urls.UrlBuilder
 import org.joda.time.DateTime
 import org.junit.Assert.{assertEquals, assertTrue}

@@ -1,7 +1,7 @@
 package nz.co.searchwellington.feeds.whakaoko
 
 import nz.co.searchwellington.ReasonableWaits
-import nz.co.searchwellington.feeds.whakaoko.model.{FeedItem, Subscription}
+import nz.co.searchwellington.feeds.whakaoko.model.FeedItem
 import nz.co.searchwellington.model.Feed
 import org.apache.log4j.Logger
 import org.springframework.beans.factory.annotation.Autowired

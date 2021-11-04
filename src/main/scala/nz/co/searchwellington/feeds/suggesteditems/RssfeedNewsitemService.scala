@@ -1,8 +1,7 @@
-package nz.co.searchwellington.feeds
-
-import java.util.Date
+package nz.co.searchwellington.feeds.suggesteditems
 
 import nz.co.searchwellington.ReasonableWaits
+import nz.co.searchwellington.feeds.FeedReaderRunner
 import nz.co.searchwellington.feeds.whakaoko.WhakaokoFeedReader
 import nz.co.searchwellington.feeds.whakaoko.model.{FeedItem, Subscription}
 import nz.co.searchwellington.model.Feed
