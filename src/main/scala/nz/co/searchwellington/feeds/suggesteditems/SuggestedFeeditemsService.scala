@@ -1,11 +1,10 @@
 package nz.co.searchwellington.feeds.suggesteditems
 
 import nz.co.searchwellington.ReasonableWaits
-import nz.co.searchwellington.feeds.whakaoko.WhakaokoService
 import nz.co.searchwellington.feeds.{FeedItemActionDecorator, FeeditemToNewsitemService}
 import nz.co.searchwellington.model.frontend.FrontendResource
 import nz.co.searchwellington.model.mappers.FrontendResourceMapper
-import nz.co.searchwellington.model.{FeedAcceptancePolicy, Newsitem, User}
+import nz.co.searchwellington.model.{Feed, FeedAcceptancePolicy, Newsitem, User}
 import nz.co.searchwellington.repositories.SuppressionDAO
 import nz.co.searchwellington.repositories.mongo.MongoRepository
 import org.apache.log4j.Logger
@@ -18,8 +17,8 @@ import scala.concurrent.{ExecutionContext, Future}
                                                         feedItemActionDecorator: FeedItemActionDecorator,
                                                         feeditemToNewsitemService: FeeditemToNewsitemService,
                                                         frontendResourceMapper: FrontendResourceMapper,
-                                                        mongoRepository: MongoRepository, suppressionDAO: SuppressionDAO,
-                                                        whakaokoService: WhakaokoService) extends
+                                                        mongoRepository: MongoRepository,
+                                                        suppressionDAO: SuppressionDAO) extends
   ReasonableWaits {
 
   private val log = Logger.getLogger(classOf[SuggestedFeeditemsService])
@@ -34,21 +33,20 @@ import scala.concurrent.{ExecutionContext, Future}
    */
   def getSuggestionFeednewsitems(maxItems: Int, loggedInUser: Option[User])(implicit ec: ExecutionContext): Future[Seq[FrontendResource]] = {
 
-    val eventualSuggestedNewsitems = whakaokoService.getSubscriptions.flatMap { subscriptions =>
+    val eventualSuggestedFeeds = mongoRepository.getAllFeeds().map { fs: Seq[Feed] =>
+      fs.filter(feed => feed.acceptance == FeedAcceptancePolicy.SUGGEST)
+    }
+
+    val eventualSuggestedNewsitems = eventualSuggestedFeeds.flatMap { feeds =>
 
       def paginateChannelFeedItems(page: Int = 1, output: Seq[Newsitem] = Seq.empty): Future[Seq[Newsitem]] = {
         log.info("Fetching filter page: " + page + "/" + output.size)
-        rssfeedNewsitemService.getChannelFeedItemsDecoratedWithFeeds(page, subscriptions).flatMap { channelFeedItems =>
+        rssfeedNewsitemService.getChannelFeedItemsDecoratedWithFeeds(page, feeds).flatMap { channelFeedItems =>
           log.info("Found " + channelFeedItems.size + " channel newsitems on page " + page)
 
-          // Filter by feed acceptance policy
-          val fromSuggestedFeeds = channelFeedItems.filter { fi =>
-            fi._2.acceptance == FeedAcceptancePolicy.SUGGEST
-          }
+          val suggestedChannelNewsitems = channelFeedItems.map(i => feeditemToNewsitemService.makeNewsitemFromFeedItem(i._1, i._2))
 
-          val suggestedChannelNewsitems = fromSuggestedFeeds.map(i => feeditemToNewsitemService.makeNewsitemFromFeedItem(i._1, i._2))
-
-          val eventuallyFiltered: Seq[Future[Option[Newsitem]]] = suggestedChannelNewsitems.map { newsitem =>
+          val eventuallyFiltered = suggestedChannelNewsitems.map { newsitem =>
             val eventuallyLocalCopy = mongoRepository.getResourceByUrl(newsitem.page)
             val eventuallyIsSuppressed = suppressionDAO.isSupressed(newsitem.page)
             for {

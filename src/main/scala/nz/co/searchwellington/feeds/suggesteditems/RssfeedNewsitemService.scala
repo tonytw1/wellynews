@@ -1,67 +1,36 @@
 package nz.co.searchwellington.feeds.suggesteditems
 
 import nz.co.searchwellington.ReasonableWaits
-import nz.co.searchwellington.feeds.FeedReaderRunner
 import nz.co.searchwellington.feeds.whakaoko.WhakaokoService
-import nz.co.searchwellington.feeds.whakaoko.model.{FeedItem, Subscription}
-import nz.co.searchwellington.model.{Feed, FeedAcceptancePolicy}
-import nz.co.searchwellington.repositories.mongo.MongoRepository
+import nz.co.searchwellington.feeds.whakaoko.model.FeedItem
+import nz.co.searchwellington.model.Feed
 import org.apache.log4j.Logger
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
 
 import scala.concurrent.{ExecutionContext, Future}
 
-@Component class RssfeedNewsitemService @Autowired()(whakaokoService: WhakaokoService,
-                                                     mongoRepository: MongoRepository)
-  extends ReasonableWaits {
+@Component class RssfeedNewsitemService @Autowired()(whakaokoService: WhakaokoService) extends ReasonableWaits {
 
-  private val log = Logger.getLogger(classOf[FeedReaderRunner])
+  private val log = Logger.getLogger(classOf[RssfeedNewsitemService])
 
   // Appears to be enhancing the getChannelFeedItems call by decorating the feed items with the feed
-  def getChannelFeedItemsDecoratedWithFeeds(page: Int, subscriptions: Seq[Subscription])(implicit ec: ExecutionContext): Future[Seq[(FeedItem, Feed)]] = {
+  def getChannelFeedItemsDecoratedWithFeeds(page: Int, feeds: Seq[Feed])(implicit ec: ExecutionContext): Future[Seq[(FeedItem, Feed)]] = {
 
-    def decorateFeedItemsWithFeeds(feedItems: Seq[FeedItem], subscriptions: Seq[Subscription]): Future[Seq[(FeedItem, Feed)]] = {
-      val eventualMaybeFeedsBySubscriptionId = Future.sequence(subscriptions.map { subscription =>
-        mongoRepository.getFeedByWhakaokoSubscriptionId(subscription.id).map { fo =>
-          (subscription.id, fo)
+    def decorateFeedItemsWithFeeds(feedItems: Seq[FeedItem], feeds: Seq[Feed]): Seq[(FeedItem, Feed)] = {
+      feedItems.flatMap { fi =>
+        val maybeFeed = feeds.find(_.whakaokoSubscription.contains(fi.subscriptionId)) // TODO use a map
+        maybeFeed.map { feed =>
+          (fi, feed)
         }
-      })
-
-      val eventualFeedsBySubscriptionId = eventualMaybeFeedsBySubscriptionId.map { f =>
-        f.flatMap { i =>
-          i._2.map { f =>
-            (i._1, f)
-          }
-        }.toMap
+        //log.warn("No local feed found for feed item with subscription id (" + fi.subscriptionId + "): " + fi)
       }
-
-      eventualFeedsBySubscriptionId.map { feeds =>
-        feedItems.flatMap { fi =>
-
-          if (feeds.get(fi.subscriptionId).isEmpty) {
-            log.warn("No local feed found for feed item with subscription id (" + fi.subscriptionId + "): " + fi)
-          }
-
-          feeds.get(fi.subscriptionId).map { feed =>
-            (fi, feed)
-          }
-        }
-      }
-    }
-
-    val eventualSuggestedFeeds = mongoRepository.getAllFeeds().map { fs: Seq[Feed] =>
-      fs.filter(feed => feed.acceptance == FeedAcceptancePolicy.SUGGEST)
     }
 
     for {
-      suggestedFeeds <- eventualSuggestedFeeds
-      subscriptionIds = suggestedFeeds.flatMap(_.whakaokoSubscription)
-      channelFeedItems <- whakaokoService.getChannelFeedItems(page, Some(subscriptionIds))
-      channelFeedItemsWithFeeds <- decorateFeedItemsWithFeeds(channelFeedItems, subscriptions)
-
+      channelFeedItems <- whakaokoService.getChannelFeedItems(page, Some(feeds.flatMap(_.whakaokoSubscription)))
     } yield {
-      channelFeedItemsWithFeeds
+      decorateFeedItemsWithFeeds(channelFeedItems, feeds)
     }
   }
 
