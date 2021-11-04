@@ -107,6 +107,7 @@ class WhakaokoClient @Autowired()(@Value("${whakaoko.url}") whakaokoUrl: String,
     }
   }
 
+  // Given a subscription id, return the first page of feed items and a total items count
   def getSubscriptionFeedItems(subscriptionId: String)(implicit ec: ExecutionContext): Future[(Seq[FeedItem], Long)] = {
     withWhakaokoAuth(wsClient.url(subscriptionUrl(subscriptionId) + "/items")).
       withRequestTimeout(TenSeconds).
