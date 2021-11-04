@@ -1,8 +1,8 @@
 package nz.co.searchwellington.feeds
 
 import nz.co.searchwellington.ReasonableWaits
-import nz.co.searchwellington.feeds.whakaoko.WhakaokoService
 import nz.co.searchwellington.feeds.whakaoko.model.FeedItem
+import nz.co.searchwellington.feeds.whakaoko.{WhakaokoFeedReader, WhakaokoService}
 import nz.co.searchwellington.model.{Feed, FeedAcceptancePolicy, Resource, User}
 import nz.co.searchwellington.modification.ContentUpdateService
 import nz.co.searchwellington.urls.UrlCleaner
@@ -14,13 +14,12 @@ import org.springframework.stereotype.Component
 import java.util.Date
 import scala.concurrent.{Await, ExecutionContext, Future}
 
-@Component class FeedReader @Autowired()(rssfeedNewsitemService: RssfeedNewsitemService,
-                                         feedItemAcceptanceDecider: FeedItemAcceptanceDecider,
+@Component class FeedReader @Autowired()(feedItemAcceptanceDecider: FeedItemAcceptanceDecider,
                                          urlCleaner: UrlCleaner,
                                          contentUpdateService: ContentUpdateService,
                                          feedReaderUpdateService: FeedReaderUpdateService,
-                                         whakaokoService: WhakaokoService)
-  extends ReasonableWaits {
+                                         whakaokoFeedReader: WhakaokoFeedReader,
+                                         whakaokoService: WhakaokoService) extends ReasonableWaits {
 
   private val log = Logger.getLogger(classOf[FeedReader])
 
@@ -55,7 +54,7 @@ import scala.concurrent.{Await, ExecutionContext, Future}
       }.getOrElse(Future.successful(Unit))
       Await.result(eventualSubscriptionNameSync, TenSeconds)
 
-      rssfeedNewsitemService.getFeedItemsAndDetailsFor(feed).flatMap { feedItemsFetch =>
+      whakaokoFeedReader.fetchFeedItems(feed).flatMap { feedItemsFetch =>
         feedItemsFetch.fold({ l =>
           log.warn("Could new get feed items for feed + '" + feed.title + "':" + l)
           Future.successful()

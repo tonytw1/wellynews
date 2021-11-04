@@ -57,11 +57,6 @@ import scala.concurrent.{ExecutionContext, Future}
     } yield {
       channelFeedItemsWithFeeds
     }
-
-  }
-
-  def getFeedItemsAndDetailsFor(feed: Feed)(implicit ec: ExecutionContext): Future[Either[String, ((Seq[FeedItem], Long), Subscription)]] = {
-    whakaokoFeedReader.fetchFeedItems(feed)
   }
 
 }

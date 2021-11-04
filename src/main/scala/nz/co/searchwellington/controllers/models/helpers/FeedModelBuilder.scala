@@ -2,8 +2,8 @@ package nz.co.searchwellington.controllers.models.helpers
 
 import nz.co.searchwellington.ReasonableWaits
 import nz.co.searchwellington.controllers.models.GeotaggedNewsitemExtractor
-import nz.co.searchwellington.feeds.whakaoko.WhakaokoService
-import nz.co.searchwellington.feeds.{FeedItemActionDecorator, FeeditemToNewsitemService, RssfeedNewsitemService}
+import nz.co.searchwellington.feeds.whakaoko.{WhakaokoFeedReader, WhakaokoService}
+import nz.co.searchwellington.feeds.{FeedItemActionDecorator, FeeditemToNewsitemService}
 import nz.co.searchwellington.model.frontend.FrontendResource
 import nz.co.searchwellington.model.mappers.FrontendResourceMapper
 import nz.co.searchwellington.model.{Feed, User}
@@ -17,12 +17,13 @@ import javax.servlet.http.HttpServletRequest
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
-@Component class FeedModelBuilder @Autowired()(rssfeedNewsitemService: RssfeedNewsitemService,
-                                               val contentRetrievalService: ContentRetrievalService,
-                                               geotaggedNewsitemExtractor: GeotaggedNewsitemExtractor, feedNewsItemLocalCopyDecorator: FeedItemActionDecorator,
+@Component class FeedModelBuilder @Autowired()(val contentRetrievalService: ContentRetrievalService,
+                                               geotaggedNewsitemExtractor: GeotaggedNewsitemExtractor,
+                                               feedNewsItemLocalCopyDecorator: FeedItemActionDecorator,
                                                frontendResourceMapper: FrontendResourceMapper,
                                                commonAttributesModelBuilder: CommonAttributesModelBuilder,
                                                feeditemToNewsitemService: FeeditemToNewsitemService,
+                                               whakaokoFeedReader: WhakaokoFeedReader,
                                                whakaokoService: WhakaokoService) extends ModelBuilder with ReasonableWaits {
 
   private val log = Logger.getLogger(classOf[FeedModelBuilder])
@@ -46,7 +47,7 @@ import scala.concurrent.Future
     }
 
     def feedItemsFor(feed: Feed): Future[Either[String, (Seq[FrontendResource], Long)]] = {
-      rssfeedNewsitemService.getFeedItemsAndDetailsFor(feed).flatMap { feedItemsForFeed =>
+      whakaokoFeedReader.fetchFeedItems(feed).flatMap { feedItemsForFeed =>
         feedItemsForFeed.fold({ l =>
           Future.successful(Left(l))
         }, {

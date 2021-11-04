@@ -1,7 +1,8 @@
 package nz.co.searchwellington.controllers
 
 import nz.co.searchwellington.ReasonableWaits
-import nz.co.searchwellington.feeds.{FeedReaderUpdateService, RssfeedNewsitemService}
+import nz.co.searchwellington.feeds.FeedReaderUpdateService
+import nz.co.searchwellington.feeds.whakaoko.WhakaokoFeedReader
 import nz.co.searchwellington.repositories.mongo.MongoRepository
 import nz.co.searchwellington.urls.UrlBuilder
 import nz.co.searchwellington.views.Errors
@@ -18,7 +19,7 @@ import scala.concurrent.{Await, Future}
 @Controller
 class AcceptFeedItemController @Autowired()(mongoRepository: MongoRepository,
                                             urlBuilder: UrlBuilder,
-                                            rssfeedNewsitemService: RssfeedNewsitemService,
+                                            whakaokoFeedReader: WhakaokoFeedReader,
                                             feedReaderUpdateService: FeedReaderUpdateService,
                                             loggedInUserFilter: LoggedInUserFilter) extends ReasonableWaits with AcceptancePolicyOptions with Errors {
 
@@ -29,7 +30,7 @@ class AcceptFeedItemController @Autowired()(mongoRepository: MongoRepository,
     val eventualModelAndView = loggedInUserFilter.getLoggedInUser.map { loggedInUser =>
       mongoRepository.getFeedByUrlwords(feed).flatMap { fo =>
         fo.map { feed =>
-          val eventualFeedItem = rssfeedNewsitemService.getFeedItemsAndDetailsFor(feed).map { fis =>
+          val eventualFeedItem = whakaokoFeedReader.fetchFeedItems(feed).map { fis =>
             fis.fold({ l =>
               log.warn("Could not read feed items: " + l)
               None

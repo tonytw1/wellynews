@@ -1,12 +1,10 @@
 package nz.co.searchwellington.controllers.models.helpers
 
-import java.util.UUID
-
 import nz.co.searchwellington.ReasonableWaits
 import nz.co.searchwellington.controllers.models.GeotaggedNewsitemExtractor
-import nz.co.searchwellington.feeds.whakaoko.WhakaokoService
 import nz.co.searchwellington.feeds.whakaoko.model.{FeedItem, Subscription}
-import nz.co.searchwellington.feeds.{FeedItemActionDecorator, FeeditemToNewsitemService, RssfeedNewsitemService}
+import nz.co.searchwellington.feeds.whakaoko.{WhakaokoFeedReader, WhakaokoService}
+import nz.co.searchwellington.feeds.{FeedItemActionDecorator, FeeditemToNewsitemService}
 import nz.co.searchwellington.model.frontend.{FrontendFeed, FrontendNewsitem}
 import nz.co.searchwellington.model.mappers.FrontendResourceMapper
 import nz.co.searchwellington.model.{Feed, Geocode, Newsitem}
@@ -17,11 +15,12 @@ import org.mockito.Matchers
 import org.mockito.Mockito.{mock, when}
 import org.springframework.mock.web.MockHttpServletRequest
 
+import java.util.UUID
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.{Await, Future}
 
 class FeedModelBuilderTest extends ReasonableWaits with ContentFields {
-  private val rssfeedNewsitemService = mock(classOf[RssfeedNewsitemService])
+  private val whakaokoFeedReader = mock(classOf[WhakaokoFeedReader])
   private val contentRetrievalService = mock(classOf[ContentRetrievalService])
   private val geotaggedNewsitemExtractor = new GeotaggedNewsitemExtractor()
   private val feedItemActionDecorator = mock(classOf[FeedItemActionDecorator])
@@ -55,12 +54,13 @@ class FeedModelBuilderTest extends ReasonableWaits with ContentFields {
 
   var request: MockHttpServletRequest = null
 
-  val modelBuilder = new FeedModelBuilder(rssfeedNewsitemService, contentRetrievalService, geotaggedNewsitemExtractor,
-    feedItemActionDecorator, frontendResourceMapper, commonAttributesModelBuilder, feeditemToNewsitemService, whakaokoService)
+  val modelBuilder = new FeedModelBuilder(contentRetrievalService, geotaggedNewsitemExtractor,
+    feedItemActionDecorator, frontendResourceMapper, commonAttributesModelBuilder, feeditemToNewsitemService,
+    whakaokoFeedReader, whakaokoService)
 
   @Before
   def setUp {
-    when(rssfeedNewsitemService.getFeedItemsAndDetailsFor(feed)).thenReturn(Future.successful(Right(((feeditems, feeditems.size.toLong), subscription))))
+    when(whakaokoFeedReader.fetchFeedItems(feed)).thenReturn(Future.successful(Right(((feeditems, feeditems.size.toLong), subscription))))
 
     when(feeditemToNewsitemService.makeNewsitemFromFeedItem(feedItem, feed)).thenReturn(newsItem)
     when(feeditemToNewsitemService.makeNewsitemFromFeedItem(anotherFeedItem, feed)).thenReturn(anotherNewsitem)
@@ -94,7 +94,7 @@ class FeedModelBuilderTest extends ReasonableWaits with ContentFields {
   @Test
   def shouldPopulateMainContentWithFeedItemsDecoratedWithLocalCopySuppressionInformation {
     when(frontendResourceMapper.createFrontendResourceFrom(feed, None)).thenReturn(Future.successful(frontendFeed))
-    when(rssfeedNewsitemService.getFeedItemsAndDetailsFor(feed)).thenReturn(Future.successful(Right(((feeditems, feeditems.size.toLong), subscription))))
+    when(whakaokoFeedReader.fetchFeedItems(feed)).thenReturn(Future.successful(Right(((feeditems, feeditems.size.toLong), subscription))))
     when(whakaokoService.getWhakaokoSubscriptionFor(Matchers.any())(Matchers.any())).thenReturn(Future.successful(None))
 
     val mv = Await.result(modelBuilder.populateContentModel(request), TenSeconds).get
