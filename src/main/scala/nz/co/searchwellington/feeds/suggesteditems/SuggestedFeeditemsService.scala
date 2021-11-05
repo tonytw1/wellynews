@@ -33,58 +33,52 @@ import scala.concurrent.{ExecutionContext, Future}
    */
   def getSuggestionFeednewsitems(maxItems: Int, loggedInUser: Option[User])(implicit ec: ExecutionContext): Future[Seq[FrontendResource]] = {
 
-    val eventualSuggestedNewsitems = {
-      def paginateChannelFeedItems(page: Int = 1, output: Seq[Newsitem] = Seq.empty, feeds: Seq[Feed]): Future[Seq[Newsitem]] = {
-        log.info("Fetching filter page: " + page + "/" + output.size)
-        rssfeedNewsitemService.getChannelFeedItemsDecoratedWithFeeds(page, feeds).flatMap { channelFeedItems =>
-          log.info("Found " + channelFeedItems.size + " channel newsitems on page " + page)
+    def paginateChannelFeedItems(page: Int = 1, output: Seq[Newsitem] = Seq.empty, feeds: Seq[Feed]): Future[Seq[Newsitem]] = {
+      log.info("Fetching filter page: " + page + "/" + output.size)
+      rssfeedNewsitemService.getChannelFeedItemsDecoratedWithFeeds(page, feeds).flatMap { channelFeedItems =>
+        log.info("Found " + channelFeedItems.size + " channel newsitems on page " + page)
 
-          val suggestedChannelNewsitems = channelFeedItems.map(i => feeditemToNewsitemService.makeNewsitemFromFeedItem(i._1, i._2))
+        val suggestedChannelNewsitems = channelFeedItems.map(i => feeditemToNewsitemService.makeNewsitemFromFeedItem(i._1, i._2))
 
-          val eventuallyFiltered = suggestedChannelNewsitems.map { newsitem =>
-            val eventuallyLocalCopy = mongoRepository.getResourceByUrl(newsitem.page)
-            val eventuallyIsSuppressed = suppressionDAO.isSupressed(newsitem.page)
-            for {
-              localCopy <- eventuallyLocalCopy
-              isSuppressed <- eventuallyIsSuppressed
-            } yield {
-              if (localCopy.nonEmpty || isSuppressed) {
-                None
-              } else {
-                Some(newsitem)
-              }
-            }
-          }
-
-          Future.sequence(eventuallyFiltered).flatMap { filterResults =>
-            val suggestions = filterResults.flatten
-            log.info("Adding " + suggestions.size + " to " + output.size)
-            val result = output ++ suggestions
-            if (result.size >= maxItems || channelFeedItems.isEmpty || page == MaximumChannelPagesToScan) {
-              Future.successful(result.take(maxItems))
+        val eventuallyFiltered = suggestedChannelNewsitems.map { newsitem =>
+          val eventuallyLocalCopy = mongoRepository.getResourceByUrl(newsitem.page)
+          val eventuallyIsSuppressed = suppressionDAO.isSupressed(newsitem.page)
+          for {
+            localCopy <- eventuallyLocalCopy
+            isSuppressed <- eventuallyIsSuppressed
+          } yield {
+            if (localCopy.nonEmpty || isSuppressed) {
+              None
             } else {
-              paginateChannelFeedItems(page + 1, result, feeds)
+              Some(newsitem)
             }
           }
         }
-      }
 
-      for {
-        feeds <- mongoRepository.getAllFeeds()
-        suggestedFeeds = feeds.filter(feed => feed.acceptance == FeedAcceptancePolicy.SUGGEST)
-        suggestedFeedItems <- paginateChannelFeedItems(feeds = suggestedFeeds)
-      } yield {
-        suggestedFeedItems
+        Future.sequence(eventuallyFiltered).flatMap { filterResults =>
+          val suggestions = filterResults.flatten
+          log.info("Adding " + suggestions.size + " to " + output.size)
+          val result = output ++ suggestions
+          if (result.size >= maxItems || channelFeedItems.isEmpty || page == MaximumChannelPagesToScan) {
+            Future.successful(result.take(maxItems))
+          } else {
+            paginateChannelFeedItems(page + 1, result, feeds)
+          }
+        }
       }
     }
 
-    eventualSuggestedNewsitems.flatMap { suggestedNewsitems =>
-      val eventualFrontendSuggestions = suggestedNewsitems.map { r =>
-        frontendResourceMapper.mapFrontendResource(r, r.geocode)
+    val eventualFrontendResources = for {
+        feeds <- mongoRepository.getAllFeeds()
+        suggestedFeeds = feeds.filter(feed => feed.acceptance == FeedAcceptancePolicy.SUGGEST)
+        suggestedFeedItems <- paginateChannelFeedItems(feeds = suggestedFeeds)
+        eventualFrontendResources <- Future.sequence(suggestedFeedItems.map(r => frontendResourceMapper.mapFrontendResource(r, r.geocode)))
+      } yield {
+        eventualFrontendResources
       }
-      Future.sequence(eventualFrontendSuggestions).flatMap { frontendSuggestedNewsitems =>
-        feedItemActionDecorator.withFeedItemSpecificActions(frontendSuggestedNewsitems, loggedInUser)
-      }
+
+    eventualFrontendResources.flatMap { suggestedNewsitems =>
+      feedItemActionDecorator.withFeedItemSpecificActions(suggestedNewsitems, loggedInUser)
     }
   }
 
