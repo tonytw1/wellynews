@@ -1,6 +1,8 @@
 package nz.co.searchwellington.feeds.suggesteditems
 
 import nz.co.searchwellington.ReasonableWaits
+import nz.co.searchwellington.feeds.whakaoko.WhakaokoService
+import nz.co.searchwellington.feeds.whakaoko.model.FeedItem
 import nz.co.searchwellington.feeds.{FeedItemActionDecorator, FeeditemToNewsitemService}
 import nz.co.searchwellington.model.frontend.FrontendResource
 import nz.co.searchwellington.model.mappers.FrontendResourceMapper
@@ -13,11 +15,11 @@ import org.springframework.stereotype.Component
 
 import scala.concurrent.{ExecutionContext, Future}
 
-@Component class SuggestedFeeditemsService @Autowired()(rssfeedNewsitemService: RssfeedNewsitemService,
-                                                        feedItemActionDecorator: FeedItemActionDecorator,
+@Component class SuggestedFeeditemsService @Autowired()(feedItemActionDecorator: FeedItemActionDecorator,
                                                         feeditemToNewsitemService: FeeditemToNewsitemService,
                                                         frontendResourceMapper: FrontendResourceMapper,
                                                         mongoRepository: MongoRepository,
+                                                        whakaokoService: WhakaokoService,
                                                         suppressionDAO: SuppressionDAO) extends
   ReasonableWaits {
 
@@ -33,7 +35,7 @@ import scala.concurrent.{ExecutionContext, Future}
 
     def paginateChannelFeedItems(page: Int = 1, output: Seq[Newsitem] = Seq.empty, feeds: Seq[Feed]): Future[Seq[Newsitem]] = {
       log.info("Fetching filter page: " + page + "/" + output.size)
-      rssfeedNewsitemService.getChannelFeedItemsDecoratedWithFeeds(page, feeds).flatMap { channelFeedItems =>
+      getChannelFeedItemsDecoratedWithFeeds(page, feeds).flatMap { channelFeedItems =>
         log.info("Found " + channelFeedItems.size + " channel newsitems on page " + page)
 
         val suggestedChannelNewsitems = channelFeedItems.map(i => feeditemToNewsitemService.makeNewsitemFromFeedItem(i._1, i._2))
@@ -74,6 +76,23 @@ import scala.concurrent.{ExecutionContext, Future}
       withActions <- feedItemActionDecorator.withFeedItemSpecificActions(frontendResources, loggedInUser)
     } yield {
       withActions
+    }
+  }
+
+  // Appears to be enhancing the getChannelFeedItems call by decorating the feed items with the feed
+  private def getChannelFeedItemsDecoratedWithFeeds(page: Int, feeds: Seq[Feed])(implicit ec: ExecutionContext): Future[Seq[(FeedItem, Feed)]] = {
+    def decorateFeedItemsWithFeeds(feedItems: Seq[FeedItem], feeds: Seq[Feed]): Seq[(FeedItem, Feed)] = {
+      feedItems.flatMap { fi =>
+        val maybeFeed = feeds.find(_.whakaokoSubscription.contains(fi.subscriptionId)) // TODO use a map
+        maybeFeed.map { feed =>
+          (fi, feed)
+        }
+      }
+    }
+    for {
+      channelFeedItems <- whakaokoService.getChannelFeedItems(page, Some(feeds.flatMap(_.whakaokoSubscription)))
+    } yield {
+      decorateFeedItemsWithFeeds(channelFeedItems, feeds)
     }
   }
 

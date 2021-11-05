@@ -1,10 +1,6 @@
 package nz.co.searchwellington.controllers
 
-import java.util.UUID
 import com.google.common.base.Strings
-import nz.co.searchwellington.feeds.suggesteditems.RssfeedNewsitemService
-
-import javax.servlet.http.{HttpServletRequest, HttpServletResponse}
 import nz.co.searchwellington.feeds.whakaoko.WhakaokoService
 import nz.co.searchwellington.feeds.{FeedItemAcceptor, FeeditemToNewsitemService}
 import nz.co.searchwellington.filters.AdminRequestFilter
@@ -23,10 +19,12 @@ import org.springframework.web.bind.annotation.{RequestMapping, RequestMethod}
 import org.springframework.web.servlet.ModelAndView
 import org.springframework.web.servlet.view.RedirectView
 
+import java.util.UUID
+import javax.servlet.http.{HttpServletRequest, HttpServletResponse}
 import scala.concurrent.Await
 import scala.concurrent.ExecutionContext.Implicits.global
 
-@Controller class ResourceEditController @Autowired()(rssfeedNewsitemService: RssfeedNewsitemService, adminRequestFilter: AdminRequestFilter,
+@Controller class ResourceEditController @Autowired()(adminRequestFilter: AdminRequestFilter,
                                                       autoTagger: AutoTaggingService,
                                                       val loggedInUserFilter: LoggedInUserFilter, editPermissionService: EditPermissionService, urlStack: UrlStack,
                                                       submissionProcessingService: SubmissionProcessingService, contentUpdateService: ContentUpdateService,
