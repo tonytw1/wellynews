@@ -33,13 +33,8 @@ import scala.concurrent.{ExecutionContext, Future}
    */
   def getSuggestionFeednewsitems(maxItems: Int, loggedInUser: Option[User])(implicit ec: ExecutionContext): Future[Seq[FrontendResource]] = {
 
-    val eventualSuggestedFeeds = mongoRepository.getAllFeeds().map { fs: Seq[Feed] =>
-      fs.filter(feed => feed.acceptance == FeedAcceptancePolicy.SUGGEST)
-    }
-
-    val eventualSuggestedNewsitems = eventualSuggestedFeeds.flatMap { feeds =>
-
-      def paginateChannelFeedItems(page: Int = 1, output: Seq[Newsitem] = Seq.empty): Future[Seq[Newsitem]] = {
+    val eventualSuggestedNewsitems = {
+      def paginateChannelFeedItems(page: Int = 1, output: Seq[Newsitem] = Seq.empty, feeds: Seq[Feed]): Future[Seq[Newsitem]] = {
         log.info("Fetching filter page: " + page + "/" + output.size)
         rssfeedNewsitemService.getChannelFeedItemsDecoratedWithFeeds(page, feeds).flatMap { channelFeedItems =>
           log.info("Found " + channelFeedItems.size + " channel newsitems on page " + page)
@@ -68,13 +63,19 @@ import scala.concurrent.{ExecutionContext, Future}
             if (result.size >= maxItems || channelFeedItems.isEmpty || page == MaximumChannelPagesToScan) {
               Future.successful(result.take(maxItems))
             } else {
-              paginateChannelFeedItems(page + 1, result)
+              paginateChannelFeedItems(page + 1, result, feeds)
             }
           }
         }
       }
 
-      paginateChannelFeedItems(1)
+      for {
+        feeds <- mongoRepository.getAllFeeds()
+        suggestedFeeds = feeds.filter(feed => feed.acceptance == FeedAcceptancePolicy.SUGGEST)
+        suggestedFeedItems <- paginateChannelFeedItems(feeds = suggestedFeeds)
+      } yield {
+        suggestedFeedItems
+      }
     }
 
     eventualSuggestedNewsitems.flatMap { suggestedNewsitems =>
