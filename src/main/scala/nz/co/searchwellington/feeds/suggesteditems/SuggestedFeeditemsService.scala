@@ -82,13 +82,19 @@ import scala.concurrent.{ExecutionContext, Future}
   // Appears to be enhancing the getChannelFeedItems call by decorating the feed items with the feed
   private def getChannelFeedItemsDecoratedWithFeeds(page: Int, feeds: Seq[Feed])(implicit ec: ExecutionContext): Future[Seq[(FeedItem, Feed)]] = {
     def decorateFeedItemsWithFeeds(feedItems: Seq[FeedItem], feeds: Seq[Feed]): Seq[(FeedItem, Feed)] = {
+      val subscriptionsToFeeds = feeds.flatMap { feed =>
+        feed.whakaokoSubscription.map { subscriptionId =>
+          (subscriptionId, feed)
+        }
+      }.toMap
+
       feedItems.flatMap { fi =>
-        val maybeFeed = feeds.find(_.whakaokoSubscription.contains(fi.subscriptionId)) // TODO use a map
-        maybeFeed.map { feed =>
+        subscriptionsToFeeds.get(fi.subscriptionId).map { feed =>
           (fi, feed)
         }
       }
     }
+
     for {
       channelFeedItems <- whakaokoService.getChannelFeedItems(page, Some(feeds.flatMap(_.whakaokoSubscription)))
     } yield {
