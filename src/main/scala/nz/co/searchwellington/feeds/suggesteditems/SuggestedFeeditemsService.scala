@@ -29,7 +29,9 @@ import scala.concurrent.{ExecutionContext, Future}
 
   /*
     Return a list of suggested feed newsitems which an editor may wish to accept after reviewing them.
-    Items which have suppressed URLs should be excluded.
+    These are the latest contents of feeds with SUGGESTED acceptances policy.
+    Items which have already been accepted or have suppressed URLs should be excluded.
+    This means we might need to paginate to fill our requested items count.
    */
   def getSuggestionFeednewsitems(maxItems: Int, loggedInUser: Option[User])(implicit ec: ExecutionContext): Future[Seq[FrontendResource]] = {
 
