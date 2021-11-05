@@ -1,10 +1,9 @@
 package nz.co.searchwellington.controllers.models.helpers
 
-import java.util.UUID
 import nz.co.searchwellington.ReasonableWaits
 import nz.co.searchwellington.feeds.suggesteditems.SuggestedFeeditemsService
-import nz.co.searchwellington.model.{DiscoveredFeed, FeedAcceptancePolicy}
 import nz.co.searchwellington.model.frontend.{FrontendFeed, FrontendNewsitem}
+import nz.co.searchwellington.model.{DiscoveredFeed, DiscoveredFeedOccurrence}
 import nz.co.searchwellington.repositories.ContentRetrievalService
 import nz.co.searchwellington.urls.UrlBuilder
 import org.joda.time.DateTime
@@ -14,6 +13,7 @@ import org.mockito.Mockito.{mock, when}
 import org.springframework.mock.web.MockHttpServletRequest
 import org.springframework.web.servlet.ModelAndView
 
+import java.util.UUID
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.{Await, Future}
 
@@ -54,14 +54,18 @@ class FeedsModelBuilderTest extends ReasonableWaits with ContentFields {
   def shouldPopulateSecondaryContent = {
     val suggestedFeeditems = Seq(FrontendNewsitem(id = UUID.randomUUID().toString))
     when(suggestedFeeditemsService.getSuggestionFeednewsitems(6, None)).thenReturn(Future.successful(suggestedFeeditems))
-    val discoveredFeeditems = Seq(DiscoveredFeed(url = "http://something", referencedFrom = "http://somewhere", seen = DateTime.now.toDate))
+    val discoveredFeeditems = Seq(
+      DiscoveredFeed(
+        url = "http://something",
+        occurrences = Seq(DiscoveredFeedOccurrence(referencedFrom = "http://somewhere", seen = DateTime.now.toDate)),
+        firstSeen = DateTime.now.toDate
+      )
+    )
     when(contentRetrievalService.getDiscoveredFeeds).thenReturn(Future.successful(discoveredFeeditems))
     when(contentRetrievalService.getAllFeedsOrderedByLatestItemDate(loggedInUser)).thenReturn(Future.successful(Seq.empty))
     val mv = new ModelAndView()
 
     Await.result(modelBuilder.populateExtraModelContent(request, mv, None), TenSeconds)
-
-    import scala.collection.JavaConverters._
     //assertEquals(suggestedFeeditems.asJava, mv.getModel.get("suggestions"))
     //assertEquals(discoveredFeeditems.asJava, mv.getModel.get("discovered_feeds"))
   }

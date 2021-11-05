@@ -43,7 +43,7 @@ class FeedAutodiscoveryProcesserTest extends ReasonableWaits {
     when(rssLinkExtractor.extractFeedLinks(pageContent)).thenReturn(Seq(UNSEEN_FEED_URL))
 
     when(commentFeedDetector.isCommentFeedUrl(UNSEEN_FEED_URL)).thenReturn(false)
-    when(mongoRepository.getDiscoveredFeedByUrlAndReference(UNSEEN_FEED_URL, resource.page)).thenReturn(Future.successful(None))
+    when(mongoRepository.getDiscoveredFeedByUrl(UNSEEN_FEED_URL)).thenReturn(Future.successful(None))
     when(mongoRepository.getFeedByUrl(UNSEEN_FEED_URL)).thenReturn(Future.successful(None))
     when(mongoRepository.saveDiscoveredFeed(Matchers.any(classOf[DiscoveredFeed]))(Matchers.eq(ec))).thenReturn(Future.successful(successfulWrite))
 
@@ -54,7 +54,7 @@ class FeedAutodiscoveryProcesserTest extends ReasonableWaits {
 
     verify(mongoRepository).saveDiscoveredFeed(saved.capture())(Matchers.eq(ec))
     assertEquals(UNSEEN_FEED_URL, saved.getValue.url)
-    assertEquals(resource.page, saved.getValue.referencedFrom)
+    assertEquals(resource.page, saved.getValue.occurrences.head.referencedFrom)
   }
 
   @Test
@@ -64,7 +64,7 @@ class FeedAutodiscoveryProcesserTest extends ReasonableWaits {
     when(rssLinkExtractor.extractFeedLinks(pageContent)).thenReturn(Seq(RELATIVE_FEED_URL))
 
     when(commentFeedDetector.isCommentFeedUrl("https://localhost/feed.xml")).thenReturn(false)
-    when(mongoRepository.getDiscoveredFeedByUrlAndReference("https://localhost/feed.xml", resource.page)).thenReturn(Future.successful(None))
+    when(mongoRepository.getDiscoveredFeedByUrl("https://localhost/feed.xml")).thenReturn(Future.successful(None))
     when(mongoRepository.getFeedByUrl("https://localhost/feed.xml")).thenReturn(Future.successful(None))
     when(mongoRepository.saveDiscoveredFeed(Matchers.any(classOf[DiscoveredFeed]))(Matchers.eq(ec))).thenReturn(Future.successful(successfulWrite))
 
@@ -83,7 +83,7 @@ class FeedAutodiscoveryProcesserTest extends ReasonableWaits {
     val autoDiscoveredLinks = Seq(EXISTING_FEED_URL)
     when(rssLinkExtractor.extractFeedLinks(pageContent)).thenReturn(autoDiscoveredLinks)
     when(commentFeedDetector.isCommentFeedUrl(EXISTING_FEED_URL)).thenReturn(false)
-    when(mongoRepository.getDiscoveredFeedByUrlAndReference(EXISTING_FEED_URL, resource.page)).thenReturn(Future.successful(None))
+    when(mongoRepository.getDiscoveredFeedByUrl(EXISTING_FEED_URL)).thenReturn(Future.successful(None))
     when(mongoRepository.getFeedByUrl(EXISTING_FEED_URL)).thenReturn(Future.successful(Some(mock(classOf[Feed]))))
 
     Await.result(feedAutodiscoveryProcesser.process(resource, Some(pageContent), DateTime.now), TenSeconds)

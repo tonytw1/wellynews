@@ -124,6 +124,7 @@ class MongoRepository @Autowired()(@Value("${mongo.uri}") mongoUri: String) exte
 
   implicit def websiteReader: BSONDocumentReader[Website] = Macros.reader[Website]
 
+  implicit def discoveredFeedOccurenceReader: BSONDocumentReader[DiscoveredFeedOccurrence] = Macros.reader[DiscoveredFeedOccurrence]
   implicit def discoveredFeedReader: BSONDocumentReader[DiscoveredFeed] = Macros.reader[DiscoveredFeed]
 
   def getResourceById(id: String)(implicit ec: ExecutionContext): Future[Option[Resource]] = {
@@ -159,6 +160,7 @@ class MongoRepository @Autowired()(@Value("${mongo.uri}") mongoUri: String) exte
 
   implicit def websiteWriter: BSONDocumentWriter[Website] = Macros.writer[Website]
 
+  implicit def discoveredFeedOccurrenceWriter: BSONDocumentWriter[DiscoveredFeedOccurrence] = Macros.writer[DiscoveredFeedOccurrence]
   implicit def discoveredFeedWriter: BSONDocumentWriter[DiscoveredFeed] = Macros.writer[DiscoveredFeed]
 
   def saveResource(resource: Resource)(implicit ec: ExecutionContext): Future[WriteResult] = {
@@ -363,8 +365,8 @@ class MongoRepository @Autowired()(@Value("${mongo.uri}") mongoUri: String) exte
       collect[List](maxDocs = AllDocuments, err = Cursor.FailOnError[List[DiscoveredFeed]]())
   }
 
-  def getDiscoveredFeedByUrlAndReference(url: String, referencedFrom: String)(implicit ec: ExecutionContext): Future[Option[DiscoveredFeed]] = {
-    val selector = BSONDocument("url" -> url, "referencedFrom" -> referencedFrom)
+  def getDiscoveredFeedByUrl(url: String)(implicit ec: ExecutionContext): Future[Option[DiscoveredFeed]] = {
+    val selector = BSONDocument("url" -> url)
     discoveredFeedCollection.find(selector, noProjection).one[DiscoveredFeed]
   }
 

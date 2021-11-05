@@ -1,11 +1,10 @@
 package nz.co.searchwellington.linkchecking
 
 import java.net.{MalformedURLException, URL}
-
 import nz.co.searchwellington.ReasonableWaits
 import nz.co.searchwellington.commentfeeds.CommentFeedDetectorService
 import nz.co.searchwellington.htmlparsing.RssLinkExtractor
-import nz.co.searchwellington.model.{DiscoveredFeed, Resource}
+import nz.co.searchwellington.model.{DiscoveredFeed, DiscoveredFeedOccurrence, Resource}
 import nz.co.searchwellington.repositories.mongo.MongoRepository
 import org.apache.log4j.Logger
 import org.joda.time.DateTime
@@ -83,13 +82,18 @@ import scala.concurrent.{ExecutionContext, Future}
   private def isFullQualified(discoveredUrl: String): Boolean = discoveredUrl.startsWith("http://") || discoveredUrl.startsWith("https://")
 
   private def recordDiscoveredFeedUrl(checkResource: Resource, discoveredFeedUrl: String, seen: DateTime)(implicit ec: ExecutionContext): Future[Boolean] = {
-    val eventualMaybeExistingDiscoveredFeed = mongoRepository.getDiscoveredFeedByUrlAndReference(discoveredFeedUrl, checkResource.page)
-    eventualMaybeExistingDiscoveredFeed.flatMap { maybeExistingDiscoveredFeed =>
-      if (maybeExistingDiscoveredFeed.isEmpty) {
-        mongoRepository.saveDiscoveredFeed(DiscoveredFeed(url = discoveredFeedUrl, referencedFrom = checkResource.page, seen = seen.toDate)).map(_.writeErrors.isEmpty)
-      } else {
-        Future.successful(false)
+    val occurrence = DiscoveredFeedOccurrence(referencedFrom = checkResource.page, seen = DateTime.now.toDate)
+    val discoveredFeedWithNewOccurrence = mongoRepository.getDiscoveredFeedByUrl(discoveredFeedUrl).map { maybeExisting =>
+      maybeExisting.map { existing =>
+        val occurrences = existing.occurrences :+ occurrence // TODO check insert speed
+        existing.copy(occurrences = occurrences)
+      }.getOrElse{
+        DiscoveredFeed(url = discoveredFeedUrl, occurrences = Seq(occurrence), firstSeen = occurrence.seen)
       }
+    }
+
+    discoveredFeedWithNewOccurrence.flatMap { y =>
+      mongoRepository.saveDiscoveredFeed(y).map{_.writeErrors.isEmpty}
     }
   }
 
