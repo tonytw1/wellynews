@@ -82,12 +82,12 @@ import scala.concurrent.{ExecutionContext, Future}
   private def isFullQualified(discoveredUrl: String): Boolean = discoveredUrl.startsWith("http://") || discoveredUrl.startsWith("https://")
 
   private def recordDiscoveredFeedUrl(checkResource: Resource, discoveredFeedUrl: String, seen: DateTime)(implicit ec: ExecutionContext): Future[Boolean] = {
-    val occurrence = DiscoveredFeedOccurrence(referencedFrom = checkResource.page, seen = DateTime.now.toDate)
+    val occurrence = DiscoveredFeedOccurrence(referencedFrom = checkResource.page, seen = seen.toDate)
     val discoveredFeedWithNewOccurrence = mongoRepository.getDiscoveredFeedByUrl(discoveredFeedUrl).map { maybeExisting =>
       maybeExisting.map { existing =>
         val existingOccurrences = existing.occurrences
         val occurrences = if (!existingOccurrences.exists(_.referencedFrom == checkResource.page)) {
-          existingOccurrences :+ occurrence // TODO check insert ordering
+          existingOccurrences :+ occurrence
         } else {
           existingOccurrences
         }
