@@ -184,6 +184,11 @@ class MongoRepository @Autowired()(@Value("${mongo.uri}") mongoUri: String) exte
     suppressionCollection.delete.one(byUrl)
   }
 
+  def deleteDiscoveredFeed(url: String)(implicit ec: ExecutionContext): Future[WriteResult] = {
+    val byUrl = BSONDocument("url" -> url)
+    discoveredFeedCollection.delete.one(byUrl)
+  }
+
   def removeResource(resource: Resource)(implicit ec: ExecutionContext): Future[WriteResult] = {
     val byId = BSONDocument("_id" -> resource._id)
     resourceCollection.delete.one(byId)
