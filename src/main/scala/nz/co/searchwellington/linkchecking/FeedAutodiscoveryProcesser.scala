@@ -85,7 +85,12 @@ import scala.concurrent.{ExecutionContext, Future}
     val occurrence = DiscoveredFeedOccurrence(referencedFrom = checkResource.page, seen = DateTime.now.toDate)
     val discoveredFeedWithNewOccurrence = mongoRepository.getDiscoveredFeedByUrl(discoveredFeedUrl).map { maybeExisting =>
       maybeExisting.map { existing =>
-        val occurrences = existing.occurrences :+ occurrence // TODO check insert speed
+        val existingOccurrences = existing.occurrences
+        val occurrences = if (!existingOccurrences.exists(_.referencedFrom == checkResource.page)) {
+          existingOccurrences :+ occurrence // TODO check insert ordering
+        } else {
+          existingOccurrences
+        }
         existing.copy(occurrences = occurrences)
       }.getOrElse{
         DiscoveredFeed(url = discoveredFeedUrl, occurrences = Seq(occurrence), firstSeen = occurrence.seen)
