@@ -100,7 +100,7 @@ import scala.concurrent.{ExecutionContext, Future}
     for {
       channelFeedItems <- whakaokoService.getChannelFeedItems(page, Some(feeds.flatMap(_.whakaokoSubscription)))
     } yield {
-      decorateFeedItemsWithFeeds(channelFeedItems, feeds)
+      decorateFeedItemsWithFeeds(channelFeedItems.getOrElse(Seq.empty), feeds)
     }
   }
 

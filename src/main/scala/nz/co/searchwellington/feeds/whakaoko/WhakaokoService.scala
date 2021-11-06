@@ -14,6 +14,7 @@ import scala.concurrent.{ExecutionContext, Future}
    It allows us to subscribe to an RSS feed URL and get the feed items back in JSON format.
    Multiple RSS feed subscriptions can be aggregated into a channel.
    This package handles the interactions with Whakaoko.
+   This class seems to exist solely to wrap the client calls with Eithers
   */
 
   private val log = Logger.getLogger(classOf[WhakaokoService])
@@ -39,7 +40,13 @@ import scala.concurrent.{ExecutionContext, Future}
     }
   }
 
-  def getChannelFeedItems(page: Int, subscriptions: Option[Seq[String]])(implicit ec: ExecutionContext): Future[Seq[FeedItem]] = client.getChannelFeedItems(page, subscriptions)
+  def getChannelFeedItems(page: Int, subscriptions: Option[Seq[String]])(implicit ec: ExecutionContext): Future[Either[String, Seq[FeedItem]]] = {
+    client.getChannelFeedItems(page, subscriptions).map { r =>
+      Right(r)
+    }.recover{
+      case e: Throwable =>Left(s"Failed to fetch channel feed items: ${e.getLocalizedMessage}")
+    }
+  }
 
   def updateSubscriptionName(subscriptionId: String, title: String)(implicit ec: ExecutionContext): Future[Unit] = {
       client.updateSubscriptionName(subscriptionId, title)
