@@ -99,6 +99,9 @@ class NewFeedController @Autowired()(contentUpdateService: ContentUpdateService,
 
           val created = Await.result(eventuallyCreated, TenSeconds)
           log.info("Created feed: " + created)
+
+          // TODO we can delete any discovered feed records for this feed
+
           setSignedInUser(request, submittingUser)
           new ModelAndView(new RedirectView(urlBuilder.getFeedUrl(withSubmittingUser)))
 
