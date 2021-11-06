@@ -321,8 +321,8 @@ import scala.concurrent.Future
     elasticSearchIndexer.getResources(publisherTagCombiner, loggedInUser = loggedInUser).flatMap(i => fetchByIds(i._1, loggedInUser))
   }
 
-  def getDiscoveredFeeds: Future[Seq[DiscoveredFeed]] = {
-    mongoRepository.getAllDiscoveredFeeds()
+  def getDiscoveredFeeds(maxNumber: Int): Future[Seq[DiscoveredFeed]] = {
+    mongoRepository.getDiscoveredFeeds(maxNumber)
   }
 
   def getTagNamesStartingWith(q: String, loggedInUser: Option[User]): Future[Seq[String]] = tagDAO.getTagNamesStartingWith(q)

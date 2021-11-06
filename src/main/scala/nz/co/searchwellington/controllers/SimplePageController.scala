@@ -1,7 +1,7 @@
 package nz.co.searchwellington.controllers
 
 import nz.co.searchwellington.ReasonableWaits
-import nz.co.searchwellington.controllers.models.helpers.{CommonAttributesModelBuilder, DiscoveredFeeds}
+import nz.co.searchwellington.controllers.models.helpers.CommonAttributesModelBuilder
 import nz.co.searchwellington.model.SiteInformation
 import nz.co.searchwellington.repositories.ContentRetrievalService
 import nz.co.searchwellington.repositories.mongo.MongoRepository
@@ -23,7 +23,7 @@ import scala.concurrent.ExecutionContext.Implicits.global
                                                      loggedInUserFilter: LoggedInUserFilter,
                                                      rssUrlBuilder: RssUrlBuilder,
                                                      commonAttributesModelBuilder: CommonAttributesModelBuilder)
-  extends ReasonableWaits with CommonModelObjectsService with DiscoveredFeeds {
+  extends ReasonableWaits with CommonModelObjectsService {
 
   @RequestMapping(value = Array("/about"), method = Array(RequestMethod.GET)) def about(request: HttpServletRequest): ModelAndView = {
     urlStack.setUrlStack(request)
@@ -80,9 +80,7 @@ import scala.concurrent.ExecutionContext.Implicits.global
   def discovered(request: HttpServletRequest): ModelAndView = {
     urlStack.setUrlStack(request)
 
-    val discoveredFeedOccurrences = Await.result(mongoRepository.getAllDiscoveredFeeds, TenSeconds)
-
-    val discoveredFeeds = filterDiscoveredFeeds(discoveredFeedOccurrences)
+    val discoveredFeeds = Await.result(mongoRepository.getDiscoveredFeeds(1000), TenSeconds)
 
     import scala.collection.JavaConverters._
     Await.result(withCommonLocal(new ModelAndView("discoveredFeeds").

@@ -19,7 +19,7 @@ import scala.concurrent.Future
                                                 suggestedFeeditemsService: SuggestedFeeditemsService,
                                                 urlBuilder: UrlBuilder,
                                                 commonAttributesModelBuilder: CommonAttributesModelBuilder) extends ModelBuilder
-  with ReasonableWaits with DiscoveredFeeds {
+  with ReasonableWaits {
 
   private val log = Logger.getLogger(classOf[FeedsModelBuilder])
 
@@ -55,7 +55,7 @@ import scala.concurrent.Future
     }
     val eventualDiscoveredFeedOccurrences = {
       if (loggedInUser.exists(_.isAdmin)) {
-        contentRetrievalService.getDiscoveredFeeds  // TODO queries for all
+        contentRetrievalService.getDiscoveredFeeds(maxDiscoveredFeedsToShow)
       } else {
         Future.successful(Seq.empty)
       }
@@ -70,11 +70,9 @@ import scala.concurrent.Future
     } yield {
       import scala.collection.JavaConverters._
       mv.addObject("suggestions", suggestedFeednewsitems.asJava)
-      val discoveredFeeds = filterDiscoveredFeeds(discoveredFeedOccurrences)
-      mv.addObject("discovered_feeds", discoveredFeeds.take(maxDiscoveredFeedsToShow).asJava)
-      if (discoveredFeeds.length > maxDiscoveredFeedsToShow) {
-        mv.addObject("discovered_feeds_moreurl", urlBuilder.getDiscoveredFeeds())
-      }
+      mv.addObject("discovered_feeds", discoveredFeedOccurrences.asJava)
+      // TODO make conditional
+      mv.addObject("discovered_feeds_moreurl", urlBuilder.getDiscoveredFeeds())
       commonAttributesModelBuilder.withSecondaryFeeds(mv, currentFeeds)
     }
   }

@@ -20,7 +20,14 @@ Sometimes, something interesting washes up here.</p>
     #foreach($discovered_feed in $discovered_feeds)
         <li class="content_item">
             <ul class="main_content_item">
-                <li>$discovered_feed</li>
+                <li>    $discovered_feed.url - $discovered_feed.firstSeen
+                        <ul>
+                            #foreach($occurrence in $discovered_feed.occurrences)
+                                <li>$occurrence.referencedFrom</li>
+                            #end
+                        </ul>
+
+                </li>
             </ul>
         </li>
     #end

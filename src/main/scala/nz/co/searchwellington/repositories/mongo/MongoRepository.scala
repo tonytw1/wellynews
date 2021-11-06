@@ -358,11 +358,11 @@ class MongoRepository @Autowired()(@Value("${mongo.uri}") mongoUri: String) exte
     }
   }
 
-  def getAllDiscoveredFeeds()(implicit ec: ExecutionContext): Future[Seq[DiscoveredFeed]] = {
+  def getDiscoveredFeeds(maxNumber: Int)(implicit ec: ExecutionContext): Future[Seq[DiscoveredFeed]] = {
     discoveredFeedCollection.find(BSONDocument.empty, noProjection).
-      sort(BSONDocument("seen" -> -1)).
+      sort(BSONDocument("firstSeen" -> -1)).
       cursor[DiscoveredFeed]().
-      collect[List](maxDocs = AllDocuments, err = Cursor.FailOnError[List[DiscoveredFeed]]())
+      collect[List](maxDocs = maxNumber, err = Cursor.FailOnError[List[DiscoveredFeed]]())  // TODO return total count
   }
 
   def getDiscoveredFeedByUrl(url: String)(implicit ec: ExecutionContext): Future[Option[DiscoveredFeed]] = {

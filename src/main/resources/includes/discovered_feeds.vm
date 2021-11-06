@@ -11,9 +11,7 @@
 #foreach($discovered_feed in $discovered_feeds)
     <li>
         <ul>
-            <li>$discovered_feed.url</li>
-            <li>Found on $discovered_feed.referencedFrom</li>
-            <li>Seen $discovered_feed.seen</li>
+            <li>$discovered_feed</li>
         </ul>
     </li>
 #end
