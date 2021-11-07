@@ -11,13 +11,13 @@
 #foreach($discovered_feed in $discovered_feeds)
     <li>
         <ul>
-            <li>$discovered_feed</li>
+            #parse("includes/discovered_feed.vm")
         </ul>
     </li>
 #end
 
 #if ($discovered_feeds_moreurl) 
-		<li class="more"><a href="$siteInformation.url/$discovered_feeds_moreurl">More...</a></li>
+    <li class="more"><a href="$siteInformation.url/$discovered_feeds_moreurl">More...</a></li>
 #end
 
 </ul>

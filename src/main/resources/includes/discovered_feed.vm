@@ -1,0 +1,8 @@
+<li>
+    <p>$discovered_feed.url - $discovered_feed.firstSeen</p>
+    <ul>
+        #foreach($occurrence in $discovered_feed.occurrences)
+            <li>$occurrence.referencedFrom</li>
+        #end
+    </ul>
+</li>
