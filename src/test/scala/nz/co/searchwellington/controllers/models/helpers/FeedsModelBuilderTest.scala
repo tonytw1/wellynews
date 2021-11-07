@@ -3,7 +3,7 @@ package nz.co.searchwellington.controllers.models.helpers
 import nz.co.searchwellington.ReasonableWaits
 import nz.co.searchwellington.feeds.suggesteditems.SuggestedFeeditemsService
 import nz.co.searchwellington.model.frontend.{FrontendFeed, FrontendNewsitem}
-import nz.co.searchwellington.model.{DiscoveredFeed, DiscoveredFeedOccurrence}
+import nz.co.searchwellington.model.{DiscoveredFeed, DiscoveredFeedOccurrence, User}
 import nz.co.searchwellington.repositories.ContentRetrievalService
 import nz.co.searchwellington.urls.UrlBuilder
 import org.joda.time.DateTime
@@ -14,6 +14,7 @@ import org.springframework.mock.web.MockHttpServletRequest
 import org.springframework.web.servlet.ModelAndView
 
 import java.util.UUID
+import scala.collection.JavaConverters._
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.{Await, Future}
 
@@ -24,6 +25,7 @@ class FeedsModelBuilderTest extends ReasonableWaits with ContentFields {
   private val urlBuilder = mock(classOf[UrlBuilder])
 
   private val loggedInUser = None
+  private val adminUser = User(admin = true)
 
   var request = new MockHttpServletRequest
 
@@ -50,11 +52,12 @@ class FeedsModelBuilderTest extends ReasonableWaits with ContentFields {
     assertEquals(feeds.asJava, mv.getModel.get(MAIN_CONTENT))
   }
 
-  /*  TODO restore
   @Test
   def shouldPopulateSecondaryContent = {
     val suggestedFeeditems = Seq(FrontendNewsitem(id = UUID.randomUUID().toString))
-    when(suggestedFeeditemsService.getSuggestionFeednewsitems(6, None)).thenReturn(Future.successful(suggestedFeeditems))
+    when(suggestedFeeditemsService.getSuggestionFeednewsitems(6, Some(adminUser))).thenReturn(Future.successful(suggestedFeeditems))
+    val currentFeeds = Seq(FrontendFeed(id = UUID.randomUUID().toString))
+    when(contentRetrievalService.getAllFeedsOrderedByLatestItemDate(Some(adminUser))).thenReturn(Future.successful(currentFeeds))
     val discoveredFeeditems = Seq(
       DiscoveredFeed(
         url = "http://something",
@@ -62,14 +65,15 @@ class FeedsModelBuilderTest extends ReasonableWaits with ContentFields {
         firstSeen = DateTime.now.toDate
       )
     )
-    when(contentRetrievalService.getDiscoveredFeeds).thenReturn(Future.successful(discoveredFeeditems))
+    when(contentRetrievalService.getDiscoveredFeeds(10)).thenReturn(Future.successful(discoveredFeeditems))
     when(contentRetrievalService.getAllFeedsOrderedByLatestItemDate(loggedInUser)).thenReturn(Future.successful(Seq.empty))
     val mv = new ModelAndView()
 
-    Await.result(modelBuilder.populateExtraModelContent(request, mv, None), TenSeconds)
-    //assertEquals(suggestedFeeditems.asJava, mv.getModel.get("suggestions"))
-    //assertEquals(discoveredFeeditems.asJava, mv.getModel.get("discovered_feeds"))
+    Await.result(modelBuilder.populateExtraModelContent(request, mv, Some(adminUser)), TenSeconds)
+
+    assertEquals(suggestedFeeditems.asJava, mv.getModel.get("suggestions"))
+    assertEquals(currentFeeds.asJava, mv.getModel.get("righthand_content"))
+    assertEquals(discoveredFeeditems.asJava, mv.getModel.get("discovered_feeds"))
   }
-  */
 
 }
