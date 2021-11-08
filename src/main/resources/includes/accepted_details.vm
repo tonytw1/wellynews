@@ -2,6 +2,6 @@
     Accepted from <a href="$urlBuilder.getFeedUrlFromFeedName($item.acceptedFromFeedName)">$item.acceptedFromFeedName</a>
     <time datetime="$dateFormatter.w3cDateTime($item.accepted)">$dateFormatter.timeSince($item.accepted)</time>
 #else
-    Accepted from <time datetime="$dateFormatter.w3cDateTime($item.accepted)">$dateFormatter.timeSince($item.accepted)</time>
+    Accepted <time datetime="$dateFormatter.w3cDateTime($item.accepted)">$dateFormatter.timeSince($item.accepted)</time>
 #end
 #if ($item.acceptedByProfilename) by <a href="$urlBuilder.getProfileUrlFromProfileName($item.acceptedByProfilename)">$item.acceptedByProfilename</a>#end
