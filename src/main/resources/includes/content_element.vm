@@ -83,7 +83,7 @@
 			#else
 			    #if ($item.owner)
                     <li>
-                        Submitted by <a href="$urlBuilder.getProfileUrlFromProfileName($item.acceptedByProfilename)">$item.acceptedByProfilename</a>
+                        Submitted by <a href="$urlBuilder.getProfileUrlFromProfileName($item.owner)">$item.owner</a>
                     </li>
 			    #end
 			#end
