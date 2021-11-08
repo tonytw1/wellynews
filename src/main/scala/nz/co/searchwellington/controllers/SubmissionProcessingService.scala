@@ -2,7 +2,6 @@ package nz.co.searchwellington.controllers
 
 import com.google.common.base.Strings
 import nz.co.searchwellington.ReasonableWaits
-import nz.co.searchwellington.controllers.submission.UrlProcessor
 import nz.co.searchwellington.feeds.PlaceToGeocodeMapper
 import nz.co.searchwellington.geocoding.osm.OsmIdParser
 import nz.co.searchwellington.model._
@@ -21,7 +20,7 @@ import scala.concurrent.Await
 import scala.concurrent.ExecutionContext.Implicits.global
 
 @Component class SubmissionProcessingService @Autowired()(tagDAO: TagDAO,
-                                                          tagVoteDAO: HandTaggingDAO, urlProcessor: UrlProcessor,
+                                                          tagVoteDAO: HandTaggingDAO,
                                                           osmIdParser: OsmIdParser, placeToGeocodeMapper: PlaceToGeocodeMapper,
                                                           mongoRepository: MongoRepository) extends ReasonableWaits with StringWrangling {
 
@@ -45,10 +44,6 @@ import scala.concurrent.ExecutionContext.Implicits.global
       }
       //editResource.setName(title)
     }
-  }
-
-  def processUrl(request: HttpServletRequest, editResource: Resource) {
-    urlProcessor.process(request, editResource)
   }
 
   def processImage(request: HttpServletRequest, editResource: Newsitem, loggedInUser: User) {

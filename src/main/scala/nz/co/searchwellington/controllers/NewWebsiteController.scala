@@ -1,11 +1,12 @@
 package nz.co.searchwellington.controllers
 
 import nz.co.searchwellington.ReasonableWaits
+import nz.co.searchwellington.controllers.submission.EndUserInputs
 import nz.co.searchwellington.forms.NewWebsite
 import nz.co.searchwellington.model.{UrlWordsGenerator, User, Website}
 import nz.co.searchwellington.modification.ContentUpdateService
 import nz.co.searchwellington.repositories.mongo.MongoRepository
-import nz.co.searchwellington.urls.UrlBuilder
+import nz.co.searchwellington.urls.{UrlBuilder, UrlCleaner}
 import org.apache.log4j.Logger
 import org.joda.time.DateTime
 import org.springframework.beans.factory.annotation.Autowired
@@ -24,7 +25,9 @@ import scala.concurrent.{Await, Future}
 class NewWebsiteController @Autowired()(contentUpdateService: ContentUpdateService,
                                         mongoRepository: MongoRepository,
                                         urlWordsGenerator: UrlWordsGenerator, urlBuilder: UrlBuilder,
-                                        val anonUserService: AnonUserService) extends ReasonableWaits with EnsuredSubmitter {
+                                        val anonUserService: AnonUserService,
+                                        val urlCleaner: UrlCleaner) extends ReasonableWaits
+  with EnsuredSubmitter with EndUserInputs {
 
   private val log = Logger.getLogger(classOf[NewWebsiteController])
 
@@ -44,7 +47,7 @@ class NewWebsiteController @Autowired()(contentUpdateService: ContentUpdateServi
     } else {
       log.info("Got valid new website submission: " + newWebsite)
       val w = Website(title = Some(newWebsite.getTitle),
-        page = newWebsite.getUrl,
+        page = cleanUrl(newWebsite.getUrl),
         date = Some(DateTime.now.toDate),
       )
       val website = w.copy(url_words = urlWordsGenerator.makeUrlWordsFor(w))

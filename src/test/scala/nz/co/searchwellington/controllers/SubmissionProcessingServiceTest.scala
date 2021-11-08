@@ -1,6 +1,5 @@
 package nz.co.searchwellington.controllers
 
-import nz.co.searchwellington.controllers.submission.UrlProcessor
 import nz.co.searchwellington.feeds.PlaceToGeocodeMapper
 import nz.co.searchwellington.geocoding.osm.{GeoCodeService, OsmIdParser}
 import nz.co.searchwellington.model.{Feed, Newsitem, UrlWordsGenerator, User}
@@ -10,11 +9,10 @@ import nz.co.searchwellington.urls.UrlCleaner
 import org.apache.struts.mock.MockHttpServletRequest
 import org.joda.time.DateTime
 import org.junit.{Before, Test}
-import org.mockito.Mockito.{verify, when}
+import org.mockito.Mockito.verify
 import org.mockito.{Mock, MockitoAnnotations}
 
 import java.util.UUID
-import scala.concurrent.ExecutionContext.Implicits.global
 
 class SubmissionProcessingServiceTest {
 
@@ -28,7 +26,6 @@ class SubmissionProcessingServiceTest {
   @Mock val resource: Newsitem = null
   val feed = Feed(id = UUID.randomUUID().toString, title = Some(FEED_NAME))
   @Mock val loggedInUser: User = null
-  @Mock val urlProcessor: UrlProcessor = null
   @Mock val osmIdParser: OsmIdParser = null
   @Mock val placeToGeocodeMapper: PlaceToGeocodeMapper = null
 
@@ -40,8 +37,7 @@ class SubmissionProcessingServiceTest {
     MockitoAnnotations.initMocks(this)
     request = new MockHttpServletRequest
     urlWordsGenerator = new UrlWordsGenerator
-    submissionProcessingService = new SubmissionProcessingService(tagDAO, tagVoteDAO,
-      urlProcessor, osmIdParser, placeToGeocodeMapper, mongoRepository)
+    submissionProcessingService = new SubmissionProcessingService(tagDAO, tagVoteDAO, osmIdParser, placeToGeocodeMapper, mongoRepository)
   }
 
   @Test
