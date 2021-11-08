@@ -2,9 +2,11 @@ package nz.co.searchwellington.feeds
 
 import nz.co.searchwellington.feeds.whakaoko.model.FeedItem
 import nz.co.searchwellington.model.{Feed, FeedAcceptancePolicy, User}
+import nz.co.searchwellington.urls.UrlCleaner
 import org.joda.time.DateTime
 import org.junit.Assert.{assertEquals, assertFalse, assertTrue}
 import org.junit.Test
+import org.mockito.Mockito.{mock, when}
 import reactivemongo.api.bson.BSONObjectID
 
 class FeedItemAcceptorTest {
@@ -12,8 +14,9 @@ class FeedItemAcceptorTest {
   private val feed = Feed(publisher = Some(BSONObjectID.generate))
   private val feedReadingUser = User(name = Some("Feed reading user"))
   private val feeditemToNewsItemService = new FeeditemToNewsitemService(new PlaceToGeocodeMapper)
+  private val urlCleaner = mock(classOf[UrlCleaner])
 
-  private val feedItemAcceptor = new FeedItemAcceptor(feeditemToNewsItemService)
+  private val feedItemAcceptor = new FeedItemAcceptor(feeditemToNewsItemService, urlCleaner)
 
   @Test
   def shouldSetAcceptedTimeWhenAccepting(): Unit = {
@@ -24,6 +27,15 @@ class FeedItemAcceptorTest {
 
     assertTrue(acceptedNewsitem.accepted.nonEmpty)
     assertFalse(acceptedNewsitem.accepted.get.before(before.toDate))
+  }
+
+  def shouldCleanUrlWhenAccepting(): Unit = {
+    val feedItem = FeedItem(id = "", title = Some("A headline"), url ="https://localhost/blah?PHPSESSION=123",  subscriptionId = "", body = None)
+    when(urlCleaner.cleanSubmittedItemUrl("https://localhost/blah?PHPSESSION=123")).thenReturn("https://localhost/blah")
+
+    val acceptedNewsitem = feedItemAcceptor.acceptFeedItem(feedReadingUser, (feedItem, feed))
+
+    assertEquals("https://localhost/blah", acceptedNewsitem.page)
   }
 
   @Test

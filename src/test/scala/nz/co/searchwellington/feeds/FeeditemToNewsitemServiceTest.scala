@@ -1,14 +1,13 @@
 package nz.co.searchwellington.feeds
 
 import nz.co.searchwellington.feeds.whakaoko.model.{FeedItem, LatLong, Place}
-import nz.co.searchwellington.model.{Feed, User}
+import nz.co.searchwellington.model.Feed
 import org.junit.Assert.{assertEquals, assertNotNull, assertTrue}
 import org.junit.Test
 import reactivemongo.api.bson.BSONObjectID
 
 class FeeditemToNewsitemServiceTest {
   private val feed: Feed = Feed(publisher = Some(BSONObjectID.generate))
-  private val user = User(name = Some("Feed reading user"))
 
   private val service = new FeeditemToNewsitemService(new PlaceToGeocodeMapper)
 
