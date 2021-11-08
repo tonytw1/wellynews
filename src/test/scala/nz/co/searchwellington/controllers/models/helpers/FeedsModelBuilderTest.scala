@@ -20,7 +20,7 @@ import scala.concurrent.{Await, Future}
 
 class FeedsModelBuilderTest extends ReasonableWaits with ContentFields {
   private val contentRetrievalService = mock(classOf[ContentRetrievalService])
-  private val commonAttributesModelBuilder = mock(classOf[CommonAttributesModelBuilder])
+  private val commonAttributesModelBuilder = new CommonAttributesModelBuilder(contentRetrievalService)
   private val suggestedFeeditemsService = mock(classOf[SuggestedFeeditemsService])
   private val urlBuilder = mock(classOf[UrlBuilder])
 
@@ -32,17 +32,17 @@ class FeedsModelBuilderTest extends ReasonableWaits with ContentFields {
   val modelBuilder = new FeedsModelBuilder(contentRetrievalService, suggestedFeeditemsService, urlBuilder, commonAttributesModelBuilder)
 
   @Before
-  def setUp {
+  def setUp() {
     request.setRequestURI("/feeds")
   }
 
   @Test
-  def isValidForFeedsPath {
+  def shouldBeValidForFeedsPath() {
     assertTrue(modelBuilder.isValid(request))
   }
 
   @Test
-  def shouldPopulateMainContentWithFeeds {
+  def shouldPopulateMainContentWithFeeds() {
     val feeds = Seq(FrontendFeed(id = UUID.randomUUID().toString), FrontendFeed(id = UUID.randomUUID().toString))
     when(contentRetrievalService.getFeeds(None, loggedInUser)).thenReturn(Future.successful(feeds))
 
@@ -53,7 +53,7 @@ class FeedsModelBuilderTest extends ReasonableWaits with ContentFields {
   }
 
   @Test
-  def shouldPopulateSecondaryContent = {
+  def shouldPopulateSecondaryContent(): Unit = {
     val suggestedFeeditems = Seq(FrontendNewsitem(id = UUID.randomUUID().toString))
     when(suggestedFeeditemsService.getSuggestionFeednewsitems(6, Some(adminUser))).thenReturn(Future.successful(suggestedFeeditems))
     val currentFeeds = Seq(FrontendFeed(id = UUID.randomUUID().toString))
