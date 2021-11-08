@@ -1,6 +1,7 @@
 package nz.co.searchwellington.controllers
 
 import nz.co.searchwellington.ReasonableWaits
+import nz.co.searchwellington.controllers.submission.GeotagParsing
 import nz.co.searchwellington.forms.EditTag
 import nz.co.searchwellington.geocoding.osm.GeoCodeService
 import nz.co.searchwellington.model.{Geocode, Tag, UrlWordsGenerator, User}

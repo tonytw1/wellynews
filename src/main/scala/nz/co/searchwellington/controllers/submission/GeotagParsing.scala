@@ -1,4 +1,4 @@
-package nz.co.searchwellington.controllers
+package nz.co.searchwellington.controllers.submission
 
 import nz.co.searchwellington.geocoding.osm.GeoCodeService
 import nz.co.searchwellington.model.{Geocode, OsmId}
