@@ -51,14 +51,4 @@ class SubmissionProcessingServiceTest {
     verify(resource).setEmbargoedUntil(embargoDate)
   }
 
-  @Test
-  @throws[Exception]
-  def shouldFlattenLoudCapsHeadlinesInUserSubmissions {
-    request.addParameter("title", "THE QUICK BROWN FOX JUMPED OVER THE LAZY DOG")
-
-    submissionProcessingService.processTitle(request, resource)
-
-    //verify(resource).setName("The quick brown fox jumped over the lazy dog")
-  }
-
 }

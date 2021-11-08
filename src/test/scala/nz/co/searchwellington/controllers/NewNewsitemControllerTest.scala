@@ -4,7 +4,7 @@ import nz.co.searchwellington.forms.NewNewsitem
 import nz.co.searchwellington.model.{Newsitem, User, Website}
 import nz.co.searchwellington.modification.ContentUpdateService
 import nz.co.searchwellington.repositories.mongo.MongoRepository
-import nz.co.searchwellington.urls.UrlBuilder
+import nz.co.searchwellington.urls.{UrlBuilder, UrlCleaner}
 import org.apache.struts.mock.MockHttpServletRequest
 import org.joda.time.DateTime
 import org.junit.Assert.assertEquals
@@ -22,8 +22,9 @@ class NewNewsitemControllerTest {
   private val mongoRepository = mock(classOf[MongoRepository])
   private val urlBuilder = mock(classOf[UrlBuilder])
   private val anonUserService = mock(classOf[AnonUserService])
+  private val urlCleaner = mock(classOf[UrlCleaner])
 
-  val controller = new NewNewsitemController(contentUpdateService, mongoRepository, urlBuilder, anonUserService)
+  val controller = new NewNewsitemController(contentUpdateService, mongoRepository, urlBuilder, anonUserService, urlCleaner)
 
   @Test
   def canSubmitNewsitems(): Unit = {
@@ -38,7 +39,7 @@ class NewNewsitemControllerTest {
 
     val publisher = Website(_id = BSONObjectID.generate(), title = Some("A publisher"))
     when(mongoRepository.getWebsiteByName("A publisher")).thenReturn(Future.successful(Some(publisher)))
-
+    when(urlCleaner.cleanSubmittedItemUrl("https://localhost/a-newsitem")).thenReturn("https://localhost/a-newsitem")
     val bindingResultWithNoErrors = mock(classOf[BindingResult])
     val createdNewsitem = ArgumentCaptor.forClass(classOf[Newsitem])
 

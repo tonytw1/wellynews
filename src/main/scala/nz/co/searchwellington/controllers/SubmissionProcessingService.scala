@@ -32,20 +32,6 @@ import scala.concurrent.ExecutionContext.Implicits.global
   private val REQUEST_SELECTED_GEOCODE = "selectedGeocode"
   private val REQUEST_EMBARGO_DATE_NAME = "embargo_date"
 
-  def processTitle(req: HttpServletRequest, editResource: Resource) {
-    if (req.getParameter(REQUEST_TITLE_NAME) != null) {
-      var title = new String(req.getParameter(REQUEST_TITLE_NAME))
-      title = UrlFilters.trimWhiteSpace(title)
-      title = UrlFilters.stripHtml(title)
-      val flattenedTitle = lowerCappedSentence(title)
-      if (!(flattenedTitle == title)) {
-        title = flattenedTitle
-        log.info("Flatten capitalised sentence to '" + title + "'")
-      }
-      //editResource.setName(title)
-    }
-  }
-
   def processImage(request: HttpServletRequest, editResource: Newsitem, loggedInUser: User) {
     val image = request.getAttribute("image").asInstanceOf[Image]
     // editResource.setImage(image)

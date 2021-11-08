@@ -1,11 +1,12 @@
 package nz.co.searchwellington.controllers
 
 import nz.co.searchwellington.ReasonableWaits
+import nz.co.searchwellington.controllers.submission.EndUserInputs
 import nz.co.searchwellington.forms.NewWatchlist
 import nz.co.searchwellington.model.{UrlWordsGenerator, Watchlist}
 import nz.co.searchwellington.modification.ContentUpdateService
 import nz.co.searchwellington.repositories.mongo.MongoRepository
-import nz.co.searchwellington.urls.UrlBuilder
+import nz.co.searchwellington.urls.{UrlBuilder, UrlCleaner}
 import org.apache.log4j.Logger
 import org.joda.time.DateTime
 import org.springframework.beans.factory.annotation.Autowired
@@ -24,8 +25,9 @@ import scala.concurrent.ExecutionContext.Implicits.global
 class NewWatchlistController @Autowired()(contentUpdateService: ContentUpdateService,
                                           mongoRepository: MongoRepository,
                                           urlWordsGenerator: UrlWordsGenerator, urlBuilder: UrlBuilder,
-                                          val anonUserService: AnonUserService) extends ReasonableWaits
-                                          with EnsuredSubmitter {
+                                          val anonUserService: AnonUserService,
+                                          val urlCleaner: UrlCleaner) extends ReasonableWaits
+                                          with EnsuredSubmitter with EndUserInputs {
 
   private val log = Logger.getLogger(classOf[NewWatchlistController])
 
@@ -48,7 +50,7 @@ class NewWatchlistController @Autowired()(contentUpdateService: ContentUpdateSer
       }
 
       val w = Watchlist(title = Some(newWatchlist.getTitle),
-        page = newWatchlist.getUrl,
+        page = cleanUrl(newWatchlist.getUrl),
         date = Some(DateTime.now.toDate),
         publisher = maybePublisher.map(_._id)
       )

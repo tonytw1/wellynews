@@ -1,11 +1,12 @@
 package nz.co.searchwellington.controllers
 
 import nz.co.searchwellington.ReasonableWaits
+import nz.co.searchwellington.controllers.submission.EndUserInputs
 import nz.co.searchwellington.forms.NewNewsitem
 import nz.co.searchwellington.model.{Newsitem, Website}
 import nz.co.searchwellington.modification.ContentUpdateService
 import nz.co.searchwellington.repositories.mongo.MongoRepository
-import nz.co.searchwellington.urls.UrlBuilder
+import nz.co.searchwellington.urls.{UrlBuilder, UrlCleaner}
 import org.apache.log4j.Logger
 import org.joda.time.DateTime
 import org.joda.time.format.ISODateTimeFormat
@@ -24,8 +25,9 @@ import scala.concurrent.ExecutionContext.Implicits.global
 @Controller
 class NewNewsitemController @Autowired()(contentUpdateService: ContentUpdateService,
                                          mongoRepository: MongoRepository, urlBuilder: UrlBuilder,
-                                         val anonUserService: AnonUserService) extends ReasonableWaits
-                                         with EnsuredSubmitter {
+                                         val anonUserService: AnonUserService,
+                                         val urlCleaner: UrlCleaner) extends ReasonableWaits
+                                         with EnsuredSubmitter with EndUserInputs {
 
   private val log = Logger.getLogger(classOf[NewNewsitemController])
   private val dateFormatter = ISODateTimeFormat.basicDate()
@@ -54,8 +56,8 @@ class NewNewsitemController @Autowired()(contentUpdateService: ContentUpdateServ
       }
 
       val newsitem = Newsitem(
-        title = Some(newNewsitem.getTitle),
-        page = newNewsitem.getUrl,
+        title = Some(processTitle(newNewsitem.getTitle)),
+        page = cleanUrl(newNewsitem.getUrl),
         date = Some(parsedDate.toDate),
         publisher = maybePublisher.map(_._id),
         description = Some(newNewsitem.getDescription.trim)

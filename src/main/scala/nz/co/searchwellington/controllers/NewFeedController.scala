@@ -1,12 +1,13 @@
 package nz.co.searchwellington.controllers
 
 import nz.co.searchwellington.ReasonableWaits
+import nz.co.searchwellington.controllers.submission.EndUserInputs
 import nz.co.searchwellington.feeds.whakaoko.WhakaokoService
 import nz.co.searchwellington.forms.NewFeed
 import nz.co.searchwellington.model.{Feed, UrlWordsGenerator, User}
 import nz.co.searchwellington.modification.ContentUpdateService
 import nz.co.searchwellington.repositories.mongo.MongoRepository
-import nz.co.searchwellington.urls.UrlBuilder
+import nz.co.searchwellington.urls.{UrlBuilder, UrlCleaner}
 import org.apache.log4j.Logger
 import org.joda.time.DateTime
 import org.springframework.beans.factory.annotation.Autowired
@@ -26,8 +27,9 @@ class NewFeedController @Autowired()(contentUpdateService: ContentUpdateService,
                                      mongoRepository: MongoRepository,
                                      urlWordsGenerator: UrlWordsGenerator, urlBuilder: UrlBuilder,
                                      whakaokoService: WhakaokoService,
-                                     val anonUserService: AnonUserService) extends ReasonableWaits with EnsuredSubmitter
-  with AcceptancePolicyOptions {
+                                     val anonUserService: AnonUserService,
+                                     val urlCleaner: UrlCleaner) extends ReasonableWaits with EnsuredSubmitter
+  with AcceptancePolicyOptions with EndUserInputs {
 
   private val log = Logger.getLogger(classOf[NewFeedController])
 
@@ -71,10 +73,8 @@ class NewFeedController @Autowired()(contentUpdateService: ContentUpdateService,
           Await.result(mongoRepository.getWebsiteByName(publisherName), TenSeconds)
         }
 
-        val owner = getLoggedInUser(request)
-
         val f = Feed(title = Some(newFeed.getTitle),
-          page = newFeed.getUrl,
+          page = cleanUrl(newFeed.getUrl),
           publisher = publisher.map(_._id),
           acceptance = newFeed.getAcceptancePolicy,
           date = Some(DateTime.now.toDate),
