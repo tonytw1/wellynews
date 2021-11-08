@@ -3,6 +3,7 @@ package nz.co.searchwellington.controllers.submission
 import nz.co.searchwellington.urls.UrlCleaner
 import nz.co.searchwellington.utils.StringWrangling
 
+// Functions to apply to unclean end user inputs
 trait EndUserInputs extends StringWrangling {
 
   def urlCleaner: UrlCleaner
@@ -12,7 +13,7 @@ trait EndUserInputs extends StringWrangling {
   }
 
   def processTitle(t: String): String = {
-    lowerCappedSentence(t)
+    lowerCappedSentence(t).trim
   }
 
 }
