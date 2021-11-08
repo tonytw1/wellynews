@@ -28,9 +28,35 @@ import scala.concurrent.{Await, ExecutionContext}
           log.info("Created whakaoko feed: " + createdSubscriptionId)
         }
       }
+
+      /*
+        // Attempt to back fill missing whakaoko subscriptions
+      if (feed.whakaokoSubscription.isEmpty) {
+        val eventualMaybeEventualBoolean: Future[Boolean] = whakaokoService.getSubscriptions().flatMap { subscriptions =>
+          subscriptions.find(s => s.url == feed.page).map { s =>
+            log.debug("Found subscription to attached to feed: " + s)
+            feed.whakaokoSubscription = Some(s.id)
+            contentUpdateService.update(feed)
+          }.getOrElse {
+            Future.successful(false)
+          }
+        }
+        val backfillOutcome = Await.result(eventualMaybeEventualBoolean, TenSeconds)
+        log.warn("Feed backfill outcome: " + backfillOutcome)
+      }
+
+      // Sync feed names
+      val eventualSubscriptionNameSync = feed.whakaokoSubscription.flatMap { subscriptionId =>
+        feed.title.map { title =>
+          whakaokoService.updateSubscriptionName(subscriptionId, title)
+        }
+      }.getOrElse(Future.successful(Unit))
+      Await.result(eventualSubscriptionNameSync, TenSeconds)
+       */
+
     }
 
-    log.info("Finished registering feeds with whakaoro")
+    log.info("Finished registering feeds with whakaoko")
   }
 
 }

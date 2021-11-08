@@ -1,8 +1,8 @@
 package nz.co.searchwellington.feeds
 
 import nz.co.searchwellington.ReasonableWaits
+import nz.co.searchwellington.feeds.whakaoko.WhakaokoFeedReader
 import nz.co.searchwellington.feeds.whakaoko.model.FeedItem
-import nz.co.searchwellington.feeds.whakaoko.{WhakaokoFeedReader, WhakaokoService}
 import nz.co.searchwellington.model.{Feed, FeedAcceptancePolicy, Resource, User}
 import nz.co.searchwellington.modification.ContentUpdateService
 import nz.co.searchwellington.urls.UrlCleaner
@@ -12,14 +12,13 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
 
 import java.util.Date
-import scala.concurrent.{Await, ExecutionContext, Future}
+import scala.concurrent.{ExecutionContext, Future}
 
 @Component class FeedReader @Autowired()(feedItemAcceptanceDecider: FeedItemAcceptanceDecider,
                                          urlCleaner: UrlCleaner,
                                          contentUpdateService: ContentUpdateService,
                                          feedReaderUpdateService: FeedReaderUpdateService,
-                                         whakaokoFeedReader: WhakaokoFeedReader,
-                                         whakaokoService: WhakaokoService) extends ReasonableWaits {
+                                         whakaokoFeedReader: WhakaokoFeedReader) extends ReasonableWaits {
 
   private val log = Logger.getLogger(classOf[FeedReader])
 
@@ -30,29 +29,6 @@ import scala.concurrent.{Await, ExecutionContext, Future}
   def processFeed(feed: Feed, readingUser: User, acceptancePolicy: FeedAcceptancePolicy)(implicit ec: ExecutionContext): Future[Unit] = {
     try {
       log.info(s"Processing feed: ${feed.title.getOrElse(feed.page)} using acceptance policy $acceptancePolicy. Last read: " + feed.last_read.getOrElse(""))
-
-      // Attempt to back fill missing whakaoko subscriptions
-      if (feed.whakaokoSubscription.isEmpty) {
-        val eventualMaybeEventualBoolean: Future[Boolean] = whakaokoService.getSubscriptions().flatMap { subscriptions =>
-          subscriptions.find(s => s.url == feed.page).map { s =>
-            log.debug("Found subscription to attached to feed: " + s)
-            feed.whakaokoSubscription = Some(s.id)
-            contentUpdateService.update(feed)
-          }.getOrElse {
-            Future.successful(false)
-          }
-        }
-        val backfillOutcome = Await.result(eventualMaybeEventualBoolean, TenSeconds)
-        log.warn("Feed backfill outcome: " + backfillOutcome)
-      }
-
-      // Sync feed names
-      val eventualSubscriptionNameSync = feed.whakaokoSubscription.flatMap { subscriptionId =>
-        feed.title.map { title =>
-          whakaokoService.updateSubscriptionName(subscriptionId, title)
-        }
-      }.getOrElse(Future.successful(Unit))
-      Await.result(eventualSubscriptionNameSync, TenSeconds)
 
       whakaokoFeedReader.fetchFeedItems(feed).flatMap { feedItemsFetch =>
         feedItemsFetch.fold({ l =>
