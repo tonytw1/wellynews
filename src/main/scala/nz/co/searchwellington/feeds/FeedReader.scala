@@ -26,42 +26,43 @@ import scala.concurrent.{ExecutionContext, Future}
   }
 
   def processFeed(feed: Feed, readingUser: User, acceptancePolicy: FeedAcceptancePolicy)(implicit ec: ExecutionContext): Future[Unit] = {
-    try {
-      log.info(s"Processing feed: ${feed.title.getOrElse(feed.page)} using acceptance policy $acceptancePolicy. Last read: " + feed.last_read.getOrElse(""))
-      whakaokoFeedReader.fetchFeedItems(feed).flatMap { feedItemsFetch =>
-        feedItemsFetch.fold({ l =>
-          log.warn("Could new get feed items for feed + '" + feed.title + "':" + l)
-          Future.successful()
+    if (acceptancePolicy.shouldReadFeed) {
+      try {
+        log.info(s"Processing feed: ${feed.title.getOrElse(feed.page)} using acceptance policy $acceptancePolicy. Last read: " + feed.last_read.getOrElse(""))
+        whakaokoFeedReader.fetchFeedItems(feed).flatMap { feedItemsFetch =>
+          feedItemsFetch.fold({ l =>
+            log.warn("Could new get feed items for feed + '" + feed.title + "':" + l)
+            Future.successful()
 
-        }, { feedNewsitems =>
-          log.debug("Feed contains " + feedNewsitems._1.size + " items from " + feedNewsitems._2 + " total items")
-          val inferredHttpStatus = if (feedNewsitems._1.nonEmpty) 200 else -3
-          val eventuallyAcceptedNewsitems = if (acceptancePolicy.shouldReadFeed) {
-            processFeedItems(feed, readingUser, acceptancePolicy, feedNewsitems._1)
-          } else {
-            Future.successful(Seq.empty)
-          }
+          }, { feedNewsitems =>
+            log.debug("Feed contains " + feedNewsitems._1.size + " items from " + feedNewsitems._2 + " total items")
+            val inferredHttpStatus = if (feedNewsitems._1.nonEmpty) 200 else -3
 
-          eventuallyAcceptedNewsitems.flatMap { accepted =>
-            if (accepted.nonEmpty) {
-              log.info("Accepted " + accepted.size + " newsitems from " + feed.title)
+            val eventuallyAcceptedNewsitems = processFeedItems(feed, readingUser, acceptancePolicy, feedNewsitems._1)
+            eventuallyAcceptedNewsitems.flatMap { accepted =>
+              if (accepted.nonEmpty) {
+                log.info("Accepted " + accepted.size + " newsitems from " + feed.title)
+              }
+
+              contentUpdateService.update(feed.copy(
+                last_read = Some(DateTime.now.toDate),
+                latestItemDate = latestPublicationDateOf(feedNewsitems._1),
+                http_status = inferredHttpStatus
+              )).map { _ =>
+                Unit
+              }
             }
+          })
+        }
 
-            contentUpdateService.update(feed.copy(
-              last_read = Some(DateTime.now.toDate),
-              latestItemDate = latestPublicationDateOf(feedNewsitems._1),
-              http_status = inferredHttpStatus
-            )).map { _ =>
-              Unit
-            }
-          }
-        })
+      } catch {
+        case e: Exception =>
+          log.error(e, e)
+          Future.failed(e)
       }
 
-    } catch {
-      case e: Exception =>
-        log.error(e, e)
-        Future.failed(e)
+    } else {
+      Future.successful(Unit)
     }
   }
 
