@@ -81,9 +81,11 @@
 				    #parse('includes/accepted_details.vm')
 				</li>
 			#else
-			    <li>
-			        Submitted by $item.owner
-			    </li>
+			    #if ($item.owner)
+                    <li>
+                        Submitted by $item.owner
+                    </li>
+			    #end
 			#end
 			
             #if($item.taggingStatus)
