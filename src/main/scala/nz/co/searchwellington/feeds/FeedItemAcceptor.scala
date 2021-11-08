@@ -21,7 +21,7 @@ import org.springframework.stereotype.Component
     }
     newsitem.copy(
       title = newsitem.title.map(processTitle),
-      page = cleanUrl(newsitem.page),
+      page = cleanUrl(newsitem.page), // TODO this is in the wrong place and redundant; already done my the feed item accepter decider
       date = Some(dateToApply),
       accepted = Some(now),
       acceptedBy = Some(feedReadingUser._id),
