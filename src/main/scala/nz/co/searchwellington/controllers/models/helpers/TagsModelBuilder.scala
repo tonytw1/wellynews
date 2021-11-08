@@ -13,8 +13,8 @@ import javax.servlet.http.HttpServletRequest
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
-@Component class TagsModelBuilder @Autowired()(tagDAO: TagDAO, frontendResourceMapper: FrontendResourceMapper,
-                                               val contentRetrievalService: ContentRetrievalService) extends ModelBuilder with ReasonableWaits {
+@Component class TagsModelBuilder @Autowired()(tagDAO: TagDAO, val contentRetrievalService: ContentRetrievalService) extends ModelBuilder
+  with ReasonableWaits {
 
   def isValid(request: HttpServletRequest): Boolean = {
     RequestPath.getPathFrom(request).matches("^/tags$") || RequestPath.getPathFrom(request).matches("^/tags/json$")
