@@ -9,7 +9,8 @@ public class WellingtonScoopCommentFeedDetectorTest {
 
 	final static String SITE_FEED = "http://wellington.scoop.co.nz/?feed=rss2";
     final static String COMMENT_FEED = "http://wellington.scoop.co.nz/?feed=rss2&p=34601";
-    
+    final static String HTTPS_COMMENT_FEED = "https://wellington.scoop.co.nz/?feed=rss2&p=34601";
+
     CommentFeedDetector detector = new WellingtonScoopCommentFeedDetector();
         
     @Test
@@ -20,6 +21,7 @@ public class WellingtonScoopCommentFeedDetectorTest {
     @Test
     public void testShouldDetectCommentFeedUrl() throws Exception {
         assertTrue(detector.isValid(COMMENT_FEED));
+        assertTrue(detector.isValid(HTTPS_COMMENT_FEED));
     }
     
 }
