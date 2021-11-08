@@ -12,7 +12,7 @@ class FeeditemToNewsitemServiceTest {
   private val service = new FeeditemToNewsitemService(new PlaceToGeocodeMapper)
 
   @Test
-  def shouldSetGeocodeWhenAcceptingFeedNewsitem {
+  def shouldSetGeocodeWhenAcceptingFeedNewsitem(): Unit = {
     val feedItemLatLong = LatLong(51.3, -0.3)
     val place = Place(latLong = Some(feedItemLatLong))
     val feedNewsitem = FeedItem(id = "", url = "", subscriptionId = "", place = Some(place))
@@ -26,7 +26,7 @@ class FeeditemToNewsitemServiceTest {
   }
 
   @Test
-  def shouldPropogateFeedPublisherWhenAcceptingNewsitem: Unit = {
+  def shouldPropogateFeedPublisherWhenAcceptingNewsitem(): Unit = {
     val feedNewsitem = FeedItem(id = "", url = "", subscriptionId = "")
 
     val newsitem = service.makeNewsitemFromFeedItem(feedNewsitem, feed)
@@ -36,7 +36,7 @@ class FeeditemToNewsitemServiceTest {
   }
 
   @Test
-  def shouldRecordSourceFeedWithAcceptingNewsitem: Unit = {
+  def shouldRecordSourceFeedWithAcceptingNewsitem(): Unit = {
     val feedNewsitem = FeedItem(id = "", url = "", subscriptionId = "")
 
     val newsitem = service.makeNewsitemFromFeedItem(feedNewsitem, feed)
