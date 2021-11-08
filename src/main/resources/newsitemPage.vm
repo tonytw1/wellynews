@@ -30,13 +30,7 @@
 			</ul>
 		</li>
 	</ul>
-	
-	#if ($item.type == "N" && $item.feed)
-		<p>#parse('includes/accepted_details.vm')</p>
-	#else
-	    <p>Submitted by $item.owner</p>
-	#end
-			
+
 	<h2>Tagging</h2>
 
 	<h3>Hand taggings</h3>

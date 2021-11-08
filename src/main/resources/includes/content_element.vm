@@ -78,8 +78,12 @@
 						
 			#if ($item.type == "N" && $item.accepted)
 				<li>
-				#parse('includes/accepted_details.vm')
+				    #parse('includes/accepted_details.vm')
 				</li>
+			#else
+			    <li>
+			        Submitted by $item.owner
+			    </li>
 			#end
 			
             #if($item.taggingStatus)

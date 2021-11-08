@@ -95,7 +95,7 @@ import scala.concurrent.{ExecutionContext, Future}
             httpStatus = n.http_status,
             lastScanned = n.last_scanned,
             lastChanged = n.last_changed,
-            owner = owner.map(user => user.name.getOrElse(user._id.stringify)).orNull
+            owner = owner.map(user => user.profilename.getOrElse(user._id.stringify)).orNull
           )
         }
 
