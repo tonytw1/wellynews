@@ -29,19 +29,20 @@ class FrontendResourceMapperTest extends ReasonableWaits {
 
   @Test
   def canMapNewsitemsToFrontendNewsitems(): Unit = {
-    val owner = BSONObjectID.generate()
+    val owner = User(BSONObjectID.generate(), name = Some(UUID.randomUUID().toString))
     val newsitem = Newsitem(id = "123", http_status = 200, title = Some("Something happened today"),
       date = Some(new DateTime(2020, 10, 7, 12, 0, 0, 0).toDate),
-      owner = Some(owner))
+      owner = Some(owner._id))
     when(taggingReturnsOfficerService.getHandTagsForResource(newsitem)).thenReturn(Future.successful(Seq.empty))
     when(indexTagsService.getIndexTagsForResource(newsitem)).thenReturn(Future.successful(Seq.empty))
     when(indexTagsService.getIndexGeocodeForResource(newsitem)).thenReturn(Future.successful(None))
+    when(mongoRepository.getUserByObjectId(owner._id)).thenReturn(Future.successful(Some(owner)))
 
     val frontendNewsitem = Await.result(mapper.createFrontendResourceFrom(newsitem), TenSeconds)
 
     assertEquals(newsitem.id, frontendNewsitem.id)
     assertEquals(200, frontendNewsitem.httpStatus)
-    assertEquals(owner.stringify, frontendNewsitem.getOwner)
+    assertEquals(owner.name.get, frontendNewsitem.getOwner)
   }
 
   @Test

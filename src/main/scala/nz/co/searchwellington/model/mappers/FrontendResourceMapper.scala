@@ -52,6 +52,11 @@ import scala.concurrent.{ExecutionContext, Future}
         }.getOrElse {
           Future.successful(None)
         }
+        val eventualOwner = n.owner.map { uid =>
+          mongoRepository.getUserByObjectId(uid)
+        }.getOrElse{
+          Future.successful(None)
+        }
 
         val eventualFeed = n.feed.map { fid =>
           mongoRepository.getResourceByObjectId(fid).flatMap { fo =>
@@ -71,7 +76,7 @@ import scala.concurrent.{ExecutionContext, Future}
           feed <- eventualFeed
           publisher <- eventualPublisher
           acceptedByUser <- eventualAcceptedByUser
-
+          owner <- eventualOwner
         } yield {
           FrontendNewsitem(
             id = n.id,
@@ -90,7 +95,7 @@ import scala.concurrent.{ExecutionContext, Future}
             httpStatus = n.http_status,
             lastScanned = n.last_scanned,
             lastChanged = n.last_changed,
-            owner = n.owner.map(_.stringify).orNull
+            owner = owner.map(user => user.name.getOrElse(user._id.stringify)).orNull
           )
         }
 
