@@ -1,7 +1,6 @@
 package nz.co.searchwellington.feeds
 
-import nz.co.searchwellington.feeds.whakaoko.model.FeedItem
-import nz.co.searchwellington.model.{Feed, FeedAcceptancePolicy, User}
+import nz.co.searchwellington.model.{Feed, FeedAcceptancePolicy, Newsitem, User}
 import nz.co.searchwellington.urls.UrlCleaner
 import org.joda.time.DateTime
 import org.junit.Assert.{assertEquals, assertFalse, assertTrue}
@@ -13,65 +12,55 @@ class FeedItemAcceptorTest {
 
   private val feed = Feed(publisher = Some(BSONObjectID.generate))
   private val feedReadingUser = User(name = Some("Feed reading user"))
-  private val feeditemToNewsItemService = new FeeditemToNewsitemService(new PlaceToGeocodeMapper)
   private val urlCleaner = mock(classOf[UrlCleaner])
 
-  private val feedItemAcceptor = new FeedItemAcceptor(feeditemToNewsItemService, urlCleaner)
+  private val feedItemAcceptor = new FeedItemAcceptor
 
   @Test
   def shouldSetAcceptedTimeWhenAccepting(): Unit = {
-    val feedItem = FeedItem(id = "", title = Some("A headline"), url ="",  subscriptionId = "", body = None)
+    val newsitem = Newsitem(id = "", title = Some("A headline"), description = None)
     val before = DateTime.now
 
-    val acceptedNewsitem = feedItemAcceptor.acceptFeedItem(feedReadingUser, (feedItem, feed))
+    val acceptedNewsitem = feedItemAcceptor.acceptFeedItem(feedReadingUser, (newsitem, feed))
 
     assertTrue(acceptedNewsitem.accepted.nonEmpty)
     assertFalse(acceptedNewsitem.accepted.get.before(before.toDate))
   }
 
   def shouldCleanUrlWhenAccepting(): Unit = {
-    val feedItem = FeedItem(id = "", title = Some("A headline"), url ="https://localhost/blah?PHPSESSION=123",  subscriptionId = "", body = None)
+    val newsitem = Newsitem(id = "", title = Some("A headline"), page ="https://localhost/blah?PHPSESSION=123", description = None)
     when(urlCleaner.cleanSubmittedItemUrl("https://localhost/blah?PHPSESSION=123")).thenReturn("https://localhost/blah")
 
-    val acceptedNewsitem = feedItemAcceptor.acceptFeedItem(feedReadingUser, (feedItem, feed))
+    val acceptedNewsitem = feedItemAcceptor.acceptFeedItem(feedReadingUser, (newsitem, feed))
 
     assertEquals("https://localhost/blah", acceptedNewsitem.page)
   }
 
   @Test
   def shouldSetAcceptedByUserAndOwnerWhenAccepting(): Unit = {
-    val feedItem = FeedItem(id = "", title = Some("A headline"), url ="",  subscriptionId = "", body = None)
+    val newsitem = Newsitem(id = "", title = Some("A headline"), description = None)
 
-    val acceptedNewsitem = feedItemAcceptor.acceptFeedItem(feedReadingUser, (feedItem, feed))
+    val acceptedNewsitem = feedItemAcceptor.acceptFeedItem(feedReadingUser, (newsitem, feed))
 
     assertEquals(Some(feedReadingUser._id), acceptedNewsitem.acceptedBy)
     assertEquals(Some(feedReadingUser._id), acceptedNewsitem.owner)
   }
 
   @Test
-  def shouldFlattenLoudHeadlinesWhenAccepting(): Unit = {
-    val feedItemWithLoudCapsHeadline = FeedItem(id = "", title = Some("HEADLINE"), url ="",  subscriptionId = "", body = None)
-
-    val accepted = feedItemAcceptor.acceptFeedItem(feedReadingUser, (feedItemWithLoudCapsHeadline, feed))
-
-    assertEquals("Headline", accepted.title.get)
-  }
-
-  @Test
   def shouldOverrideTheFeedItemDateIfFeedAcceptancePolicyIsToIgnoreFeedItemsDates(): Unit = {
     // Some feeds contains items with dates that refer to an event date in the future rather than news item publication date.
     // These items can clog up the head of the main feed so we should set their dates to the acceptance time rather than the state date.
-    val feedItemWithFutureDate = FeedItem(id = "", title = Some("HEADLINE"), url ="",  subscriptionId = "", body = None, date = Some(DateTime.now.plusMonths(1).toDateTime()))
+    val newsitemWithFutureDate = Newsitem(id = "", title = Some("HEADLINE"), description = None, date = Some(DateTime.now.plusMonths(1).toDate))
     val feedWithIgnoreDatesAcceptancePolicy = Feed(publisher = Some(BSONObjectID.generate), acceptance = FeedAcceptancePolicy.ACCEPT_IGNORING_DATE)
 
-    val accepted = feedItemAcceptor.acceptFeedItem(feedReadingUser, (feedItemWithFutureDate, feedWithIgnoreDatesAcceptancePolicy))
+    val accepted = feedItemAcceptor.acceptFeedItem(feedReadingUser, (newsitemWithFutureDate, feedWithIgnoreDatesAcceptancePolicy))
 
     assertEquals(accepted.accepted, accepted.date)
   }
 
   @Test
   def acceptedFeedItemsWithNoDatesShouldDefaultToToday(): Unit = {
-    val feedItemWithNoDate = FeedItem(id = "", title = Some("HEADLINE"), url ="",  subscriptionId = "", body = None, date = None)
+    val feedItemWithNoDate = Newsitem(id = "", title = Some("HEADLINE"), description = None, date = None)
 
     val accepted = feedItemAcceptor.acceptFeedItem(feedReadingUser, (feedItemWithNoDate, feed))
 

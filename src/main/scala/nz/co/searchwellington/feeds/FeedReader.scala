@@ -5,7 +5,6 @@ import nz.co.searchwellington.feeds.whakaoko.WhakaokoFeedReader
 import nz.co.searchwellington.feeds.whakaoko.model.FeedItem
 import nz.co.searchwellington.model.{Feed, FeedAcceptancePolicy, Resource, User}
 import nz.co.searchwellington.modification.ContentUpdateService
-import nz.co.searchwellington.urls.UrlCleaner
 import org.apache.log4j.Logger
 import org.joda.time.DateTime
 import org.springframework.beans.factory.annotation.Autowired
@@ -15,10 +14,10 @@ import java.util.Date
 import scala.concurrent.{ExecutionContext, Future}
 
 @Component class FeedReader @Autowired()(feedItemAcceptanceDecider: FeedItemAcceptanceDecider,
-                                         urlCleaner: UrlCleaner,
                                          contentUpdateService: ContentUpdateService,
                                          feedReaderUpdateService: FeedReaderUpdateService,
-                                         whakaokoFeedReader: WhakaokoFeedReader) extends ReasonableWaits {
+                                         whakaokoFeedReader: WhakaokoFeedReader,
+                                         feeditemToNewsItemService: FeeditemToNewsitemService) extends ReasonableWaits {
 
   private val log = Logger.getLogger(classOf[FeedReader])
 
@@ -29,7 +28,6 @@ import scala.concurrent.{ExecutionContext, Future}
   def processFeed(feed: Feed, readingUser: User, acceptancePolicy: FeedAcceptancePolicy)(implicit ec: ExecutionContext): Future[Unit] = {
     try {
       log.info(s"Processing feed: ${feed.title.getOrElse(feed.page)} using acceptance policy $acceptancePolicy. Last read: " + feed.last_read.getOrElse(""))
-
       whakaokoFeedReader.fetchFeedItems(feed).flatMap { feedItemsFetch =>
         feedItemsFetch.fold({ l =>
           log.warn("Could new get feed items for feed + '" + feed.title + "':" + l)
@@ -38,7 +36,6 @@ import scala.concurrent.{ExecutionContext, Future}
         }, { feedNewsitems =>
           log.debug("Feed contains " + feedNewsitems._1.size + " items from " + feedNewsitems._2 + " total items")
           val inferredHttpStatus = if (feedNewsitems._1.nonEmpty) 200 else -3
-
           val eventuallyAcceptedNewsitems = if (acceptancePolicy.shouldReadFeed) {
             processFeedItems(feed, readingUser, acceptancePolicy, feedNewsitems._1)
           } else {
@@ -68,21 +65,20 @@ import scala.concurrent.{ExecutionContext, Future}
     }
   }
 
-  private def processFeedItems(feed: Feed, feedReaderUser: User, acceptancePolicy: FeedAcceptancePolicy, feedNewsitems: Seq[FeedItem])(implicit ec: ExecutionContext): Future[Seq[Resource]] = {
-    val eventualProcessed: Seq[Future[Option[Resource]]] = feedNewsitems.map { feednewsitem =>
-      val withCleanedUrl = feednewsitem.copy(url = urlCleaner.cleanSubmittedItemUrl(feednewsitem.url))
-      feedItemAcceptanceDecider.getAcceptanceErrors(withCleanedUrl, acceptancePolicy).flatMap { acceptanceErrors =>
+  private def processFeedItems(feed: Feed, feedReaderUser: User, acceptancePolicy: FeedAcceptancePolicy, feedItems: Seq[FeedItem])(implicit ec: ExecutionContext): Future[Seq[Resource]] = {
+    val newsItems = feedItems.map(i => feeditemToNewsItemService.makeNewsitemFromFeedItem(i, feed))
+    val eventualProcessed = newsItems.map { newsitem =>
+      feedItemAcceptanceDecider.getAcceptanceErrors(newsitem, acceptancePolicy).flatMap { acceptanceErrors =>
         if (acceptanceErrors.isEmpty) {
-          feedReaderUpdateService.acceptFeeditem(feedReaderUser, withCleanedUrl, feed).map { acceptedNewsitem =>
+          feedReaderUpdateService.acceptFeeditem(feedReaderUser, newsitem, feed).map { acceptedNewsitem =>
             Some(acceptedNewsitem)
           }.recover {
             case e: Exception =>
               log.error("Error while accepting feeditem", e)
               None
           }
-
         } else {
-          log.debug("Not accepting " + withCleanedUrl.url + " due to acceptance errors: " + acceptanceErrors.mkString(", "))
+          log.debug("Not accepting " + newsitem.page + " due to acceptance errors: " + acceptanceErrors.mkString(", "))
           Future.successful(None)
         }
       }

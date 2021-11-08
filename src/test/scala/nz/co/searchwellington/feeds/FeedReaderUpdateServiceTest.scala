@@ -2,9 +2,8 @@ package nz.co.searchwellington.feeds
 
 import io.micrometer.core.instrument.{Counter, MeterRegistry}
 import nz.co.searchwellington.ReasonableWaits
-import nz.co.searchwellington.feeds.whakaoko.model.FeedItem
-import nz.co.searchwellington.model.taggingvotes.HandTagging
 import nz.co.searchwellington.model._
+import nz.co.searchwellington.model.taggingvotes.HandTagging
 import nz.co.searchwellington.modification.ContentUpdateService
 import nz.co.searchwellington.tagging.AutoTaggingService
 import org.junit.Assert.assertEquals
@@ -30,7 +29,7 @@ class FeedReaderUpdateServiceTest extends ReasonableWaits {
     val feedReaderUser = User()
     val autoTagUser = User()
 
-    val feednewsitem = FeedItem(id = "123", url = "http://localhost/123", subscriptionId = "123")
+    val newsitem = Newsitem(id = "123", page = "http://localhost/123")
     val feed = Feed()
 
     val atag = Tag(id = "atag")
@@ -42,7 +41,7 @@ class FeedReaderUpdateServiceTest extends ReasonableWaits {
       HandTagging(tag = anotherTag, user = autoTagUser)
     )
 
-    when(feedItemAcceptor.acceptFeedItem(feedReaderUser, (feednewsitem, feed))).thenReturn(acceptedNewsitem)
+    when(feedItemAcceptor.acceptFeedItem(feedReaderUser, (newsitem, feed))).thenReturn(acceptedNewsitem)
     when(autoTaggingService.autotag(acceptedNewsitem.copy(held = false))).thenReturn(Future.successful(autoTaggings))
     when(contentUpdateService.create(acceptedNewsitem.copy(held = false,
       resource_tags = Seq(
@@ -52,7 +51,7 @@ class FeedReaderUpdateServiceTest extends ReasonableWaits {
     ))).thenReturn(Future.successful(acceptedNewsitem))
     when(meterRegistry.counter("feedreader_accepted")).thenReturn(counter)
 
-    val created = Await.result(feedReaderUpdateService.acceptFeeditem(feedReaderUser, feednewsitem, feed), TenSeconds)
+    val created = Await.result(feedReaderUpdateService.acceptFeeditem(feedReaderUser, newsitem, feed), TenSeconds)
 
     assertEquals(created, acceptedNewsitem)
   }

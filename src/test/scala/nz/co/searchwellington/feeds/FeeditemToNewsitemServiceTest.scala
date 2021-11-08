@@ -2,14 +2,38 @@ package nz.co.searchwellington.feeds
 
 import nz.co.searchwellington.feeds.whakaoko.model.{FeedItem, LatLong, Place}
 import nz.co.searchwellington.model.Feed
+import nz.co.searchwellington.urls.UrlCleaner
 import org.junit.Assert.{assertEquals, assertNotNull, assertTrue}
 import org.junit.Test
+import org.mockito.Mockito.{mock, when}
 import reactivemongo.api.bson.BSONObjectID
 
 class FeeditemToNewsitemServiceTest {
-  private val feed: Feed = Feed(publisher = Some(BSONObjectID.generate))
 
-  private val service = new FeeditemToNewsitemService(new PlaceToGeocodeMapper)
+  private val urlCleaner = mock(classOf[UrlCleaner])
+
+  private val feed = Feed(publisher = Some(BSONObjectID.generate))
+
+  private val service = new FeeditemToNewsitemService(new PlaceToGeocodeMapper, urlCleaner)
+
+  @Test
+  def shouldFlattenLoudHeadlinesWhenConvertingToNewsitem(): Unit = {
+    val newsitemWithLoudCapsHeadline = FeedItem(id = "", title = Some("HEADLINE"), body = None, subscriptionId = "123", url = "")
+
+    val newsitem = service.makeNewsitemFromFeedItem(newsitemWithLoudCapsHeadline, feed)
+
+    assertEquals(Some("Headline"), newsitem.title)
+  }
+
+  @Test
+  def shouldCleanUrlToNewsitem(): Unit = {
+    val newsitemWithLoudCapsHeadline = FeedItem(id = "", title = Some("Headline"), body = None, subscriptionId = "123", url = "https://localhost/blah?PHPSESSION=123")
+    when(urlCleaner.cleanSubmittedItemUrl( "https://localhost/blah?PHPSESSION=123")).thenReturn( "https://localhost/blah")
+
+    val newsitem = service.makeNewsitemFromFeedItem(newsitemWithLoudCapsHeadline, feed)
+
+    assertEquals("https://localhost/blah", newsitem.page)
+  }
 
   @Test
   def shouldSetGeocodeWhenAcceptingFeedNewsitem(): Unit = {

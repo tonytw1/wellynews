@@ -1,8 +1,7 @@
 package nz.co.searchwellington.feeds
 
-import io.micrometer.core.instrument.{Counter, MeterRegistry}
-import nz.co.searchwellington.feeds.whakaoko.model.FeedItem
-import nz.co.searchwellington.model.{Feed, Resource, Tagging, User}
+import io.micrometer.core.instrument.MeterRegistry
+import nz.co.searchwellington.model._
 import nz.co.searchwellington.modification.ContentUpdateService
 import nz.co.searchwellington.tagging.AutoTaggingService
 import org.apache.log4j.Logger
@@ -20,8 +19,8 @@ import scala.concurrent.{ExecutionContext, Future}
 
   private lazy val acceptedCount = registry.counter("feedreader_accepted")
 
-  def acceptFeeditem(feedReaderUser: User, feednewsitem: FeedItem, feed: Feed)(implicit ec: ExecutionContext): Future[Resource] = {
-    log.info("Accepting newsitem: " + feednewsitem.url)
+  def acceptFeeditem(feedReaderUser: User, feednewsitem: Newsitem, feed: Feed)(implicit ec: ExecutionContext): Future[Resource] = {
+    log.info("Accepting newsitem: " + feednewsitem.page)
     val newsitem = feedItemAcceptor.acceptFeedItem(feedReaderUser: User, (feednewsitem, feed))
     log.info("Got newsitem to accept: " + newsitem)
     val notHeld = newsitem.copy(held = false)

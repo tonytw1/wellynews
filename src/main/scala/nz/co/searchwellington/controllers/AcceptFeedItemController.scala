@@ -1,8 +1,8 @@
 package nz.co.searchwellington.controllers
 
 import nz.co.searchwellington.ReasonableWaits
-import nz.co.searchwellington.feeds.FeedReaderUpdateService
 import nz.co.searchwellington.feeds.whakaoko.WhakaokoFeedReader
+import nz.co.searchwellington.feeds.{FeedReaderUpdateService, FeeditemToNewsitemService}
 import nz.co.searchwellington.repositories.mongo.MongoRepository
 import nz.co.searchwellington.urls.UrlBuilder
 import nz.co.searchwellington.views.Errors
@@ -21,7 +21,9 @@ class AcceptFeedItemController @Autowired()(mongoRepository: MongoRepository,
                                             urlBuilder: UrlBuilder,
                                             whakaokoFeedReader: WhakaokoFeedReader,
                                             feedReaderUpdateService: FeedReaderUpdateService,
-                                            loggedInUserFilter: LoggedInUserFilter) extends ReasonableWaits with AcceptancePolicyOptions with Errors {
+                                            loggedInUserFilter: LoggedInUserFilter,
+                                            feeditemToNewsItemService: FeeditemToNewsitemService
+                                            ) extends ReasonableWaits with AcceptancePolicyOptions with Errors {
 
   private val log = Logger.getLogger(classOf[AcceptFeedItemController])
 
@@ -41,7 +43,8 @@ class AcceptFeedItemController @Autowired()(mongoRepository: MongoRepository,
 
           eventualFeedItemToAccept.flatMap { maybeFeedItem =>
             maybeFeedItem.map { feedItemToAccept =>
-              feedReaderUpdateService.acceptFeeditem(loggedInUser, feedItemToAccept, feed).map { accepted =>
+              val newsitemToAccept = feeditemToNewsItemService.makeNewsitemFromFeedItem(feedItemToAccept, feed)
+              feedReaderUpdateService.acceptFeeditem(loggedInUser, newsitemToAccept, feed).map { accepted =>
                 log.info("Accepted newsitem: " + accepted.title)
                 new ModelAndView(new RedirectView(urlBuilder.getFeedUrl(feed)))
               } recover {

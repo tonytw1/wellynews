@@ -1,27 +1,20 @@
 package nz.co.searchwellington.feeds
 
-import nz.co.searchwellington.controllers.submission.EndUserInputs
-import nz.co.searchwellington.feeds.whakaoko.model.FeedItem
 import nz.co.searchwellington.model.{Feed, FeedAcceptancePolicy, Newsitem, User}
-import nz.co.searchwellington.urls.UrlCleaner
 import org.joda.time.DateTime
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
 
-@Component class FeedItemAcceptor @Autowired()(feeditemToNewsItemSerice: FeeditemToNewsitemService,
-                                               val urlCleaner: UrlCleaner) extends EndUserInputs {
+@Component class FeedItemAcceptor @Autowired()() {
 
-  def acceptFeedItem(feedReadingUser: User, feeditem: (FeedItem, Feed)): Newsitem = {
-    val newsitem = feeditemToNewsItemSerice.makeNewsitemFromFeedItem(feeditem._1, feeditem._2)
-
+  def acceptFeedItem(feedReadingUser: User, newsitemAndFeed: (Newsitem, Feed)): Newsitem = {
+    val newsitem = newsitemAndFeed._1
     val now = DateTime.now.toDate
-    val dateToApply = feeditem._2.acceptance match {
+    val dateToApply = newsitemAndFeed._2.acceptance match {
       case FeedAcceptancePolicy.ACCEPT_IGNORING_DATE => now
       case _ => newsitem.date.getOrElse(now)
     }
     newsitem.copy(
-      title = newsitem.title.map(processTitle),
-      page = cleanUrl(newsitem.page), // TODO this is in the wrong place and redundant; already done my the feed item accepter decider
       date = Some(dateToApply),
       accepted = Some(now),
       acceptedBy = Some(feedReadingUser._id),
