@@ -89,7 +89,8 @@ import scala.concurrent.{ExecutionContext, Future}
             publisherName = publisher.flatMap(_.title),
             httpStatus = n.http_status,
             lastScanned = n.last_scanned,
-            lastChanged = n.last_changed
+            lastChanged = n.last_changed,
+            owner = n.owner.map(_.stringify).orNull
           )
         }
 

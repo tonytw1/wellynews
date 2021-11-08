@@ -11,6 +11,7 @@ import org.joda.time.DateTime
 import org.junit.Assert.{assertEquals, assertFalse, assertTrue}
 import org.junit.Test
 import org.mockito.Mockito.{mock, when}
+import reactivemongo.api.bson.BSONObjectID
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.{Await, Future}
@@ -28,8 +29,10 @@ class FrontendResourceMapperTest extends ReasonableWaits {
 
   @Test
   def canMapNewsitemsToFrontendNewsitems(): Unit = {
+    val owner = BSONObjectID.generate()
     val newsitem = Newsitem(id = "123", http_status = 200, title = Some("Something happened today"),
-      date = Some(new DateTime(2020, 10, 7, 12, 0, 0, 0).toDate))
+      date = Some(new DateTime(2020, 10, 7, 12, 0, 0, 0).toDate),
+      owner = Some(owner))
     when(taggingReturnsOfficerService.getHandTagsForResource(newsitem)).thenReturn(Future.successful(Seq.empty))
     when(indexTagsService.getIndexTagsForResource(newsitem)).thenReturn(Future.successful(Seq.empty))
     when(indexTagsService.getIndexGeocodeForResource(newsitem)).thenReturn(Future.successful(None))
@@ -38,6 +41,7 @@ class FrontendResourceMapperTest extends ReasonableWaits {
 
     assertEquals(newsitem.id, frontendNewsitem.id)
     assertEquals(200, frontendNewsitem.httpStatus)
+    assertEquals(owner.stringify, frontendNewsitem.getOwner)
   }
 
   @Test
