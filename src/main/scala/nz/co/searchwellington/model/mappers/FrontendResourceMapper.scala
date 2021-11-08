@@ -54,7 +54,7 @@ import scala.concurrent.{ExecutionContext, Future}
         }
         val eventualOwner = n.owner.map { uid =>
           mongoRepository.getUserByObjectId(uid)
-        }.getOrElse{
+        }.getOrElse {
           Future.successful(None)
         }
 
@@ -105,10 +105,14 @@ import scala.concurrent.{ExecutionContext, Future}
         }.getOrElse {
           Future.successful(None)
         }
-
+        val eventualOwner = f.owner.map { uid =>
+          mongoRepository.getUserByObjectId(uid)
+        }.getOrElse {
+          Future.successful(None)
+        }
         for {
           publisher <- eventualPublisher
-
+          owner <- eventualOwner
         } yield {
           FrontendFeed(
             id = f.id,
@@ -125,7 +129,8 @@ import scala.concurrent.{ExecutionContext, Future}
             publisherName = publisher.flatMap(_.title),
             httpStatus = f.http_status,
             lastScanned = f.last_scanned,
-            lastChanged = f.last_changed
+            lastChanged = f.last_changed,
+            owner = owner.map(user => user.profilename.getOrElse(user._id.stringify)).orNull
           )
         }
 
@@ -135,10 +140,15 @@ import scala.concurrent.{ExecutionContext, Future}
         }.getOrElse {
           Future.successful(None)
         }
-
+        val eventualOwner = l.owner.map { uid =>
+          mongoRepository.getUserByObjectId(uid)
+        }.getOrElse {
+          Future.successful(None)
+        }
 
         for {
           publisher <- eventualPublisher
+          owner <- eventualOwner
         } yield {
           FrontendWatchlist(
             id = l.id,
@@ -152,11 +162,21 @@ import scala.concurrent.{ExecutionContext, Future}
             httpStatus = l.http_status,
             lastScanned = l.last_scanned,
             lastChanged = l.last_changed,
+            owner = owner.map(user => user.profilename.getOrElse(user._id.stringify)).orNull
           )
         }
 
       case w: Website =>
-        Future.successful {
+        val eventualOwner = w.owner.map { uid =>
+          mongoRepository.getUserByObjectId(uid)
+        }.getOrElse {
+          Future.successful(None)
+        }
+
+        for {
+          owner <- eventualOwner
+        } yield {
+
           FrontendWebsite(
             id = w.id,
             name = w.title.orNull,
@@ -167,7 +187,8 @@ import scala.concurrent.{ExecutionContext, Future}
             httpStatus = w.http_status,
             date = w.date.orNull,
             lastScanned = w.last_scanned,
-            lastChanged = w.last_changed
+            lastChanged = w.last_changed,
+            owner = owner.map(user => user.profilename.getOrElse(user._id.stringify)).orNull
           )
         }
 
