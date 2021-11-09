@@ -29,7 +29,7 @@ class ExistingNewsitemCommentFeedDetector @Autowired()(mongoRepository: MongoRep
         case _ => false
       }
     } else {
-      true
+      false
     }
   }
 }
