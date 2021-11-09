@@ -15,7 +15,7 @@ import scala.concurrent.ExecutionContext.Implicits.global
 
   // Delete anon users with no submissions or taggings.
   // Typically these will be spammers who's spam contributions have been deleted
-  @Scheduled(fixedRate = 60000, initialDelay = 60000)
+  @Scheduled(fixedRate = 600000, initialDelay = 600000)
   def deleteAnonUsers(): Unit = {
     def isAnonUser(user: User) = {
       user.profilename.exists(_.startsWith("anon")) && user.openid.isEmpty && user.twitterid.isEmpty && !user.admin
