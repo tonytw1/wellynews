@@ -13,7 +13,7 @@ import org.springframework.stereotype.Component
 
   def isCommentFeedUrl(url: String): Boolean = {
     detectors.find(d => d.isValid(url)).exists { d =>
-      log.debug(d.getClass.getName + " detected comment feed url: " + url)
+      log.info(d.getClass.getName + " detected comment feed url: " + url)
       true
     }
   }
