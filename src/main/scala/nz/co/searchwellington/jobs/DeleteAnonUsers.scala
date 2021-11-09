@@ -24,8 +24,7 @@ import scala.concurrent.ExecutionContext.Implicits.global
     log.info("Deleting users with no submissions or taggings")
     val eventualUsersToExamine = mongoRepository.getAllUsers().map { users =>
       log.info(s"Filtering ${users.size} total users")
-      val nonAdmins = users.filter(nonAdmins)
-      nonAdmins.take(1000)
+      users.filter(nonAdmins).take(1000)
     }
     eventualUsersToExamine.map { users =>
       users.map { user =>
