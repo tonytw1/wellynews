@@ -36,7 +36,7 @@ import scala.concurrent.ExecutionContext.Implicits.global
           log.info(s"User ${user.profilename.getOrElse(user._id)} owns ${owned.size} and has tagged ${tagged.size} for $total submissions.")
           if (total == 0) {
             log.info(s"User ${user.profilename.getOrElse(user._id)} has $total submissions and can be deleted")
-            //mongoRepository.removeUser(user)
+            mongoRepository.removeUser(user)
           }
         }
       }
