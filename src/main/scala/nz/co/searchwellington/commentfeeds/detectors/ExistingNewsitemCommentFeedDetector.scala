@@ -21,12 +21,10 @@ class ExistingNewsitemCommentFeedDetector @Autowired()(mongoRepository: MongoRep
     // then it is probably that newsitem's comment feed
     if (url.endsWith("/feed")) {
       val newsitemUrl = url.dropRight("/feed".length)
-      val maybeResource = Await.result(mongoRepository.getResourceByUrl(newsitemUrl), TenSeconds)
-      maybeResource match {
-        case n: Some[Newsitem] => {
+      Await.result(mongoRepository.getResourceByUrl(newsitemUrl), TenSeconds) match {
+        case n: Some[Newsitem] =>
           log.info(s"Feed url $url appears to be a comment feed for newsitem: " + n)
           true
-        }
         case None => false
         case _ => false
       }
