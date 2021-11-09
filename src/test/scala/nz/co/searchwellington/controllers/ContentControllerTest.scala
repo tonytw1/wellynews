@@ -1,12 +1,13 @@
 package nz.co.searchwellington.controllers
 
-import javax.servlet.http.{HttpServletRequest, HttpServletResponse}
 import nz.co.searchwellington.controllers.models.{ContentModelBuilderService, ContentModelBuilderServiceFactory}
-import org.junit.Assert.assertEquals
+import org.junit.Assert.{assertEquals, assertFalse, assertTrue}
 import org.junit.Test
 import org.mockito.Mockito.{mock, verify, verifyZeroInteractions, when}
+import org.springframework.util.AntPathMatcher
 import org.springframework.web.servlet.ModelAndView
 
+import javax.servlet.http.{HttpServletRequest, HttpServletResponse}
 import scala.concurrent.Future
 
 class ContentControllerTest {
@@ -61,6 +62,20 @@ class ContentControllerTest {
     contentController.normal(request, response)
 
     verify(urlStack).setUrlStack(request)
+  }
+
+  @Test
+  def shouldMatchContentPaths(): Unit = {
+    // Practise our AntPathMatcher expressions here
+    assertTrue(new AntPathMatcher().`match`("/*", "/transport"))
+    assertTrue(new AntPathMatcher().`match`("/*/rss", "/transport/rss"))
+
+    val publisherArchivePattern = "/{\\w+}/{year:\\d+}-{month:\\w+}"
+    val publisherArchivePath = "/wellington-city-council/2021-nov"
+    assertTrue(new AntPathMatcher().`match`(publisherArchivePattern, publisherArchivePath))
+
+    assertFalse(new AntPathMatcher().`match`(publisherArchivePattern, "/static/palm.jpg"))
+    assertFalse(new AntPathMatcher().`match`(publisherArchivePattern, "/static/feed-icon-16x16.png"))
   }
 
 }

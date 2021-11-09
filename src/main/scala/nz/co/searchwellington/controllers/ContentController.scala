@@ -21,9 +21,9 @@ class ContentController @Autowired()(contentModelBuilderServiceFactory: ContentM
   private val contentModelBuilderService = contentModelBuilderServiceFactory.makeContentModelBuilderService()
 
   // Ant-style path patterns
-  @GetMapping(path = Array("/", "/*", "/search", "/archive/*", "/(?!static-assets)*/*", "/profiles/**", "/*/geotagged", "/feed/*",
+  @GetMapping(path = Array("/", "/*", "/search", "/archive/*", "/profiles/**", "/*/geotagged", "/feed/*",
     "/feed/*/json", "/feeds/inbox", "/publishers", "/publishers/json", "/tags", "/tags/json", "/*/json", "/*/rss", "/newsitem/*",
-    "/*/{\\d+}-{[a-z]}"
+    "/{\\w+}/{year:\\d+}-{month:\\w+}"
   ))
   def normal(request: HttpServletRequest, response: HttpServletResponse): ModelAndView = {
     val TenSeconds = Duration(10, SECONDS)
