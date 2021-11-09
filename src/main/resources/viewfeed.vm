@@ -39,7 +39,7 @@
 				<p>This feed is provided by screen scraping a third parties site.</p>
 			#end		
 		#else
-			#if($feed.publisher)
+			#if($feed.publisherName)
 				<p>This feed is published by $feed.publisherName.</p>
 			#else
 				<p>This feed is provided by a third party.</p>
