@@ -7,11 +7,12 @@ import nz.co.searchwellington.model.{Newsitem, SiteInformation, Tag, UrlWordsGen
 import nz.co.searchwellington.repositories.mongo.MongoRepository
 import nz.co.searchwellington.tagging.{IndexTagsService, TaggingReturnsOfficerService}
 import nz.co.searchwellington.urls.UrlBuilder
-import org.joda.time.DateTime
+import org.joda.time.{DateTime, DateTimeZone}
 import org.junit.Assert.{assertEquals, assertFalse, assertTrue}
 import org.junit.Test
 import org.mockito.Mockito.{mock, when}
 import reactivemongo.api.bson.BSONObjectID
+import uk.co.eelpieconsulting.common.dates.DateFormatter
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.{Await, Future}
@@ -22,13 +23,13 @@ class FrontendResourceMapperTest extends ReasonableWaits {
   private val indexTagsService = mock(classOf[IndexTagsService])
   private val mongoRepository = mock(classOf[MongoRepository])
 
-  private val urlBuilder = new UrlBuilder(new SiteInformation(), new UrlWordsGenerator)
+  private val urlBuilder = new UrlBuilder(new SiteInformation(), new UrlWordsGenerator(new DateFormatter(DateTimeZone.UTC)))
   private val adminUrlBuilder = new AdminUrlBuilder(urlBuilder, "", "")
 
   val mapper = new FrontendResourceMapper(taggingReturnsOfficerService, indexTagsService, mongoRepository, adminUrlBuilder)
 
   @Test
-  def canMapNewsitemsToFrontendNewsitems(): Unit = {
+  def shouldMapNewsitemsToFrontendNewsitems(): Unit = {
     val owner = User(BSONObjectID.generate(), name = Some(UUID.randomUUID().toString), profilename = Some(UUID.randomUUID().toString))
     val newsitem = Newsitem(id = "123", http_status = 200, title = Some("Something happened today"),
       date = Some(new DateTime(2020, 10, 7, 12, 0, 0, 0).toDate),

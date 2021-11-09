@@ -1,10 +1,10 @@
 package nz.co.searchwellington.model
 
-import org.joda.time.DateTimeZone
+import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
 import uk.co.eelpieconsulting.common.dates.DateFormatter
 
-@Component class UrlWordsGenerator {
+@Component class UrlWordsGenerator @Autowired()(dateFormatter: DateFormatter) {
 
   def makeUrlWordsFor(resource: Resource, publisher: Option[Website] = None): Option[String] = {
     resource match {
@@ -27,7 +27,6 @@ import uk.co.eelpieconsulting.common.dates.DateFormatter
     }
 
     newsitem.date.map { d =>
-      val dateFormatter = new DateFormatter(DateTimeZone.UTC)
       uri.append("/" + dateFormatter.yearMonthDayUrlStub(d))
       uri.append("/" + makeUrlWordsFromName(newsitem.title.getOrElse("")))
       uri.toString()

@@ -15,10 +15,9 @@ import javax.servlet.http.HttpServletRequest
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
-@Component class ArchiveModelBuilder @Autowired()(val contentRetrievalService: ContentRetrievalService, archiveLinksService: ArchiveLinksService) extends
+@Component class ArchiveModelBuilder @Autowired()(val contentRetrievalService: ContentRetrievalService, archiveLinksService: ArchiveLinksService,
+                                                  dateFormatter: DateFormatter) extends
   ModelBuilder with ReasonableWaits with ArchiveMonth {
-
-  private val dateFormatter = new DateFormatter(DateTimeZone.UTC) // TODO use global
 
   private val archiveMonthPath = "^/archive/.*?$"
 

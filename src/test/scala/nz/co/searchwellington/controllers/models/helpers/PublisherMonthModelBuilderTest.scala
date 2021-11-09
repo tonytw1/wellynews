@@ -11,6 +11,7 @@ import org.junit.Assert.{assertEquals, assertFalse, assertTrue}
 import org.junit.Test
 import org.mockito.Mockito.{mock, when}
 import org.springframework.mock.web.MockHttpServletRequest
+import uk.co.eelpieconsulting.common.dates.DateFormatter
 
 import scala.concurrent.{Await, Future}
 import scala.concurrent.ExecutionContext.Implicits.global
@@ -26,7 +27,7 @@ class PublisherMonthModelBuilderTest extends ReasonableWaits with ContentFields 
   private val anotherNewsitem = mock(classOf[FrontendResource])
   private val monthNewsitems = Seq(newsitem, anotherNewsitem)
 
-  private val modelBuilder = new PublisherMonthModelBuilder(contentRetrievalService, frontendResourceMapper)
+  private val modelBuilder = new PublisherMonthModelBuilder(contentRetrievalService, frontendResourceMapper, new DateFormatter(DateTimeZone.UTC))
 
   @Test
   def testPathMatcher(): Unit = {
@@ -38,7 +39,7 @@ class PublisherMonthModelBuilderTest extends ReasonableWaits with ContentFields 
   }
 
   @Test
-  def isValidForPublisherAndMonthPath(): Unit = {
+  def shouldBeValidForPublisherAndMonthPath(): Unit = {
     val request = new MockHttpServletRequest()
     request.setAttribute("publisher", publisher)
     request.setRequestURI("/a-publisher/2020-feb")
@@ -47,7 +48,7 @@ class PublisherMonthModelBuilderTest extends ReasonableWaits with ContentFields 
   }
 
   @Test
-  def isNotValidForPublisherAndMonthPath(): Unit = {
+  def shouldNotBeValidForPublisherAndMonthPath(): Unit = {
     val archiveMonthRequest = new MockHttpServletRequest
     archiveMonthRequest.setRequestURI("/2020-may")
 
@@ -55,7 +56,7 @@ class PublisherMonthModelBuilderTest extends ReasonableWaits with ContentFields 
   }
 
   @Test
-  def isValidForPublisherNonDate(): Unit = {
+  def shouldBeValidForPublisherNonDate(): Unit = {
     val request = new MockHttpServletRequest()
     request.setAttribute("publisher", publisher)
     request.setRequestURI("/a-publisher/something")
@@ -71,7 +72,6 @@ class PublisherMonthModelBuilderTest extends ReasonableWaits with ContentFields 
 
     val july = new DateTime(2020, 7, 1, 0, 0, DateTimeZone.UTC)
     val month = new Interval(july, july.plusMonths(1))
-    System.out.println(month);
 
     when(contentRetrievalService.getNewsitemsForPublisherInterval(publisher, month, None)).thenReturn(Future.successful(monthNewsitems))
     when(frontendResourceMapper.createFrontendResourceFrom(publisher, None)).thenReturn(Future.successful(FrontendWebsite(id = "123")))

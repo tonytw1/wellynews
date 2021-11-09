@@ -11,6 +11,7 @@ import org.junit.{Before, Test}
 import org.mockito.Mockito.{mock, when}
 import org.springframework.mock.web.MockHttpServletRequest
 import org.springframework.web.servlet.ModelAndView
+import uk.co.eelpieconsulting.common.dates.DateFormatter
 
 import scala.concurrent.{Await, Future}
 
@@ -25,20 +26,20 @@ class ArchiveModelBuilderTest extends ReasonableWaits with ContentFields {
 
   private val loggedInUser = None
 
-  val modelBuilder =  new ArchiveModelBuilder(contentRetrievalService, new ArchiveLinksService())
+  val modelBuilder =  new ArchiveModelBuilder(contentRetrievalService, new ArchiveLinksService(), new DateFormatter(DateTimeZone.UTC))
 
   @Before
-  def setup {
+  def setup() {
     request.setRequestURI("/archive/2020-jul")
   }
 
   @Test
-  def isValidForArchiveMonthUrl() {
+  def isValidForArchiveMonthUrl(): Unit = {
     assertTrue(modelBuilder.isValid(request))
   }
 
   @Test
-  def indexPageMainContentIsTheArchiveMonthNewsitems() {
+  def indexPageMainContentIsTheArchiveMonthNewsitems(): Unit = {
     val july = new DateTime(2020, 7, 1, 0, 0, DateTimeZone.UTC)
     val monthOfJuly = new Interval(july, july.plusMonths(1))
     when(contentRetrievalService.getNewsitemsForInterval(monthOfJuly, loggedInUser)).thenReturn(Future.successful(monthNewsitems))

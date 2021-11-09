@@ -7,18 +7,20 @@ import nz.co.searchwellington.model.{Geocode, SiteInformation, Tag, UrlWordsGene
 import nz.co.searchwellington.repositories.{ContentRetrievalService, TagDAO}
 import nz.co.searchwellington.tagging.RelatedTagsService
 import nz.co.searchwellington.urls.UrlBuilder
+import org.joda.time.DateTimeZone
 import org.junit.Assert.{assertEquals, assertFalse, assertTrue}
 import org.junit.{Before, Test}
 import org.mockito.Mockito.{mock, when}
 import org.springframework.mock.web.MockHttpServletRequest
 import org.springframework.web.servlet.ModelAndView
+import uk.co.eelpieconsulting.common.dates.DateFormatter
 
 import scala.concurrent.{Await, Future}
 
 class TagModelBuilderTest extends ReasonableWaits with ContentFields {
 
   private val siteInformation = new SiteInformation("", "", "", "", "")
-  private val urlBuilder = new UrlBuilder(siteInformation, new UrlWordsGenerator)
+  private val urlBuilder = new UrlBuilder(siteInformation, new UrlWordsGenerator(new DateFormatter(DateTimeZone.UTC)))
   private val rssUrlBuilder = new RssUrlBuilder(siteInformation)
 
   private val contentRetrievalService = mock(classOf[ContentRetrievalService])
@@ -44,7 +46,7 @@ class TagModelBuilderTest extends ReasonableWaits with ContentFields {
     contentRetrievalService, commonAttributesModelBuilder, tagDAO)
 
   @Before
-  def setup {
+  def setup() {
     when(tagDAO.loadTagsByParent(tag._id)).thenReturn(Future.successful(List.empty))
     when(tagDAO.loadTagByObjectId(parentTag._id)).thenReturn(Future.successful(Some(parentTag)))
   }
@@ -61,13 +63,13 @@ class TagModelBuilderTest extends ReasonableWaits with ContentFields {
   }
 
   @Test
-  def isNotValidIfMoreThanOneTagIsOnTheRequest {
+  def isNotValidIfMoreThanOneTagIsOnTheRequest() {
     request.setAttribute("tags", Seq(tag, tag))
     assertFalse(modelBuilder.isValid(request))
   }
 
   @Test
-  def tagPageHeadingShouldBeTheTagDisplayName {
+  def tagPageHeadingShouldBeTheTagDisplayName() {
     request.setAttribute("tags", Seq(tag))
     when(contentRetrievalService.getTaggedNewsitems(tag, 0, 30, loggedInUser)).thenReturn(Future.successful(noNewsitems))
 
@@ -77,7 +79,7 @@ class TagModelBuilderTest extends ReasonableWaits with ContentFields {
   }
 
   @Test
-  def mainContentShouldBeTagNewsitems {
+  def mainContentShouldBeTagNewsitems(): Unit = {
     request.setAttribute("tags", Seq(tag))
     val tagNewsitems = Seq(newsitem1, newsitem2)
     when(contentRetrievalService.getTaggedNewsitems(tag, 0, 30, loggedInUser)).thenReturn(Future.successful((tagNewsitems, tagNewsitems.size.toLong)))
@@ -89,7 +91,7 @@ class TagModelBuilderTest extends ReasonableWaits with ContentFields {
   }
 
   @Test
-  def shouldIncludeTagParent = {
+  def shouldIncludeTagParent(): Unit = {
     request.setAttribute("tags", Seq(tag))
     when(contentRetrievalService.getTaggedNewsitems(tag, 0, 30, loggedInUser)).thenReturn(Future.successful(noNewsitems))
 
@@ -99,7 +101,7 @@ class TagModelBuilderTest extends ReasonableWaits with ContentFields {
   }
 
   @Test
-  def tagPageExtras = {
+  def tagPageExtras(): Unit = {
     request.setAttribute("tags", Seq(tag))
     val mv = new ModelAndView()
 

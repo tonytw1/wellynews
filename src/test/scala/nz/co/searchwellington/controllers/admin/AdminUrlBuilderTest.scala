@@ -1,25 +1,20 @@
 package nz.co.searchwellington.controllers.admin
 
-import org.junit.Assert.assertEquals
-import org.mockito.Mockito.when
-import nz.co.searchwellington.model.SiteInformation
-import nz.co.searchwellington.model.UrlWordsGenerator
-import nz.co.searchwellington.model.frontend.FrontendFeed
-import nz.co.searchwellington.model.frontend.FrontendNewsitem
-import nz.co.searchwellington.model.frontend.FrontendWebsite
+import nz.co.searchwellington.model.{SiteInformation, UrlWordsGenerator}
+import nz.co.searchwellington.model.frontend.{FrontendFeed, FrontendNewsitem, FrontendWebsite}
 import nz.co.searchwellington.urls.UrlBuilder
-import org.joda.time.DateTime
-import org.junit.Before
+import org.joda.time.{DateTime, DateTimeZone}
+import org.junit.Assert.assertEquals
 import org.junit.Test
-import org.mockito.Mock
-import org.mockito.MockitoAnnotations
+import uk.co.eelpieconsulting.common.dates.DateFormatter
 
 class AdminUrlBuilderTest {
 
   private val frontendFeed: FrontendFeed = new FrontendFeed(id = "124")
   private val frontendWebsite = FrontendWebsite(id = "123", name = "My local sports team", urlWords = "my-local-sports-team")
 
-  private val adminUrlBuilder = new AdminUrlBuilder(new UrlBuilder(new SiteInformation(), new UrlWordsGenerator), "", "")
+  private val urlWordsGenerator = new UrlWordsGenerator(new DateFormatter(DateTimeZone.UTC))
+  private val adminUrlBuilder = new AdminUrlBuilder(new UrlBuilder(new SiteInformation(), urlWordsGenerator), "", "")
 
   @Test
   def canConstructEditUrlForFrontendWebsite(): Unit = {

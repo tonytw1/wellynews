@@ -1,18 +1,19 @@
 package nz.co.searchwellington.controllers.admin
 
-import java.util.UUID
-
 import nz.co.searchwellington.controllers.LoggedInUserFilter
 import nz.co.searchwellington.feeds.FeedReader
 import nz.co.searchwellington.filters.AdminRequestFilter
 import nz.co.searchwellington.model._
 import nz.co.searchwellington.permissions.EditPermissionService
 import nz.co.searchwellington.urls.UrlBuilder
+import org.joda.time.DateTimeZone
 import org.junit.Test
 import org.mockito.Mockito
 import org.mockito.Mockito.{mock, when}
-import org.springframework.mock.web.{MockHttpServletRequest, MockHttpServletResponse}
+import org.springframework.mock.web.MockHttpServletRequest
+import uk.co.eelpieconsulting.common.dates.DateFormatter
 
+import java.util.UUID
 import scala.concurrent.ExecutionContext.Implicits.global
 
 class AdminFeedControllerTest {
@@ -21,7 +22,8 @@ class AdminFeedControllerTest {
   private val feed = Feed(id = FEED_ID, title = Some("A feed"))
 
   private val requestFilter = mock(classOf[AdminRequestFilter])
-  private val urlBuilder = new UrlBuilder(new SiteInformation("", "", "", "", ""), new UrlWordsGenerator)
+  private val urlWordsGenerator = new UrlWordsGenerator(new DateFormatter(DateTimeZone.UTC))
+  private val urlBuilder = new UrlBuilder(new SiteInformation("", "", "", "", ""), urlWordsGenerator)
   private val loggedInUserFilter = mock(classOf[LoggedInUserFilter])
   private val permissionService = new EditPermissionService(loggedInUserFilter)
   private val feedReader = mock(classOf[FeedReader])

@@ -1,12 +1,12 @@
 package nz.co.searchwellington.urls
 
 import java.util.UUID
-
 import nz.co.searchwellington.model.frontend.{FrontendFeed, FrontendNewsitem, FrontendWebsite}
 import nz.co.searchwellington.model._
-import org.joda.time.{DateTime, Interval}
+import org.joda.time.{DateTime, DateTimeZone, Interval}
 import org.junit.Assert.{assertEquals, assertNull}
 import org.junit.Test
+import uk.co.eelpieconsulting.common.dates.DateFormatter
 import uk.co.eelpieconsulting.common.geo.model.{LatLong, OsmType, Place}
 
 class UrlBuilderTest {
@@ -18,24 +18,24 @@ class UrlBuilderTest {
 
   private val tag = Tag(name = "atag")
 
-  private val urlBuilder = new UrlBuilder(new SiteInformation(url = "https://wellynews.local"), new UrlWordsGenerator)
+  private val urlBuilder = new UrlBuilder(new SiteInformation(url = "https://wellynews.local"), new UrlWordsGenerator(new DateFormatter(DateTimeZone.UTC)))
 
   @Test
-  def canBuildPublisherKeywordSearchUrl(): Unit = {
+  def shouldBuildPublisherKeywordSearchUrl(): Unit = {
     val publisher = Website(title = Some("Wellington City Council"), url_words = Some("wellington-city-council"))
     val url = urlBuilder.getPublisherSearchUrl(publisher, "something")
     assertEquals("/search?q=something&publisher=wellington-city-council", url)
   }
 
   @Test
-  def canBuildTagKeywordSearchUrl(): Unit = {
+  def shouldBuildTagKeywordSearchUrl(): Unit = {
     val tag = Tag(name = "transport")
     val url = urlBuilder.getTagSearchUrl(tag, keywords = "something")
     assertEquals("/search?q=something&tag=transport", url)
   }
 
   @Test
-  def canCreatePublisherAndTagCombinerLinkBasedOnPublisherUrlWordsAndTagName(): Unit = {
+  def shouldCreatePublisherAndTagCombinerLinkBasedOnPublisherUrlWordsAndTagName(): Unit = {
     val publisher = Website(title = Some("Wellington City Council"), url_words = Some("wellington-city-council"))
 
     val result = urlBuilder.getPublisherCombinerUrl(publisher, tag)
@@ -75,7 +75,7 @@ class UrlBuilderTest {
   }
 
   @Test
-  def canComposeOsmWebsiteLinkforOsmIds(): Unit = {
+  def shouldComposeOsmWebsiteLinkforOsmIds(): Unit = {
     val osmId = new OsmId(24724709, OsmType.WAY.toString)
     assertEquals("http://www.openstreetmap.org/browse/way/24724709", urlBuilder.getOsmWebsiteUrl(osmId))
   }
