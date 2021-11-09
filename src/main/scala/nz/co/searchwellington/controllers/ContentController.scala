@@ -6,7 +6,7 @@ import org.apache.log4j.Logger
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.core.annotation.Order
 import org.springframework.stereotype.Controller
-import org.springframework.web.bind.annotation.RequestMapping
+import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.servlet.ModelAndView
 
 import scala.concurrent.Await
@@ -20,7 +20,8 @@ class ContentController @Autowired()(contentModelBuilderServiceFactory: ContentM
 
   private val contentModelBuilderService = contentModelBuilderServiceFactory.makeContentModelBuilderService()
 
-  @RequestMapping(value = Array("/", "/*", "/search", "/archive/*", "/(?!static-assets)*/*", "/profiles/**", "/*/geotagged", "/feed/*",
+  // Ant-style path patterns
+  @GetMapping(path = Array("/", "/*", "/search", "/archive/*", "/(?!static-assets)*/*", "/profiles/**", "/*/geotagged", "/feed/*",
     "/feed/*/json", "/feeds/inbox", "/publishers", "/publishers/json", "/tags", "/tags/json", "/*/json", "/*/rss", "/newsitem/*",
     "/*/{\\d+}-{[a-z]}"
   ))
