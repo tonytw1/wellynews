@@ -13,31 +13,31 @@ import scala.concurrent.ExecutionContext.Implicits.global
 
   private val log = Logger.getLogger(classOf[DeleteAnonUsers])
 
-  // Delete anon users with no submissions or taggings.
+  // Delete users with no submissions or taggings.
   // Typically these will be spammers who's spam contributions have been deleted
   @Scheduled(fixedRate = 600000, initialDelay = 600000)
   def deleteAnonUsers(): Unit = {
-    def isAnonUser(user: User) = {
-      user.profilename.exists(_.startsWith("anon")) && user.openid.isEmpty && user.twitterid.isEmpty && !user.admin
+    def nonAdmins(user: User) = {
+      !user.admin
     }
 
-    log.info("Deleting anon users")
-    val eventualToExamine = mongoRepository.getAllUsers().map { users =>
+    log.info("Deleting users with no submissions or taggings")
+    val eventualUsersToExamine = mongoRepository.getAllUsers().map { users =>
       log.info(s"Filtering ${users.size} total users")
-      val anonUsers = users.filter(isAnonUser)
-      anonUsers.take(1000)
+      val nonAdmins = users.filter(nonAdmins)
+      nonAdmins.take(1000)
     }
-    eventualToExamine.map { anonUsers =>
-      anonUsers.map { user =>
+    eventualUsersToExamine.map { users =>
+      users.map { user =>
         for {
           tagged <- mongoRepository.getResourceIdsByTaggingUser(user)
           owned <- mongoRepository.getResourcesIdsOwnedBy(user)
         } yield {
           val total = owned.size + tagged.size
-          log.info(s"Anon user ${user.profilename.getOrElse(user._id)} owns ${owned.size} and has tagged ${tagged.size} for $total submissions.")
+          log.info(s"User ${user.profilename.getOrElse(user._id)} owns ${owned.size} and has tagged ${tagged.size} for $total submissions.")
           if (total == 0) {
-            log.info(s"Anon user ${user.profilename.getOrElse(user._id)} has ${total} submissions and can be deleted")
-            mongoRepository.removeUser(user)
+            log.info(s"User ${user.profilename.getOrElse(user._id)} has $total submissions and can be deleted")
+            //mongoRepository.removeUser(user)
           }
         }
       }
