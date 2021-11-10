@@ -26,6 +26,14 @@
 <form action="$siteInformation.url/geotagged">
 	<fieldset>				
 		<input name="location" #if ($locationQuery) value="$locationQuery" #end />
+
+        <label for="geocode">Geocode:</label>
+        <input id="geocode" name="geocode" />
+        <br />
+        <label for="selectedGeocode">Selected geocode:</label>
+        <input id="selectedGeocode" name="selectedGeocode" />
+        <br />
+
 		<input type="submit" value="Search by location" />
 	</fieldset>
 </form>
