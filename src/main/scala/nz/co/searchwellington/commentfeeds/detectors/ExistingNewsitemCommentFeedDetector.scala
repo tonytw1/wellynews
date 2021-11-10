@@ -16,20 +16,24 @@ class ExistingNewsitemCommentFeedDetector @Autowired()(mongoRepository: MongoRep
 
   private val log = Logger.getLogger(classOf[ExistingNewsitemCommentFeedDetector])
 
+  private val feedSuffixes = Seq("/feed", "/feed/")
+
   override def isValid(url: String): Boolean = {
     // If a feed url matches the url of an existing newsitem with /feed appended
     // then it is probably that newsitem's comment feed
-    if (url.endsWith("/feed")) {
-      val newsitemUrl = url.dropRight("/feed".length)
-      Await.result(mongoRepository.getResourceByUrl(newsitemUrl), TenSeconds) match {
-        case n: Some[Newsitem] =>
-          log.info(s"Feed url $url appears to be a comment feed for newsitem: " + n)
-          true
-        case None => false
-        case _ => false
+    feedSuffixes.exists { suffix =>
+      if (url.endsWith(suffix)) {
+        val newsitemUrl = url.dropRight(suffix.length)
+        Await.result(mongoRepository.getResourceByUrl(newsitemUrl), TenSeconds) match {
+          case n: Some[Newsitem] =>
+            log.info(s"Feed url $url appears to be a comment feed for newsitem: " + n)
+            true
+          case None => false
+          case _ => false
+        }
+      } else {
+        false
       }
-    } else {
-      false
     }
   }
 }
