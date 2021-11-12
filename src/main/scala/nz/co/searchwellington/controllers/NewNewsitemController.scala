@@ -19,7 +19,7 @@ import org.springframework.web.servlet.view.RedirectView
 
 import javax.servlet.http.HttpServletRequest
 import javax.validation.Valid
-import scala.concurrent.Await
+import scala.concurrent.{Await, Future}
 import scala.concurrent.ExecutionContext.Implicits.global
 
 @Controller
@@ -48,28 +48,40 @@ class NewNewsitemController @Autowired()(contentUpdateService: ContentUpdateServ
 
     } else {
       log.info("Got valid new newsitem submission: " + newNewsitem)
-
       val parsedDate = dateFormatter.parseDateTime(newNewsitem.getDate)
 
-      val maybePublisher = trimToOption(newNewsitem.getPublisher).flatMap { publisherName =>
-        Await.result(mongoRepository.getWebsiteByName(publisherName), TenSeconds)
+      val eventualMaybePublisher = trimToOption(newNewsitem.getPublisher).map { publisherName =>
+        mongoRepository.getWebsiteByName(publisherName)
+      }.getOrElse {
+        Future.successful(None)
       }
 
-      val newsitem = Newsitem(
-        title = Some(processTitle(newNewsitem.getTitle)),
-        page = cleanUrl(newNewsitem.getUrl),
-        date = Some(parsedDate.toDate),
-        publisher = maybePublisher.map(_._id),
-        description = Some(newNewsitem.getDescription.trim)
-      )
+      val eventualModelAndView = for {
+        maybePublisher <- eventualMaybePublisher
+        mv <- {
+          val newsitem = Newsitem(
+            title = Some(processTitle(newNewsitem.getTitle)),
+            page = cleanUrl(newNewsitem.getUrl),
+            date = Some(parsedDate.toDate),
+            publisher = maybePublisher.map(_._id),
+            description = Some(newNewsitem.getDescription.trim)
+          )
 
-      val submittingUser = ensuredSubmittingUser(loggedInUser)
-      val withSubmittingUser = newsitem.copy(owner = Some(submittingUser._id), held = submissionShouldBeHeld(Some(submittingUser)))
+          val submittingUser = ensuredSubmittingUser(loggedInUser)
+          val withSubmittingUser = newsitem.copy(owner = Some(submittingUser._id), held = submissionShouldBeHeld(Some(submittingUser)))
 
-      contentUpdateService.create(withSubmittingUser)
-      log.info("Created newsitem: " + withSubmittingUser)
-      setSignedInUser(request, submittingUser)
-      exitFromNewsitemSubmit(withSubmittingUser, maybePublisher)
+          val eventualResource = contentUpdateService.create(withSubmittingUser)
+          eventualResource.map { updated =>
+            log.info("Created newsitem: " + updated)
+            setSignedInUser(request, submittingUser)
+            exitFromNewsitemSubmit(withSubmittingUser, maybePublisher)
+          }
+        }
+      } yield {
+        mv
+      }
+
+      Await.result(eventualModelAndView, TenSeconds)
     }
   }
 

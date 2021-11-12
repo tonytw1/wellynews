@@ -1,7 +1,7 @@
 package nz.co.searchwellington.controllers
 
 import nz.co.searchwellington.forms.NewNewsitem
-import nz.co.searchwellington.model.{Newsitem, User, Website}
+import nz.co.searchwellington.model.{Newsitem, Resource, User, Website}
 import nz.co.searchwellington.modification.ContentUpdateService
 import nz.co.searchwellington.repositories.mongo.MongoRepository
 import nz.co.searchwellington.urls.{UrlBuilder, UrlCleaner}
@@ -27,7 +27,7 @@ class NewNewsitemControllerTest {
   val controller = new NewNewsitemController(contentUpdateService, mongoRepository, urlBuilder, anonUserService, urlCleaner)
 
   @Test
-  def canSubmitNewsitems(): Unit = {
+  def shouldSubmitNewsitems(): Unit = {
     implicit val ec: ExecutionContext = scala.concurrent.ExecutionContext.Implicits.global
 
     val newNewsitemSubmission = new NewNewsitem()
@@ -40,6 +40,8 @@ class NewNewsitemControllerTest {
     val publisher = Website(_id = BSONObjectID.generate(), title = Some("A publisher"))
     when(mongoRepository.getWebsiteByName("A publisher")).thenReturn(Future.successful(Some(publisher)))
     when(urlCleaner.cleanSubmittedItemUrl("https://localhost/a-newsitem")).thenReturn("https://localhost/a-newsitem")
+    when(contentUpdateService.create(Matchers.any(classOf[Resource]))(Matchers.any())).thenReturn(Future.successful(null))
+
     val bindingResultWithNoErrors = mock(classOf[BindingResult])
     val createdNewsitem = ArgumentCaptor.forClass(classOf[Newsitem])
 
