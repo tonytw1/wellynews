@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.{RequestMapping, RequestMethod}
 import org.springframework.web.servlet.ModelAndView
 
 import javax.servlet.http.HttpServletRequest
+import scala.collection.JavaConverters._
 import scala.concurrent.Await
 import scala.concurrent.ExecutionContext.Implicits.global
 
@@ -28,7 +29,6 @@ import scala.concurrent.ExecutionContext.Implicits.global
   @RequestMapping(value = Array("/about"), method = Array(RequestMethod.GET)) def about(request: HttpServletRequest): ModelAndView = {
     urlStack.setUrlStack(request)
 
-    import scala.collection.JavaConverters._
     Await.result((for {
       latestNewsitems <- eventualLatestNewsitems
     } yield {
@@ -47,7 +47,6 @@ import scala.concurrent.ExecutionContext.Implicits.global
     Await.result((for {
       links <- contentRetrievalService.getArchiveMonths(loggedInUser)
     } yield {
-      import scala.collection.JavaConverters._
       new ModelAndView("archiveIndex").
         addObject("heading", "Archive").
         addObject("archiveLinks", links.asJava)
@@ -66,15 +65,21 @@ import scala.concurrent.ExecutionContext.Implicits.global
     urlStack.setUrlStack(request)
     val loggedInUser = loggedInUserFilter.getLoggedInUser
 
-    Await.result(withLatestNewsitems(Await.result(withCommonLocal {
-      import scala.collection.JavaConverters._
-      val mv = new ModelAndView("rssfeeds").
-        addObject("heading", "RSS feeds").
-        addObject("feedable_tags", Await.result(contentRetrievalService.getFeaturedTags, TenSeconds).asJava)
-
-      commonAttributesModelBuilder.setRss(mv, rssUrlBuilder.getBaseRssTitle, rssUrlBuilder.getBaseRssUrl)
+    val eventualModelAndView = for {
+      exampleFeedableTags <- contentRetrievalService.getFeaturedTags
+      modelAndView <- withCommonLocal {
+        val mv = new ModelAndView("rssfeeds").
+          addObject("heading", "RSS feeds").
+          addObject("feedable_tags", exampleFeedableTags.asJava)
+        commonAttributesModelBuilder.setRss(mv, rssUrlBuilder.getBaseRssTitle, rssUrlBuilder.getBaseRssUrl)
+        mv
+      }
+      mv <- withLatestNewsitems(modelAndView, loggedInUser)
+    } yield {
       mv
-    }, TenSeconds), loggedInUser), TenSeconds)
+    }
+
+    Await.result(eventualModelAndView, TenSeconds)
   }
 
   @RequestMapping(Array("/feeds/discovered"))
@@ -89,12 +94,12 @@ import scala.concurrent.ExecutionContext.Implicits.global
       discoveredFeeds <- eventualDiscoveredFeeds
       feeds <- eventualFeeds
     } yield {
-      import scala.collection.JavaConverters._
       val mv = new ModelAndView("discoveredFeeds").
         addObject("heading", "Discovered Feeds").
         addObject("discovered_feeds", discoveredFeeds.asJava)
       commonAttributesModelBuilder.withSecondaryFeeds(mv, feeds)
     }
+
     Await.result(eventualModelAndView.flatMap(withCommonLocal), TenSeconds)
   }
 
