@@ -28,15 +28,11 @@ Sometimes, something interesting washes up here.</p>
 
 </div>
 
-<div class="right">
-
-<div class="box">
-#parse("includes/latest_newsitems.vm")
-<br clear="all"/>
-
-</div>
-
-</div>
+	<div class="right">
+		<div class="box">
+			#parse("includes/righthand_content.vm")
+		</div>
+	</div>
 
 </div>
 
