@@ -64,6 +64,7 @@ import scala.concurrent.ExecutionContext.Implicits.global
   @RequestMapping(Array("/rssfeeds"))
   def rssfeeds(request: HttpServletRequest): ModelAndView = {
     urlStack.setUrlStack(request)
+    val loggedInUser = loggedInUserFilter.getLoggedInUser
 
     Await.result(withLatestNewsitems(Await.result(withCommonLocal {
       import scala.collection.JavaConverters._
@@ -73,7 +74,7 @@ import scala.concurrent.ExecutionContext.Implicits.global
 
       commonAttributesModelBuilder.setRss(mv, rssUrlBuilder.getBaseRssTitle, rssUrlBuilder.getBaseRssUrl)
       mv
-    }, TenSeconds), loggedInUserFilter.getLoggedInUser), TenSeconds)
+    }, TenSeconds), loggedInUser), TenSeconds)
   }
 
   @RequestMapping(Array("/feeds/discovered"))
