@@ -95,7 +95,7 @@ import scala.concurrent.ExecutionContext.Implicits.global
         addObject("discovered_feeds", discoveredFeeds.asJava)
       commonAttributesModelBuilder.withSecondaryFeeds(mv, feeds)
     }
-    Await.result(eventualModelAndView, TenSeconds)
+    Await.result(eventualModelAndView.flatMap(withCommonLocal), TenSeconds)
   }
 
   private def eventualLatestNewsitems = contentRetrievalService.getLatestNewsitems(5, loggedInUser = loggedInUserFilter.getLoggedInUser)
