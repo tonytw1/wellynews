@@ -82,14 +82,20 @@ import scala.concurrent.ExecutionContext.Implicits.global
     urlStack.setUrlStack(request)
     val loggedInUser = loggedInUserFilter.getLoggedInUser
 
-    val discoveredFeeds = Await.result(mongoRepository.getDiscoveredFeeds(1000), TenSeconds)
-    val feeds = Await.result(contentRetrievalService.getAllFeedsOrderedByLatestItemDate(loggedInUser), TenSeconds)
+    val eventualDiscoveredFeeds = mongoRepository.getDiscoveredFeeds(1000)
+    val eventualFeeds = contentRetrievalService.getAllFeedsOrderedByLatestItemDate(loggedInUser)
 
-    import scala.collection.JavaConverters._
-    val mv = Await.result(withCommonLocal(new ModelAndView("discoveredFeeds").
-      addObject("heading", "Discovered Feeds").
-      addObject("discovered_feeds", discoveredFeeds.asJava)), TenSeconds)
-    commonAttributesModelBuilder.withSecondaryFeeds(mv, feeds)
+    val eventualModelAndView = for {
+      discoveredFeeds <- eventualDiscoveredFeeds
+      feeds <- eventualFeeds
+    } yield {
+      import scala.collection.JavaConverters._
+      val mv = new ModelAndView("discoveredFeeds").
+        addObject("heading", "Discovered Feeds").
+        addObject("discovered_feeds", discoveredFeeds.asJava)
+      commonAttributesModelBuilder.withSecondaryFeeds(mv, feeds)
+    }
+    Await.result(eventualModelAndView, TenSeconds)
   }
 
   private def eventualLatestNewsitems = contentRetrievalService.getLatestNewsitems(5, loggedInUser = loggedInUserFilter.getLoggedInUser)
