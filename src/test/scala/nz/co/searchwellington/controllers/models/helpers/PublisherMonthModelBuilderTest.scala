@@ -1,6 +1,5 @@
 package nz.co.searchwellington.controllers.models.helpers
 
-import java.util.regex.Pattern
 import nz.co.searchwellington.ReasonableWaits
 import nz.co.searchwellington.model.Website
 import nz.co.searchwellington.model.frontend.{FrontendResource, FrontendWebsite}
@@ -13,8 +12,10 @@ import org.mockito.Mockito.{mock, when}
 import org.springframework.mock.web.MockHttpServletRequest
 import uk.co.eelpieconsulting.common.dates.DateFormatter
 
-import scala.concurrent.{Await, Future}
+import java.util.regex.Pattern
 import scala.concurrent.ExecutionContext.Implicits.global
+import scala.concurrent.{Await, Future}
+import scala.jdk.CollectionConverters._
 
 class PublisherMonthModelBuilderTest extends ReasonableWaits with ContentFields {
 
@@ -78,7 +79,6 @@ class PublisherMonthModelBuilderTest extends ReasonableWaits with ContentFields 
 
     val mv = Await.result(modelBuilder.populateContentModel(request), TenSeconds).get
 
-    import scala.collection.JavaConverters._
     assertEquals(monthNewsitems.asJava, mv.getModel.get(MAIN_CONTENT))
     assertEquals("A publisher - July 2020", mv.getModel.get("heading"))
   }

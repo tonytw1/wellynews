@@ -12,6 +12,7 @@ import org.mockito.Mockito.{mock, when}
 import org.springframework.mock.web.MockHttpServletRequest
 
 import scala.concurrent.{Await, Future}
+import scala.jdk.CollectionConverters._
 
 class WatchlistModelBuilderTest extends ReasonableWaits with ContentFields {
 
@@ -31,7 +32,6 @@ class WatchlistModelBuilderTest extends ReasonableWaits with ContentFields {
 
     val mv = Await.result(modelBuilder.populateContentModel(request), TenSeconds).get
 
-    import scala.collection.JavaConverters._
     assertEquals(watchlistItems._1.asJava, mv.getModel.get(MAIN_CONTENT))
 
     val pageLinks = mv.getModel.get("page_links").asInstanceOf[java.util.List[PaginationLink]].asScala

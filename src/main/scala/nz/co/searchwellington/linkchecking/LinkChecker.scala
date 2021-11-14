@@ -15,6 +15,7 @@ import reactivemongo.api.bson.BSONObjectID
 
 import java.net.{URL, UnknownHostException}
 import scala.concurrent.{Await, ExecutionContext, Future}
+import scala.jdk.CollectionConverters._
 import scala.util.Try
 
 @Component class LinkChecker @Autowired()(mongoRepository: MongoRepository, contentUpdateService: ContentUpdateService,
@@ -29,7 +30,6 @@ import scala.util.Try
   private val failedCounter = registry.counter("linkchecker_failed")
 
   {
-    import scala.collection.JavaConverters._
     log.info("Autowired " + processors.asScala.size + " link checker processors: " + processors.asScala.map(_.getClass.getCanonicalName).mkString(", "))
   }
 
@@ -114,8 +114,6 @@ import scala.util.Try
 
         }, { right =>
           resource.setHttpStatus(right._1)
-
-          import scala.collection.JavaConverters._
           val eventualProcesserOutcomes = processors.asScala.map { processor =>
             log.debug("Running processor: " + processor.getClass.toString)
             processor.process(resource, right._2, DateTime.now)

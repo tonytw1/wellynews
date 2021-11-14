@@ -14,6 +14,7 @@ import org.springframework.web.servlet.ModelAndView
 import uk.co.eelpieconsulting.common.dates.DateFormatter
 
 import scala.concurrent.{Await, Future}
+import scala.jdk.CollectionConverters._
 
 class ArchiveModelBuilderTest extends ReasonableWaits with ContentFields {
 
@@ -46,7 +47,6 @@ class ArchiveModelBuilderTest extends ReasonableWaits with ContentFields {
 
     val mv = Await.result(modelBuilder.populateContentModel(request), TenSeconds).get
 
-    import scala.collection.JavaConverters._
     assertEquals(monthNewsitems.asJava, mv.getModel.get(MAIN_CONTENT))
   }
 
@@ -64,8 +64,6 @@ class ArchiveModelBuilderTest extends ReasonableWaits with ContentFields {
 
     val mv = new ModelAndView()
     val withExtras = Await.result(modelBuilder.populateExtraModelContent(request, mv, None), TenSeconds)
-
-    import scala.collection.JavaConverters._
     assertEquals(archiveLinks.asJava, withExtras.getModel.get("archive_links"))
   }
 

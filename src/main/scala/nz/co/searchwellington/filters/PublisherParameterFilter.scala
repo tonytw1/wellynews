@@ -17,7 +17,7 @@ import scala.concurrent.ExecutionContext.Implicits.global
   extends RequestAttributeFilter with ReasonableWaits {
 
   override def filter(request: HttpServletRequest): Unit = {
-    if (!(Strings.isNullOrEmpty(request.getParameter("publisher")))) {
+    if (!Strings.isNullOrEmpty(request.getParameter("publisher"))) {
       val publisherUrlWords = request.getParameter("publisher")
       Await.result(mongoRepository.getWebsiteByUrlwords(publisherUrlWords), TenSeconds).map { publisher =>
         request.setAttribute("publisher", publisher)

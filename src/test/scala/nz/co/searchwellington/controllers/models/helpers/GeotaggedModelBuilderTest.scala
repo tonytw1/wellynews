@@ -15,6 +15,7 @@ import org.springframework.mock.web.MockHttpServletRequest
 import uk.co.eelpieconsulting.common.geo.model.{LatLong, Place}
 
 import scala.concurrent.{Await, Future}
+import scala.jdk.CollectionConverters._
 
 class GeotaggedModelBuilderTest extends ReasonableWaits with ContentFields {
   val contentRetrievalService = mock(classOf[ContentRetrievalService])
@@ -79,7 +80,6 @@ class GeotaggedModelBuilderTest extends ReasonableWaits with ContentFields {
 
     val modelAndView = Await.result(modelBuilder.populateContentModel(request), TenSeconds).get
 
-    import scala.collection.JavaConverters._
     assertEquals(newsitemsNearPetoneStationFirstPage.asJava, modelAndView.getModel.get(MAIN_CONTENT))
   }
 
@@ -96,8 +96,6 @@ class GeotaggedModelBuilderTest extends ReasonableWaits with ContentFields {
     request.setAttribute(LocationParameterFilter.RADIUS, 3.0)
 
     val modelAndView = Await.result(modelBuilder.populateContentModel(request), TenSeconds).get
-
-    import scala.collection.JavaConverters._
     assertEquals(newsitemsNearPetoneStationFirstPage.asJava, modelAndView.getModel.get(MAIN_CONTENT))
   }
 

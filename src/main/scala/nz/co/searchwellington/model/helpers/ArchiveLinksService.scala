@@ -4,6 +4,8 @@ import nz.co.searchwellington.model.ArchiveLink
 import org.springframework.stereotype.Component
 import org.springframework.web.servlet.ModelAndView
 
+import scala.jdk.CollectionConverters._
+
 @Component
 class ArchiveLinksService {
 
@@ -16,7 +18,6 @@ class ArchiveLinksService {
       mv.addObject("feed_count", archiveStatistics.get("F").orNull)
     }
 
-    import scala.collection.JavaConverters._
     mv.addObject("archive_links", archiveMonths.take(MaxBackIssues).asJava)
 
     populateArchiveStatistics(mv)

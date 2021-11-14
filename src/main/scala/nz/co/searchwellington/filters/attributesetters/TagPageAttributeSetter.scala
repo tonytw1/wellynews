@@ -25,7 +25,7 @@ import scala.concurrent.ExecutionContext.Implicits.global
     val contentMatcher = tagPagePathPattern.matcher(RequestPath.getPathFrom(request))
     if (contentMatcher.matches) {
       val tagUrlWords = contentMatcher.group(1)
-      if (!(isReservedUrlWord(tagUrlWords))) {
+      if (!isReservedUrlWord(tagUrlWords)) {
         log.debug("'" + tagUrlWords + "' matches content")
 
         if (tagUrlWords.trim.nonEmpty) {

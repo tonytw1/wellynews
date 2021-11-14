@@ -12,6 +12,7 @@ import org.mockito.Mockito.{mock, when}
 import org.springframework.mock.web.MockHttpServletRequest
 
 import scala.concurrent.{Await, Future}
+import scala.jdk.CollectionConverters._
 
 class IndexModelBuilderTest extends ReasonableWaits with ContentFields {
 
@@ -59,7 +60,6 @@ class IndexModelBuilderTest extends ReasonableWaits with ContentFields {
 
     val mv = Await.result(modelBuilder.populateContentModel(request), TenSeconds).get
 
-    import scala.collection.JavaConverters._
     assertEquals(latestNewsitems.asJava, mv.getModel.get(MAIN_CONTENT))
   }
 

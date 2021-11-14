@@ -1,9 +1,8 @@
 package nz.co.searchwellington.controllers.models.helpers
 
-import java.util.UUID
 import nz.co.searchwellington.ReasonableWaits
-import nz.co.searchwellington.controllers.models.GeotaggedNewsitemExtractor
 import nz.co.searchwellington.controllers.RssUrlBuilder
+import nz.co.searchwellington.controllers.models.GeotaggedNewsitemExtractor
 import nz.co.searchwellington.model.frontend.{FrontendFeed, FrontendNewsitem, FrontendResource, FrontendWebsite}
 import nz.co.searchwellington.model.mappers.FrontendResourceMapper
 import nz.co.searchwellington.model.{ArchiveLink, Geocode, PublisherArchiveLink, Website}
@@ -17,8 +16,10 @@ import org.mockito.Mockito.{mock, when}
 import org.springframework.mock.web.MockHttpServletRequest
 import org.springframework.web.servlet.ModelAndView
 
+import java.util.UUID
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.{Await, Future}
+import scala.jdk.CollectionConverters._
 
 class PublisherModelBuilderTest extends ReasonableWaits with ContentFields {
 
@@ -49,7 +50,6 @@ class PublisherModelBuilderTest extends ReasonableWaits with ContentFields {
 
     val mv = Await.result(modelBuilder.populateContentModel(request), TenSeconds).get
 
-    import scala.collection.JavaConverters._
     assertEquals(publisherNewsitems.asJava, mv.getModel.get(MAIN_CONTENT))
     assertEquals(publisherFeeds.asJava, mv.getModel.get("feeds"))
   }

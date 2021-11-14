@@ -163,10 +163,10 @@ import scala.jdk.CollectionConverters.CollectionHasAsScala
             log.debug("Ignoring invalid tag name: " + field)
           }
         }
-        ({
+        {
           i += 1;
           i - 1
-        })
+        }
       }
     }
   }

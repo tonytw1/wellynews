@@ -16,6 +16,7 @@ import org.springframework.web.servlet.ModelAndView
 import uk.co.eelpieconsulting.common.dates.DateFormatter
 
 import scala.concurrent.{Await, Future}
+import scala.jdk.CollectionConverters._
 
 class TagModelBuilderTest extends ReasonableWaits with ContentFields {
 
@@ -86,7 +87,6 @@ class TagModelBuilderTest extends ReasonableWaits with ContentFields {
 
     val mv = Await.result(modelBuilder.populateContentModel(request), TenSeconds).get
 
-    import scala.collection.JavaConverters._
     assertEquals(tagNewsitems.asJava, mv.getModel.get(MAIN_CONTENT))
   }
 
@@ -116,7 +116,6 @@ class TagModelBuilderTest extends ReasonableWaits with ContentFields {
 
     val withExtras = Await.result(modelBuilder.populateExtraModelContent(request, mv, None), TenSeconds)
 
-    import scala.collection.JavaConverters._
     assertEquals(geotagged.asJava, withExtras.getModel.get("geocoded"))
   }
 
