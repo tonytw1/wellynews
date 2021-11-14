@@ -77,9 +77,10 @@ import scala.concurrent.Future
     }
   }
 
-  def getNewsitemsMatchingKeywords(keywords: String, startIndex: Int, maxNewsitems: Int, loggedInUser: Option[User], tag: Option[Tag] = None, publisher: Option[Website] = None): Future[(Seq[FrontendResource], Long)] = {
+  def getNewsitemsMatchingKeywords(keywords: String, startIndex: Int, maxItems: Int, loggedInUser: Option[User], tag: Option[Tag] = None, publisher: Option[Website] = None): Future[(Seq[FrontendResource], Long)] = {
     val newsitemsByKeywords = ResourceQuery(`type` = newsitems, q = Some(keywords), publisher = publisher, tags = tag.map(t => Set(t)))
-    toFrontendResourcesWithTotalCount(elasticSearchIndexer.getResources(newsitemsByKeywords, loggedInUser = loggedInUser), loggedInUser)
+    val withPagination = newsitemsByKeywords.copy(startIndex = startIndex, maxItems = maxItems)
+    toFrontendResourcesWithTotalCount(elasticSearchIndexer.getResources(withPagination, loggedInUser = loggedInUser), loggedInUser)
   }
 
   def getNewsitemKeywordSearchRelatedTags(keywords: String, loggedInUser: Option[User]): Future[Seq[TagContentCount]] = {
@@ -136,7 +137,8 @@ import scala.concurrent.Future
   }
 
   def getGeocodedNewsitems(startIndex: Int, maxItems: Int, loggedInUser: Option[User]): Future[Seq[FrontendResource]] = {
-    elasticSearchIndexer.getResources(geocodedNewsitems, loggedInUser = loggedInUser).flatMap(i => fetchByIds(i._1, loggedInUser))
+    val withPagination = geocodedNewsitems.copy(startIndex = startIndex, maxItems = maxItems)
+    elasticSearchIndexer.getResources(withPagination, loggedInUser = loggedInUser).flatMap(i => fetchByIds(i._1, loggedInUser))
   }
 
   def getGeocodedNewitemsCount(loggedInUser: Option[User]): Future[Long] = {
@@ -316,8 +318,9 @@ import scala.concurrent.Future
     elasticSearchIndexer.getResources(publisherWatchlist, loggedInUser = loggedInUser).flatMap(i => fetchByIds(i._1, loggedInUser))
   }
 
-  def getPublisherTagCombinerNewsitems(publisher: Website, tag: Tag, maxNewsitems: Int, loggedInUser: Option[User]): Future[Seq[FrontendResource]] = {
+  def getPublisherTagCombinerNewsitems(publisher: Website, tag: Tag, startIndex: Int, maxItems: Int, loggedInUser: Option[User]): Future[Seq[FrontendResource]] = {
     val publisherTagCombiner = ResourceQuery(`type` = newsitems, publisher = Some(publisher), tags = Some(Set(tag)))
+    val withPagination = publisherTagCombiner.copy(startIndex = startIndex, maxItems = maxItems)
     elasticSearchIndexer.getResources(publisherTagCombiner, loggedInUser = loggedInUser).flatMap(i => fetchByIds(i._1, loggedInUser))
   }
 

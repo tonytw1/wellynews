@@ -20,7 +20,7 @@ import scala.jdk.CollectionConverters._
 @Component class PublisherTagCombinerModelBuilder @Autowired()(val contentRetrievalService: ContentRetrievalService, rssUrlBuilder: RssUrlBuilder, urlBuilder: UrlBuilder,
                                                                relatedTagsService: RelatedTagsService, commonAttributesModelBuilder: CommonAttributesModelBuilder,
                                                                frontendResourceMapper: FrontendResourceMapper) extends ModelBuilder
-  with CommonSizes with ReasonableWaits {
+  with CommonSizes with ReasonableWaits with Pagination {
 
   private val logger = Logger.getLogger(classOf[PublisherTagCombinerModelBuilder])
 
@@ -37,7 +37,7 @@ import scala.jdk.CollectionConverters._
     val eventualFrontendPublisher = frontendResourceMapper.createFrontendResourceFrom(publisher)
     for {
       frontendPublisher <- eventualFrontendPublisher
-      publisherTagNewsitems <- contentRetrievalService.getPublisherTagCombinerNewsitems(publisher, tag, MAX_NEWSITEMS, loggedInUser)
+      publisherTagNewsitems <- contentRetrievalService.getPublisherTagCombinerNewsitems(publisher, tag, 0, MAX_NEWSITEMS, loggedInUser) // TODO pagination
     } yield {
       val mv = new ModelAndView().
         addObject("publisher", frontendPublisher).

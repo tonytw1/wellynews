@@ -15,6 +15,7 @@ import org.springframework.mock.web.MockHttpServletRequest
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.{Await, Future}
+import scala.jdk.CollectionConverters._
 
 class PublisherTagCombinerModelBuilderTest extends ReasonableWaits with ContentFields {
 
@@ -34,7 +35,7 @@ class PublisherTagCombinerModelBuilderTest extends ReasonableWaits with ContentF
   val request = new MockHttpServletRequest
 
   @Test
-  def isValidForPublisherAndTags(): Unit = {
+  def shouldBeValidForPublisherAndTags(): Unit = {
     request.setAttribute("publisher", apublisher)
     request.setAttribute("tag", atag)
 
@@ -48,11 +49,10 @@ class PublisherTagCombinerModelBuilderTest extends ReasonableWaits with ContentF
     when(frontendResourceMapper.createFrontendResourceFrom(apublisher)).thenReturn(Future.successful(FrontendWebsite(id = "123", name = "A publisher")))
 
     val expectedNewsitems = Seq(FrontendNewsitem(id = "123"), FrontendNewsitem(id = "456"))
-    when(contentRetrievalService.getPublisherTagCombinerNewsitems(apublisher, atag, 30, None)).thenReturn(Future.successful(expectedNewsitems))
+    when(contentRetrievalService.getPublisherTagCombinerNewsitems(apublisher, atag, 0, 30, None)).thenReturn(Future.successful(expectedNewsitems))
 
     val mv = Await.result(modelBuilder.populateContentModel(request), TenSeconds).get
 
-    import scala.collection.JavaConverters._
     assertEquals(expectedNewsitems.asJava, mv.getModel.get(MAIN_CONTENT))
     assertNotNull(mv.getModel.get("publisher"))
     assertNotNull(mv.getModel.get("tag"))
