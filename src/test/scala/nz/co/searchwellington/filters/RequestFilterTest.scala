@@ -24,7 +24,7 @@ class RequestFilterTest {
 
   private val filters = Array[RequestAttributeFilter](new PageParameterFilter)
 
-  private val filter = new RequestFilter(new CombinerPageAttributeSetter(tagDAO, mongoRepository), new PublisherPageAttributeSetter(mongoRepository),
+  private val filter = new RequestFilter(new CombinerPageAttributeSetter(mongoRepository), new PublisherPageAttributeSetter(mongoRepository),
     new FeedAttributeSetter(mongoRepository), new TagPageAttributeSetter(tagDAO, mongoRepository), filters) // TODO suggests test coverage at wrong level
 
   @Before
@@ -137,6 +137,7 @@ class RequestFilterTest {
     request.setRequestURI("/capital-times+soccer")
     when(mongoRepository.getTagByUrlWords("capital-times+soccer")).thenReturn(Future.successful(None)) // TODO tag combiner pattern should have been blocked before here
     when(mongoRepository.getWebsiteByUrlwords("capital-times+soccer")).thenReturn(Future.successful(None))
+    when(mongoRepository.getTagByUrlWords("capital-times")).thenReturn(Future.successful(None))
 
     filter.loadAttributesOntoRequest(request)
 
@@ -153,6 +154,7 @@ class RequestFilterTest {
     request.setRequestURI("/capital-times+soccer/rss")
     when(mongoRepository.getTagByUrlWords("capital-times+soccer")).thenReturn(Future.successful(None)) // TODO tag combiner pattern should have been blocked before here
     when(mongoRepository.getWebsiteByUrlwords("capital-times+soccer")).thenReturn(Future.successful(None))
+    when(mongoRepository.getTagByUrlWords("capital-times")).thenReturn(Future.successful(None))
 
     filter.loadAttributesOntoRequest(request)
 
