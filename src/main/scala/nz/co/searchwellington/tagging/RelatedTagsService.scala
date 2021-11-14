@@ -39,7 +39,7 @@ import scala.concurrent.Future
           val isNotHidden = !relatedTag.hidden
           val isNotParentOf = !tagsAncestors.contains(relatedTag)
           val isNotDescendantOf = !tagsDescendants.contains(relatedTag)
-          val isNotBlogsOrPlaces = Set("blogs", "places").contains(relatedTag.name)
+          val isNotBlogsOrPlaces = !Set("blogs", "places").contains(relatedTag.name)
 
           tag != relatedTag && isNotHidden && isNotBlogsOrPlaces && isNotParentOf && isNotDescendantOf
         }
