@@ -23,23 +23,8 @@ trait Resource extends Tagged {
   var owner: Option[BSONObjectID]
   val resource_tags: Seq[Tagging]
 
-  def setDate(date: Date): Unit = {}  // TODO
-
-  def setDescription(description: String): Unit = {}  // TODO this.description = description
-
   def setHttpStatus(httpStatus: Int): Unit = this.http_status = httpStatus
-
   def setLastScanned(lastScanned: Date): Unit = this.last_scanned = Some(lastScanned)
-
   def setLastChanged(lastChanged: Date): Unit = this.last_changed = Some(lastChanged)
 
-  def setLiveTime(liveTime: Date): Unit = this.live_time = Some(liveTime)
-
-  def setEmbargoedUntil(embargoedUntil: Date): Unit = this.embargoed_until = Some(embargoedUntil)
-
-  def setUrlWords(urlWords: String): Unit = {} // TODO this.url_words = urlWords
-
-  def setOwner(owner: User): Unit = {}  // TODO
-
-  def setHeld(held: Boolean): Unit = this.held = held
 }

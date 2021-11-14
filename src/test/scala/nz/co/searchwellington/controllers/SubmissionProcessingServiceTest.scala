@@ -41,15 +41,4 @@ class SubmissionProcessingServiceTest {
     submissionProcessingService = new SubmissionProcessingService(tagDAO, tagVoteDAO, osmIdParser, placeToGeocodeMapper, mongoRepository)
   }
 
-  @Test
-  @throws[Exception]
-  def acceptsEmbargoDates {
-    val embargoDate = DateTime.now.toDate
-    request.setAttribute("embargo_date", embargoDate)
-
-    submissionProcessingService.processEmbargoDate(request, resource)
-
-    verify(resource).setEmbargoedUntil(embargoDate)
-  }
-
 }

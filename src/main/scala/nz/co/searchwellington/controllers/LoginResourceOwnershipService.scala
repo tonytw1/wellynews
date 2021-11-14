@@ -1,7 +1,7 @@
 package nz.co.searchwellington.controllers
 
 import nz.co.searchwellington.ReasonableWaits
-import nz.co.searchwellington.model.{Resource, User}
+import nz.co.searchwellington.model.{Feed, Newsitem, Resource, User, Watchlist, Website}
 import nz.co.searchwellington.repositories.HandTaggingService
 import nz.co.searchwellington.repositories.mongo.MongoRepository
 import org.springframework.beans.factory.annotation.Autowired
@@ -22,11 +22,16 @@ import scala.concurrent.{Await, ExecutionContext, Future}
       }
 
       Future.sequence(eventualMaybeResourcesIds).flatMap { ros: Seq[Option[Resource]] =>
-        val x: Seq[Future[WriteResult]] = ros.flatten.map { resource =>
-          resource.setOwner(newOwner)
-          mongoRepository.saveResource(resource)  // TODO need an elastic update as well.
+        val updateWrites = ros.flatten.map { resource =>
+          val withNewOwner = resource match {
+            case w: Website => w.copy(owner = Some(newOwner._id))
+            case n: Newsitem => n.copy(owner = Some(newOwner._id))
+            case f: Feed => f.copy(owner = Some(newOwner._id))
+            case l: Watchlist => l.copy(owner = Some(newOwner._id))
+          }
+          mongoRepository.saveResource(withNewOwner)  // TODO need an elastic update as well.
         }
-        Future.sequence(x)
+        Future.sequence(updateWrites)
       }
     }
 

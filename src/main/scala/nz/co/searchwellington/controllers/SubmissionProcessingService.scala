@@ -63,15 +63,8 @@ import scala.jdk.CollectionConverters.CollectionHasAsScala
     }
   }
 
-  def processDate(request: HttpServletRequest, editResource: Resource) {
-    editResource.setDate(request.getAttribute(REQUEST_DATE_NAME).asInstanceOf[Date])
-    if (editResource.date.isEmpty && editResource.id == 0) {
-      editResource.setDate(Calendar.getInstance.getTime)
-    }
-  }
-
   def processEmbargoDate(request: HttpServletRequest, editResource: Resource) {
-    editResource.setEmbargoedUntil(request.getAttribute(REQUEST_EMBARGO_DATE_NAME).asInstanceOf[Date])
+    //editResource.setEmbargoedUntil(request.getAttribute(REQUEST_EMBARGO_DATE_NAME).asInstanceOf[Date])
   }
 
   def processDescription(request: HttpServletRequest, editResource: Resource) {
@@ -80,15 +73,15 @@ import scala.jdk.CollectionConverters.CollectionHasAsScala
       description = StringEscapeUtils.unescapeHtml(description)
       description = UrlFilters.stripHtml(description)
     }
-    editResource.setDescription(description)
+    //editResource.setDescription(description)
   }
 
   def processHeld(request: HttpServletRequest, editResource: Resource) {
     if (request.getParameter("has_held") != null) {
       if (request.getParameter("held") != null) {
-        editResource.setHeld(true)
+      //  editResource.setHeld(true)
       } else {
-        editResource.setHeld(false)
+       // editResource.setHeld(false)
       }
     }
   }
