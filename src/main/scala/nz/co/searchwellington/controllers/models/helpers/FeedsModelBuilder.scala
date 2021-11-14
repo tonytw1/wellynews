@@ -71,7 +71,7 @@ import scala.jdk.CollectionConverters._
       mv.addObject("suggestions", suggestedFeednewsitems.asJava)
       mv.addObject("discovered_feeds", discoveredFeedOccurrences.asJava)
       // TODO make conditional
-      mv.addObject("discovered_feeds_moreurl", urlBuilder.getDiscoveredFeeds())
+      mv.addObject("discovered_feeds_moreurl", urlBuilder.getDiscoveredFeeds)
       commonAttributesModelBuilder.withSecondaryFeeds(mv, currentFeeds)
     }
   }
