@@ -17,21 +17,26 @@ class TwitterPhotoDetector extends LinkCheckerProcessor {
   private val metaTags = new AndFilter(new TagNameFilter("META"), new NodeClassFilter(classOf[Tag]))
   private val twitterPhotoMetaTags = new AndFilter(metaTags, new HasAttributeFilter("name", "twitter:image"))
 
-  override def process(checkResource: Resource, pageContent: Option[String], seen: DateTime)(implicit ec: ExecutionContext): Future[Boolean] = {
-    parserFor(pageContent.get).flatMap { parser =>  // TODO naked get
-      Try {
-        val tags = parser.extractAllNodesThatMatch(twitterPhotoMetaTags).toNodeArray.toSeq.map(_.asInstanceOf[Tag])
-        val imageURLs = tags.flatMap(tag => Option(tag.getAttribute("content")))
-        if (imageURLs.nonEmpty) {
-          log.info("Found twitter:images: " + imageURLs)
+  override def process(checkResource: Resource, maybePageContent: Option[String], seen: DateTime)(implicit ec: ExecutionContext): Future[Boolean] = {
+    maybePageContent.map { pageContent =>
+      parserFor(pageContent).flatMap { parser =>
+        Try {
+          val tags = parser.extractAllNodesThatMatch(twitterPhotoMetaTags).toNodeArray.toSeq.map(_.asInstanceOf[Tag])
+          val imageURLs = tags.flatMap(tag => Option(tag.getAttribute("content")))
+          if (imageURLs.nonEmpty) {
+            log.info("Found twitter:images: " + imageURLs)
+          }
         }
+      } match {
+        case Success(_) =>
+          Future.successful(true)
+        case Failure(e) =>
+          log.warn("Failed to parse html for twitter:images", e)
+          Future.successful(false)
       }
-    } match {
-      case Success(_) =>
-        Future.successful(true)
-      case Failure(e) =>
-        log.warn("Failed to parse html for twitter:images", e)
-        Future.successful(false)
+
+    }.getOrElse{
+      Future.successful(true)
     }
   }
 
