@@ -31,10 +31,10 @@ trait Pagination {
     mv.addObject("start_index", startIndex + 1)
     mv.addObject("end_index", endIndex)
 
-    mv.addObject("page_links", makePaginationLinks(startIndex, totalCount, pageSize, linkBuilder).asJava)
+    mv.addObject("page_links", makePaginationLinks(totalCount, pageSize, linkBuilder).asJava)
   }
 
-  private def makePaginationLinks(startIndex: Int, totalCount: Long, pageSize: Int, linkBuilder: Int => String): Seq[PaginationLink] = {
+  private def makePaginationLinks(totalCount: Long, pageSize: Int, linkBuilder: Int => String): Seq[PaginationLink] = {
     val maxPageNumber = (totalCount / pageSize) + 1
     if (maxPageNumber > 1) {
       val pages = 1 to maxPageNumber.toInt
