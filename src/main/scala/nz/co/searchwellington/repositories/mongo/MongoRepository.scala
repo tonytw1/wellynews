@@ -219,7 +219,7 @@ class MongoRepository @Autowired()(@Value("${mongo.uri}") mongoUri: String) exte
     getResourceBy(BSONDocument("type" -> "F", "page" -> url)).map(ro => ro.map(r => r.asInstanceOf[Feed]))
   }
 
-  def getFeedByWhakaokoSubscriptionId(subscriptionId: String)(implicit ec: ExecutionContext) = {
+  def getFeedByWhakaokoSubscriptionId(subscriptionId: String)(implicit ec: ExecutionContext): Future[Option[Feed]] = {
     getResourceBy(BSONDocument("type" -> "F", "whakaokoSubscription" -> subscriptionId)).map(ro => ro.map(r => r.asInstanceOf[Feed]))
   }
 
