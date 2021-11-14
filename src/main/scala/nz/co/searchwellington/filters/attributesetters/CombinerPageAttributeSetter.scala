@@ -54,39 +54,5 @@ import scala.concurrent.ExecutionContext.Implicits.global
     } else {
       false
     }
-
-    if (matcher.matches) {
-      val left = matcher.group(1)
-      val right = matcher.group(2)
-      log.debug("Path matches combiner pattern for '" + left + "', '" + right + "'")
-
-      Await.result(mongoRepository.getTagByUrlWords(right), TenSeconds).map { rightHandTag =>
-
-        Await.result(mongoRepository.getWebsiteByUrlwords(left), TenSeconds).map { publisher =>
-          log.info("Right matches tag: " + rightHandTag.getName + " and left matches publisher: " + publisher.getTitle)
-          request.setAttribute("publisher", publisher)
-          request.setAttribute("tag", rightHandTag)
-          true
-
-        }.getOrElse {
-          Await.result(mongoRepository.getTagByUrlWords(left), TenSeconds).map { leftHandTag =>
-            log.info("Setting tags '" + leftHandTag.getName + "', '" + rightHandTag.getName + "'")
-            val tags = Seq(leftHandTag, rightHandTag)
-            request.setAttribute("tags", tags)
-            true
-
-          }.getOrElse {
-            false
-          }
-        }
-
-      }.getOrElse {
-        false
-      }
-
-    } else {
-      false
-    }
   }
-
 }
