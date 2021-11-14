@@ -17,6 +17,7 @@ import uk.co.eelpieconsulting.common.dates.DateFormatter
 
 import scala.concurrent.{Await, Future}
 import scala.jdk.CollectionConverters._
+import scala.concurrent.ExecutionContext.Implicits.global
 
 class TagModelBuilderTest extends ReasonableWaits with ContentFields {
 

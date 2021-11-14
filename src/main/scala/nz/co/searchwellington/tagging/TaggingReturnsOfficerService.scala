@@ -8,8 +8,7 @@ import nz.co.searchwellington.repositories.mongo.MongoRepository
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
 
-import scala.concurrent.ExecutionContext.Implicits.global // TODO pass in
-import scala.concurrent.Future
+import scala.concurrent.{ExecutionContext, Future}
 
 // The tagging returns officer is responsible for collecting all opinions / votes on how a resource should be tagged
 // These votes are used to determine how a resource is indexed and how it renders on the frontend.
@@ -17,7 +16,7 @@ import scala.concurrent.Future
 @Component class TaggingReturnsOfficerService @Autowired()(handTaggingDAO: HandTaggingDAO, val mongoRepository: MongoRepository)
   extends ReasonableWaits with TagAncestors {
 
-  def getTaggingsVotesForResource(resource: Tagged): Future[Seq[TaggingVote]] = {
+  def getTaggingsVotesForResource(resource: Tagged)(implicit ec: ExecutionContext): Future[Seq[TaggingVote]] = {
     val eventualPublisherVotes = resource match {
       case p: PublishedResource =>
         val eventualAncestorTagVotes = {
@@ -58,7 +57,7 @@ import scala.concurrent.Future
     }
   }
 
-  def getGeotagVotesForResource(resource: Resource): Future[Seq[GeotaggingVote]] = {
+  def getGeotagVotesForResource(resource: Resource)(implicit ec: ExecutionContext): Future[Seq[GeotaggingVote]] = {
     val resourceGeocodeVote = resource.geocode.filter(_.isValid).map { g =>
       GeotaggingVote(g, "Resources own geo tag", 1) // TODO resource owner as the voter
     }
@@ -113,7 +112,7 @@ import scala.concurrent.Future
     }
   }
 
-  private def generatePublisherDerivedTagVotes(p: PublishedResource): Future[Seq[GeneratedTaggingVote]] = {
+  private def generatePublisherDerivedTagVotes(p: PublishedResource)(implicit ec: ExecutionContext): Future[Seq[GeneratedTaggingVote]] = {
     p.publisher.map { pid =>
       handTaggingDAO.getHandTaggingsForResourceId(pid).flatMap { handTaggings =>
         Future.sequence(handTaggings.map { publishersTagging =>
@@ -130,7 +129,7 @@ import scala.concurrent.Future
     }
   }
 
-  private def generateFeedRelatedTags(n: Newsitem): Future[Seq[GeneratedTaggingVote]] = {
+  private def generateFeedRelatedTags(n: Newsitem)(implicit ec: ExecutionContext): Future[Seq[GeneratedTaggingVote]] = {
     def generateAcceptedFromFeedTags(feedTags: Seq[Tag]): Future[Seq[GeneratedTaggingVote]] = {
       Future.sequence {
         feedTags.map { ft =>

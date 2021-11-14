@@ -8,13 +8,12 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
 import reactivemongo.api.bson.BSONObjectID
 
-import scala.concurrent.Future
-import scala.concurrent.ExecutionContext.Implicits.global
+import scala.concurrent.{ExecutionContext, Future}
 
 @Deprecated // "tags are attached to resource document now"
 @Component class HandTaggingDAO @Autowired()(mongoRepository: MongoRepository) extends ReasonableWaits {
 
-  def getHandTaggingsForResource(resource: Tagged): Future[Seq[HandTagging]] = {
+  def getHandTaggingsForResource(resource: Tagged)(implicit ec: ExecutionContext): Future[Seq[HandTagging]] = {
     Future.sequence {
       resource.resource_tags.map { tagging =>
         mongoRepository.getTagByObjectId(tagging.tag_id).flatMap { tag =>
@@ -26,7 +25,7 @@ import scala.concurrent.ExecutionContext.Implicits.global
     }
   }
 
-  def getHandTaggingsForResourceId(id: BSONObjectID): Future[Seq[HandTagging]] = {
+  def getHandTaggingsForResourceId(id: BSONObjectID)(implicit ec: ExecutionContext): Future[Seq[HandTagging]] = {
     mongoRepository.getResourceByObjectId(id).flatMap { maybeResource =>
       maybeResource.map { resource =>
         getHandTaggingsForResource(resource)
