@@ -238,8 +238,6 @@ class UrlBuilder @Autowired()(siteInformation: SiteInformation, urlWordsGenerato
     "http://www.openstreetmap.org/browse/" + osmId.getType.toLowerCase + "/" + osmId.getId
   }
 
-  def getDiscoveredFeeds(): String = {
-    getFeedsUrl + "/discovered"
-  }
+  def getDiscoveredFeeds: String = getFeedsUrl + "/discovered"
 
 }
