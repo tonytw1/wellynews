@@ -13,6 +13,7 @@ import org.springframework.web.servlet.ModelAndView
 import javax.servlet.http.HttpServletRequest
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
+import scala.jdk.CollectionConverters._
 
 @Component class SearchModelBuilder @Autowired()(val contentRetrievalService: ContentRetrievalService,
                                                  val urlBuilder: UrlBuilder, frontendResourceMapper: FrontendResourceMapper)
@@ -54,8 +55,6 @@ import scala.concurrent.Future
       publisherRefinements <- eventualPublisherRefinements
 
     } yield {
-      import scala.collection.JavaConverters._
-
       val mv = new ModelAndView().
         addObject("page", page).
         addObject("heading", "Search results - " + keywords).

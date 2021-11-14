@@ -21,6 +21,7 @@ import org.springframework.web.servlet.view.RedirectView
 import javax.validation.Valid
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.{Await, Future}
+import scala.jdk.CollectionConverters._
 
 @Controller
 class EditWatchlistController @Autowired()(contentUpdateService: ContentUpdateService,
@@ -41,7 +42,6 @@ class EditWatchlistController @Autowired()(contentUpdateService: ContentUpdateSe
         val editWatchlist = mapToForm(w)
         val usersTags = w.resource_tags.filter(_.user_id == loggedInUser._id)
 
-        import scala.collection.JavaConverters._
         editWatchlist.setTags(usersTags.map(_.tag_id.stringify).asJava)
 
         renderEditForm(w, editWatchlist)
@@ -104,8 +104,7 @@ class EditWatchlistController @Autowired()(contentUpdateService: ContentUpdateSe
             held = submissionShouldBeHeld(loggedInUser)
           )
 
-          import scala.collection.JavaConverters._
-          val tags = Await.result(tagDAO.loadTagsById(editWatchlist.getTags.asScala), TenSeconds).toSet
+          val tags = Await.result(tagDAO.loadTagsById(editWatchlist.getTags.asScala.toSeq), TenSeconds).toSet
           val withNewTags = handTaggingService.setUsersTagging(loggedInUser, tags.map(_._id), updated)
 
           contentUpdateService.update(withNewTags)
@@ -134,7 +133,6 @@ class EditWatchlistController @Autowired()(contentUpdateService: ContentUpdateSe
   }
 
   private def renderEditForm(w: Watchlist, editWatchlist: EditWatchlist): ModelAndView = {
-    import scala.collection.JavaConverters._
     new ModelAndView("editWatchlist").
       addObject("title", "Editing a watchlist").
       addObject("watchlist", w).

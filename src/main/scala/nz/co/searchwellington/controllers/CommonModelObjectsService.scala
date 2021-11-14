@@ -7,6 +7,7 @@ import org.springframework.web.servlet.ModelAndView
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
+import scala.jdk.CollectionConverters._
 
 trait CommonModelObjectsService extends ReasonableWaits {
 
@@ -20,7 +21,6 @@ trait CommonModelObjectsService extends ReasonableWaits {
     for {
       latestNewsitems <- contentRetrievalService.getLatestNewsitems(5, loggedInUser = loggedInUser)
     } yield {
-      import scala.collection.JavaConverters._
       mv.addObject("latest_newsitems", latestNewsitems.asJava)
     }
   }
@@ -32,7 +32,6 @@ trait CommonModelObjectsService extends ReasonableWaits {
       topLevelTags <- eventualTopLevelTags
       featuredTags <- eventualFeaturedTags
     } yield {
-      import scala.collection.JavaConverters._
       mv.addObject("top_level_tags",topLevelTags.asJava)
       mv.addObject("featuredTags", featuredTags.asJava)
     }

@@ -16,6 +16,7 @@ import org.springframework.web.servlet.ModelAndView
 import javax.servlet.http.HttpServletRequest
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
+import scala.jdk.CollectionConverters._
 
 @Component class FeedModelBuilder @Autowired()(val contentRetrievalService: ContentRetrievalService,
                                                geotaggedNewsitemExtractor: GeotaggedNewsitemExtractor,
@@ -39,9 +40,6 @@ import scala.concurrent.Future
       val geotaggedItems = geotaggedNewsitemExtractor.extractGeotaggedItems(feedNewsitems)
       if (geotaggedItems.nonEmpty) {
         log.info("Adding " + geotaggedItems.size + " geotagged feed items")
-
-        import scala.collection.JavaConverters._
-
         mv.addObject("geocoded", geotaggedItems.asJava) // TODO deduplicate overlapping
       }
     }
@@ -77,7 +75,6 @@ import scala.concurrent.Future
           mv.addObject("feed_error", l)
           mv
       }, { result =>
-        import scala.collection.JavaConverters._
         mv.addObject(MAIN_CONTENT, result._1.asJava)
         populateGeotaggedFeedItems(mv, result._1)
         mv.addObject("feed_total_count", result._2)

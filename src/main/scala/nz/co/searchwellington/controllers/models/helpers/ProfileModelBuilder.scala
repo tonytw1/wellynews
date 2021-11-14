@@ -14,6 +14,7 @@ import java.util.regex.Pattern
 import javax.servlet.http.HttpServletRequest
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
+import scala.jdk.CollectionConverters._
 
 @Component class ProfileModelBuilder @Autowired()(val contentRetrievalService: ContentRetrievalService,
                                                   mongoRepository: MongoRepository) extends ModelBuilder
@@ -51,7 +52,6 @@ import scala.concurrent.Future
           submissions <- contentRetrievalService.getOwnedBy(user, loggedInUser, MAX_NEWSITEMS)
           tagged <- contentRetrievalService.getTaggedBy(user, loggedInUser)
           mv = {
-            import scala.collection.JavaConverters._
             new ModelAndView().
               addObject("heading", "User profile").
               addObject("profileuser", user).

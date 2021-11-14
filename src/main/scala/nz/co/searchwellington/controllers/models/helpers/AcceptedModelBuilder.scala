@@ -13,6 +13,7 @@ import org.springframework.web.servlet.ModelAndView
 import javax.servlet.http.HttpServletRequest
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
+import scala.jdk.CollectionConverters._
 
 @Component class AcceptedModelBuilder @Autowired()(val contentRetrievalService: ContentRetrievalService,
                                                    rssUrlBuilder: RssUrlBuilder, val urlBuilder: UrlBuilder,
@@ -29,7 +30,6 @@ import scala.concurrent.Future
     for {
       acceptedNewsitmes <- contentRetrievalService.getAcceptedNewsitems(MAX_NEWSITEMS, loggedInUser = loggedInUser, page = page)
     } yield {
-      import scala.collection.JavaConverters._
       val mv = new ModelAndView().
         addObject("heading", "Accepted newsitems").
         addObject("description", "The most recently accepted feed news items.").

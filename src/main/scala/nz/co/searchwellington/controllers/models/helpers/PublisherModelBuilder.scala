@@ -17,6 +17,7 @@ import org.springframework.web.servlet.ModelAndView
 import javax.servlet.http.HttpServletRequest
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
+import scala.jdk.CollectionConverters._
 
 @Component class PublisherModelBuilder @Autowired()(rssUrlBuilder: RssUrlBuilder,
                                                     relatedTagsService: RelatedTagsService,
@@ -59,7 +60,6 @@ import scala.concurrent.Future
 
         val totalPublisherNewsitems = publisherNewsitems._2
         if (publisherNewsitems._1.nonEmpty) {
-          import scala.collection.JavaConverters._
           mv.addObject(MAIN_CONTENT, publisherNewsitems._1.asJava)
 
           def paginationLinks(page: Int): String = {
@@ -71,7 +71,6 @@ import scala.concurrent.Future
 
           populateGeotaggedItems(mv, publisherNewsitems._1) // TODO This should be a seperate query
         }
-        import scala.collection.JavaConverters._
         mv.addObject("feeds", publisherFeeds.asJava)
 
         Some(mv)
@@ -87,7 +86,6 @@ import scala.concurrent.Future
   def populateExtraModelContent(request: HttpServletRequest, mv: ModelAndView, loggedInUser: Option[User]): Future[ModelAndView] = {
     val publisher = request.getAttribute("publisher").asInstanceOf[Website]
     val frontendPublisher = mv.getModel.get("publisher").asInstanceOf[FrontendResource]
-    import scala.collection.JavaConverters._
 
     val eventualPublisherWatchlist = contentRetrievalService.getPublisherWatchlist(publisher, loggedInUser)
     val eventualLatestNewsitems = contentRetrievalService.getLatestNewsitems(maxItems = 5, loggedInUser = loggedInUser)
@@ -118,10 +116,9 @@ import scala.concurrent.Future
 
   def getViewName(mv: ModelAndView, loggedInUser: Option[User]): String = "publisher"
 
-  private def populateGeotaggedItems(mv: ModelAndView, mainContent: Seq[FrontendResource]) {
+  private def populateGeotaggedItems(mv: ModelAndView, mainContent: Seq[FrontendResource]): Unit = {
     val geotaggedNewsitems = geotaggedNewsitemExtractor.extractGeotaggedItems(mainContent)
     if (geotaggedNewsitems.nonEmpty) {
-      import scala.collection.JavaConverters._
       mv.addObject("geocoded", geotaggedNewsitems.asJava)
     }
   }

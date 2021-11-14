@@ -13,6 +13,7 @@ import org.springframework.web.servlet.ModelAndView
 import javax.servlet.http.HttpServletRequest
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
+import scala.jdk.CollectionConverters._
 
 @Component class JustinModelBuilder @Autowired()(val contentRetrievalService: ContentRetrievalService,
                                                  rssUrlBuilder: RssUrlBuilder, val urlBuilder: UrlBuilder,
@@ -29,7 +30,6 @@ import scala.concurrent.Future
     for {
       websites <- contentRetrievalService.getLatestWebsites(MAX_NEWSITEMS, loggedInUser = loggedInUser, page = page)
     } yield {
-      import scala.collection.JavaConverters._
       val mv = new ModelAndView().
         addObject("heading", "Latest additions").
         addObject("description", "The most recently submitted website listings.").

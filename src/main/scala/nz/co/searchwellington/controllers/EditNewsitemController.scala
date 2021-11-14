@@ -21,6 +21,7 @@ import org.springframework.web.servlet.view.RedirectView
 import javax.validation.Valid
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.{Await, Future}
+import scala.jdk.CollectionConverters._
 
 @Controller
 class EditNewsitemController @Autowired()(contentUpdateService: ContentUpdateService,
@@ -68,8 +69,7 @@ class EditNewsitemController @Autowired()(contentUpdateService: ContentUpdateSer
 
           val date = formDateFormat.parseLocalDate(formObject.getDate).toDate
 
-          import scala.collection.JavaConverters._
-          val submittedTags = Await.result(tagDAO.loadTagsById(formObject.getTags.asScala), TenSeconds).toSet
+          val submittedTags = Await.result(tagDAO.loadTagsById(formObject.getTags.asScala.toSeq), TenSeconds).toSet
 
           val publisherName = if (formObject.getPublisher.trim.nonEmpty) {
             Some(formObject.getPublisher.trim)
@@ -145,7 +145,6 @@ class EditNewsitemController @Autowired()(contentUpdateService: ContentUpdateSer
     }
 
     val usersTags = n.resource_tags.filter(_.user_id == loggedInUser._id)
-    import scala.collection.JavaConverters._
     formObject.setTags(usersTags.map(_.tag_id.stringify).asJava)
 
     formObject
@@ -153,7 +152,6 @@ class EditNewsitemController @Autowired()(contentUpdateService: ContentUpdateSer
 
 
   private def renderEditForm(n: Newsitem, formObject: EditNewsitem): ModelAndView = {
-    import scala.collection.JavaConverters._
     new ModelAndView("editNewsitem").
       addObject("title", "Editing a newsitem").
       addObject("newsitem", n).

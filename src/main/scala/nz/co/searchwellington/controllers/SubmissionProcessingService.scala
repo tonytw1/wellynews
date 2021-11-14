@@ -18,6 +18,7 @@ import java.util.{Calendar, Date}
 import javax.servlet.http.HttpServletRequest
 import scala.concurrent.Await
 import scala.concurrent.ExecutionContext.Implicits.global
+import scala.jdk.CollectionConverters.CollectionHasAsScala
 
 @Component class SubmissionProcessingService @Autowired()(tagDAO: TagDAO,
                                                           tagVoteDAO: HandTaggingDAO,
@@ -108,8 +109,7 @@ import scala.concurrent.ExecutionContext.Implicits.global
   @SuppressWarnings(Array("unchecked")) private def processTagSelect(request: HttpServletRequest, editResource: Resource, user: User) {
     log.info("Processing tag select")
     if (request.getAttribute("tags") != null) {
-      import scala.collection.JavaConversions._
-      val requestTagsList: Seq[Tag] = request.getAttribute("tags").asInstanceOf[java.util.List[Tag]]
+      val requestTagsList = request.getAttribute("tags").asInstanceOf[java.util.List[Tag]].asScala.toSeq
       log.debug("Found tags on request: " + requestTagsList)
       log.info("Found " + requestTagsList.size + " tags on the request")
       //tagVoteDAO.setUsersTagVotesForResource(editResource, user, requestTagsList.toSet)

@@ -18,10 +18,12 @@ import org.springframework.validation.BindingResult
 import org.springframework.web.bind.annotation.{ModelAttribute, PathVariable, RequestMapping, RequestMethod}
 import org.springframework.web.servlet.ModelAndView
 import org.springframework.web.servlet.view.RedirectView
+import scala.jdk.CollectionConverters._
 
 import javax.validation.Valid
 import scala.concurrent.Await
 import scala.concurrent.ExecutionContext.Implicits.global
+import scala.jdk.CollectionConverters._
 
 @Controller
 class EditWebsiteController @Autowired()(contentUpdateService: ContentUpdateService,
@@ -53,7 +55,6 @@ class EditWebsiteController @Autowired()(contentUpdateService: ContentUpdateServ
 
         val usersTags = w.resource_tags.filter(_.user_id == loggedInUser._id)
 
-        import scala.collection.JavaConverters._
         editWebsite.setTags(usersTags.map(_.tag_id.stringify).asJava)
 
         renderEditForm(w, editWebsite)
@@ -91,8 +92,7 @@ class EditWebsiteController @Autowired()(contentUpdateService: ContentUpdateServ
             held = submissionShouldBeHeld(loggedInUser)
           )
 
-          import scala.collection.JavaConverters._
-          val tags = Await.result(tagDAO.loadTagsById(editWebsite.getTags.asScala), TenSeconds).toSet
+          val tags = Await.result(tagDAO.loadTagsById(editWebsite.getTags.asScala.toSeq), TenSeconds).toSet
           val withNewTags = handTaggingService.setUsersTagging(loggedInUser, tags.map(_._id), updated)
 
           contentUpdateService.update(withNewTags)
@@ -130,7 +130,6 @@ class EditWebsiteController @Autowired()(contentUpdateService: ContentUpdateServ
   }
 
   private def renderEditForm(w: Website, editWebsite: EditWebsite): ModelAndView = {
-    import scala.collection.JavaConverters._
     new ModelAndView("editWebsite").
       addObject("title", "Editing a website").
       addObject("website", w).

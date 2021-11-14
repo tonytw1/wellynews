@@ -1,10 +1,11 @@
 package nz.co.searchwellington.model.frontend
 
-import java.util.UUID
-
 import nz.co.searchwellington.model.Tag
 import org.junit.Assert.assertEquals
 import org.junit.Test
+
+import java.util.UUID
+import scala.jdk.CollectionConverters._
 
 class FrontendResourceTest {
 
@@ -14,7 +15,6 @@ class FrontendResourceTest {
 
     assertEquals("Not tagged", newsitemWithNoTags.getTaggingStatus)
 
-    import scala.collection.JavaConverters._
     assertEquals(Seq.empty.asJava, newsitemWithNoTags.getTaggingsToShow)
   }
 
@@ -28,8 +28,6 @@ class FrontendResourceTest {
     )
 
     assertEquals("Automatically tagged as: ", newsitemWithAutomaticTagsOnly.getTaggingStatus)
-
-    import scala.collection.JavaConverters._
     assertEquals(Seq(aTag).asJava, newsitemWithAutomaticTagsOnly.getTaggingsToShow)
   }
 
@@ -44,7 +42,6 @@ class FrontendResourceTest {
     )
 
     assertEquals("Tagged as: ", newsitemWithManualAndAutomaticTags.getTaggingStatus)
-    import scala.collection.JavaConverters._
     assertEquals(Seq(aTag).asJava, newsitemWithManualAndAutomaticTags.getTaggingsToShow)
   }
 
@@ -57,8 +54,6 @@ class FrontendResourceTest {
     val newsitem = FrontendNewsitem(id = UUID.randomUUID().toString,
       tags = Seq(aTag, anotherTag, childOfAnotherTag)
     )
-
-    import scala.collection.JavaConverters._
     assertEquals(Seq(aTag, childOfAnotherTag).asJava, newsitem.getTaggingsToShow)
   }
 

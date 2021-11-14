@@ -14,6 +14,7 @@ import org.springframework.web.servlet.ModelAndView
 import javax.servlet.http.HttpServletRequest
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
+import scala.jdk.CollectionConverters._
 
 @Component class FeedsModelBuilder @Autowired()(val contentRetrievalService: ContentRetrievalService,
                                                 suggestedFeeditemsService: SuggestedFeeditemsService,
@@ -35,7 +36,6 @@ import scala.concurrent.Future
     for {
       feeds <- contentRetrievalService.getFeeds(withAcceptancePolicy, loggedInUser)
     } yield {
-      import scala.collection.JavaConverters._
       val mv = new ModelAndView().
         addObject("heading", "Feeds").
         addObject("description", "Incoming feeds").
@@ -68,7 +68,6 @@ import scala.concurrent.Future
       currentFeeds <- eventualCurrentFeeds
 
     } yield {
-      import scala.collection.JavaConverters._
       mv.addObject("suggestions", suggestedFeednewsitems.asJava)
       mv.addObject("discovered_feeds", discoveredFeedOccurrences.asJava)
       // TODO make conditional

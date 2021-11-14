@@ -4,7 +4,7 @@ import nz.co.searchwellington.ReasonableWaits
 import nz.co.searchwellington.controllers.submission.GeotagParsing
 import nz.co.searchwellington.forms.EditTag
 import nz.co.searchwellington.geocoding.osm.GeoCodeService
-import nz.co.searchwellington.model.{Geocode, Tag, UrlWordsGenerator, User}
+import nz.co.searchwellington.model.{Tag, UrlWordsGenerator, User}
 import nz.co.searchwellington.modification.{ContentUpdateService, TagModificationService}
 import nz.co.searchwellington.repositories.TagDAO
 import nz.co.searchwellington.repositories.elasticsearch.ElasticSearchIndexRebuildService
@@ -23,6 +23,7 @@ import reactivemongo.api.bson.BSONObjectID
 import javax.validation.Valid
 import scala.concurrent.Await
 import scala.concurrent.ExecutionContext.Implicits.global
+import scala.jdk.CollectionConverters._
 
 @Controller
 class EditTagController @Autowired()(contentUpdateService: ContentUpdateService,
@@ -127,7 +128,6 @@ class EditTagController @Autowired()(contentUpdateService: ContentUpdateService,
   }
 
   private def renderEditForm(tag: Tag, editTag: EditTag): ModelAndView = {
-    import scala.collection.JavaConverters._
     val possibleParents = Await.result(tagDAO.getAllTags, TenSeconds).filterNot(_ == tag)
     new ModelAndView("editTag").
       addObject("tag", tag).

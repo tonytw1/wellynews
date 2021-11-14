@@ -6,7 +6,8 @@ import nz.co.searchwellington.repositories.TagDAO
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
 
-import scala.collection.JavaConversions._
+import java.lang
+import scala.jdk.CollectionConverters._
 import scala.concurrent.{ExecutionContext, Future}
 
 @Component
@@ -18,7 +19,7 @@ class TagHintAutoTagger @Autowired()(tagDAO: TagDAO) {
 
     def matches(resourceContent: String, tag: Tag): Boolean = {
       val autotagHints = tag.autotag_hints.map { autotagHints =>
-        commaSplitter.split(autotagHints).map(_.trim).toSeq
+        commaSplitter.split(autotagHints).asScala.map(_.trim).toSeq
       }.getOrElse(Seq.empty)
 
       val keywordsForTags = autotagHints.filter(!Strings.isNullOrEmpty(_))

@@ -12,6 +12,7 @@ import org.mockito.Mockito.mock
 
 import scala.concurrent.Await
 import scala.concurrent.ExecutionContext.Implicits.global
+import scala.jdk.CollectionConverters._
 
 class LinkCheckerTest extends ReasonableWaits {
 
@@ -27,7 +28,6 @@ class LinkCheckerTest extends ReasonableWaits {
   def returnsFalseForUnparsableResourceUrls(): Unit = {
     val website = Website(page = "http:////feedproxy.google.com/~r/WellingtonGreens/~3/Tdcpif4nmKI/")
 
-    import scala.collection.JavaConverters._
     val linkChecker = new LinkChecker(mongoRepository, contentUpdateService, httpFetcher, meterRegistry, Seq(feedAutodiscoveryProcesser, twitterPhotoDetector, contentHasChangedProcesser).asJava)
 
     val eventualResult = linkChecker.checkResource(website)

@@ -14,6 +14,7 @@ import java.util.List
 import javax.servlet.http.HttpServletRequest
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
+import scala.jdk.CollectionConverters._
 
 @Component class TagModelBuilder @Autowired()(rssUrlBuilder: RssUrlBuilder, val urlBuilder: UrlBuilder,
                                               relatedTagsService: RelatedTagsService,
@@ -66,7 +67,6 @@ import scala.concurrent.Future
             addObject("parent", maybeParent.orNull)
 
           val taggedNewsitems = taggedNewsitemsAndTotalCount._1
-          import scala.collection.JavaConverters._
           mv.addObject(MAIN_CONTENT, taggedNewsitems.asJava)
 
           def paginationLinks(page: Int): String = {
@@ -78,7 +78,6 @@ import scala.concurrent.Future
           }
 
           if (children.nonEmpty) {
-            import scala.collection.JavaConverters._
             mv.addObject("children", children.asJava)
           }
 
@@ -111,14 +110,12 @@ import scala.concurrent.Future
       latestNewsitems <- eventualLatestNewsitems
 
     } yield {
-      def populateGeocoded(mv: ModelAndView, tag: Tag) {
+      def populateGeocoded(mv: ModelAndView, tag: Tag): Unit = {
         if (geotaggedNewsitems.nonEmpty) {
-          import scala.collection.JavaConverters._
           mv.addObject("geocoded", geotaggedNewsitems.asJava)
         }
       }
 
-      import scala.collection.JavaConverters._
       mv.addObject(WEBSITES, taggedWebsites.asJava)
 
       if (relatedTagLinks.nonEmpty) {

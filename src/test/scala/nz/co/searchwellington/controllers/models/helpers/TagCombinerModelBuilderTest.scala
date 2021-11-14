@@ -1,6 +1,5 @@
 package nz.co.searchwellington.controllers.models.helpers
 
-import java.util.UUID
 import nz.co.searchwellington.ReasonableWaits
 import nz.co.searchwellington.controllers.RssUrlBuilder
 import nz.co.searchwellington.model.Tag
@@ -14,7 +13,9 @@ import org.mockito.Mockito.{mock, when}
 import org.springframework.mock.web.MockHttpServletRequest
 import reactivemongo.api.bson.BSONObjectID
 
+import java.util.UUID
 import scala.concurrent.{Await, Future}
+import scala.jdk.CollectionConverters._
 
 class TagCombinerModelBuilderTest extends ReasonableWaits with ContentFields {
 
@@ -62,7 +63,6 @@ class TagCombinerModelBuilderTest extends ReasonableWaits with ContentFields {
 
     val mv = Await.result(modelBuilder.populateContentModel(request), TenSeconds).get
 
-    import scala.collection.JavaConverters._
     assertEquals(tags.asJava, mv.getModel.get("tags"))
     assertEquals(tagCombinerNewsitems._1.asJava, mv.getModel.get(MAIN_CONTENT))
   }

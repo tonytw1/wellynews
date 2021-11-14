@@ -7,6 +7,8 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
 import org.springframework.web.servlet.ModelAndView
 
+import scala.jdk.CollectionConverters._
+
 @Component class CommonAttributesModelBuilder @Autowired()(contentRetrievalService: ContentRetrievalService) extends CommonSizes
 with ReasonableWaits {
 
@@ -20,7 +22,6 @@ with ReasonableWaits {
     mv.addObject("righthand_heading", heading)
     mv.addObject("righthand_description", description)
     if (feeds.nonEmpty) {
-      import scala.collection.JavaConverters._
       mv.addObject("righthand_content", feeds.asJava)
     }
     mv

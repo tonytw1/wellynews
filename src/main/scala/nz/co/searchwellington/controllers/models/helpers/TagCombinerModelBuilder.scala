@@ -15,6 +15,7 @@ import java.util.List
 import javax.servlet.http.HttpServletRequest
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
+import scala.jdk.CollectionConverters._
 
 @Component class TagCombinerModelBuilder @Autowired()(val contentRetrievalService: ContentRetrievalService, rssUrlBuilder: RssUrlBuilder,
                                                       val urlBuilder: UrlBuilder,
@@ -45,7 +46,6 @@ import scala.concurrent.Future
           val secondTag = tags(1)
 
           if (totalNewsitemCount > 0) {
-            import scala.collection.JavaConverters._
             val mv = new ModelAndView().
               addObject("tag", firstTag).
               addObject("tags", tags.asJava).
@@ -83,7 +83,6 @@ import scala.concurrent.Future
         latestWebsites <- eventualLatestWebsites
         relatedTags <- eventualRelatedTags
       } yield {
-        import scala.collection.JavaConverters._
         mv.addObject("related_tags", relatedTags.asJava)
         mv.addObject("websites", taggedWebsites.asJava)
         mv.addObject("latest_news", latestWebsites._1.asJava)

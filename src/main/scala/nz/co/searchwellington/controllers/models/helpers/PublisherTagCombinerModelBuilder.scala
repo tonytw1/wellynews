@@ -15,6 +15,7 @@ import org.springframework.web.servlet.ModelAndView
 import javax.servlet.http.HttpServletRequest
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
+import scala.jdk.CollectionConverters._
 
 @Component class PublisherTagCombinerModelBuilder @Autowired()(val contentRetrievalService: ContentRetrievalService, rssUrlBuilder: RssUrlBuilder, urlBuilder: UrlBuilder,
                                                                relatedTagsService: RelatedTagsService, commonAttributesModelBuilder: CommonAttributesModelBuilder,
@@ -38,7 +39,6 @@ import scala.concurrent.Future
       frontendPublisher <- eventualFrontendPublisher
       publisherTagNewsitems <- contentRetrievalService.getPublisherTagCombinerNewsitems(publisher, tag, MAX_NEWSITEMS, loggedInUser)
     } yield {
-      import scala.collection.JavaConverters._
       val mv = new ModelAndView().
         addObject("publisher", frontendPublisher).
         addObject("tag", tag).
@@ -61,7 +61,6 @@ import scala.concurrent.Future
     val eventualWithExtras = for {
       relatedTags <- relatedTagsService.getRelatedTagsForPublisher(publisher, loggedInUser)
     } yield {
-      import scala.collection.JavaConverters._
       if (relatedTags.nonEmpty) {
         mv.addObject("related_tags", relatedTags.asJava)
       }

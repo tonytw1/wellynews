@@ -15,6 +15,7 @@ import java.util.regex.Pattern
 import javax.servlet.http.HttpServletRequest
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
+import scala.jdk.CollectionConverters._
 
 @Component class NewsitemPageModelBuilder @Autowired()(val contentRetrievalService: ContentRetrievalService,
                                                        taggingReturnsOfficerService: TaggingReturnsOfficerService,
@@ -49,7 +50,6 @@ import scala.concurrent.Future
             mv.addObject("item", frontendResource)
             mv.addObject("heading", resource.title.orNull)
 
-            import scala.collection.JavaConverters._
             mv.addObject("hand_taggings", handTaggings.asJava)
             mv.addObject("geotag_votes", geotagVotes.asJava)
             mv.addObject("tagging_votes", taggingVotes.asJava)

@@ -15,6 +15,7 @@ import uk.co.eelpieconsulting.common.dates.DateFormatter
 import javax.servlet.http.HttpServletRequest
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
+import scala.jdk.CollectionConverters._
 
 @Component class PublisherMonthModelBuilder @Autowired()(val contentRetrievalService: ContentRetrievalService,
                                                          frontendResourceMapper: FrontendResourceMapper, dateFormatter: DateFormatter)
@@ -37,7 +38,6 @@ import scala.concurrent.Future
           eventualFrontendWebsite <- frontendResourceMapper.createFrontendResourceFrom(publisher, loggedInUser)
           newsitemsForMonth <- contentRetrievalService.getNewsitemsForPublisherInterval(publisher, month, loggedInUser)
         } yield {
-          import scala.collection.JavaConverters._
           Some(new ModelAndView().
             addObject("publisher", eventualFrontendWebsite).
             addObject(MAIN_CONTENT, newsitemsForMonth.asJava).
@@ -58,8 +58,6 @@ import scala.concurrent.Future
   override def populateExtraModelContent(request: HttpServletRequest, mv: ModelAndView, loggedInUser: Option[User]): Future[ModelAndView] = {
     val publisher = request.getAttribute("publisher").asInstanceOf[Website]
     val frontendPublisher = mv.getModel.get("publisher").asInstanceOf[FrontendResource]
-    import scala.collection.JavaConverters._
-
     for {
       archiveLinks <- contentRetrievalService.getPublisherArchiveMonths(publisher, loggedInUser)
     } yield {

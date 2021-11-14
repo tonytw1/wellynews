@@ -12,9 +12,9 @@ import org.springframework.web.bind.annotation.{RequestMapping, RequestMethod}
 import org.springframework.web.servlet.ModelAndView
 
 import javax.servlet.http.HttpServletRequest
-import scala.collection.JavaConverters._
 import scala.concurrent.Await
 import scala.concurrent.ExecutionContext.Implicits.global
+import scala.jdk.CollectionConverters._
 
 @Order(1)
 @Controller class SimplePageController @Autowired()( siteInformation: SiteInformation,

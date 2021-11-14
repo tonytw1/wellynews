@@ -14,6 +14,7 @@ import org.springframework.web.servlet.ModelAndView
 import javax.servlet.http.HttpServletRequest
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
+import scala.jdk.CollectionConverters._
 
 @Component class SuggestionsModelBuilder @Autowired()(suggestedFeeditemsService: SuggestedFeeditemsService,
                                                       rssUrlBuilder: RssUrlBuilder,
@@ -32,7 +33,6 @@ import scala.concurrent.Future
     for {
       suggestions <- suggestedFeeditemsService.getSuggestionFeednewsitems(MAX_SUGGESTIONS, loggedInUser)
     } yield {
-      import scala.collection.JavaConverters._
       val mv = new ModelAndView().
         addObject(MAIN_CONTENT, suggestions.asJava).
         addObject("heading", "Inbox").

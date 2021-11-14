@@ -14,9 +14,9 @@ import org.springframework.stereotype.Component
 import org.springframework.web.servlet.ModelAndView
 
 import javax.servlet.http.HttpServletRequest
-import scala.collection.JavaConverters._
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
+import scala.jdk.CollectionConverters._
 
 @Component class IndexModelBuilder @Autowired()(val contentRetrievalService: ContentRetrievalService, rssUrlBuilder: RssUrlBuilder,
                                                 val urlBuilder: UrlBuilder, archiveLinksService: ArchiveLinksService,

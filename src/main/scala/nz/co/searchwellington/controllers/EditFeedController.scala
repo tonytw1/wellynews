@@ -1,12 +1,11 @@
 package nz.co.searchwellington.controllers
 
-import javax.validation.Valid
 import nz.co.searchwellington.ReasonableWaits
 import nz.co.searchwellington.forms.EditFeed
 import nz.co.searchwellington.model.{Feed, UrlWordsGenerator, User}
 import nz.co.searchwellington.modification.ContentUpdateService
-import nz.co.searchwellington.repositories.{HandTaggingService, TagDAO}
 import nz.co.searchwellington.repositories.mongo.MongoRepository
+import nz.co.searchwellington.repositories.{HandTaggingService, TagDAO}
 import nz.co.searchwellington.urls.UrlBuilder
 import nz.co.searchwellington.views.Errors
 import org.apache.log4j.Logger
@@ -17,8 +16,10 @@ import org.springframework.web.bind.annotation.{ModelAttribute, PathVariable, Re
 import org.springframework.web.servlet.ModelAndView
 import org.springframework.web.servlet.view.RedirectView
 
+import javax.validation.Valid
 import scala.concurrent.Await
 import scala.concurrent.ExecutionContext.Implicits.global
+import scala.jdk.CollectionConverters._
 
 @Controller
 class EditFeedController @Autowired()(contentUpdateService: ContentUpdateService,
@@ -44,7 +45,6 @@ class EditFeedController @Autowired()(contentUpdateService: ContentUpdateService
         editFeed.setAcceptancePolicy(f.acceptance)
 
         val usersTags = f.resource_tags.filter(_.user_id == loggedInUser._id)
-        import scala.collection.JavaConverters._
         editFeed.setTags(usersTags.map(_.tag_id.stringify).asJava)
 
         renderEditForm(f, editFeed)
@@ -88,9 +88,7 @@ class EditFeedController @Autowired()(contentUpdateService: ContentUpdateService
             held = submissionShouldBeHeld(loggedInUser)
           )
           val updatedFeed = uf.copy(url_words = urlWordsGenerator.makeUrlWordsFor(uf, publisher))
-
-          import scala.collection.JavaConverters._
-          val submittedTags = Await.result(tagDAO.loadTagsById(formObject.getTags.asScala), TenSeconds).toSet
+          val submittedTags = Await.result(tagDAO.loadTagsById(formObject.getTags.asScala.toSeq), TenSeconds).toSet
 
           val updated = handTaggingService.setUsersTagging(loggedInUser, submittedTags.map(_._id), updatedFeed)
 
@@ -123,7 +121,6 @@ class EditFeedController @Autowired()(contentUpdateService: ContentUpdateService
   }
 
   private def renderEditForm(f: Feed, formObject: EditFeed): ModelAndView = {
-    import scala.collection.JavaConverters._
     new ModelAndView("editFeed").
       addObject("feed", f).
       addObject("formObject", formObject).

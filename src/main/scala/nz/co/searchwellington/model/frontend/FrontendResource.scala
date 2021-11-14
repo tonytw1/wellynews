@@ -8,6 +8,7 @@ import uk.co.eelpieconsulting.common.views.rss.RssFeedable
 
 import java.io.Serializable
 import java.util.{Date, List}
+import scala.jdk.CollectionConverters._
 
 @JsonInclude(Include.NON_NULL)
 trait FrontendResource extends RssFeedable with Serializable {
@@ -51,15 +52,9 @@ trait FrontendResource extends RssFeedable with Serializable {
   @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ssXXX")
   final def getLiveTime: Date = liveTime
 
-  final def getTags: List[Tag] = {
-    import scala.collection.JavaConverters._
-    tags.asJava
-  }
+  final def getTags: List[Tag] = tags.asJava
 
-  final def getHandTags: List[Tag] = {
-    import scala.collection.JavaConverters._
-    handTags.asJava
-  }
+  final def getHandTags: List[Tag] = handTags.asJava
 
   final def getOwner: String = owner
 
@@ -91,7 +86,6 @@ trait FrontendResource extends RssFeedable with Serializable {
   def getLastChanged: Date = lastChanged.orNull
 
   def getActions: List[Action] = {
-    import scala.collection.JavaConverters._
     actions.asJava
   }
 
@@ -108,7 +102,6 @@ trait FrontendResource extends RssFeedable with Serializable {
   }
 
   def getTaggingsToShow: List[Tag] = {
-    import scala.collection.JavaConverters._
     val tagsToShow = if (handTags.nonEmpty) {
       handTags
     } else {

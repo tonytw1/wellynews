@@ -12,6 +12,7 @@ import org.springframework.web.servlet.ModelAndView
 import javax.servlet.http.HttpServletRequest
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
+import scala.jdk.CollectionConverters._
 
 @Component class PublishersModelBuilder @Autowired()(val contentRetrievalService: ContentRetrievalService,
                                                      frontendResourceMapper: FrontendResourceMapper)
@@ -38,7 +39,6 @@ import scala.concurrent.Future
           map(r => frontendResourceMapper.createFrontendResourceFrom(r, loggedInUser))
       }
     } yield {
-      import scala.collection.JavaConverters._
       val mv = new ModelAndView().
         addObject(MAIN_CONTENT, frontendPublishers.asJava).
         addObject("heading", "All publishers")

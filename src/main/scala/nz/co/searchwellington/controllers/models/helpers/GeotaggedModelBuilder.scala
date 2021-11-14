@@ -14,9 +14,9 @@ import org.springframework.web.servlet.ModelAndView
 import uk.co.eelpieconsulting.common.geo.model.Place
 
 import javax.servlet.http.HttpServletRequest
-import scala.collection.JavaConverters._
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
+import scala.jdk.CollectionConverters._
 
 @Component class GeotaggedModelBuilder @Autowired()(val contentRetrievalService: ContentRetrievalService,
                                                     val urlBuilder: UrlBuilder,

@@ -49,7 +49,7 @@ import scala.concurrent.{ExecutionContext, Future}
                 latestItemDate = latestPublicationDateOf(feedNewsitems._1),
                 http_status = inferredHttpStatus
               )).map { _ =>
-                Unit
+                ()
               }
             }
           })
@@ -62,7 +62,7 @@ import scala.concurrent.{ExecutionContext, Future}
       }
 
     } else {
-      Future.successful(Unit)
+      Future.successful(())
     }
   }
 

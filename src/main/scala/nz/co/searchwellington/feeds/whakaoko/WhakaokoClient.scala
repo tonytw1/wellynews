@@ -137,7 +137,7 @@ class WhakaokoClient @Autowired()(@Value("${whakaoko.url}") whakaokoUrl: String,
         case _ =>
           log.warn("Update subscription call failed: " + r.status + "/" + r.body)
       }
-      Unit
+      ()
     }
   }
 

@@ -9,7 +9,7 @@
     <description>Wellynews website</description>
 
     <properties>
-        <scala.version>2.12.15</scala.version>
+        <scala.version>2.13.7</scala.version>
         <elastic4s.version>7.3.6</elastic4s.version>
         <jackson.version>2.11.4</jackson.version>
     </properties>
@@ -95,35 +95,35 @@
 
         <dependency>
             <groupId>org.reactivemongo</groupId>
-            <artifactId>reactivemongo_2.12</artifactId>
+            <artifactId>reactivemongo_2.13</artifactId>
             <version>1.0.7</version>
         </dependency>
 
         <dependency>
             <groupId>com.sksamuel.elastic4s</groupId>
-            <artifactId>elastic4s-core_2.12</artifactId>
+            <artifactId>elastic4s-core_2.13</artifactId>
             <version>7.6.2</version>
         </dependency>
         <dependency>
             <groupId>com.sksamuel.elastic4s</groupId>
-            <artifactId>elastic4s-client-esjava_2.12</artifactId>
+            <artifactId>elastic4s-client-esjava_2.13</artifactId>
             <version>7.6.2</version>
         </dependency>
 
         <dependency>
             <groupId>com.typesafe.play</groupId>
-            <artifactId>play-ahc-ws-standalone_2.12</artifactId>
+            <artifactId>play-ahc-ws-standalone_2.13</artifactId>
             <version>2.0.8</version>
         </dependency>
         <dependency>
             <groupId>com.typesafe.play</groupId>
-            <artifactId>play-ws-standalone-json_2.12</artifactId>
+            <artifactId>play-ws-standalone-json_2.13</artifactId>
             <version>2.0.8</version>
         </dependency>
 
         <dependency>
             <groupId>com.typesafe.play</groupId>
-            <artifactId>play-json-joda_2.12</artifactId>
+            <artifactId>play-json-joda_2.13</artifactId>
             <version>2.9.2</version>
         </dependency>
 
@@ -204,7 +204,7 @@
 
         <dependency>
             <groupId>io.lemonlabs</groupId>
-            <artifactId>scala-uri_2.12</artifactId>
+            <artifactId>scala-uri_2.13</artifactId>
             <version>2.3.0</version>
             <type>jar</type>
         </dependency>
@@ -291,8 +291,8 @@
         </dependency>
         <dependency>
             <groupId>org.scalatest</groupId>
-            <artifactId>scalatest_2.12</artifactId>
-            <version>3.0.5</version>
+            <artifactId>scalatest_2.13</artifactId>
+            <version>3.2.10</version>
             <scope>test</scope>
         </dependency>
         <dependency>

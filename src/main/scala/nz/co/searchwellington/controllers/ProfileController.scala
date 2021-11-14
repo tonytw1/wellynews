@@ -14,6 +14,7 @@ import org.springframework.web.servlet.view.RedirectView
 import javax.servlet.http.{HttpServletRequest, HttpServletResponse}
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.{Await, Future}
+import scala.jdk.CollectionConverters._
 
 @Order(3)
 @Controller
@@ -28,7 +29,6 @@ class ProfileController @Autowired()(mongoRepository: MongoRepository, loggedInU
     Await.result(for {
       users <- mongoRepository.getAllUsers
       mv = {
-        import scala.collection.JavaConverters._
         new ModelAndView("profiles").
           addObject("heading", "Profiles").
           addObject("profiles", users.asJava)

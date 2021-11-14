@@ -1,7 +1,6 @@
 package nz.co.searchwellington.controllers.admin
 
 import com.google.common.base.Splitter
-import javax.servlet.http.{HttpServletRequest, HttpServletResponse}
 import nz.co.searchwellington.ReasonableWaits
 import nz.co.searchwellington.controllers.{CommonModelObjectsService, LoggedInUserFilter, RequiringLoggedInUser}
 import nz.co.searchwellington.filters.AdminRequestFilter
@@ -18,8 +17,10 @@ import org.springframework.stereotype.Controller
 import org.springframework.web.bind.annotation.{RequestMapping, RequestMethod}
 import org.springframework.web.servlet.ModelAndView
 
+import javax.servlet.http.{HttpServletRequest, HttpServletResponse}
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.{Await, Future}
+import scala.jdk.CollectionConverters._
 
 @Controller class AutoTagController @Autowired()(mongoRepository: MongoRepository,
                                                  requestFilter: AdminRequestFilter,
@@ -45,7 +46,6 @@ import scala.concurrent.{Await, Future}
         Await.result((for {
           suggestions <- getPossibleAutotagResources(loggedInUser, tag, Some(loggedInUser)) // TODO double pass
         } yield {
-          import scala.collection.JavaConverters._
           new ModelAndView("autoTagPrompt").
             addObject("heading", "Autotagging").
             addObject("tag", tag).
@@ -90,8 +90,6 @@ import scala.concurrent.{Await, Future}
 
         val results = Await.result(eventuallyAutoTaggedResources, ThirtySeconds).flatten
         val frontendResults = Await.result(Future.sequence(results.map(r => frontendResourceMapper.createFrontendResourceFrom(r, None))), TenSeconds)
-
-        import scala.collection.JavaConverters._
         val mv = new ModelAndView("autoTagApply").
           addObject("heading", "Autotagging").
           addObject("tag", tag).
@@ -109,7 +107,6 @@ import scala.concurrent.{Await, Future}
   }
 
   private def getPossibleAutotagResources(user: User, tag: Tag, loggedInUser: Option[User]): Future[Seq[FrontendResource]] = {
-    import scala.collection.JavaConverters._
     val autotag_hints = tag.autotag_hints.map(hints => commaSplitter.split(hints).asScala).getOrElse(Seq.empty).toSet
     contentRetrievalService.getNewsitemsMatchingKeywordsNotTaggedByUser(autotag_hints + tag.display_name, user, tag, loggedInUser)
   }

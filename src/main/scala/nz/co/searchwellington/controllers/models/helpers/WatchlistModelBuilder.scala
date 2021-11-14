@@ -12,6 +12,7 @@ import org.springframework.web.servlet.ModelAndView
 import javax.servlet.http.HttpServletRequest
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
+import scala.jdk.CollectionConverters._
 
 @Component class WatchlistModelBuilder @Autowired()(val contentRetrievalService: ContentRetrievalService,
                                                     rssUrlBuilder: RssUrlBuilder,
@@ -28,8 +29,6 @@ import scala.concurrent.Future
     for {
       watchlists <- contentRetrievalService.getWatchlistItems(loggedInUser, page = page)
     } yield {
-      import scala.collection.JavaConverters._
-
       val mv = new ModelAndView().
         addObject("heading", "News watchlist").
         addObject("description", "The news watchlist").
