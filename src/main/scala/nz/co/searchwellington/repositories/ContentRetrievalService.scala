@@ -136,22 +136,14 @@ import scala.concurrent.Future
     elasticSearchIndexer.getResources(taggedWebsites, loggedInUser = loggedInUser).flatMap(i => fetchByIds(i._1, loggedInUser))
   }
 
-  def getGeocodedNewsitems(startIndex: Int, maxItems: Int, loggedInUser: Option[User]): Future[Seq[FrontendResource]] = {
+  def getGeocodedNewsitems(startIndex: Int, maxItems: Int, loggedInUser: Option[User]): Future[(Seq[FrontendResource], Long)] = {
     val withPagination = geocodedNewsitems.copy(startIndex = startIndex, maxItems = maxItems)
-    elasticSearchIndexer.getResources(withPagination, loggedInUser = loggedInUser).flatMap(i => fetchByIds(i._1, loggedInUser))
+    elasticSearchIndexer.getResources(withPagination, loggedInUser = loggedInUser).flatMap(r => buildFrontendResourcesFor(r, loggedInUser))
   }
 
-  def getGeocodedNewitemsCount(loggedInUser: Option[User]): Future[Long] = {
-    elasticSearchIndexer.getResources(geocodedNewsitems, loggedInUser = loggedInUser).map(_._2)
-  }
-
-  def getNewsitemsNear(latLong: LatLong, radius: Double, startIndex: Int, maxNewsitems: Int, loggedInUser: Option[User]): Future[Seq[FrontendResource]] = {
+  def getNewsitemsNear(latLong: LatLong, radius: Double, startIndex: Int, maxNewsitems: Int, loggedInUser: Option[User]): Future[(Seq[FrontendResource], Long)] = {
     val withPagination = nearbyNewsitems(latLong, radius).copy(startIndex = startIndex, maxItems = maxNewsitems)
-    elasticSearchIndexer.getResources(withPagination, loggedInUser = loggedInUser).flatMap(i => fetchByIds(i._1, loggedInUser))
-  }
-
-  def getNewsitemsNearCount(latLong: LatLong, radius: Double, loggedInUser: Option[User]): Future[Long] = {
-    elasticSearchIndexer.getResources(nearbyNewsitems(latLong, radius), loggedInUser = loggedInUser).map(i => i._2)
+    elasticSearchIndexer.getResources(withPagination, loggedInUser = loggedInUser).flatMap(r => buildFrontendResourcesFor(r, loggedInUser))
   }
 
   def getGeotaggedNewsitemsForTag(tag: Tag, maxItems: Int, loggedInUser: Option[User]): Future[Seq[FrontendResource]] = {

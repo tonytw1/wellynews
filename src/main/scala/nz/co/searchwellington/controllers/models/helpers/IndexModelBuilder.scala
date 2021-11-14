@@ -81,17 +81,17 @@ import scala.jdk.CollectionConverters._
     val eventualWebsites = contentRetrievalService.getLatestWebsites(4, loggedInUser = loggedInUser)
     val eventualArchiveMonths = contentRetrievalService.getArchiveMonths(loggedInUser)
     val eventualArchiveStatistics = contentRetrievalService.getArchiveCounts(loggedInUser)
-    val eventualGeocoded = contentRetrievalService.getGeocodedNewsitems(0, MAX_NUMBER_OF_GEOTAGGED_TO_SHOW, loggedInUser)
+    val eventualGeocodedNewsitems = contentRetrievalService.getGeocodedNewsitems(0, MAX_NUMBER_OF_GEOTAGGED_TO_SHOW, loggedInUser)
 
     (for {
       websites <- eventualWebsites
       archiveMonths <- eventualArchiveMonths
       archiveStatistics <- eventualArchiveStatistics
-      geocoded <- eventualGeocoded
+      geocodedNewsitems <- eventualGeocodedNewsitems
 
     } yield {
       populateSecondaryJustin(mv, websites._1)
-      populateGeocoded(mv, geocoded)
+      populateGeocoded(mv, geocodedNewsitems._1)
       archiveLinksService.populateArchiveLinks(mv, archiveMonths, archiveStatistics)
       mv
     }).flatMap { mv =>

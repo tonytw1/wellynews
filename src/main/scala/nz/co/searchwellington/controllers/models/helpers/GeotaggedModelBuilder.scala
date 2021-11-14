@@ -52,45 +52,41 @@ import scala.jdk.CollectionConverters._
     }
   }
 
-  private def processModel(loggedInUser: Option[User], mv: ModelAndView, startIndex: Int) = {
+  private def processModel(loggedInUser: Option[User], mv: ModelAndView, startIndex: Int): Future[Option[ModelAndView]] = {
     for {
-      // TODO combine queries?
-      totalGeotaggedCount <- contentRetrievalService.getGeocodedNewitemsCount(loggedInUser)
       geocodedNewsitems <- contentRetrievalService.getGeocodedNewsitems(startIndex, MAX_NEWSITEMS, loggedInUser)
     } yield {
-      if (startIndex > totalGeotaggedCount) {
+      if (startIndex < geocodedNewsitems._2) {
+        populatePagination(mv, startIndex, geocodedNewsitems._2, MAX_NEWSITEMS, paginationLinks)
+        mv.addObject("heading", "Geotagged newsitems")
+        mv.addObject(MAIN_CONTENT, geocodedNewsitems._1.asJava)
+        commonAttributesModelBuilder.setRss(mv, rssUrlBuilder.getRssTitleForGeotagged, rssUrlBuilder.getRssUrlForGeotagged)
+        Some(mv)
+      } else {
         None
       }
-      populatePagination(mv, startIndex, totalGeotaggedCount, MAX_NEWSITEMS, paginationLinks)
-
-      mv.addObject("heading", "Geotagged newsitems")
-      mv.addObject(MAIN_CONTENT, geocodedNewsitems.asJava)
-      commonAttributesModelBuilder.setRss(mv, rssUrlBuilder.getRssTitleForGeotagged, rssUrlBuilder.getRssUrlForGeotagged)
-      Some(mv)
     }
   }
 
-  private def processLocationSuppliedModel(request: HttpServletRequest, loggedInUser: Option[User], mv: ModelAndView, userSuppliedPlace: Place, startIndex: Int) = {
+  private def processLocationSuppliedModel(request: HttpServletRequest, loggedInUser: Option[User], mv: ModelAndView, userSuppliedPlace: Place, startIndex: Int): Future[Option[ModelAndView]] = {
     val radius = getLocationSearchRadius(request)
     val latLong = userSuppliedPlace.getLatLong
 
     val eventualRelatedTagsForLocation = relatedTagsService.getRelatedTagsForLocation(userSuppliedPlace, radius, loggedInUser)
     val eventualPublishersForLocation = relatedTagsService.getRelatedPublishersForLocation(userSuppliedPlace, radius, loggedInUser)
-    val eventualNewsitemsNearCount = contentRetrievalService.getNewsitemsNearCount(latLong, radius, loggedInUser = loggedInUser)
     val eventualNewsitemsNear = contentRetrievalService.getNewsitemsNear(latLong, radius, startIndex, MAX_NEWSITEMS, loggedInUser)
     for {
       relatedTagLinks <- eventualRelatedTagsForLocation
       relatedPublisherLinks <- eventualPublishersForLocation
-      totalNearbyCount <- eventualNewsitemsNearCount
       newsitemsNear <- eventualNewsitemsNear
 
     } yield {
-      if (startIndex < totalNearbyCount) {
-        populatePagination(mv, startIndex, totalNearbyCount, MAX_NEWSITEMS, paginationLinks)
+      if (startIndex < newsitemsNear._2) {
+        populatePagination(mv, startIndex, newsitemsNear._2, MAX_NEWSITEMS, paginationLinks)
 
         mv.addObject("location", userSuppliedPlace)
         mv.addObject("radius", radius)
-        mv.addObject(MAIN_CONTENT, newsitemsNear.asJava)
+        mv.addObject(MAIN_CONTENT, newsitemsNear._1.asJava)
 
         if (relatedTagLinks.nonEmpty) {
           log.info("Found geo related tags: " + relatedTagLinks)
