@@ -4,8 +4,9 @@ import nz.co.searchwellington.ReasonableWaits
 import nz.co.searchwellington.filters.RequestPath
 import nz.co.searchwellington.model.User
 import nz.co.searchwellington.model.mappers.FrontendResourceMapper
+import nz.co.searchwellington.model.taggingvotes.{HandTagging, TaggingVote}
+import nz.co.searchwellington.repositories.ContentRetrievalService
 import nz.co.searchwellington.repositories.mongo.MongoRepository
-import nz.co.searchwellington.repositories.{ContentRetrievalService, HandTaggingDAO}
 import nz.co.searchwellington.tagging.TaggingReturnsOfficerService
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
@@ -19,7 +20,6 @@ import scala.jdk.CollectionConverters._
 
 @Component class NewsitemPageModelBuilder @Autowired()(val contentRetrievalService: ContentRetrievalService,
                                                        taggingReturnsOfficerService: TaggingReturnsOfficerService,
-                                                       handTaggingDAO: HandTaggingDAO,
                                                        mongoRepository: MongoRepository,
                                                        frontendResourceMapper: FrontendResourceMapper) extends ModelBuilder with ReasonableWaits {
 
@@ -36,21 +36,26 @@ import scala.jdk.CollectionConverters._
       mongoRepository.getResourceById(id).flatMap { maybeResource =>
         maybeResource.map { resource =>
           val eventualFrontendResource = frontendResourceMapper.createFrontendResourceFrom(resource, loggedInUser)
-          val eventualHandTaggings = handTaggingDAO.getHandTaggingsForResource(resource)  // TODO should be able to filter this from the tagging votes
           val eventualGeotagVotes = taggingReturnsOfficerService.getGeotagVotesForResource(resource)
           val eventualTaggingVotes = taggingReturnsOfficerService.getTaggingsVotesForResource(resource)
           for {
             frontendResource <- eventualFrontendResource
-            handTaggings <- eventualHandTaggings
             geotagVotes <- eventualGeotagVotes
-            taggingVotes <- eventualTaggingVotes
+            taggingVotes: Seq[TaggingVote] <- eventualTaggingVotes
 
           } yield {
             val mv = new ModelAndView
             mv.addObject("item", frontendResource)
             mv.addObject("heading", resource.title.orNull)
 
-            mv.addObject("hand_taggings", handTaggings.asJava)
+            val handTagging = taggingVotes.flatMap { vote =>
+              vote match {
+                case h: HandTagging => Some(h)
+                case _ => None
+              }
+            }
+
+            mv.addObject("hand_taggings", handTagging.asJava)
             mv.addObject("geotag_votes", geotagVotes.asJava)
             mv.addObject("tagging_votes", taggingVotes.asJava)
 

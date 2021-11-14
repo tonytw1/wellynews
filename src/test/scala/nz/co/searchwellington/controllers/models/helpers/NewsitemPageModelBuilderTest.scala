@@ -1,36 +1,35 @@
 package nz.co.searchwellington.controllers.models.helpers
 
-import java.util.UUID
-
 import nz.co.searchwellington.ReasonableWaits
 import nz.co.searchwellington.model.frontend.FrontendNewsitem
 import nz.co.searchwellington.model.mappers.FrontendResourceMapper
 import nz.co.searchwellington.model.taggingvotes.{GeotaggingVote, HandTagging}
 import nz.co.searchwellington.model.{Geocode, Newsitem, Tag, User}
+import nz.co.searchwellington.repositories.ContentRetrievalService
 import nz.co.searchwellington.repositories.mongo.MongoRepository
-import nz.co.searchwellington.repositories.{ContentRetrievalService, HandTaggingDAO}
 import nz.co.searchwellington.tagging.TaggingReturnsOfficerService
 import org.junit.Assert.{assertEquals, assertNotNull, assertNull, assertTrue}
 import org.junit.Test
 import org.mockito.Mockito.{mock, when}
 import org.springframework.mock.web.MockHttpServletRequest
 
+import java.util.UUID
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.{Await, Future}
+import scala.jdk.CollectionConverters._
 
 class NewsitemPageModelBuilderTest extends ReasonableWaits {
 
   private val contentRetrievalService = mock(classOf[ContentRetrievalService])
   private val taggingReturnsOfficerService = mock(classOf[TaggingReturnsOfficerService])
-  private val handTaggingDAO = mock(classOf[HandTaggingDAO])
   private val mongoRepository = mock(classOf[MongoRepository])
   private val frontendResourceMapper = mock(classOf[FrontendResourceMapper])
 
   private val modelBuilder = new NewsitemPageModelBuilder(contentRetrievalService, taggingReturnsOfficerService,
-    handTaggingDAO, mongoRepository, frontendResourceMapper)
+    mongoRepository, frontendResourceMapper)
 
   @Test
-  def isValidForSingleNewsitemPath() {
+  def shouldBeValidForSingleNewsitemPath(): Unit = {
     val newsitem = Newsitem()
 
     val validPath = "/newsitem/" + newsitem.id
@@ -41,7 +40,7 @@ class NewsitemPageModelBuilderTest extends ReasonableWaits {
   }
 
   @Test
-  def shouldShowNewsitem() {
+  def shouldShowNewsitem(): Unit = {
     val newsitem = Newsitem()
     val validPath = "/newsitem/" + newsitem.id
     val request = new MockHttpServletRequest
@@ -52,7 +51,6 @@ class NewsitemPageModelBuilderTest extends ReasonableWaits {
 
     when(mongoRepository.getResourceById(newsitem.id)).thenReturn(Future.successful(Some(newsitem)))
     when(frontendResourceMapper.createFrontendResourceFrom(newsitem, None)).thenReturn(Future.successful(frontendNewsitem))
-    when(handTaggingDAO.getHandTaggingsForResource(newsitem)).thenReturn(Future.successful(Seq.empty))
     when(taggingReturnsOfficerService.getGeotagVotesForResource(newsitem)).thenReturn(Future.successful(Seq.empty))
     when(taggingReturnsOfficerService.getTaggingsVotesForResource(newsitem)).thenReturn(Future.successful(Seq.empty))
 
@@ -63,7 +61,7 @@ class NewsitemPageModelBuilderTest extends ReasonableWaits {
   }
 
   @Test
-  def shouldShowTaggingsAppliedToThisNewsitem() {
+  def shouldShowTaggingsAppliedToThisNewsitem(): Unit = {
     val newsitem = Newsitem()
     val validPath = "/newsitem/" + newsitem.id
     val request = new MockHttpServletRequest
@@ -72,21 +70,19 @@ class NewsitemPageModelBuilderTest extends ReasonableWaits {
     val place = Geocode(address = Some("Somewhere"))
     val frontendNewsitem = FrontendNewsitem(id = newsitem.id, place = Some(place))
 
-    val handTaggingsForNewsitem = Seq(HandTagging(user = User(), tag = Tag()))
+    val handTagging = HandTagging(tag = Tag(id = "123"), user = User())
     val geotagVotesForNewsitem = Seq(GeotaggingVote(geocode = place, weight = 1, explanation = "Some tagging"))
-    val taggingVotesForNewsitem = Seq(HandTagging(tag = Tag(id = "123"), user = User()))
+    val taggingVotesForNewsitem = Seq(handTagging)
 
     when(mongoRepository.getResourceById(newsitem.id)).thenReturn(Future.successful(Some(newsitem)))
     when(frontendResourceMapper.createFrontendResourceFrom(newsitem, None)).thenReturn(Future.successful(frontendNewsitem))
-    when(handTaggingDAO.getHandTaggingsForResource(newsitem)).thenReturn(Future.successful(handTaggingsForNewsitem))
     when(taggingReturnsOfficerService.getGeotagVotesForResource(newsitem)).thenReturn(Future.successful(geotagVotesForNewsitem))
     when(taggingReturnsOfficerService.getTaggingsVotesForResource(newsitem)).thenReturn(Future.successful(taggingVotesForNewsitem))
 
     val mv = Await.result(modelBuilder.populateContentModel(request), TenSeconds).get
 
-    import scala.collection.JavaConverters._
     val handTaggings = mv.getModel.get("hand_taggings")
-    assertEquals("Expect to be able to see all hand tagging for this newsitem", handTaggingsForNewsitem.asJava, handTaggings)
+    assertEquals("Expect to be able to see all hand tagging for this newsitem", Seq(handTagging).asJava, handTaggings)
 
     val geoTagVotes = mv.getModel.get("geotag_votes")
     assertEquals("Expect to be see geotagging votes", geotagVotesForNewsitem.asJava, geoTagVotes)
@@ -96,7 +92,7 @@ class NewsitemPageModelBuilderTest extends ReasonableWaits {
   }
 
   @Test
-  def shouldShowNewsitemOnMapIfItIsGeotagged {
+  def shouldShowNewsitemOnMapIfItIsGeotagged(): Unit = {
     val id = UUID.randomUUID()
     val geotaggedNewsitem = Newsitem(id = id.toString)
 
@@ -109,11 +105,9 @@ class NewsitemPageModelBuilderTest extends ReasonableWaits {
 
     when(mongoRepository.getResourceById(id.toString)).thenReturn(Future.successful(Some(geotaggedNewsitem))) // TODO properly exercise mapped option branch
     when(frontendResourceMapper.createFrontendResourceFrom(geotaggedNewsitem, None)).thenReturn(Future.successful(geotaggedFrontendNewsitem))
-
-    when(handTaggingDAO.getHandTaggingsForResource(geotaggedNewsitem)).thenReturn(Future.successful(Seq.empty))
     when(taggingReturnsOfficerService.getTaggingsVotesForResource(geotaggedNewsitem)).thenReturn(Future.successful(Seq.empty))
 
-    val geotaggingVote = new GeotaggingVote(place, "Publisher's location", 1)
+    val geotaggingVote = GeotaggingVote(place, "Publisher's location", 1)
     when(taggingReturnsOfficerService.getGeotagVotesForResource(geotaggedNewsitem)).thenReturn(Future.successful(Seq(geotaggingVote)))
 
     val mv = Await.result(modelBuilder.populateContentModel(request), TenSeconds).get
@@ -125,7 +119,7 @@ class NewsitemPageModelBuilderTest extends ReasonableWaits {
   }
 
   @Test
-  def shouldNotPopulateGeotaggedItemsIfNewsitemIsNotGeotagged {
+  def shouldNotPopulateGeotaggedItemsIfNewsitemIsNotGeotagged(): Unit = {
     val id = UUID.randomUUID()
     val newsitem = Newsitem(id = id.toString)
     val frontendNewsitem = FrontendNewsitem(id = id.toString)
@@ -136,8 +130,6 @@ class NewsitemPageModelBuilderTest extends ReasonableWaits {
 
     when(mongoRepository.getResourceById(id.toString)).thenReturn(Future.successful(Some(newsitem))) // TODO properly exercise mapped option branch
     when(frontendResourceMapper.createFrontendResourceFrom(newsitem, None)).thenReturn(Future.successful(frontendNewsitem))
-
-    when(handTaggingDAO.getHandTaggingsForResource(newsitem)).thenReturn(Future.successful(Seq.empty))
     when(taggingReturnsOfficerService.getTaggingsVotesForResource(newsitem)).thenReturn(Future.successful(Seq.empty))
     when(taggingReturnsOfficerService.getGeotagVotesForResource(newsitem)).thenReturn(Future.successful(Seq.empty))
 
@@ -147,7 +139,7 @@ class NewsitemPageModelBuilderTest extends ReasonableWaits {
   }
 
   @Test
-  def shouldDisplayGeotaggingVotes {
+  def shouldDisplayGeotaggingVotes(): Unit = {
     val newsitem = Newsitem()
     val validPath = "/newsitem/" + newsitem.id
     val request = new MockHttpServletRequest
@@ -156,12 +148,10 @@ class NewsitemPageModelBuilderTest extends ReasonableWaits {
     val frontendNewsitem = FrontendNewsitem(id = newsitem.id)
     when(mongoRepository.getResourceById(newsitem.id)).thenReturn(Future.successful(Some(newsitem)))
     when(frontendResourceMapper.createFrontendResourceFrom(newsitem, None)).thenReturn(Future.successful(frontendNewsitem))
-
-    when(handTaggingDAO.getHandTaggingsForResource(newsitem)).thenReturn(Future.successful(Seq.empty))
     when(taggingReturnsOfficerService.getTaggingsVotesForResource(newsitem)).thenReturn(Future.successful(Seq.empty))
 
     val place = Geocode(address = Some("Somewhere"))
-    val geotaggingVote = new GeotaggingVote(place, "Publisher's location", 1)
+    val geotaggingVote = GeotaggingVote(place, "Publisher's location", 1)
     when(taggingReturnsOfficerService.getGeotagVotesForResource(newsitem)).thenReturn(Future.successful(Seq(geotaggingVote)))
 
     val mv = Await.result(modelBuilder.populateContentModel(request), TenSeconds).get
