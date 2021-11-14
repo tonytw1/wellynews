@@ -43,10 +43,9 @@ class ContentController @Autowired()(contentModelBuilderServiceFactory: ContentM
         mv
       }
     } catch {
-      case e: Exception => {
+      case e: Exception =>
         log.error("Error building content", e)
         throw e
-      }
     }
   }
 

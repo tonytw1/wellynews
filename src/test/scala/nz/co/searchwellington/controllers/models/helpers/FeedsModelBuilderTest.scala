@@ -27,7 +27,7 @@ class FeedsModelBuilderTest extends ReasonableWaits with ContentFields {
   private val loggedInUser = None
   private val adminUser = User(admin = true)
 
-  var request = new MockHttpServletRequest
+  val request = new MockHttpServletRequest
 
   val modelBuilder = new FeedsModelBuilder(contentRetrievalService, suggestedFeeditemsService, urlBuilder, commonAttributesModelBuilder)
 

@@ -18,7 +18,6 @@ import org.springframework.validation.BindingResult
 import org.springframework.web.bind.annotation.{ModelAttribute, PathVariable, RequestMapping, RequestMethod}
 import org.springframework.web.servlet.ModelAndView
 import org.springframework.web.servlet.view.RedirectView
-import scala.jdk.CollectionConverters._
 
 import javax.validation.Valid
 import scala.concurrent.Await

@@ -28,9 +28,8 @@ import scala.concurrent.ExecutionContext.Implicits.global
         }
       }
       catch {
-        case e: NumberFormatException => {
+        case e: NumberFormatException =>
           log.warn("Invalid resource id given: " + resourceParameter)
-        }
       }
     }
 

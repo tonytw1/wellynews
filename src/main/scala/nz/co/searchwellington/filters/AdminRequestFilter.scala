@@ -58,9 +58,8 @@ class AdminRequestFilter @Autowired()(mongoRepository: MongoRepository, resource
         }
       }
       catch {
-        case e: ParseException => {
+        case e: ParseException =>
           log.warn("Invalid date string supplied: " + dateString)
-        }
       }
     }
 
@@ -104,9 +103,8 @@ class AdminRequestFilter @Autowired()(mongoRepository: MongoRepository, resource
         Some(twitterId)
       }
       catch {
-        case e: Exception => {
+        case e: Exception =>
           None
-        }
       }
     } else {
       None
