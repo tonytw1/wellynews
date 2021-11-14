@@ -20,22 +20,9 @@ case class Website(override val _id: BSONObjectID = BSONObjectID.generate,
                    override var url_words: Option[String] = None,
                    override var geocode: Option[Geocode] = None,
                    override var owner: Option[BSONObjectID] = None,
-                   override val resource_tags: Seq[Tagging] = Seq()
-                   // var feeds: Set[Feed] = Set(),
-                   // var watchlist: Set[Watchlist] = Set()
-                  ) extends Resource {
+                   override val resource_tags: Seq[Tagging] = Seq()) extends Resource {
 
   def getTitle: String = title.getOrElse(id)
-
-  def getFeeds: Set[Feed] = Set()
-
-  // TODO
-  def setFeeds(feeds: Set[Feed]): Unit = {} // TODO
-
-  def getWatchlist: Set[Watchlist] = Set()
-
-  // TODO
-  def setWatchlist(watchlist: Set[Watchlist]): Unit = {} // TODO
 
   override def withTaggings(taggings: Seq[Tagging]): Website = this.copy(resource_tags = taggings)
 
