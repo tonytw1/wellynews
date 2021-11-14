@@ -18,6 +18,7 @@ import org.springframework.mock.web.MockHttpServletRequest
 import java.util.UUID
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.{Await, Future}
+import scala.jdk.CollectionConverters._
 
 class FeedModelBuilderTest extends ReasonableWaits with ContentFields {
   private val whakaokoFeedReader = mock(classOf[WhakaokoFeedReader])
@@ -47,20 +48,18 @@ class FeedModelBuilderTest extends ReasonableWaits with ContentFields {
   private val frontendNewsitemWithActions = FrontendNewsitem(id = UUID.randomUUID().toString) // TODO better example with actions
   private val anotherFrontendNewsitemWithActions = FrontendNewsitem(id = UUID.randomUUID().toString, place = somePlace)
 
-  private val subscription = mock(classOf[Subscription])
-
   private val frontendFeed = mock(classOf[FrontendFeed])
 
   private val loggedInUser = None
 
-  var request: MockHttpServletRequest = null
+  private val request = new MockHttpServletRequest
 
   val modelBuilder = new FeedModelBuilder(contentRetrievalService, geotaggedNewsitemExtractor,
     feedItemActionDecorator, frontendResourceMapper, commonAttributesModelBuilder, feeditemToNewsitemService,
     whakaokoFeedReader, whakaokoService)
 
   @Before
-  def setUp {
+  def setUp(): Unit = {
     when(whakaokoFeedReader.fetchFeedItems(feed)).thenReturn(Future.successful(Right((feeditems, feeditems.size.toLong))))
 
     when(feeditemToNewsitemService.makeNewsitemFromFeedItem(feedItem, feed)).thenReturn(newsItem)
@@ -72,18 +71,17 @@ class FeedModelBuilderTest extends ReasonableWaits with ContentFields {
     when(feedItemActionDecorator.withFeedItemSpecificActions(Seq(frontendNewsitem, anotherFrontendNewsitem), None)).
       thenReturn(Future.successful(Seq(frontendNewsitemWithActions, anotherFrontendNewsitemWithActions)))
 
-    request = new MockHttpServletRequest
     request.setAttribute("feedAttribute", feed)
     request.setRequestURI("/feed/someonesfeed")
   }
 
   @Test
-  def feedPathsAreValid {
+  def feedPathsAreValid(): Unit = {
     assertTrue(modelBuilder.isValid(request))
   }
 
   @Test
-  def shouldPopulateFrontendFeedFromRequestAttribute {
+  def shouldPopulateFrontendFeedFromRequestAttribute(): Unit = {
     when(frontendResourceMapper.createFrontendResourceFrom(feed, None)).thenReturn(Future.successful(frontendFeed))
     when(whakaokoService.getSubscription(Matchers.eq("a-whakaoko-subscription-id"))(Matchers.any())).thenReturn(Future.successful(Some(whakaokoSubscription)))
 
@@ -93,19 +91,18 @@ class FeedModelBuilderTest extends ReasonableWaits with ContentFields {
   }
 
   @Test
-  def shouldPopulateMainContentWithFeedItemsDecoratedWithLocalCopySuppressionInformation {
+  def shouldPopulateMainContentWithFeedItemsDecoratedWithLocalCopySuppressionInformation(): Unit = {
     when(frontendResourceMapper.createFrontendResourceFrom(feed, None)).thenReturn(Future.successful(frontendFeed))
     when(whakaokoFeedReader.fetchFeedItems(feed)).thenReturn(Future.successful(Right((feeditems, feeditems.size.toLong))))
     when(whakaokoService.getSubscription(Matchers.eq("a-whakaoko-subscription-id"))(Matchers.any())).thenReturn(Future.successful(Some(whakaokoSubscription)))
 
     val mv = Await.result(modelBuilder.populateContentModel(request), TenSeconds).get
 
-    import scala.collection.JavaConverters._
     assertEquals(Seq(frontendNewsitemWithActions, anotherFrontendNewsitemWithActions).asJava, mv.getModel.get(MAIN_CONTENT))
   }
 
   @Test
-  def shouldPushGeotaggedFeeditemsOntoTheModelAsFrontendNewsitemsSeperately {
+  def shouldPushGeotaggedFeeditemsOntoTheModelAsFrontendNewsitemsSeperately(): Unit = {
     when(frontendResourceMapper.createFrontendResourceFrom(feed, None)).thenReturn(Future.successful(frontendFeed))
     when(contentRetrievalService.getAllFeedsOrderedByLatestItemDate(loggedInUser)).thenReturn(Future.successful(Seq()))
     when(whakaokoService.getSubscription(Matchers.eq("a-whakaoko-subscription-id"))(Matchers.any())).thenReturn(Future.successful(Some(whakaokoSubscription)))
@@ -114,7 +111,6 @@ class FeedModelBuilderTest extends ReasonableWaits with ContentFields {
 
     modelBuilder.populateExtraModelContent(request, mv, None)
 
-    import scala.collection.JavaConverters._
     assertEquals(Seq(anotherFrontendNewsitemWithActions).asJava, mv.getModel.get("geocoded"))
     assertEquals("Expected whakaoko subscription to be shown", whakaokoSubscription, mv.getModel.get("subscription"))
   }

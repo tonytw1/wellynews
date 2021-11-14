@@ -20,7 +20,7 @@ class ContentModelBuilderServiceTest extends ReasonableWaits {
   private val viewFactory = mock(classOf[ViewFactory])
   private val contentRetrievalService = mock(classOf[ContentRetrievalService])
 
-  private var request: MockHttpServletRequest = null
+  private val request = new MockHttpServletRequest
 
   private val validModelAndView = new ModelAndView("")
 
@@ -28,7 +28,6 @@ class ContentModelBuilderServiceTest extends ReasonableWaits {
   private val validModelBuilder =  mock(classOf[ModelBuilder])
 
   @Before def setup {
-    request = new MockHttpServletRequest
     request.setRequestURI("/something")
   }
 

@@ -1,29 +1,25 @@
 package nz.co.searchwellington.filters.attributesetters
 
-import java.util.UUID
-
 import nz.co.searchwellington.model.Feed
 import nz.co.searchwellington.repositories.mongo.MongoRepository
 import org.junit.Assert.assertEquals
 import org.junit.{Before, Test}
-import org.mockito.Mockito.when
-import org.mockito.{Mock, MockitoAnnotations}
+import org.mockito.Mockito.{mock, when}
 import org.springframework.mock.web.MockHttpServletRequest
 
-import scala.concurrent.Future
+import java.util.UUID
 import scala.concurrent.ExecutionContext.Implicits.global
+import scala.concurrent.Future
 
 class FeedAttributeSetterTest {
-  @Mock val mongoRepository: MongoRepository = null
+  private val mongoRepository = mock(classOf[MongoRepository])
   private val feed = Feed(id = UUID.randomUUID().toString, title = Some("Wellington City Council news"))
-  private var request: MockHttpServletRequest = null
-  private var feedAttributeSetter: FeedAttributeSetter = null
+  private val request= new MockHttpServletRequest
+
+  private val feedAttributeSetter = new FeedAttributeSetter(mongoRepository)
 
   @Before def setup(): Unit = {
-    MockitoAnnotations.initMocks(this)
-    request = new MockHttpServletRequest
     when(mongoRepository.getFeedByUrlwords("wcc-news")).thenReturn(Future.successful(Some(feed)))
-    feedAttributeSetter = new FeedAttributeSetter(mongoRepository)
   }
 
   @Test def shouldSetFeedAttributeForFeedPagePath(): Unit = {

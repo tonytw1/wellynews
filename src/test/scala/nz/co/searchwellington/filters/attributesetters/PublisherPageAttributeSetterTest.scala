@@ -1,29 +1,25 @@
 package nz.co.searchwellington.filters.attributesetters
 
-import java.util.UUID
-
 import nz.co.searchwellington.model.Website
 import nz.co.searchwellington.repositories.mongo.MongoRepository
 import org.junit.Assert.assertEquals
 import org.junit.{Before, Test}
-import org.mockito.Mockito.when
-import org.mockito.{Mock, MockitoAnnotations}
+import org.mockito.Mockito.{mock, when}
 import org.springframework.mock.web.MockHttpServletRequest
 
+import java.util.UUID
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
 class PublisherPageAttributeSetterTest {
-  @Mock val mongoRepository: MongoRepository = null
+  private val mongoRepository: MongoRepository = mock(classOf[MongoRepository])
   private val publisher = Website(id = UUID.randomUUID().toString, title = Some("Wellington City Council"))
-  private var request: MockHttpServletRequest = null
-  private var pageAttributeSetter: PublisherPageAttributeSetter = null
+  private val request = new MockHttpServletRequest
+
+  private val pageAttributeSetter = new PublisherPageAttributeSetter(mongoRepository)
 
   @Before def setup(): Unit = {
-    MockitoAnnotations.initMocks(this)
-    request = new MockHttpServletRequest
     when(mongoRepository.getWebsiteByUrlwords("wellington-city-council")).thenReturn(Future.successful(Some(publisher)))
-    pageAttributeSetter = new PublisherPageAttributeSetter(mongoRepository)
   }
 
   @Test def shouldSetPublisherAttributeForPublisherPath(): Unit = {
