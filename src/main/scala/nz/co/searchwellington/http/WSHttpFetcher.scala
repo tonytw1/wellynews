@@ -31,6 +31,6 @@ class WSHttpFetcher @Autowired()(taskExecutor: TaskExecutor, siteInformation: Si
     }
   }
 
-  override def getUserAgent(): String = siteInformation.getUserAgent
+  override def getUserAgent: String = siteInformation.getUserAgent
 
 }
