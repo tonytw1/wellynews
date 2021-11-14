@@ -24,7 +24,7 @@ import scala.jdk.CollectionConverters._
 
 @Controller class AutoTagController @Autowired()(mongoRepository: MongoRepository,
                                                  requestFilter: AdminRequestFilter,
-                                                 autoTagService: ImpliedTagService,
+                                                 impliedTagService: ImpliedTagService,
                                                  contentUpdateService: ContentUpdateService,
                                                  val loggedInUserFilter: LoggedInUserFilter,
                                                  handTaggingService: HandTaggingService,
@@ -63,9 +63,9 @@ import scala.jdk.CollectionConverters._
       Option(request.getAttribute("tag").asInstanceOf[Tag]).map { tag =>
 
         def applyTagTo(resource: Resource, tag: Tag): Future[Resource] = {
-          // There is no need to apply a tag if it is already implied by say the publisher tag
-          // TODO This could be made clearer
-          autoTagService.alreadyHasTag(resource, tag).flatMap { alreadyHasTag =>
+          // There is no need to apply a tag if it is already implied on this resource (by a publisher or feed tag)
+          // TODO The autotagging on acceptances isn't making the same check?
+          impliedTagService.alreadyHasTag(resource, tag).flatMap { alreadyHasTag =>
             if (!alreadyHasTag) {
               log.info("Applying tag " + tag.getName + " to:" + resource.title)
               val withTag = handTaggingService.addUserTagging(loggedInUser, tag, resource)

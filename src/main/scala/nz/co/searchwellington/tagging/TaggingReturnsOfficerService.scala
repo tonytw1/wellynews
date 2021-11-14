@@ -17,7 +17,7 @@ import scala.concurrent.Future
 @Component class TaggingReturnsOfficerService @Autowired()(handTaggingDAO: HandTaggingDAO, val mongoRepository: MongoRepository)
   extends ReasonableWaits with TagAncestors {
 
-  def getTaggingsVotesForResource(resource: Resource): Future[Seq[TaggingVote]] = {
+  def getTaggingsVotesForResource(resource: Tagged): Future[Seq[TaggingVote]] = {
     val eventualPublisherVotes = resource match {
       case p: PublishedResource =>
         val eventualAncestorTagVotes = {
