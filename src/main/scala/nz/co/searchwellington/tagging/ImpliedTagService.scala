@@ -2,6 +2,7 @@ package nz.co.searchwellington.tagging
 
 import nz.co.searchwellington.ReasonableWaits
 import nz.co.searchwellington.model.{Newsitem, Tag, Tagged}
+import nz.co.searchwellington.repositories.HandTaggingDAO
 import nz.co.searchwellington.repositories.mongo.MongoRepository
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
@@ -9,8 +10,8 @@ import org.springframework.stereotype.Component
 import scala.concurrent.{Await, ExecutionContext, Future}
 
 @Component
-class ImpliedTagService @Autowired()(taggingReturnsOfficerService: TaggingReturnsOfficerService,
-                                     mongoRepository: MongoRepository) extends ReasonableWaits {
+class ImpliedTagService @Autowired()(mongoRepository: MongoRepository, val handTaggingDAO: HandTaggingDAO)
+  extends ReasonableWaits with ResourceTagging {
 
   def alreadyHasTag(resource: Tagged, tag: Tag)(implicit ec: ExecutionContext): Future[Boolean] = {
     // TODO This should just delegate to the tagging returns officer?
@@ -19,7 +20,7 @@ class ImpliedTagService @Autowired()(taggingReturnsOfficerService: TaggingReturn
         n.publisher.map { publisherId =>
           mongoRepository.getResourceByObjectId(publisherId).map { publisher =>
             publisher.exists { publisher =>
-              Await.result(taggingReturnsOfficerService.getHandTagsForResource(publisher), TenSeconds).contains(tag)
+              Await.result(getHandTagsForResource(publisher), TenSeconds).contains(tag)
             }
           }
         }.getOrElse {
@@ -31,7 +32,7 @@ class ImpliedTagService @Autowired()(taggingReturnsOfficerService: TaggingReturn
 
     eventualIsNewsitemWhosPublisherAlreadyHasThisTag.map { isNewsitemWhosPublisherAlreadyHasThisTag =>
       isNewsitemWhosPublisherAlreadyHasThisTag ||
-        Await.result(taggingReturnsOfficerService.getHandTagsForResource(resource), TenSeconds).contains(tag)
+        Await.result(getHandTagsForResource(resource), TenSeconds).contains(tag)  // TODO Await
     }
   }
 

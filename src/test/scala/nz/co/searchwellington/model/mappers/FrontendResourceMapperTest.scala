@@ -3,7 +3,9 @@ package nz.co.searchwellington.model.mappers
 import java.util.UUID
 import nz.co.searchwellington.ReasonableWaits
 import nz.co.searchwellington.controllers.admin.AdminUrlBuilder
+import nz.co.searchwellington.model.taggingvotes.HandTagging
 import nz.co.searchwellington.model.{Newsitem, SiteInformation, Tag, UrlWordsGenerator, User, Website}
+import nz.co.searchwellington.repositories.HandTaggingDAO
 import nz.co.searchwellington.repositories.mongo.MongoRepository
 import nz.co.searchwellington.tagging.{IndexTagsService, TaggingReturnsOfficerService}
 import nz.co.searchwellington.urls.UrlBuilder
@@ -22,11 +24,12 @@ class FrontendResourceMapperTest extends ReasonableWaits {
   private val taggingReturnsOfficerService = mock(classOf[TaggingReturnsOfficerService])
   private val indexTagsService = mock(classOf[IndexTagsService])
   private val mongoRepository = mock(classOf[MongoRepository])
+  private val handTaggingDAO = mock(classOf[HandTaggingDAO])
 
   private val urlBuilder = new UrlBuilder(new SiteInformation(), new UrlWordsGenerator(new DateFormatter(DateTimeZone.UTC)))
   private val adminUrlBuilder = new AdminUrlBuilder(urlBuilder, "", "")
 
-  val mapper = new FrontendResourceMapper(taggingReturnsOfficerService, indexTagsService, mongoRepository, adminUrlBuilder)
+  val mapper = new FrontendResourceMapper(indexTagsService, mongoRepository, adminUrlBuilder, handTaggingDAO)
 
   @Test
   def shouldMapNewsitemsToFrontendNewsitems(): Unit = {
@@ -34,7 +37,7 @@ class FrontendResourceMapperTest extends ReasonableWaits {
     val newsitem = Newsitem(id = "123", http_status = 200, title = Some("Something happened today"),
       date = Some(new DateTime(2020, 10, 7, 12, 0, 0, 0).toDate),
       owner = Some(owner._id))
-    when(taggingReturnsOfficerService.getHandTagsForResource(newsitem)).thenReturn(Future.successful(Seq.empty))
+    when(handTaggingDAO.getHandTaggingsForResource(newsitem)).thenReturn(Future.successful(Seq.empty))
     when(indexTagsService.getIndexTagsForResource(newsitem)).thenReturn(Future.successful(Seq.empty))
     when(indexTagsService.getIndexGeocodeForResource(newsitem)).thenReturn(Future.successful(None))
     when(mongoRepository.getUserByObjectId(owner._id)).thenReturn(Future.successful(Some(owner)))
@@ -52,7 +55,7 @@ class FrontendResourceMapperTest extends ReasonableWaits {
 
     val tag = Tag(id = UUID.randomUUID().toString, name = "123", display_name = "123")
 
-    when(taggingReturnsOfficerService.getHandTagsForResource(website)).thenReturn(Future.successful(Seq(tag)))
+    when(handTaggingDAO.getHandTaggingsForResource(website)).thenReturn(Future.successful(Seq(HandTagging(tag = tag, user = null))))
     when(indexTagsService.getIndexTagsForResource(website)).thenReturn(Future.successful(Seq.empty))
     when(indexTagsService.getIndexGeocodeForResource(website)).thenReturn(Future.successful(None))
 
@@ -67,7 +70,7 @@ class FrontendResourceMapperTest extends ReasonableWaits {
     val website = Website(id = "123")
     val adminUser = User(admin = true)
 
-    when(taggingReturnsOfficerService.getHandTagsForResource(website)).thenReturn(Future.successful(Seq.empty))
+    when(handTaggingDAO.getHandTaggingsForResource(website)).thenReturn(Future.successful(Seq.empty))
     when(indexTagsService.getIndexTagsForResource(website)).thenReturn(Future.successful(Seq.empty))
     when(indexTagsService.getIndexGeocodeForResource(website)).thenReturn(Future.successful(None))
 
@@ -84,7 +87,7 @@ class FrontendResourceMapperTest extends ReasonableWaits {
     val website = Newsitem(id = "456")
     val adminUser = User(admin = true)
 
-    when(taggingReturnsOfficerService.getHandTagsForResource(website)).thenReturn(Future.successful(Seq.empty))
+    when(handTaggingDAO.getHandTaggingsForResource(website)).thenReturn(Future.successful(Seq.empty))
     when(indexTagsService.getIndexTagsForResource(website)).thenReturn(Future.successful(Seq.empty))
     when(indexTagsService.getIndexGeocodeForResource(website)).thenReturn(Future.successful(None))
 
@@ -99,7 +102,7 @@ class FrontendResourceMapperTest extends ReasonableWaits {
   @Test
   def shouldNotApplyActionIfUserIsNotLoggedIn(): Unit = {
     val website = Website(id = "123")
-    when(taggingReturnsOfficerService.getHandTagsForResource(website)).thenReturn(Future.successful(Seq.empty))
+    when(handTaggingDAO.getHandTaggingsForResource(website)).thenReturn(Future.successful(Seq.empty))
     when(indexTagsService.getIndexTagsForResource(website)).thenReturn(Future.successful(Seq.empty))
     when(indexTagsService.getIndexGeocodeForResource(website)).thenReturn(Future.successful(None))
 
