@@ -36,7 +36,7 @@ import scala.jdk.CollectionConverters._
       mongoRepository.getResourceById(id).flatMap { maybeResource =>
         maybeResource.map { resource =>
           val eventualFrontendResource = frontendResourceMapper.createFrontendResourceFrom(resource, loggedInUser)
-          val eventualHandTaggings = handTaggingDAO.getHandTaggingsForResource(resource)
+          val eventualHandTaggings = handTaggingDAO.getHandTaggingsForResource(resource)  // TODO should be able to filter this from the tagging votes
           val eventualGeotagVotes = taggingReturnsOfficerService.getGeotagVotesForResource(resource)
           val eventualTaggingVotes = taggingReturnsOfficerService.getTaggingsVotesForResource(resource)
           for {
