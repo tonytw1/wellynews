@@ -15,7 +15,7 @@ import org.springframework.web.servlet.view.RedirectView
   @RequestMapping(Array("/suppress/suppress"))
   def suppress(request: HttpServletRequest): ModelAndView = {
     def suppress(loggedInUser: User): ModelAndView = {
-      Option(request.getParameter("url")).map { url =>
+      Option(request.getParameter("url")).foreach { url =>
         suppressionDAO.addSuppression(url)
       }
       returnRedirect(request)

@@ -22,7 +22,7 @@ import scala.concurrent.ExecutionContext.Implicits.global
     def processResourceId(request: HttpServletRequest, resourceParameter: String) {
       try {
         val resourceId = resourceParameter
-        Await.result(mongoRepository.getResourceById(resourceId), TenSeconds).map { resource =>
+        Await.result(mongoRepository.getResourceById(resourceId), TenSeconds).foreach { resource =>
           log.debug("Found resource: " + resource)
           request.setAttribute("resource", resource)
         }

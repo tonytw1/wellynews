@@ -34,9 +34,9 @@ case class Feed(override val _id: BSONObjectID = BSONObjectID.generate,
 
   def setAcceptancePolicy(acceptancePolicy: FeedAcceptancePolicy): Unit = this.acceptance = acceptancePolicy
 
-  def getLatestItemDate: Date = latestItemDate.getOrElse(null)
+  def getLatestItemDate: Date = latestItemDate.orNull
 
-  def getLastRead: Date = last_read.getOrElse(null)
+  def getLastRead: Date = last_read.orNull
 
   def isScreenScraped: Boolean = page.startsWith("http://brownbag.wellington.gen.nz/")
 

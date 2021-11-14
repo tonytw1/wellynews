@@ -17,7 +17,7 @@ import uk.co.eelpieconsulting.common.geo.model.LatLong
     log.debug("Deduping collection with " + geocoded.size + " items")
     var deduped = Seq(selected).flatten
 
-    geocoded.map { resource =>
+    geocoded.foreach { resource =>
       resource.geocode.foreach { p =>
         val isUnique = !listAlreadyContainsResourceWithThisLocation(deduped, p)
         if (isUnique) deduped = deduped :+ resource

@@ -9,12 +9,10 @@ import org.apache.log4j.Logger
 import org.joda.time.{DateTime, Duration}
 import org.springframework.beans.factory.annotation.{Autowired, Value}
 import org.springframework.stereotype.Component
-import play.api.libs.json.Json
-import play.api.libs.json.Reads.DefaultJodaDateReads
+import play.api.libs.json.{JodaReads, Json}
 import play.api.libs.ws.JsonBodyWritables.writeableOf_JsValue
 import play.api.libs.ws.StandaloneWSRequest
 import play.api.libs.ws.ahc.StandaloneAhcWSClient
-import play.api.libs.json.JodaReads
 
 import scala.concurrent.{ExecutionContext, Future}
 

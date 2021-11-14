@@ -30,7 +30,7 @@ class AdminRequestFilter @Autowired()(mongoRepository: MongoRepository, resource
     log.debug("Looking for tag parameter")
     if (request.getParameter("tag") != null) {
       val tagName = request.getParameter("tag")
-      Await.result(mongoRepository.getTagByUrlWords(tagName), TenSeconds).map { tag =>
+      Await.result(mongoRepository.getTagByUrlWords(tagName), TenSeconds).foreach { tag =>
         request.setAttribute("tag", tag)
       }
     }
@@ -39,7 +39,7 @@ class AdminRequestFilter @Autowired()(mongoRepository: MongoRepository, resource
       val item: Integer = request.getParameter("item").toInt
       request.setAttribute("item", item)
     }
-    parseTwitterIdfromRequest(request).map { twitterId =>
+    parseTwitterIdfromRequest(request).foreach { twitterId =>
       request.setAttribute("twitterId", twitterId)
     }
     val image = request.getParameter("image").asInstanceOf[String]
@@ -70,7 +70,7 @@ class AdminRequestFilter @Autowired()(mongoRepository: MongoRepository, resource
     }
     if (request.getParameter("publisher") != null && !(request.getParameter("publisher") == "")) {
       val publisherUrlWords: String = request.getParameter("publisher")
-      Await.result(mongoRepository.getWebsiteByUrlwords(publisherUrlWords), TenSeconds).map { publisher =>
+      Await.result(mongoRepository.getWebsiteByUrlwords(publisherUrlWords), TenSeconds).foreach { publisher =>
         request.setAttribute("publisher", publisher)
       }
     }
@@ -80,7 +80,7 @@ class AdminRequestFilter @Autowired()(mongoRepository: MongoRepository, resource
     if (request.getParameter("feed") != null) {
       val feedParameter: String = request.getParameter("feed")
       log.debug("Loading feed by url words: " + feedParameter)
-      Await.result(mongoRepository.getFeedByUrlwords(feedParameter), TenSeconds).map { feed =>
+      Await.result(mongoRepository.getFeedByUrlwords(feedParameter), TenSeconds).foreach { feed =>
         log.debug("Found feed: " + feed)
         request.setAttribute("feedAttribute", feed)
       }
