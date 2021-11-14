@@ -3,10 +3,9 @@ package nz.co.searchwellington.urls
 import nz.co.searchwellington.controllers.models.helpers.ArchiveMonth
 import nz.co.searchwellington.model._
 import nz.co.searchwellington.model.frontend.{FrontendFeed, FrontendNewsitem, FrontendResource, FrontendWebsite}
-import org.joda.time.{DateTimeZone, Interval}
+import org.joda.time.Interval
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
-import uk.co.eelpieconsulting.common.dates.DateFormatter
 import uk.co.eelpieconsulting.common.geo.model.Place
 
 @Component
@@ -197,9 +196,7 @@ class UrlBuilder @Autowired()(siteInformation: SiteInformation, urlWordsGenerato
     }
   }
 
-  def getSearchUrlFor(q: String): String = {
-    getSearchUrlFor(q, None, None);
-  }
+  def getSearchUrlFor(q: String): String = getSearchUrlFor(q, None, None)
 
   def getSearchUrlFor(keywords: String, page: Option[Int] = None, tag: Option[Tag] = None, publisher: Option[Website] = None): String = {
     val ps = Seq(
