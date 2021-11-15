@@ -40,7 +40,7 @@ class NewNewsitemController @Autowired()(contentUpdateService: ContentUpdateServ
   }
 
   @RequestMapping(value = Array("/new-newsitem"), method = Array(RequestMethod.POST))
-  def submit(@Valid @ModelAttribute("newNewsitem") newNewsitem: NewNewsitem, result: BindingResult, request: HttpServletRequest): ModelAndView = {
+  def submit(@Valid @ModelAttribute("formObject") newNewsitem: NewNewsitem, result: BindingResult, request: HttpServletRequest): ModelAndView = {
     val loggedInUser = getLoggedInUser(request)
     if (result.hasErrors) {
       log.warn("New newsitem submission has errors: " + result)
@@ -88,7 +88,7 @@ class NewNewsitemController @Autowired()(contentUpdateService: ContentUpdateServ
   private def renderNewNewsitemForm(newNewsitem: nz.co.searchwellington.forms.NewNewsitem): ModelAndView = {
     new ModelAndView("newNewsitem").
       addObject("heading", "Adding a newsitem").
-      addObject("newNewsitem", newNewsitem)
+      addObject("formObject", newNewsitem)
   }
 
   private def exitFromNewsitemSubmit(newsitem: Newsitem, maybePublisher: Option[Website]): ModelAndView = {

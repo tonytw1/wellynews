@@ -62,7 +62,7 @@ class EditNewsitemController @Autowired()(contentUpdateService: ContentUpdateSer
           log.info("Got valid edit newsitem submission: " + formObject)
 
           val geocode = Option(formObject.getGeocode).flatMap { address =>
-            Option(formObject.getSelectedGeocode).flatMap { osmId =>
+            Option(formObject.getOsm).flatMap { osmId =>
               parseGeotag(address, osmId)
             }
           }
@@ -137,7 +137,7 @@ class EditNewsitemController @Autowired()(contentUpdateService: ContentUpdateSer
     n.geocode.foreach { g =>
       formObject.setGeocode(g.getAddress)
       val osmId = g.osmId.map(osmToString)
-      formObject.setSelectedGeocode(osmId.getOrElse(""))
+      formObject.setOsm(osmId.getOrElse(""))
     }
 
     n.date.foreach { d =>

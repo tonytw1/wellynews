@@ -94,7 +94,7 @@ $(function() {
 			},			
 			select: function( event, ui ) {
 				itemType = itemTypes[ui.item.osmType];
-				$("#selectedGeocode").val( ui.item ? ui.item.osmId + "/" + itemType : "");
+				$("#osm").val( ui.item ? ui.item.osmId + "/" + itemType : "");
 			}
 		});
 	}

@@ -17,7 +17,7 @@ public class EditNewsitem {
     @NotBlank
     private String date;
 
-    private String geocode, selectedGeocode;
+    private String geocode, osm;
 
     private List<String> tags = Lists.newArrayList();
 
@@ -69,12 +69,12 @@ public class EditNewsitem {
         this.geocode = geocode;
     }
 
-    public String getSelectedGeocode() {
-        return selectedGeocode;
+    public String getOsm() {
+        return osm;
     }
 
-    public void setSelectedGeocode(String selectedGeocode) {
-        this.selectedGeocode = selectedGeocode;
+    public void setOsm(String osm) {
+        this.osm = osm;
     }
 
     public List<String> getTags() {
@@ -94,7 +94,7 @@ public class EditNewsitem {
                 ", description='" + description + '\'' +
                 ", date='" + date + '\'' +
                 ", geocode='" + geocode + '\'' +
-                ", selectedGeocode='" + selectedGeocode + '\'' +
+                ", osm='" + osm + '\'' +
                 ", tags=" + tags +
                 '}';
     }

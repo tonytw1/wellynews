@@ -24,7 +24,7 @@ public class EditTag {
 
     private Boolean featured;
 
-    private String geocode, selectedGeocode;
+    private String geocode, osm;
 
     public String getDisplayName() {
         return displayName;
@@ -74,12 +74,12 @@ public class EditTag {
         this.geocode = geocode;
     }
 
-    public String getSelectedGeocode() {
-        return selectedGeocode;
+    public String getOsm() {
+        return osm;
     }
 
-    public void setSelectedGeocode(String selectedGeocode) {
-        this.selectedGeocode = selectedGeocode;
+    public void setOsm(String osm) {
+        this.osm = osm;
     }
 
     @Override
@@ -91,7 +91,7 @@ public class EditTag {
                 ", autotagHints='" + autotagHints + '\'' +
                 ", featured=" + featured +
                 ", geocode='" + geocode + '\'' +
-                ", selectedGeocode='" + selectedGeocode + '\'' +
+                ", osm='" + osm + '\'' +
                 '}';
     }
 }

@@ -10,25 +10,25 @@
 	<div class="main">
 		<h2>Editing a tag</h2>
 
-		<form id="editForm" action="$adminUrlBuilder.getEditTagUrl($tag)" method="POST">
+		<form id="editForm" action="$adminUrlBuilder.getformObjectUrl($tag)" method="POST">
 
-            #springBind("editTag")
+            #springBind("formObject")
             #foreach($error in $status.errorMessages)
                 <div class="alert">$error</div>
             #end
 
             <fieldset>
-                #springBind("editTag.displayName")
+                #springBind("formObject.displayName")
                 <label for="${status.expression}">Display name:</label>
                 <input name="${status.expression}" class="title" value="$!{status.value}" />
                 <br />
 
-                #springBind("editTag.description")
+                #springBind("formObject.description")
                 <label for="${status.expression}">Description:</label>
                 <input name="${status.expression}" class="title" value="$!{status.value}" />
                 <br />
 
-                #springBind("editTag.parent")
+                #springBind("formObject.parent")
                 <label for="${status.expression}">Parent:</label>
                 <select name="${status.expression}">
                     <option value="">
@@ -38,25 +38,18 @@
                 </select>
                 <br />
 
-                #springBind("editTag.autotagHints")
+                #springBind("formObject.autotagHints")
                 <label for="${status.expression}">Autotag Hints:</label>
                 <input name="${status.expression}" class="title" value="$!{status.value}" />
                 <br />
 
-                #springBind("editTag.featured")
+                #springBind("formObject.featured")
                 <label for="${status.expression}">Featured:</label>
                 <input name="${status.expression}" type="checkbox:" value="$!{status.value}" />
                 $!{status.value}
                 <br />
 
-                #springBind("editTag.geocode")
-                <label for="${status.expression}">Geocode:</label>
-                <input id="geocode" name="${status.expression}" class="title" value="$!{status.value}" />
-                <br />
-                #springBind("editTag.selectedGeocode")
-                <label for="${status.expression}">Selected geocode:</label>
-                <input id="selectedGeocode" name="${status.expression}" class="title" value="$!{status.value}" />
-                <br />
+               #parse("includes/location_picker.vm")
 
 				<input type="submit" value="Submit" />
 			</fieldset>

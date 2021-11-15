@@ -37,14 +37,7 @@
                 <input name="${status.expression}" class="title" value="$!{status.value}" />
                 <br />
 
-                #springBind("formObject.geocode")
-                <label for="${status.expression}">Geocode:</label>
-                <input id="geocode" name="${status.expression}" class="title" value="$!{status.value}" />
-                <br />
-                #springBind("formObject.selectedGeocode")
-                <label for="${status.expression}">Selected geocode:</label>
-                <input id="selectedGeocode" name="${status.expression}" class="title" value="$!{status.value}" />
-                <br />
+               #parse("includes/location_picker.vm")
 
                 #springBind("formObject.tags")
                 <label for="${status.expression}">Tags:</label>

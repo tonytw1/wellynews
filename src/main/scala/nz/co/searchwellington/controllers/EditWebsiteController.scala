@@ -49,7 +49,7 @@ class EditWebsiteController @Autowired()(contentUpdateService: ContentUpdateServ
         w.geocode.foreach { g =>
           editWebsite.setGeocode(g.getAddress)
           val osmId = g.osmId.map(osmToString)
-          editWebsite.setSelectedGeocode(osmId.getOrElse(""))
+          editWebsite.setOsm(osmId.getOrElse(""))
         }
 
         val usersTags = w.resource_tags.filter(_.user_id == loggedInUser._id)
@@ -78,7 +78,7 @@ class EditWebsiteController @Autowired()(contentUpdateService: ContentUpdateServ
           log.info("Got valid edit website submission: " + editWebsite)
 
           val geocode = Option(editWebsite.getGeocode).flatMap { address =>
-            Option(editWebsite.getSelectedGeocode).flatMap { osmId =>
+            Option(editWebsite.getOsm).flatMap { osmId =>
               parseGeotag(address, osmId)
             }
           }

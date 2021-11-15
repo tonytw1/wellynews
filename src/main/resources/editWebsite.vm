@@ -12,31 +12,24 @@
 		
 		<form id="editForm" action="$adminUrlBuilder.getResourceEditUrl($website)" method="POST">
             <fieldset>
-                #springBind("editWebsite.title")
+                #springBind("formObject.title")
                 <label for="${status.expression}">Title:</label>
                 <input name="${status.expression}" class="title" value="$!{status.value}" />
                 <br />
 
-                #springBind("editWebsite.url")
+                #springBind("formObject.url")
                 <label for="${status.expression}">URL:</label>
                 <input name="${status.expression}" class="title" value="$!{status.value}" />
                 <br />
 
-                #springBind("editWebsite.description")
+                #springBind("formObject.description")
                 <label for="${status.expression}">Description:</label>
                 <input name="${status.expression}" class="title" value="$!{status.value}" />
                 <br />
 
-                #springBind("editWebsite.geocode")
-                <label for="${status.expression}">Geocode:</label>
-                <input id="geocode" name="${status.expression}" class="title" value="$!{status.value}" />
-                <br />
-                #springBind("editWebsite.selectedGeocode")
-                <label for="${status.expression}">Selected geocode:</label>
-                <input id="selectedGeocode" name="${status.expression}" class="title" value="$!{status.value}" />
-                <br />
+                #parse("includes/location_picker.vm")
 
-                #springBind("editWebsite.tags")
+                #springBind("formObject.tags")
                 <label for="${status.expression}">Tags:</label>
                 <select name="${status.expression}" multiple >
                     #foreach($tag in $tags)

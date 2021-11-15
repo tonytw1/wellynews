@@ -12,7 +12,7 @@ public class EditWebsite {
 
     private String description;
 
-    private String geocode, selectedGeocode;
+    private String geocode, osm;
 
     private List<String> tags = Lists.newArrayList();
 
@@ -48,12 +48,12 @@ public class EditWebsite {
         this.geocode = geocode;
     }
 
-    public String getSelectedGeocode() {
-        return selectedGeocode;
+    public String getOsm() {
+        return osm;
     }
 
-    public void setSelectedGeocode(String selectedGeocode) {
-        this.selectedGeocode = selectedGeocode;
+    public void setOsm(String osm) {
+        this.osm = osm;
     }
 
     public List<String> getTags() {
@@ -71,7 +71,7 @@ public class EditWebsite {
                 ", url='" + url + '\'' +
                 ", description='" + description + '\'' +
                 ", geocode='" + geocode + '\'' +
-                ", selectedGeocode='" + selectedGeocode + '\'' +
+                ", osm='" + osm + '\'' +
                 ", tags=" + tags +
                 '}';
     }

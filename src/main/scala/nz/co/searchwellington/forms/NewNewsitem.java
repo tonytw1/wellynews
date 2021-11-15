@@ -7,7 +7,7 @@ public class NewNewsitem {
     @NotBlank
     private String title, url, date, publisher;
 
-    private String geocode, selectedGeocode;
+    private String geocode, osm;
     private String description;
 
     public String getTitle() {
@@ -53,12 +53,12 @@ public class NewNewsitem {
         this.geocode = geocode;
     }
 
-    public String getSelectedGeocode() {
-        return selectedGeocode;
+    public String getOsm() {
+        return osm;
     }
 
-    public void setSelectedGeocode(String selectedGeocode) {
-        this.selectedGeocode = selectedGeocode;
+    public void setOsm(String osm) {
+        this.osm = osm;
     }
 
     @Override
@@ -69,7 +69,7 @@ public class NewNewsitem {
                 ", date='" + date + '\'' +
                 ", publisher='" + publisher + '\'' +
                 ", geocode='" + geocode + '\'' +
-                ", selectedGeocode='" + selectedGeocode + '\'' +
+                ", osm='" + osm + '\'' +
                 ", description='" + description + '\'' +
                 '}';
     }

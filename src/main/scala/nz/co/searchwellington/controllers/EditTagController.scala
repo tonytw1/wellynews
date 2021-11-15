@@ -52,7 +52,7 @@ class EditTagController @Autowired()(contentUpdateService: ContentUpdateService,
         tag.geocode.foreach { g =>
           editTag.setGeocode(g.getAddress)
           val osmId = g.osmId.map(osmToString)
-          editTag.setSelectedGeocode(osmId.getOrElse(""))
+          editTag.setOsm(osmId.getOrElse(""))
         }
 
         renderEditForm(tag, editTag)
@@ -66,7 +66,7 @@ class EditTagController @Autowired()(contentUpdateService: ContentUpdateService,
   }
 
   @RequestMapping(value = Array("/edit-tag/{id}"), method = Array(RequestMethod.POST))
-  def submit(@PathVariable id: String, @Valid @ModelAttribute("editTag") editTag: EditTag, result: BindingResult): ModelAndView = {
+  def submit(@PathVariable id: String, @Valid @ModelAttribute("formObject") editTag: EditTag, result: BindingResult): ModelAndView = {
 
     def submitEditTag(loggedInUser: User): ModelAndView = {
       Await.result(mongoRepository.getTagById(id), TenSeconds).map { tag =>
@@ -81,13 +81,13 @@ class EditTagController @Autowired()(contentUpdateService: ContentUpdateService,
 
         val resolvedGeocode = for {
           address <- optionalInputString(editTag.getGeocode)
-          osmId <- optionalInputString(editTag.getSelectedGeocode)
+          osmId <- optionalInputString(editTag.getOsm)
           geocode <- parseGeotag(address, osmId)
         } yield {
           geocode
         }
         log.info("Resolved geocode: " + resolvedGeocode)
-        if (optionalInputString(editTag.getSelectedGeocode).nonEmpty && resolvedGeocode.isEmpty) {
+        if (optionalInputString(editTag.getOsm).nonEmpty && resolvedGeocode.isEmpty) {
           result.addError(new ObjectError("geocode", "Could not resolve geocode"))
         }
 
@@ -132,7 +132,7 @@ class EditTagController @Autowired()(contentUpdateService: ContentUpdateService,
     new ModelAndView("editTag").
       addObject("tag", tag).
       addObject("parents", possibleParents.asJava).
-      addObject("editTag", editTag)
+      addObject("formObject", editTag)
   }
 
   private def optionalBsonObjectId(i: String): Option[BSONObjectID] = {
