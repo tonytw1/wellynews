@@ -89,7 +89,6 @@ import scala.jdk.CollectionConverters._
         mv.addObject(MAIN_CONTENT, newsitemsNear._1.asJava)
 
         if (relatedTagLinks.nonEmpty) {
-          log.info("Found geo related tags: " + relatedTagLinks)
           mv.addObject("related_tags", relatedTagLinks.asJava)
         }
         if (relatedPublisherLinks.nonEmpty) {
