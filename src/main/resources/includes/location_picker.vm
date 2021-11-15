@@ -3,7 +3,7 @@
 <input id="geocode" name="${status.expression}" class="title" value="$!{status.value}" />
 <br />
 
-#springBind("formObject.selectedGeocode")
+#springBind("formObject.osm")
 <label for="${status.expression}">Selected geocode:</label>
 <input id="selectedGeocode" name="${status.expression}" class="title" value="$!{status.value}" />
 <br />

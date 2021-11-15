@@ -132,7 +132,7 @@ class EditWebsiteController @Autowired()(contentUpdateService: ContentUpdateServ
     new ModelAndView("editWebsite").
       addObject("title", "Editing a website").
       addObject("website", w).
-      addObject("editWebsite", editWebsite).
+      addObject("formObject", editWebsite).
       addObject("tags", Await.result(tagDAO.getAllTags, TenSeconds).asJava)
   }
 

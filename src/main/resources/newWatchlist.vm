@@ -12,23 +12,23 @@
 		
 		<form id="editForm" action="/new-watchlist" method="POST">
 
-			#springBind("newWatchlist")
+			#springBind("formObject")
 			#foreach($error in $status.errorMessages)
 				<div class="alert">$error</div>
 			#end
 
             <fieldset>
-                #springBind("newWatchlist.title")
+                #springBind("formObject.title")
                 <label for="${status.expression}">Title:</label>
                 <input name="${status.expression}" class="title" value="$!{status.value}" />
                 <br />
 
-                #springBind("newWatchlist.url")
+                #springBind("formObject.url")
                 <label for="${status.expression}">URL:</label>
                 <input name="${status.expression}" class="title" value="$!{status.value}" />
                 <br />
 
-                #springBind("newWatchlist.publisher")
+                #springBind("formObject.publisher")
                 <label for="${status.expression}">Publisher:</label>
                 <input id="publisher" name="${status.expression}" class="title" value="$!{status.value}" />
                 <br />

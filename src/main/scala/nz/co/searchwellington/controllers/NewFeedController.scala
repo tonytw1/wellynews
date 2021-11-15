@@ -126,7 +126,7 @@ class NewFeedController @Autowired()(contentUpdateService: ContentUpdateService,
     new ModelAndView("newFeed").
       addObject("heading", "Adding a feed").
       addObject("acceptancePolicyOptions", acceptancePolicyOptions.asJava).
-      addObject("newFeed", newFeed)
+      addObject("formObject", newFeed)
   }
 
 }

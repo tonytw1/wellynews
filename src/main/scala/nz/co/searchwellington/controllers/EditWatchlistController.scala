@@ -136,7 +136,7 @@ class EditWatchlistController @Autowired()(contentUpdateService: ContentUpdateSe
     new ModelAndView("editWatchlist").
       addObject("title", "Editing a watchlist").
       addObject("watchlist", w).
-      addObject("editWatchlist", editWatchlist).
+      addObject("formObject", editWatchlist).
       addObject("tags", Await.result(tagDAO.getAllTags, TenSeconds).asJava)
   }
 

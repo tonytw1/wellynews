@@ -12,18 +12,18 @@
 		
 		<form id="editForm" action="/new-website" method="POST">
 
-			#springBind("newWebsite")
+			#springBind("formObject")
 			#foreach($error in $status.errorMessages)
 				<div class="alert">$error</div>
 			#end
 
             <fieldset>
-                #springBind("newWebsite.title")
+                #springBind("formObject.title")
                 <label for="${status.expression}">Title:</label>
                 <input name="${status.expression}" class="title" value="$!{status.value}" />
                 <br />
 
-                #springBind("newWebsite.url")
+                #springBind("formObject.url")
                 <label for="${status.expression}">URL:</label>
                 <input name="${status.expression}" class="title" value="$!{status.value}" />
                 <br />
