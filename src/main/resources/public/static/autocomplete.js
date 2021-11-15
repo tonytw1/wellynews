@@ -67,7 +67,7 @@ $(function() {
        itemTypes={
                 'N': 'NODE',
                 'W': 'WAY',
-                'R': 'RELATIONSHIP'};
+                'R': 'RELATION'};
 
 		$("#geocode").autocomplete({
 			source: function( request, response ) {
