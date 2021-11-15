@@ -12,28 +12,28 @@
 		
 		<form id="formObject" action="/new-feed" method="POST">
 
-            #springBind("newFeed")
+            #springBind("formObject")
             #foreach($error in $status.errorMessages)
                 <div class="alert">$error</div>
             #end
 
             <fieldset>
-                #springBind("newFeed.title")
+                #springBind("formObject.title")
                 <label for="${status.expression}">Title:</label>
                 <input name="${status.expression}" class="title" value="$!{status.value}" />
                 <br />
 
-                #springBind("newFeed.url")
+                #springBind("formObject.url")
                 <label for="${status.expression}">URL:</label>
                 <input name="${status.expression}" class="title" value="$!{status.value}" />
                 <br />
 
-                #springBind("newFeed.publisher")
+                #springBind("formObject.publisher")
                 <label for="${status.expression}">Publisher:</label>
                 <input id="publisher" name="${status.expression}" class="title" value="$!{status.value}" />
                 <br />
 
-                #springBind("newFeed.acceptancePolicy")
+                #springBind("formObject.acceptancePolicy")
                 <label for="${status.expression}">Acceptance policy:</label>
                 <select name="${status.expression}">
                     #foreach($option in $acceptancePolicyOptions)
