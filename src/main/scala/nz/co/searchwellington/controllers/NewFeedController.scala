@@ -94,9 +94,7 @@ class NewFeedController @Autowired()(contentUpdateService: ContentUpdateService,
           val eventuallyCreated = whakaokoService.createFeedSubscription(withSubmittingUser.page).map { maybeSubscription =>
             withSubmittingUser.whakaokoSubscription = maybeSubscription
             withSubmittingUser
-          }.flatMap { withWhakaokoSubscription =>
-            contentUpdateService.create(withWhakaokoSubscription)
-          }
+          }.flatMap(contentUpdateService.create)
 
           val created = Await.result(eventuallyCreated, TenSeconds)
           log.info("Created feed: " + created)
