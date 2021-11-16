@@ -112,6 +112,11 @@ Pages often contain elements such as timestamps which mean a pages checksum chan
 This should be filtered out before checksum pages.
 
 
+### Admin actions
+
+#### Gather publisher resources
+
+Given a publisher, find newsitems and feeds which based on their urls should be assigned to this publisher.
 
 
 ## Local dev
