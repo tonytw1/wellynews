@@ -6,15 +6,16 @@ import nz.co.searchwellington.repositories.mongo.MongoRepository
 import org.apache.log4j.Logger
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
+import reactivemongo.api.commands.WriteResult
 
-import scala.concurrent.{Await, Future}
 import scala.concurrent.ExecutionContext.Implicits.global
+import scala.concurrent.{Await, Future}
 
 @Component class SuppressionDAO @Autowired()(mongoRepository: MongoRepository) extends ReasonableWaits {
 
   private val log = Logger.getLogger(classOf[SuppressionDAO])
 
-  def addSuppression(urlToSupress: String) {
+  def addSuppression(urlToSupress: String): Unit = {
     log.info("Supression url: " + urlToSupress)
     Await.result(mongoRepository.saveSupression(Supression(url = urlToSupress)), TenSeconds)
   }
@@ -23,7 +24,7 @@ import scala.concurrent.ExecutionContext.Implicits.global
     mongoRepository.getSupressionByUrl(url).map(_.nonEmpty)
   }
 
-  def removeSupressionForUrl(url: String) = {
+  def removeSupressionForUrl(url: String): WriteResult = {
     Await.result(mongoRepository.removeSupressionFor(url), TenSeconds)
   }
 

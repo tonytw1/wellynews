@@ -19,7 +19,7 @@ import scala.concurrent.{Await, ExecutionContext}
     //registerFeedsWithWhakaoko(Await.result(mongoReposity.getAllFeeds, TenSeconds))
   }
 
-  private def registerFeedsWithWhakaoko(feeds: Seq[Feed])(implicit ec: ExecutionContext) {
+  private def registerFeedsWithWhakaoko(feeds: Seq[Feed])(implicit ec: ExecutionContext): Unit = {
     log.info("Registering feeds with whakaoko")
     feeds.map { feed =>
       if (!Strings.isNullOrEmpty(feed.page)) {

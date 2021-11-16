@@ -20,7 +20,7 @@ import org.springframework.stereotype.Component
     }
   }
 
-  def setUrlStack(request: HttpServletRequest) {
+  def setUrlStack(request: HttpServletRequest): Unit = {
     var url = RequestPath.getPathFrom(request)
     if (request.getQueryString != null) {
       url = url + "?" + request.getQueryString
@@ -28,7 +28,7 @@ import org.springframework.stereotype.Component
     setUrlStack(request, url)
   }
 
-  def setUrlStack(request: HttpServletRequest, url: String) {
+  def setUrlStack(request: HttpServletRequest, url: String): Unit = {
     request.getSession.setAttribute("url", url)
     log.debug("Put url onto the stack: " + url)
   }

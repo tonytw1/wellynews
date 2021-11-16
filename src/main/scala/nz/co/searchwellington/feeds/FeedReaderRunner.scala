@@ -21,7 +21,7 @@ import scala.concurrent.{Await, ExecutionContext, Future}
   implicit val executionContext = ExecutionContext.fromExecutor(feedReaderTaskExecutor)
 
   @Scheduled(cron = "0 */10 * * * *")
-  def readFeeds {
+  def readFeeds(): Unit = {
     def readAllFeeds(feeds: Seq[Feed]): Future[Boolean] = {
       getFeedReaderUser.map { maybyFeedUser =>
         maybyFeedUser.map { feedReaderUser =>

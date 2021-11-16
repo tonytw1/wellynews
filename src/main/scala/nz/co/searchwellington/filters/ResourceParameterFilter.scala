@@ -19,7 +19,7 @@ import scala.concurrent.ExecutionContext.Implicits.global
 
   def filter(request: HttpServletRequest) {
 
-    def processResourceId(request: HttpServletRequest, resourceParameter: String) {
+    def processResourceId(request: HttpServletRequest, resourceParameter: String): Unit = {
       try {
         val resourceId = resourceParameter
         Await.result(mongoRepository.getResourceById(resourceId), TenSeconds).foreach { resource =>

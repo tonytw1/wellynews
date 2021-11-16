@@ -1,12 +1,11 @@
 package nz.co.searchwellington.controllers
 
 import nz.co.searchwellington.ReasonableWaits
-import nz.co.searchwellington.model.{Feed, Newsitem, Resource, User, Watchlist, Website}
+import nz.co.searchwellington.model._
 import nz.co.searchwellington.repositories.HandTaggingService
 import nz.co.searchwellington.repositories.mongo.MongoRepository
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
-import reactivemongo.api.commands.WriteResult
 
 import scala.concurrent.{Await, ExecutionContext, Future}
 
@@ -15,7 +14,7 @@ import scala.concurrent.{Await, ExecutionContext, Future}
 
   // Typically used when an anonymous session user later signs into their actual account.
   // Reassign the session submissions to their long running account so that they don't lose them.
-  def reassignOwnership(previousOwner: User, newOwner: User)(implicit ec: ExecutionContext) {
+  def reassignOwnership(previousOwner: User, newOwner: User)(implicit ec: ExecutionContext): Unit = {
     val eventualOwnerChanges = mongoRepository.getResourcesIdsOwnedBy(previousOwner).flatMap { rids =>
       val eventualMaybeResourcesIds: Seq[Future[Option[Resource]]] = rids.map { id =>
         mongoRepository.getResourceByObjectId(id)
