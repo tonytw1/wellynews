@@ -21,8 +21,8 @@ trait FrontendResource extends RssFeedable with Serializable {
   val date: Date
   val description: String
   val liveTime: Date
-  val tags: Seq[Tag]
-  val handTags: Seq[Tag]
+  val tags: Option[Seq[Tag]]
+  val handTags: Option[Seq[Tag]]
   val owner: String
   val place: Option[Geocode]
   val held: Boolean
@@ -52,9 +52,9 @@ trait FrontendResource extends RssFeedable with Serializable {
   @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ssXXX")
   final def getLiveTime: Date = liveTime
 
-  final def getTags: List[Tag] = tags.asJava
+  final def getTags: List[Tag] = tags.map(_.asJava).orNull
 
-  final def getHandTags: List[Tag] = handTags.asJava
+  final def getHandTags: List[Tag] = handTags.map(_.asJava).orNull
 
   final def getOwner: String = owner
 
@@ -90,36 +90,46 @@ trait FrontendResource extends RssFeedable with Serializable {
   }
 
   def getTaggingStatus: String = {
-    if (handTags.nonEmpty) {
-      "Tagged as: "
-    } else {
-      if (tags.nonEmpty) {
-        "Automatically tagged as: "
+    (for {
+      handTags <- handTags
+      tags <- tags
+    } yield {
+      if (handTags.nonEmpty) {
+        "Tagged as: "
       } else {
-        "Not tagged"
+        if (tags.nonEmpty) {
+          "Automatically tagged as: "
+        } else {
+          "Not tagged"
+        }
       }
-    }
+    }).orNull
   }
 
   def getTaggingsToShow: List[Tag] = {
-    val tagsToShow = if (handTags.nonEmpty) {
-      handTags
-    } else {
-      if (tags.nonEmpty) {
-        tags
+    (for {
+      handTags <- handTags
+      tags <- tags
+    } yield {
+      val tagsToShow = if (handTags.nonEmpty) {
+        handTags
       } else {
-        Seq.empty
+        if (tags.nonEmpty) {
+          tags
+        } else {
+          Seq.empty
+        }
       }
-    }
 
-    val withNoChildren = tagsToShow.map { t =>
-      val children = tagsToShow.filter { c =>
-        c.parent.contains(t._id)
-      }.map(_._id).toSet
-      TagWithChildren(t, children)
-    }.filter(_.children.isEmpty).map(_.tag)
+      val withNoChildren = tagsToShow.map { t =>
+        val children = tagsToShow.filter { c =>
+          c.parent.contains(t._id)
+        }.map(_._id).toSet
+        TagWithChildren(t, children)
+      }.filter(_.children.isEmpty).map(_.tag)
 
-    withNoChildren.asJava
+      withNoChildren.asJava
+    }).orNull
   }
 
   case class TagWithChildren(tag: Tag, children: Set[BSONObjectID])

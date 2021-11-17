@@ -62,7 +62,7 @@ class FrontendResourceMapperTest extends ReasonableWaits {
     val frontendWebsite = Await.result(mapper.createFrontendResourceFrom(website), TenSeconds)
 
     assertFalse(frontendWebsite.handTags.isEmpty)
-    assertEquals(tag.id, frontendWebsite.handTags.head.id)
+    assertEquals(tag.id, frontendWebsite.handTags.get.head.id)
   }
 
   @Test

@@ -23,8 +23,8 @@ class FrontendResourceTest {
     val aTag = Tag()
 
     val newsitemWithAutomaticTagsOnly = FrontendNewsitem(id = UUID.randomUUID().toString,
-      handTags = Seq.empty,
-      tags = Seq(aTag)
+      handTags = Some(Seq.empty),
+      tags = Some(Seq(aTag))
     )
 
     assertEquals("Automatically tagged as: ", newsitemWithAutomaticTagsOnly.getTaggingStatus)
@@ -37,8 +37,8 @@ class FrontendResourceTest {
     val anotherTag = Tag()
 
     val newsitemWithManualAndAutomaticTags = FrontendNewsitem(id = UUID.randomUUID().toString,
-      handTags = Seq(aTag),
-      tags = Seq(anotherTag)
+      handTags = Some(Seq(aTag)),
+      tags = Some(Seq(anotherTag))
     )
 
     assertEquals("Tagged as: ", newsitemWithManualAndAutomaticTags.getTaggingStatus)
@@ -52,7 +52,7 @@ class FrontendResourceTest {
     val childOfAnotherTag = Tag(name = "Child of another tag", parent = Some(anotherTag._id))
 
     val newsitem = FrontendNewsitem(id = UUID.randomUUID().toString,
-      tags = Seq(aTag, anotherTag, childOfAnotherTag)
+      tags = Some(Seq(aTag, anotherTag, childOfAnotherTag))
     )
     assertEquals(Seq(aTag, childOfAnotherTag).asJava, newsitem.getTaggingsToShow)
   }

@@ -31,10 +31,10 @@ import scala.concurrent.{ExecutionContext, Future}
         val actions = actionsFor(frontendResource, loggedInUser)
         frontendResource match {
           // TODO this match to call the same code on each class is a weird smell
-          case n: FrontendNewsitem => n.copy(tags = indexTags, handTags = handTags, actions = actions)
-          case f: FrontendFeed => f.copy(tags = indexTags, handTags = handTags, actions = actions)
-          case l: FrontendWatchlist => l.copy(tags = indexTags, handTags = handTags, actions = actions)
-          case w: FrontendWebsite => w.copy(tags = indexTags, handTags = handTags, actions = actions)
+          case n: FrontendNewsitem => n.copy(tags = Some(indexTags), handTags = Some(handTags), actions = actions)
+          case f: FrontendFeed => f.copy(tags = Some(indexTags), handTags = Some(handTags), actions = actions)
+          case l: FrontendWatchlist => l.copy(tags = Some(indexTags), handTags = Some(handTags), actions = actions)
+          case w: FrontendWebsite => w.copy(tags = Some(indexTags), handTags = Some(handTags), actions = actions)
         }
       }
     }).flatten

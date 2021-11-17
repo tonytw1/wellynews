@@ -1,11 +1,12 @@
 package nz.co.searchwellington.model.frontend
 
 import com.fasterxml.jackson.annotation.JsonFormat
+import nz.co.searchwellington.model.{Geocode, Tag, User}
+import uk.co.eelpieconsulting.common.views.rss.RssFeedable
 
 import java.util
 import java.util.Date
-import nz.co.searchwellington.model.{Geocode, Tag, User, Website}
-import uk.co.eelpieconsulting.common.views.rss.RssFeedable
+import scala.jdk.CollectionConverters._
 
 case class FrontendNewsitem(id: String,
                             urlWords: String = null,
@@ -16,8 +17,8 @@ case class FrontendNewsitem(id: String,
                             date: Date = null,
                             description: String = null,
                             liveTime: Date = null,
-                            tags: Seq[Tag] = Seq.empty,
-                            handTags: Seq[Tag] = Seq.empty,
+                            tags: Option[Seq[Tag]] = Some(Seq.empty),
+                            handTags: Option[Seq[Tag]] = Some(Seq.empty),
                             owner: String = null,
                             place: Option[Geocode] = None,
                             held: Boolean = false,
@@ -48,8 +49,7 @@ case class FrontendNewsitem(id: String,
   override def getImageUrl: String = if (image != null) image.getUrl else null
 
   def getHangTags: util.List[Tag] = {
-    import scala.collection.JavaConverters._
-    handTags.asJava
+    handTags.map(_.asJava).orNull
   }
 
 }

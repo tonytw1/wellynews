@@ -4,7 +4,7 @@ import nz.co.searchwellington.ReasonableWaits
 import nz.co.searchwellington.controllers.models.GeotaggedNewsitemExtractor
 import nz.co.searchwellington.feeds.whakaoko.{WhakaokoFeedReader, WhakaokoService}
 import nz.co.searchwellington.feeds.{FeedItemActionDecorator, FeeditemToNewsitemService}
-import nz.co.searchwellington.model.frontend.FrontendResource
+import nz.co.searchwellington.model.frontend.{FrontendNewsitem, FrontendResource}
 import nz.co.searchwellington.model.mappers.FrontendResourceMapper
 import nz.co.searchwellington.model.{Feed, User}
 import nz.co.searchwellington.repositories.ContentRetrievalService
@@ -58,8 +58,15 @@ import scala.jdk.CollectionConverters._
               }
             }
 
-            val eventualWithSuppressionAndLocalCopyInformation: Future[Seq[FrontendResource]] = eventualFrontendFeedNewitems.flatMap { rs =>
-              feedNewsItemLocalCopyDecorator.withFeedItemSpecificActions(rs, loggedInUser)
+            val eventualWithSuppressionAndLocalCopyInformation: Future[Seq[FrontendResource]] = eventualFrontendFeedNewitems.flatMap { feedItems =>
+              feedNewsItemLocalCopyDecorator.withFeedItemSpecificActions(feedItems, loggedInUser).map{ feedItems =>
+                // Remove tags
+                feedItems.map { feedItem: FrontendResource =>
+                  feedItem match {
+                    case n: FrontendNewsitem => n.copy(tags = None, handTags = None)
+                  }
+                }
+              }
             }
 
             eventualWithSuppressionAndLocalCopyInformation.map { i =>
