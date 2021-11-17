@@ -14,7 +14,7 @@
 			#end
 
 			#if ($item.publisherName)
-				<li class="publisher"><a href="$item.publisherUrlWords">$item.publisherName</a></li>
+				<li class="publisher"><a href="/$item.publisherUrlWords">$item.publisherName</a></li>
 			#end
 						
 			#if ($item.latestItemDate)
