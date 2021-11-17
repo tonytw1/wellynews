@@ -31,7 +31,7 @@ import scala.jdk.CollectionConverters._
       acceptedNewsitmes <- contentRetrievalService.getAcceptedNewsitems(MAX_NEWSITEMS, loggedInUser = loggedInUser, page = page)
     } yield {
       val mv = new ModelAndView().
-        addObject("heading", "Accepted newsitems").
+        addObject("heading", "Accepted").
         addObject("description", "The most recently accepted feed news items.").
         addObject("link", urlBuilder.fullyQualified(urlBuilder.getAcceptedUrl)).
         addObject(MAIN_CONTENT, acceptedNewsitmes._1.asJava)
