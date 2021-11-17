@@ -25,6 +25,7 @@ case class FrontendWatchlist(id: String,
                              actions: Seq[Action] = Seq.empty) extends FrontendResource {
 
   def getPublisherName: String = publisherName.orNull
+  def getPublisherUrlWords: String = publisherUrlWords.orNull
 
 }
 

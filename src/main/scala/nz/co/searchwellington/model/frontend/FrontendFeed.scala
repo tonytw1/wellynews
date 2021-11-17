@@ -38,5 +38,6 @@ case class FrontendFeed(id: String,
   def getLastRead: Date = lastRead.orNull
 
   def getPublisherName: String = publisherName.orNull
+  def getPublisherUrlWords: String = publisherUrlWords.orNull
 
 }
