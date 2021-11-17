@@ -21,6 +21,7 @@ case class FrontendWatchlist(id: String,
                              lastScanned: Option[Date],
                              lastChanged: Option[Date],
                              publisherName: Option[String] = None,
+                             publisherUrlWords: Option[String] = None,
                              actions: Seq[Action] = Seq.empty) extends FrontendResource {
 
   def getPublisherName: String = publisherName.orNull

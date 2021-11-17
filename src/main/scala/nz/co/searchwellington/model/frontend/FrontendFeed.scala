@@ -23,6 +23,7 @@ case class FrontendFeed(id: String,
                         acceptancePolicy: FeedAcceptancePolicy = null,
                         lastRead: Option[Date] = None,
                         publisherName: Option[String] = None,
+                        publisherUrlWords: Option[String] = None,
                         lastScanned: Option[Date] = None,
                         lastChanged: Option[Date] = None,
                         actions: Seq[Action] = Seq.empty
