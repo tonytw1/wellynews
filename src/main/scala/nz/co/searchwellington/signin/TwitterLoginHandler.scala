@@ -52,7 +52,7 @@ import scala.concurrent.ExecutionContext.Implicits.global
     }
   }
 
-  override def getExternalUserIdentifierFromCallbackRequest(request: HttpServletRequest): Option[twitter4j.User] = {
+  override def getExternalUserIdentifierFromCallbackRequest(request: HttpServletRequest): Option[Long] = {
     if (twitterApiFactory.apiIsConfigured) {
       if (request.getParameter("oauth_token") != null && request.getParameter("oauth_verifier") != null) {
         val token = request.getParameter("oauth_token")
@@ -66,13 +66,16 @@ import scala.concurrent.ExecutionContext.Implicits.global
           try {
             log.debug("Exchanging request token for access token")
             Option(twitterApiFactory.getTwitterApi.getOAuthAccessToken(requestToken, verifier)).flatMap { accessToken =>
-              log.info("Got access token: '" + accessToken.getToken + "', '" + accessToken.getTokenSecret + "'")
+              log.debug("Got access token: '" + accessToken.getToken + "', '" + accessToken.getTokenSecret + "'")
               tokens.remove(requestToken.getToken)
               log.info("Using access token to lookup twitter user details")
 
               getTwitterUserCredentials(accessToken).map { twitterUser =>
-                log.info("Authenticated user is: " + twitterUser.getName)
-                Some(twitterUser)
+                log.info("Authenticated Twitter user is: " + twitterUser.getName)
+                val twitterUserId = twitterUser.getId
+                log.info(s"Returning Twitter id $twitterUserId as external identifier")
+                Some(twitterUserId)
+
               }.getOrElse {
                 log.warn("Failed up obtain twitter user details")
                 None
@@ -99,25 +102,30 @@ import scala.concurrent.ExecutionContext.Implicits.global
   }
 
   override def getUserByExternalIdentifier(externalIdentifier: Any): Option[User] = {
-    val twitterUser = externalIdentifier.asInstanceOf[twitter4j.User]
-    log.info("Looking of local user by twitter id: " + twitterUser.getId)
-    Await.result(mongoRepository.getUserByTwitterId(twitterUser.getId), TenSeconds)
+    externalIdentifier match {
+      case twitterUserId: Long =>
+        log.info("Looking of local user by twitter id: " + twitterUserId)
+        Await.result(mongoRepository.getUserByTwitterId(twitterUserId), TenSeconds)
+      case _ =>
+        log.warn("Did not see expected Long Twitter user id as external identifier; cannot look on local user")
+        None
+    }
   }
 
   override def decorateUserWithExternalSigninIdentifier(user: User, externalIdentifier: Any): User = {
-    if (user.twitterid.isEmpty) {
       externalIdentifier match {
-        case twitterUser: twitter4j.User =>
-          user.copy(twitterid = Some(twitterUser.getId.toInt)) // TODO persistance should be Long
-        // val twitterScreenName: String = twitterUser.getScreenName()
-        //if (userDAO.getUserByProfileName(twitterScreenName) == null) {
-        // user.setProfilename(twitterScreenName) TODO
-        //}
+        case twitterUserId: Long =>
+          if (user.twitterid.isEmpty) {
+            user.copy(twitterid = Some(twitterUserId.toInt)) // TODO persistance should be Long
+            // val twitterScreenName: String = twitterUser.getScreenName()
+            //if (userDAO.getUserByProfileName(twitterScreenName) == null) {
+            // user.setProfilename(twitterScreenName) TODO
+            //}
+          } else {
+            user
+          }
         case _ =>
           user
-      }
-    } else {
-      user
     }
   }
 

@@ -31,12 +31,13 @@ import scala.concurrent.ExecutionContext.Implicits.global
       log.info("External user identifier is: " + externalIdentifier.toString)
 
       val userToSignIn = signinHandler.getUserByExternalIdentifier(externalIdentifier).map { user =>
-        // TODO Don't know what this does
-        loggedInUserFilter.getLoggedInUser.map { loggedInUser =>
-          log.info("Attaching external identifier to current user: " + externalIdentifier.toString)
+        // This was an opportunity to sync external user details everytime we signed in.
+        //loggedInUserFilter.getLoggedInUser.map { loggedInUser =>
+          //log.info("Attaching external identifier to current user: " + externalIdentifier)
           //signinHandler.decorateUserWithExternalSigninIdentifier(loggedInUser, externalIdentifier) // TODO why?
-          loggedInUser
-        }
+          //loggedInUser
+        //}
+        log.info(s"Found existing local user by external identifier $externalIdentifier: ${user.getId}")
         user
 
       }.getOrElse {
@@ -61,7 +62,7 @@ import scala.concurrent.ExecutionContext.Implicits.global
   private def signinErrorView(request: HttpServletRequest) = new ModelAndView(new RedirectView(urlStack.getExitUrlFromStack(request)))
 
   private def createNewUser(externalIdentifier: Any): User = {
-    log.info("Creating new user with external identifier: " + externalIdentifier.toString)
+    log.info("Creating new user with external identifier: " + externalIdentifier)
     val newUser = anonUserService.createAnonUser
     val withLinkedExternalIdentifier = signinHandler.decorateUserWithExternalSigninIdentifier(newUser, externalIdentifier)
     mongoRepository.saveUser(withLinkedExternalIdentifier)
