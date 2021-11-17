@@ -94,6 +94,7 @@ import scala.concurrent.{ExecutionContext, Future}
             image = null, // TODO
             urlWords = n.url_words.orNull,
             publisherName = publisher.flatMap(_.title),
+            publisherUrlWords = publisher.flatMap(_.url_words),
             httpStatus = n.http_status,
             lastScanned = n.last_scanned,
             lastChanged = n.last_changed,

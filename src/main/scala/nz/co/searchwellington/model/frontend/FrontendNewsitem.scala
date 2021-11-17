@@ -22,6 +22,7 @@ case class FrontendNewsitem(id: String,
                             place: Option[Geocode] = None,
                             held: Boolean = false,
                             publisherName: Option[String] = None,
+                            publisherUrlWords: Option[String] = None,
                             acceptedFrom: Option[FrontendFeed] = None,
                             acceptedBy: Option[User] = None, // TODO Frontend user
                             accepted: Date = null,
@@ -31,6 +32,7 @@ case class FrontendNewsitem(id: String,
                             actions: Seq[Action] = Seq.empty) extends FrontendResource with RssFeedable {
 
   def getPublisherName: String = publisherName.orNull
+  def getPublisherUrlWords: String = publisherUrlWords.orNull
 
   def getAcceptedFromFeedName: String = acceptedFrom.map(_.name).orNull
 
