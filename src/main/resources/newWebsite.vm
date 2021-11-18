@@ -10,7 +10,7 @@
 	<div class="main">
 		<h2>Submitting a Website</h2>
 		
-		<form id="editForm" action="/new-website" method="POST">
+		<form id="newWebsite" action="/new-website" method="POST">
 
 			#springBind("formObject")
 			#foreach($error in $status.errorMessages)

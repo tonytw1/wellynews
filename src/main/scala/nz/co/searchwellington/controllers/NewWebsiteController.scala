@@ -2,7 +2,7 @@ package nz.co.searchwellington.controllers
 
 import nz.co.searchwellington.ReasonableWaits
 import nz.co.searchwellington.controllers.submission.EndUserInputs
-import nz.co.searchwellington.forms.NewWebsite
+import nz.co.searchwellington.forms.{NewNewsitem, NewWebsite}
 import nz.co.searchwellington.model.{UrlWordsGenerator, User, Website}
 import nz.co.searchwellington.modification.ContentUpdateService
 import nz.co.searchwellington.repositories.mongo.MongoRepository
@@ -33,7 +33,7 @@ class NewWebsiteController @Autowired()(contentUpdateService: ContentUpdateServi
 
   @RequestMapping(value = Array("/new-website"), method = Array(RequestMethod.GET))
   def prompt(): ModelAndView = {
-    new ModelAndView("newWebsite").addObject("newWebsite", new NewWebsite())
+      renderNewWebsiteForm(new NewWebsite());
   }
 
   @RequestMapping(value = Array("/new-website"), method = Array(RequestMethod.POST))

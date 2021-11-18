@@ -10,7 +10,7 @@
 	<div class="main">
 		<h2>Submitting a watchlist item</h2>
 		
-		<form id="editForm" action="/new-watchlist" method="POST">
+		<form id="newWatchlist" action="/new-watchlist" method="POST">
 
 			#springBind("formObject")
 			#foreach($error in $status.errorMessages)

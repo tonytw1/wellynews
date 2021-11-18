@@ -59,7 +59,7 @@ class NewFeedController @Autowired()(contentUpdateService: ContentUpdateService,
   }
 
   @RequestMapping(value = Array("/new-feed"), method = Array(RequestMethod.POST))
-  def submit(@Valid @ModelAttribute("newFeed") newFeed: NewFeed, result: BindingResult, request: HttpServletRequest): ModelAndView = {
+  def submit(@Valid @ModelAttribute("formObject") newFeed: NewFeed, result: BindingResult, request: HttpServletRequest): ModelAndView = {
     val loggedInUser = getLoggedInUser(request)
     if (!result.hasErrors) {
       log.info("Got valid new feed submission: " + newFeed)
@@ -120,7 +120,7 @@ class NewFeedController @Autowired()(contentUpdateService: ContentUpdateService,
     }
   }
 
-  private def renderForm(newFeed: NewFeed) = {
+  private def renderForm(newFeed: NewFeed): ModelAndView = {
     new ModelAndView("newFeed").
       addObject("heading", "Adding a feed").
       addObject("acceptancePolicyOptions", acceptancePolicyOptions.asJava).

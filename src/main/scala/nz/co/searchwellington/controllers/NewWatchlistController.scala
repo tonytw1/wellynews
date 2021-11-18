@@ -33,7 +33,7 @@ class NewWatchlistController @Autowired()(contentUpdateService: ContentUpdateSer
 
   @RequestMapping(value = Array("/new-watchlist"), method = Array(RequestMethod.GET))
   def prompt(): ModelAndView = {
-    new ModelAndView("newWatchlist").addObject("newWatchlist", new NewWatchlist())
+    renderNewWatchlistForm(new NewWatchlist())
   }
 
   @RequestMapping(value = Array("/new-watchlist"), method = Array(RequestMethod.POST))
@@ -77,7 +77,7 @@ class NewWatchlistController @Autowired()(contentUpdateService: ContentUpdateSer
   private def renderNewWatchlistForm(newWatchlist: nz.co.searchwellington.forms.NewWatchlist): ModelAndView = {
     new ModelAndView("newWatchlist").
       addObject("heading", "Adding a watchlist item").
-      addObject("newWatchlist", newWatchlist)
+      addObject("formObject", newWatchlist)
   }
 
 }

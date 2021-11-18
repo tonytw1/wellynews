@@ -10,7 +10,7 @@
 	<div class="main">
 		<h2>Submitting a Feed</h2>
 		
-		<form id="formObject" action="/new-feed" method="POST">
+		<form id="newFeed" action="/new-feed" method="POST">
 
             #springBind("formObject")
             #foreach($error in $status.errorMessages)
