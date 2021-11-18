@@ -5,19 +5,18 @@ import nz.co.searchwellington.model.User
 import nz.co.searchwellington.repositories.ContentRetrievalService
 import org.springframework.web.servlet.ModelAndView
 
-import scala.concurrent.ExecutionContext.Implicits.global
-import scala.concurrent.Future
+import scala.concurrent.{ExecutionContext, Future}
 import scala.jdk.CollectionConverters._
 
 trait CommonModelObjectsService extends ReasonableWaits {
 
   def contentRetrievalService: ContentRetrievalService
 
-  def withCommonLocal(mv: ModelAndView): Future[ModelAndView] = {
+  def withCommonLocal(mv: ModelAndView)(implicit ec: ExecutionContext): Future[ModelAndView] = {
     populateCommonLocal(mv)
   }
 
-  def withLatestNewsitems(mv: ModelAndView, loggedInUser: Option[User]): Future[ModelAndView] = {
+  def withLatestNewsitems(mv: ModelAndView, loggedInUser: Option[User])(implicit ec: ExecutionContext): Future[ModelAndView] = {
     for {
       latestNewsitems <- contentRetrievalService.getLatestNewsitems(5, loggedInUser = loggedInUser)
     } yield {
@@ -25,7 +24,7 @@ trait CommonModelObjectsService extends ReasonableWaits {
     }
   }
 
-  private def populateCommonLocal(mv: ModelAndView): Future[ModelAndView] = {
+  private def populateCommonLocal(mv: ModelAndView)(implicit ec: ExecutionContext): Future[ModelAndView] = {
     val eventualTopLevelTags = contentRetrievalService.getTopLevelTags
     val eventualFeaturedTags = contentRetrievalService.getFeaturedTags
     for {

@@ -9,14 +9,13 @@ import org.springframework.stereotype.Component
 import reactivemongo.api.bson.BSONObjectID
 import uk.co.eelpieconsulting.common.geo.model.{LatLong, Place}
 
-import scala.concurrent.ExecutionContext.Implicits.global
-import scala.concurrent.Future
+import scala.concurrent.{ExecutionContext, Future}
 
 @Component class RelatedTagsService @Autowired()(val mongoRepository: MongoRepository, elasticSearchIndexer: ElasticSearchIndexer) extends ReasonableWaits with TagAncestors {
 
   private val newsitems = Some(Set("N"))
 
-  def getRelatedTagsForTag(tag: Tag, maxItems: Int, loggedInUser: Option[User]): Future[Seq[TagContentCount]] = {
+  def getRelatedTagsForTag(tag: Tag, maxItems: Int, loggedInUser: Option[User])(implicit ec: ExecutionContext): Future[Seq[TagContentCount]] = {
     def getTagAggregation(tag: Tag, loggedInUser: Option[User]): Future[Seq[(String, Long)]] = {
       val newsitemsForTag = ResourceQuery(`type` = newsitems, tags = Some(Set(tag)))
       elasticSearchIndexer.getAggregationFor(newsitemsForTag, elasticSearchIndexer.Tags, loggedInUser)
@@ -51,7 +50,7 @@ import scala.concurrent.Future
     }
   }
 
-  def getRelatedPublishersForTag(tag: Tag, maxItems: Int, loggedInUser: Option[User]): Future[Seq[PublisherContentCount]] = {
+  def getRelatedPublishersForTag(tag: Tag, maxItems: Int, loggedInUser: Option[User])(implicit ec: ExecutionContext): Future[Seq[PublisherContentCount]] = {
 
     def getPublishersForTag(tag: Tag, loggedInUser: Option[User]): Future[Seq[(String, Long)]] = {
       val newsitemsForTag = ResourceQuery(`type` = newsitems, tags = Some(Set(tag)))
@@ -65,7 +64,7 @@ import scala.concurrent.Future
     }
   }
 
-  def getRelatedPublishersForLocation(place: Place, radius: Double, loggedInUser: Option[User]): Future[Seq[PublisherContentCount]] = {
+  def getRelatedPublishersForLocation(place: Place, radius: Double, loggedInUser: Option[User])(implicit ec: ExecutionContext): Future[Seq[PublisherContentCount]] = {
 
     def getPublishersNear(latLong: LatLong, radius: Double, loggedInUser: Option[User]): Future[Seq[(String, Long)]] = {
       elasticSearchIndexer.getPublisherAggregationFor(nearbyNewsitemsQuery(latLong, radius), loggedInUser)
@@ -78,7 +77,7 @@ import scala.concurrent.Future
     }
   }
 
-  def getRelatedTagsForPublisher(publisher: Website, loggedInUser: Option[User]): Future[Seq[TagContentCount]] = {
+  def getRelatedTagsForPublisher(publisher: Website, loggedInUser: Option[User])(implicit ec: ExecutionContext): Future[Seq[TagContentCount]] = {
 
     def getPublisherTags(publisher: Website, loggedInUser: Option[User]): Future[Seq[(String, Long)]] = {
       val publishersNewsitems = ResourceQuery(`type` = newsitems, publisher = Some(publisher))
@@ -90,7 +89,7 @@ import scala.concurrent.Future
     }
   }
 
-  def getRelatedTagsForLocation(place: Place, radius: Double, loggedInUser: Option[User]): Future[Seq[TagContentCount]] = {
+  def getRelatedTagsForLocation(place: Place, radius: Double, loggedInUser: Option[User])(implicit ec: ExecutionContext): Future[Seq[TagContentCount]] = {
 
     def getTagsNear(latLong: LatLong, radius: Double, loggedInUser: Option[User]): Future[Seq[(String, Long)]] = {
       elasticSearchIndexer.getAggregationFor(nearbyNewsitemsQuery(latLong, radius), elasticSearchIndexer.Tags, loggedInUser)
@@ -101,7 +100,7 @@ import scala.concurrent.Future
     }
   }
 
-  private def toPublisherContentCount(facet: (String, Long)): Future[Option[PublisherContentCount]] = {
+  private def toPublisherContentCount(facet: (String, Long))(implicit ec: ExecutionContext): Future[Option[PublisherContentCount]] = {
     val eventualMaybePublisher = mongoRepository.getResourceByObjectId(BSONObjectID.parse(facet._1).get)
     eventualMaybePublisher.map { maybePublisher =>
       maybePublisher.flatMap { resource =>
@@ -115,7 +114,7 @@ import scala.concurrent.Future
     }
   }
 
-  private def toTagContentCount(facet: (String, Long)): Future[Option[TagContentCount]] = {
+  private def toTagContentCount(facet: (String, Long))(implicit ec: ExecutionContext): Future[Option[TagContentCount]] = {
     mongoRepository.getTagByObjectId(BSONObjectID.parse(facet._1).get).map { to =>
       to.map { tag =>
         TagContentCount(tag, facet._2)
