@@ -1,6 +1,5 @@
 package nz.co.searchwellington.controllers
 
-import javax.servlet.http.{HttpServletRequest, HttpServletResponse}
 import nz.co.searchwellington.repositories.ContentRetrievalService
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Controller
@@ -8,6 +7,7 @@ import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.servlet.ModelAndView
 import org.springframework.web.servlet.view.RedirectView
 
+import javax.servlet.http.HttpServletRequest
 import scala.concurrent.Await
 import scala.concurrent.ExecutionContext.Implicits.global
 
@@ -15,25 +15,25 @@ import scala.concurrent.ExecutionContext.Implicits.global
                                                val contentRetrievalService: ContentRetrievalService,
                                                loggedInUserFilter: LoggedInUserFilter) extends CommonModelObjectsService {
 
-  @RequestMapping(Array("/signin")) def signin(request: HttpServletRequest, response: HttpServletResponse): ModelAndView = {
-    val loggedInUser = loggedInUserFilter.getLoggedInUser
-
-    Await.result(withCommonLocal {
-      new ModelAndView("signin").addObject("heading", "Sign in")
-    }.flatMap { mv =>
-      withLatestNewsitems(mv, loggedInUser)
-    }, TenSeconds)
+  @RequestMapping(Array("/signin")) def signin(request: HttpServletRequest): ModelAndView = {
+    if (loggedInUserFilter.getLoggedInUser.isEmpty) {
+      Await.result(withCommonLocal {
+        new ModelAndView("signin").addObject("heading", "Sign in")
+      }.flatMap { mv =>
+        withLatestNewsitems(mv, loggedInUserFilter.getLoggedInUser)
+      }, TenSeconds)
+    } else {
+      redirectToUrlStack(request)
+    }
   }
 
-  @RequestMapping(Array("/logout")) def logout(request: HttpServletRequest, response: HttpServletResponse): ModelAndView = {
-    def setRedirect(mv: ModelAndView, request: HttpServletRequest) {
-      mv.setView(new RedirectView(urlStack.getExitUrlFromStack(request)))
-    }
+  @RequestMapping(Array("/logout")) def logout(request: HttpServletRequest): ModelAndView = {
+    loggedInUserFilter.clearLoggedInUser(request)
+    redirectToUrlStack(request)
+  }
 
-    val mv = new ModelAndView
-    request.getSession.setAttribute("user", null)
-    setRedirect(mv, request)
-    mv
+  private def redirectToUrlStack(request: HttpServletRequest): ModelAndView = {
+    new ModelAndView(new RedirectView(urlStack.getExitUrlFromStack(request)))
   }
 
 }

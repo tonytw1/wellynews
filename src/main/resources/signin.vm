@@ -8,14 +8,10 @@
 </div>
 
 <div class="main">
-<h2>$heading</h2>
-
-#if (!$loggedInUserFilter.isSignedIn())
-	<p>Sign in to have your submissions assigned to you. Signing in will allow you to edit your previous submissions and tinker with things.</p>	
-	#parse("includes/signin_form.vm")	
-#end
+    <h2>$heading</h2>
+    <p>Sign in to have your submissions assigned to you. Signing in will allow you to edit your previous submissions and tinker with things.</p>
+    #parse("includes/signin_form.vm")
 </div>
-
 <div class="right">
 <div class="box">
 #parse("includes/latest_newsitems.vm")

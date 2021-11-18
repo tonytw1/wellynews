@@ -26,6 +26,10 @@ class LoggedInUserFilter {
     request.getSession.setAttribute("user", user)
   }
 
+  def clearLoggedInUser(request: HttpServletRequest): Unit = {
+    request.getSession.setAttribute("user", null)
+  }
+
   def isSignedIn: Boolean = loggedInUser.nonEmpty
 
   def getLoggedinUserProfileName: String = {
