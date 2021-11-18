@@ -1,21 +1,20 @@
 package nz.co.searchwellington.controllers.models.helpers
 
 import nz.co.searchwellington.model.PaginationLink
-import org.junit.Assert.assertFalse
-import org.junit.Assert.assertTrue
-import org.junit.Assert.assertEquals
+import org.junit.Assert.{assertEquals, assertFalse, assertTrue}
 import org.junit.Test
 import org.springframework.web.servlet.ModelAndView
+
+import scala.jdk.CollectionConverters._
 
 class PaginationTest extends Pagination {
 
   @Test
-  def shouldProvidePaginationLinksForMainContent() {
+  def shouldProvidePaginationLinksForMainContent(): Unit = {
     val mv = new ModelAndView()
 
     populatePagination(mv, 0, 100, 30, dummyLinkBuilder)
 
-    import scala.collection.JavaConverters._
     val pageLinks = mv.getModel.get("page_links").asInstanceOf[java.util.List[PaginationLink]].asScala
 
     assertFalse(pageLinks.isEmpty)
@@ -25,12 +24,11 @@ class PaginationTest extends Pagination {
   }
 
   @Test
-  def shouldOmitPageLinksIfOnlyOnePageOfMainContent() {
+  def shouldOmitPageLinksIfOnlyOnePageOfMainContent(): Unit = {
     val mv = new ModelAndView()
 
     populatePagination(mv, 0, 10, 30, dummyLinkBuilder)
 
-    import scala.collection.JavaConverters._
     val pageLinks = mv.getModel.get("page_links").asInstanceOf[java.util.List[PaginationLink]].asScala
 
     assertTrue(pageLinks.isEmpty)

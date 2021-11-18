@@ -1,10 +1,10 @@
 package nz.co.searchwellington.model
 
-import java.util.Date
 import reactivemongo.api.bson.BSONObjectID
 
 import java.util
-import scala.collection.JavaConverters._
+import java.util.Date
+import scala.jdk.CollectionConverters._
 
 case class DiscoveredFeed(_id: BSONObjectID = BSONObjectID.generate, url: String, occurrences: Seq[DiscoveredFeedOccurrence], firstSeen: Date) {
 

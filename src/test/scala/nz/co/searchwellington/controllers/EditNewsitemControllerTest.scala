@@ -14,16 +14,17 @@ import org.mockito.{ArgumentCaptor, Matchers}
 import org.springframework.validation.BindingResult
 
 import scala.concurrent.ExecutionContext.Implicits.global
-import scala.concurrent.Future
+import scala.concurrent.{ExecutionContext, Future}
+import scala.jdk.CollectionConverters._
 
 class EditNewsitemControllerTest {
 
-  val contentUpdateService = mock(classOf[ContentUpdateService])
-  val mongoRepository = mock(classOf[MongoRepository])
-  val loggedInUserFilter = mock(classOf[LoggedInUserFilter])
-  val tagDAO = mock(classOf[TagDAO])
-  val geoCodeService = mock(classOf[GeoCodeService])
-  val handTaggingService = new HandTaggingService(mock(classOf[FrontendContentUpdater]), mongoRepository)
+  private val contentUpdateService = mock(classOf[ContentUpdateService])
+  private val mongoRepository = mock(classOf[MongoRepository])
+  private val loggedInUserFilter = mock(classOf[LoggedInUserFilter])
+  private val tagDAO = mock(classOf[TagDAO])
+  private val geoCodeService = mock(classOf[GeoCodeService])
+  private val handTaggingService = new HandTaggingService(mock(classOf[FrontendContentUpdater]), mongoRepository)
 
   val controller = new EditNewsitemController(contentUpdateService, mongoRepository, loggedInUserFilter, tagDAO, geoCodeService, handTaggingService)
 
@@ -44,13 +45,12 @@ class EditNewsitemControllerTest {
     editFormSubmission.setDate("20200617")
     editFormSubmission.setPublisher("Another publisher")
 
-    import scala.collection.JavaConverters._
     editFormSubmission.setTags(Seq.empty.asJava)
 
     controller.submit(existingNewsitem.id, editFormSubmission, mock(classOf[BindingResult]))
 
     val updatedNewsitem = ArgumentCaptor.forClass(classOf[Newsitem])
-    implicit val ec = scala.concurrent.ExecutionContext.Implicits.global
+    implicit val ec: ExecutionContext = scala.concurrent.ExecutionContext.Implicits.global
     verify(contentUpdateService).update(updatedNewsitem.capture)(Matchers.eq(ec))
 
     assertEquals(Some("New title"), updatedNewsitem.getValue.title)
