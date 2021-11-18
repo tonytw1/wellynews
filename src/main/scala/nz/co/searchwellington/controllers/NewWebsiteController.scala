@@ -37,7 +37,7 @@ class NewWebsiteController @Autowired()(contentUpdateService: ContentUpdateServi
   }
 
   @RequestMapping(value = Array("/new-website"), method = Array(RequestMethod.POST))
-  def submit(@Valid @ModelAttribute("newWebsite") newWebsite: NewWebsite, result: BindingResult, request: HttpServletRequest): ModelAndView = {
+  def submit(@Valid @ModelAttribute("formObject") newWebsite: NewWebsite, result: BindingResult, request: HttpServletRequest): ModelAndView = {
     val loggedInUser = getLoggedInUser(request)
 
     if (result.hasErrors) {
@@ -76,7 +76,7 @@ class NewWebsiteController @Autowired()(contentUpdateService: ContentUpdateServi
   private def renderNewWebsiteForm(newWebsite: nz.co.searchwellington.forms.NewWebsite): ModelAndView = {
     new ModelAndView("newWebsite").
       addObject("heading", "Adding a website").
-      addObject("newWebsite", newWebsite)
+      addObject("formObject", newWebsite)
   }
 
 }
