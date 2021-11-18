@@ -2,15 +2,14 @@ package nz.co.searchwellington.controllers.models.helpers
 
 import nz.co.searchwellington.ReasonableWaits
 import nz.co.searchwellington.model.frontend.FrontendResource
-import nz.co.searchwellington.repositories.ContentRetrievalService
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
 import org.springframework.web.servlet.ModelAndView
 
 import scala.jdk.CollectionConverters._
 
-@Component class CommonAttributesModelBuilder @Autowired()(contentRetrievalService: ContentRetrievalService) extends CommonSizes
-with ReasonableWaits {
+@Component class CommonAttributesModelBuilder @Autowired()() extends CommonSizes
+  with ReasonableWaits {
 
   def setRss(mv: ModelAndView, title: String, url: String) {
     mv.addObject("rss_title", title)

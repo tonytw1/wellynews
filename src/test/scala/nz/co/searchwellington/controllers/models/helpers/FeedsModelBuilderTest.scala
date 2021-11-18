@@ -20,7 +20,7 @@ import scala.concurrent.{Await, Future}
 
 class FeedsModelBuilderTest extends ReasonableWaits with ContentFields {
   private val contentRetrievalService = mock(classOf[ContentRetrievalService])
-  private val commonAttributesModelBuilder = new CommonAttributesModelBuilder(contentRetrievalService)
+  private val commonAttributesModelBuilder = new CommonAttributesModelBuilder
   private val suggestedFeeditemsService = mock(classOf[SuggestedFeeditemsService])
   private val urlBuilder = mock(classOf[UrlBuilder])
 
