@@ -1,13 +1,10 @@
 package nz.co.searchwellington.model.mappers
 
-import java.util.UUID
 import nz.co.searchwellington.ReasonableWaits
 import nz.co.searchwellington.controllers.admin.AdminUrlBuilder
-import nz.co.searchwellington.model.taggingvotes.HandTagging
-import nz.co.searchwellington.model.{Newsitem, SiteInformation, Tag, UrlWordsGenerator, User, Website}
-import nz.co.searchwellington.repositories.HandTaggingDAO
+import nz.co.searchwellington.model._
 import nz.co.searchwellington.repositories.mongo.MongoRepository
-import nz.co.searchwellington.tagging.{IndexTagsService, TaggingReturnsOfficerService}
+import nz.co.searchwellington.tagging.IndexTagsService
 import nz.co.searchwellington.urls.UrlBuilder
 import org.joda.time.{DateTime, DateTimeZone}
 import org.junit.Assert.{assertEquals, assertFalse, assertTrue}
@@ -16,20 +13,19 @@ import org.mockito.Mockito.{mock, when}
 import reactivemongo.api.bson.BSONObjectID
 import uk.co.eelpieconsulting.common.dates.DateFormatter
 
+import java.util.UUID
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.{Await, Future}
 
 class FrontendResourceMapperTest extends ReasonableWaits {
 
-  private val taggingReturnsOfficerService = mock(classOf[TaggingReturnsOfficerService])
   private val indexTagsService = mock(classOf[IndexTagsService])
   private val mongoRepository = mock(classOf[MongoRepository])
-  private val handTaggingDAO = mock(classOf[HandTaggingDAO])
 
   private val urlBuilder = new UrlBuilder(new SiteInformation(), new UrlWordsGenerator(new DateFormatter(DateTimeZone.UTC)))
   private val adminUrlBuilder = new AdminUrlBuilder(urlBuilder, "", "")
 
-  val mapper = new FrontendResourceMapper(indexTagsService, mongoRepository, adminUrlBuilder, handTaggingDAO)
+  private val frontendResourceMapper = new FrontendResourceMapper(indexTagsService, mongoRepository, adminUrlBuilder)
 
   @Test
   def shouldMapNewsitemsToFrontendNewsitems(): Unit = {
@@ -37,12 +33,11 @@ class FrontendResourceMapperTest extends ReasonableWaits {
     val newsitem = Newsitem(id = "123", http_status = 200, title = Some("Something happened today"),
       date = Some(new DateTime(2020, 10, 7, 12, 0, 0, 0).toDate),
       owner = Some(owner._id))
-    when(handTaggingDAO.getHandTaggingsForResource(newsitem)).thenReturn(Future.successful(Seq.empty))
     when(indexTagsService.getIndexTagsForResource(newsitem)).thenReturn(Future.successful(Seq.empty))
     when(indexTagsService.getIndexGeocodeForResource(newsitem)).thenReturn(Future.successful(None))
     when(mongoRepository.getUserByObjectId(owner._id)).thenReturn(Future.successful(Some(owner)))
 
-    val frontendNewsitem = Await.result(mapper.createFrontendResourceFrom(newsitem), TenSeconds)
+    val frontendNewsitem = Await.result(frontendResourceMapper.createFrontendResourceFrom(newsitem), TenSeconds)
 
     assertEquals(newsitem.id, frontendNewsitem.id)
     assertEquals(200, frontendNewsitem.httpStatus)
@@ -51,15 +46,17 @@ class FrontendResourceMapperTest extends ReasonableWaits {
 
   @Test
   def handTaggingsShouldBeAppliedToFrontendResources(): Unit = {
-    val website = Website(id = "123")
-
+    val owner = User(BSONObjectID.generate(), name = Some(UUID.randomUUID().toString), profilename = Some(UUID.randomUUID().toString))
     val tag = Tag(id = UUID.randomUUID().toString, name = "123", display_name = "123")
 
-    when(handTaggingDAO.getHandTaggingsForResource(website)).thenReturn(Future.successful(Seq(HandTagging(tag = tag, user = null))))
+    val tagging = Tagging(tag_id = tag._id, user_id = owner._id)
+    val website = Website(id = "123", resource_tags = Seq(tagging))
+
+    when(mongoRepository.getTagByObjectId(tag._id)).thenReturn(Future.successful(Some(tag)))
     when(indexTagsService.getIndexTagsForResource(website)).thenReturn(Future.successful(Seq.empty))
     when(indexTagsService.getIndexGeocodeForResource(website)).thenReturn(Future.successful(None))
 
-    val frontendWebsite = Await.result(mapper.createFrontendResourceFrom(website), TenSeconds)
+    val frontendWebsite = Await.result(frontendResourceMapper.createFrontendResourceFrom(website), TenSeconds)
 
     assertFalse(frontendWebsite.handTags.isEmpty)
     assertEquals(tag.id, frontendWebsite.handTags.get.head.id)
@@ -70,11 +67,10 @@ class FrontendResourceMapperTest extends ReasonableWaits {
     val website = Website(id = "123")
     val adminUser = User(admin = true)
 
-    when(handTaggingDAO.getHandTaggingsForResource(website)).thenReturn(Future.successful(Seq.empty))
     when(indexTagsService.getIndexTagsForResource(website)).thenReturn(Future.successful(Seq.empty))
     when(indexTagsService.getIndexGeocodeForResource(website)).thenReturn(Future.successful(None))
 
-    val frontendWebsite = Await.result(mapper.createFrontendResourceFrom(website, loggedInUser = Some(adminUser)), TenSeconds)
+    val frontendWebsite = Await.result(frontendResourceMapper.createFrontendResourceFrom(website, loggedInUser = Some(adminUser)), TenSeconds)
 
     assertTrue(frontendWebsite.actions.nonEmpty)
     val editAction = frontendWebsite.actions.head
@@ -87,11 +83,10 @@ class FrontendResourceMapperTest extends ReasonableWaits {
     val website = Newsitem(id = "456")
     val adminUser = User(admin = true)
 
-    when(handTaggingDAO.getHandTaggingsForResource(website)).thenReturn(Future.successful(Seq.empty))
     when(indexTagsService.getIndexTagsForResource(website)).thenReturn(Future.successful(Seq.empty))
     when(indexTagsService.getIndexGeocodeForResource(website)).thenReturn(Future.successful(None))
 
-    val frontendWebsite = Await.result(mapper.createFrontendResourceFrom(website, loggedInUser = Some(adminUser)), TenSeconds)
+    val frontendWebsite = Await.result(frontendResourceMapper.createFrontendResourceFrom(website, loggedInUser = Some(adminUser)), TenSeconds)
 
     assertTrue(frontendWebsite.actions.nonEmpty)
     val editAction = frontendWebsite.actions.head
@@ -102,11 +97,10 @@ class FrontendResourceMapperTest extends ReasonableWaits {
   @Test
   def shouldNotApplyActionIfUserIsNotLoggedIn(): Unit = {
     val website = Website(id = "123")
-    when(handTaggingDAO.getHandTaggingsForResource(website)).thenReturn(Future.successful(Seq.empty))
     when(indexTagsService.getIndexTagsForResource(website)).thenReturn(Future.successful(Seq.empty))
     when(indexTagsService.getIndexGeocodeForResource(website)).thenReturn(Future.successful(None))
 
-    val frontendWebsite = Await.result(mapper.createFrontendResourceFrom(website, loggedInUser = None), TenSeconds)
+    val frontendWebsite = Await.result(frontendResourceMapper.createFrontendResourceFrom(website, loggedInUser = None), TenSeconds)
 
     assertTrue(frontendWebsite.actions.isEmpty)
   }

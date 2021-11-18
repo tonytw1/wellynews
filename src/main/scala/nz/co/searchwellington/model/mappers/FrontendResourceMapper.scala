@@ -4,7 +4,6 @@ import nz.co.searchwellington.ReasonableWaits
 import nz.co.searchwellington.controllers.admin.AdminUrlBuilder
 import nz.co.searchwellington.model._
 import nz.co.searchwellington.model.frontend._
-import nz.co.searchwellington.repositories.HandTaggingDAO
 import nz.co.searchwellington.repositories.mongo.MongoRepository
 import nz.co.searchwellington.tagging.{IndexTagsService, ResourceTagging}
 import org.springframework.beans.factory.annotation.Autowired
@@ -13,13 +12,12 @@ import org.springframework.stereotype.Component
 import scala.concurrent.{ExecutionContext, Future}
 
 @Component class FrontendResourceMapper @Autowired()(indexTagsService: IndexTagsService,
-                                                     mongoRepository: MongoRepository,
-                                                     adminUrlBuilder: AdminUrlBuilder,
-                                                     val handTaggingDAO: HandTaggingDAO)
+                                                     val mongoRepository: MongoRepository,
+                                                     adminUrlBuilder: AdminUrlBuilder)
   extends ReasonableWaits with ResourceTagging {
 
   def createFrontendResourceFrom(contentItem: Resource, loggedInUser: Option[User] = None)(implicit ec: ExecutionContext): Future[FrontendResource] = {
-    val eventualHandTags = getHandTagsForResource(contentItem) // TODO This is interesting as it's applied to unaccepted feed items as well.
+    val eventualHandTags = getDistinctHandTagsForResource(contentItem) // TODO This is interesting as it's applied to unaccepted feed items as well.
     val eventualIndexTags = indexTagsService.getIndexTagsForResource(contentItem) // TODO this could use the above handtaggings to save a duplicate query
     val eventualPlace = indexTagsService.getIndexGeocodeForResource(contentItem)
     (for {
