@@ -13,7 +13,6 @@ import org.mockito.Mockito.{mock, verify, when}
 import org.mockito.{ArgumentCaptor, Matchers}
 import org.springframework.validation.BindingResult
 
-import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.{ExecutionContext, Future}
 import scala.jdk.CollectionConverters._
 
@@ -26,10 +25,12 @@ class EditNewsitemControllerTest {
   private val geoCodeService = mock(classOf[GeoCodeService])
   private val handTaggingService = new HandTaggingService(mock(classOf[FrontendContentUpdater]), mongoRepository)
 
-  val controller = new EditNewsitemController(contentUpdateService, mongoRepository, loggedInUserFilter, tagDAO, geoCodeService, handTaggingService)
+  private implicit val ec: ExecutionContext = scala.concurrent.ExecutionContext.Implicits.global
+
+  private val controller = new EditNewsitemController(contentUpdateService, mongoRepository, loggedInUserFilter, tagDAO, geoCodeService, handTaggingService)
 
   @Test
-  def canUpdateExistingNewsitem(): Unit = {
+  def shouldUpdateExistingNewsitem(): Unit = {
     val existingNewsitem = Newsitem(id = "123")
 
     val adminUser = User(admin = true)
@@ -50,7 +51,6 @@ class EditNewsitemControllerTest {
     controller.submit(existingNewsitem.id, editFormSubmission, mock(classOf[BindingResult]))
 
     val updatedNewsitem = ArgumentCaptor.forClass(classOf[Newsitem])
-    implicit val ec: ExecutionContext = scala.concurrent.ExecutionContext.Implicits.global
     verify(contentUpdateService).update(updatedNewsitem.capture)(Matchers.eq(ec))
 
     assertEquals(Some("New title"), updatedNewsitem.getValue.title)
