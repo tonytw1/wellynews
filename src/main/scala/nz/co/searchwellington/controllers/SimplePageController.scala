@@ -28,15 +28,19 @@ import scala.jdk.CollectionConverters._
 
   @GetMapping(value = Array("/about")) def about(request: HttpServletRequest): ModelAndView = {
     urlStack.setUrlStack(request)
+    val loggedInUser = loggedInUserFilter.getLoggedInUser
+    val mv = new ModelAndView("about").
+      addObject("heading", "About").
+      addObject("user_agent", siteInformation.getUserAgent)
 
-    Await.result((for {
-      latestNewsitems <- eventualLatestNewsitems
+    val eventualModelAndView = for {
+      withCommon <- withCommonLocal(mv)
+      withCommonAndLatestNewsitems <- withLatestNewsitems(withCommon, loggedInUser)
     } yield {
-      new ModelAndView("about").
-        addObject("heading", "About").
-        addObject("user_agent", siteInformation.getUserAgent).
-        addObject("latest_newsitems", latestNewsitems.asJava)
-    }).flatMap(withCommonLocal), TenSeconds)
+      withCommonAndLatestNewsitems
+    }
+
+    Await.result(eventualModelAndView, TenSeconds)
   }
 
   @GetMapping(Array("/archive"))
@@ -102,7 +106,5 @@ import scala.jdk.CollectionConverters._
 
     Await.result(eventualModelAndView.flatMap(withCommonLocal), TenSeconds)
   }
-
-  private def eventualLatestNewsitems = contentRetrievalService.getLatestNewsitems(5, loggedInUser = loggedInUserFilter.getLoggedInUser)  // TODO duplication
 
 }
