@@ -4,8 +4,9 @@ import nz.co.searchwellington.ReasonableWaits
 import nz.co.searchwellington.controllers.admin.AdminUrlBuilder
 import nz.co.searchwellington.model._
 import nz.co.searchwellington.model.frontend._
+import nz.co.searchwellington.model.taggingvotes.HandTagging
 import nz.co.searchwellington.repositories.mongo.MongoRepository
-import nz.co.searchwellington.tagging.{IndexTagsService, ResourceTagging}
+import nz.co.searchwellington.tagging.{IndexTagsService, TaggingReturnsOfficerService}
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
 
@@ -13,19 +14,24 @@ import scala.concurrent.{ExecutionContext, Future}
 
 @Component class FrontendResourceMapper @Autowired()(indexTagsService: IndexTagsService,
                                                      val mongoRepository: MongoRepository,
-                                                     adminUrlBuilder: AdminUrlBuilder)
-  extends ReasonableWaits with ResourceTagging {
+                                                     adminUrlBuilder: AdminUrlBuilder,
+                                                     taggingReturnsOfficerService: TaggingReturnsOfficerService)
+  extends ReasonableWaits {
 
   def createFrontendResourceFrom(contentItem: Resource, loggedInUser: Option[User] = None)(implicit ec: ExecutionContext): Future[FrontendResource] = {
-    val eventualHandTags = getDistinctHandTagsForResource(contentItem) // TODO This is interesting as it's applied to unaccepted feed items as well.
-    val eventualIndexTags = indexTagsService.getIndexTagsForResource(contentItem) // TODO this could use the above handtaggings to save a duplicate query
+    val eventualTaggingVotes = taggingReturnsOfficerService.getTaggingsVotesForResource(contentItem)
     val eventualPlace = indexTagsService.getIndexGeocodeForResource(contentItem)
     (for {
-      indexTags <- eventualIndexTags
-      handTags <- eventualHandTags
+      taggingVotes <- eventualTaggingVotes
       place <- eventualPlace
     } yield {
       mapFrontendResource(contentItem, place).map { frontendResource =>
+        val handTags = taggingVotes.filter { _ match {
+          case HandTagging(_, _) => true
+          case _ => false
+        }
+        }.map(_.tag).distinct
+        val indexTags = indexTagsService.indexTagsForTaggingVotes(taggingVotes)
         val actions = actionsFor(frontendResource, loggedInUser)
         frontendResource match {
           // TODO this match to call the same code on each class is a weird smell
