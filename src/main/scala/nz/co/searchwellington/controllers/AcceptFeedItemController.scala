@@ -9,7 +9,7 @@ import nz.co.searchwellington.views.Errors
 import org.apache.log4j.Logger
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Controller
-import org.springframework.web.bind.annotation.{RequestMapping, RequestMethod}
+import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.servlet.ModelAndView
 import org.springframework.web.servlet.view.RedirectView
 
@@ -27,7 +27,7 @@ class AcceptFeedItemController @Autowired()(mongoRepository: MongoRepository,
 
   private val log = Logger.getLogger(classOf[AcceptFeedItemController])
 
-  @RequestMapping(value = Array("/accept-feed-item"), method = Array(RequestMethod.GET))
+  @GetMapping(value = Array("/accept-feed-item"))
   def accept(feed: String, url: String): ModelAndView = {
     val eventualModelAndView = loggedInUserFilter.getLoggedInUser.map { loggedInUser =>
       mongoRepository.getFeedByUrlwords(feed).flatMap { fo =>

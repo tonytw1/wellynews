@@ -28,7 +28,7 @@ import scala.concurrent.ExecutionContext.Implicits.global
 
   private val log = Logger.getLogger(classOf[PublisherAutoGatherController])
 
-  @GetMapping(Array("/admin/gather/prompt"))
+  @GetMapping(Array("/admin/gather/prompt"))  // TODO incorrect path
   def prompt(request: HttpServletRequest): ModelAndView = {
     def prompt(loggedInUser: User): ModelAndView = {
       val mv = new ModelAndView("autoGatherPrompt").
@@ -60,7 +60,7 @@ import scala.concurrent.ExecutionContext.Implicits.global
       val publisher = request.getAttribute("publisher").asInstanceOf[Website]
       mv.addObject("publisher", publisher)
       if (publisher != null) {
-        val autotaggedResourceIds = request.getParameterValues("autotag")
+        val autotaggedResourceIds = request.getParameterValues("autotag") // TODO parameter name
         val resources = autotaggedResourceIds.flatMap(id => Await.result(mongoRepository.getResourceById(id), TenSeconds))
         val autotaggedNewsitems = resources.filter(resource => resource.`type` == "N").map { newsitem =>
           log.info("Applying publisher " + publisher.title + " to:" + newsitem.title)
@@ -88,7 +88,7 @@ import scala.concurrent.ExecutionContext.Implicits.global
 
   private def needsPublisher(resource: Newsitem, proposedPublisher: Website): Boolean = {
     // Apply the new publisher if the resource currently has no publisher or a different publisher
-    !resource.publisher.contains(proposedPublisher._id)
+    !resource.publisher.contains(proposedPublisher._id) // TODO inline this into the query
   }
 
 }

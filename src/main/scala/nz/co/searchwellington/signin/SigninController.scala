@@ -6,7 +6,7 @@ import nz.co.searchwellington.repositories.mongo.MongoRepository
 import org.apache.log4j.Logger
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Controller
-import org.springframework.web.bind.annotation.RequestMapping
+import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.servlet.ModelAndView
 import org.springframework.web.servlet.view.RedirectView
 
@@ -17,7 +17,7 @@ import scala.concurrent.ExecutionContext.Implicits.global
 
   private val log = Logger.getLogger(classOf[SigninController])
 
-  @RequestMapping(Array("/twitter/login"))
+  @GetMapping(Array("/twitter/login"))
   def login(request: HttpServletRequest, response: HttpServletResponse): ModelAndView = {
     log.info("Twitter login called")
     val loginView = signinHandler.getLoginView(request, response)
@@ -25,7 +25,7 @@ import scala.concurrent.ExecutionContext.Implicits.global
     signinErrorView(request)
   }
 
-  @RequestMapping(Array("/twitter/callback"))
+  @GetMapping(Array("/twitter/callback"))
   def callback(request: HttpServletRequest): ModelAndView = {
     signinHandler.getExternalUserIdentifierFromCallbackRequest(request).map { externalIdentifier =>
       log.info("External user identifier is: " + externalIdentifier.toString)

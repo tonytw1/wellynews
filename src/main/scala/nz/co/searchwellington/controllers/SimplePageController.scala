@@ -8,7 +8,7 @@ import nz.co.searchwellington.repositories.mongo.MongoRepository
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.core.annotation.Order
 import org.springframework.stereotype.Controller
-import org.springframework.web.bind.annotation.{RequestMapping, RequestMethod}
+import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.servlet.ModelAndView
 
 import javax.servlet.http.HttpServletRequest
@@ -26,7 +26,7 @@ import scala.jdk.CollectionConverters._
                                                      commonAttributesModelBuilder: CommonAttributesModelBuilder)
   extends ReasonableWaits with CommonModelObjectsService {
 
-  @RequestMapping(value = Array("/about"), method = Array(RequestMethod.GET)) def about(request: HttpServletRequest): ModelAndView = {
+  @GetMapping(value = Array("/about")) def about(request: HttpServletRequest): ModelAndView = {
     urlStack.setUrlStack(request)
 
     Await.result((for {
@@ -39,7 +39,7 @@ import scala.jdk.CollectionConverters._
     }).flatMap(withCommonLocal), TenSeconds)
   }
 
-  @RequestMapping(Array("/archive"))
+  @GetMapping(Array("/archive"))
   def archive(request: HttpServletRequest): ModelAndView = {
     urlStack.setUrlStack(request)
     val loggedInUser = loggedInUserFilter.getLoggedInUser
@@ -53,14 +53,14 @@ import scala.jdk.CollectionConverters._
     }).flatMap(withCommonLocal).flatMap(mv => withLatestNewsitems(mv, loggedInUser)), TenSeconds)
   }
 
-  @RequestMapping(Array("/api"))
+  @GetMapping(Array("/api"))
   def api(request: HttpServletRequest): ModelAndView = {
     urlStack.setUrlStack(request)
     Await.result(withCommonLocal(new ModelAndView("api").
       addObject("heading", "The Wellynews API")), TenSeconds)
   }
 
-  @RequestMapping(Array("/rssfeeds"))
+  @GetMapping(Array("/rssfeeds"))
   def rssfeeds(request: HttpServletRequest): ModelAndView = {
     urlStack.setUrlStack(request)
     val loggedInUser = loggedInUserFilter.getLoggedInUser
@@ -82,7 +82,7 @@ import scala.jdk.CollectionConverters._
     Await.result(eventualModelAndView, TenSeconds)
   }
 
-  @RequestMapping(Array("/feeds/discovered"))
+  @GetMapping(Array("/feeds/discovered"))
   def discovered(request: HttpServletRequest): ModelAndView = {
     urlStack.setUrlStack(request)
     val loggedInUser = loggedInUserFilter.getLoggedInUser
@@ -103,6 +103,6 @@ import scala.jdk.CollectionConverters._
     Await.result(eventualModelAndView.flatMap(withCommonLocal), TenSeconds)
   }
 
-  private def eventualLatestNewsitems = contentRetrievalService.getLatestNewsitems(5, loggedInUser = loggedInUserFilter.getLoggedInUser)
+  private def eventualLatestNewsitems = contentRetrievalService.getLatestNewsitems(5, loggedInUser = loggedInUserFilter.getLoggedInUser)  // TODO duplication
 
 }

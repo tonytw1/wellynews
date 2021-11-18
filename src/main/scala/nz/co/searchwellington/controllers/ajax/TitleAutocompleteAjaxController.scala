@@ -9,7 +9,7 @@ import org.apache.commons.lang.StringEscapeUtils
 import org.apache.log4j.Logger
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Controller
-import org.springframework.web.bind.annotation.RequestMapping
+import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.servlet.ModelAndView
 import uk.co.eelpieconsulting.common.views.ViewFactory
 
@@ -25,7 +25,7 @@ class TitleAutocompleteAjaxController @Autowired()(viewFactory: ViewFactory, log
 
   private val log = Logger.getLogger(classOf[TitleAutocompleteAjaxController])
 
-  @RequestMapping(Array("/ajax/title-autofill"))
+  @GetMapping(Array("/ajax/title-autofill"))
   def handleRequest(request: HttpServletRequest, response: HttpServletResponse): ModelAndView = {
     val loggedInUser = loggedInUserFilter.getLoggedInUser
 
