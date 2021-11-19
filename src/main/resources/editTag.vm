@@ -10,7 +10,7 @@
 	<div class="main">
 		<h2>Editing a tag</h2>
 
-		<form id="editForm" action="$adminUrlBuilder.getformObjectUrl($tag)" method="POST">
+		<form id="editTag" action="$adminUrlBuilder.getEditTagUrl($tag)" method="POST">
 
             #springBind("formObject")
             #foreach($error in $status.errorMessages)
