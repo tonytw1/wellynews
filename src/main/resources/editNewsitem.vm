@@ -9,8 +9,7 @@
 
 	<div class="main">
 		<h2>Editing a Newsitem</h2>
-		
-		<form id="editForm" action="$adminUrlBuilder.getResourceEditUrl($newsitem)" method="POST">
+		<form id="editForm" action="$adminUrlBuilder.getResourceEditUrl($newsitem)" method="POST" class="editForm">
             <fieldset>
                 #springBind("formObject.title")
                 <label for="${status.expression}">Title:</label>

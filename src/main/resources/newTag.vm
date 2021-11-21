@@ -10,8 +10,7 @@
     <div class="main">
         <h2>Adding a tag</h2>
 
-        <form action="$adminUrlBuilder.addTagUrl" method="POST">
-
+        <form action="$adminUrlBuilder.addTagUrl" method="POST" class="editForm">
             #springBind("newTag")
             #foreach($error in $status.errorMessages)
                 <div class="alert">$error</div>

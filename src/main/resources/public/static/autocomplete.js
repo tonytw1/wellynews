@@ -23,9 +23,10 @@ $(function() {
 			$('#tags option:selected').remove();			
 		});
 	}
-	
-	if ($('#editForm').length) {
-		$("#editForm").submit(function() {
+
+	// Edit form behaviours
+	if ($('.editForm').length) {
+		$(".editForm").submit(function() {
 			$('#tags option').attr('selected', 'selected');
 		});
 

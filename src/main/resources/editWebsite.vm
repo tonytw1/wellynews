@@ -10,7 +10,7 @@
 	<div class="main">
 		<h2>Editing a Website</h2>
 		
-		<form id="editForm" action="$adminUrlBuilder.getResourceEditUrl($website)" method="POST">
+		<form id="editForm" action="$adminUrlBuilder.getResourceEditUrl($website)" method="POST" class="editForm">
             <fieldset>
                 #springBind("formObject.title")
                 <label for="${status.expression}">Title:</label>
