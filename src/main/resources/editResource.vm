@@ -16,8 +16,7 @@
 			<form id="editForm" action="$adminUrlBuilder.getSaveUrl()" method="POST">
 				<input type="hidden" name="resource" value="$resource.id" />
 
-				<fieldset>					
-				
+				<fieldset>
 					#parse("includes/form_resource_title_and_url.vm")
 									
 					#if ($resource.type != "W")
