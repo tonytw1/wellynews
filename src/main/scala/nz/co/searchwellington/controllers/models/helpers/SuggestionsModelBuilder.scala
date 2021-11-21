@@ -81,7 +81,7 @@ import scala.jdk.CollectionConverters._
 
       val y: Future[Seq[FrontendFeed]] = Future.sequence(x).map { f: Seq[Option[FrontendFeed]] =>
         val flatten: Seq[FrontendFeed] = f.flatten
-        flatten.sortBy(_.latestItemDate).reverse
+        flatten.filter(_.latestItemDate != null).sortBy(_.latestItemDate).reverse
       }
 
       val sortedFeeds = Await.result(y, TenSeconds)
