@@ -39,7 +39,8 @@ class InboxFeedsService @Autowired()(mongoRepository: MongoRepository, whakaokoS
         val frontendFeedsWithAmmendedLatestItemDates = feedsWithSubscriptions.map { feed =>
           frontendResourceMapper.createFrontendResourceFrom(feed._1).map {
             case frontendFeed: FrontendFeed =>
-              Some(frontendFeed.copy(lastChanged = feed._2.latestItemDate.map(_.toDate)))
+              val subscription = feed._2
+              Some(frontendFeed.copy(latestItemDate = subscription.latestItemDate.map(_.toDate).orNull))
             case _ =>
               None
           }
@@ -49,9 +50,9 @@ class InboxFeedsService @Autowired()(mongoRepository: MongoRepository, whakaokoS
           maybeFrontendFeeds.flatten.filter(_.latestItemDate != null).sortBy(_.latestItemDate).reverse
         }
       }
+
     } yield {
       inboxFeeds
-
     }
   }
 
