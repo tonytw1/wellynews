@@ -16,11 +16,12 @@ import scala.concurrent.ExecutionContext.Implicits.global
                                                loggedInUserFilter: LoggedInUserFilter) extends CommonModelObjectsService {
 
   @RequestMapping(Array("/signin")) def signin(request: HttpServletRequest): ModelAndView = {
-    if (loggedInUserFilter.getLoggedInUser.isEmpty) {
+    val loggedInUser = loggedInUserFilter.getLoggedInUser
+    if (loggedInUser.isEmpty) {
       Await.result(withCommonLocal {
         new ModelAndView("signin").addObject("heading", "Sign in")
       }.flatMap { mv =>
-        withLatestNewsitems(mv, loggedInUserFilter.getLoggedInUser)
+        withLatestNewsitems(mv, loggedInUser)
       }, TenSeconds)
     } else {
       redirectToUrlStack(request)
