@@ -7,7 +7,7 @@ import java.util.Date
 
 trait ArchiveMonth {
 
-  val archiveMonthFormat = DateTimeFormat.forPattern("yyyy-MMM").withZone(DateTimeZone.UTC)
+  private val archiveMonthFormat = DateTimeFormat.forPattern("yyyy-MMM").withZone(DateTimeZone.UTC)
 
   def parseYearMonth(archiveMonthString: String): Option[Interval] = {
     def intervalForMonth(month: Date): Interval = {

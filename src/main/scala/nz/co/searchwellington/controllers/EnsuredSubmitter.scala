@@ -16,7 +16,7 @@ trait EnsuredSubmitter {
     loggedInUser.getOrElse(createAnonUser)
   }
 
-  def submissionShouldBeHeld(owner: Option[User]) = {
+  def submissionShouldBeHeld(owner: Option[User]): Boolean = {
     !owner.exists(_.isAdmin)
   }
 
