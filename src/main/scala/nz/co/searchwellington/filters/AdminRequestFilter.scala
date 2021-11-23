@@ -1,13 +1,8 @@
 package nz.co.searchwellington.filters
 
-import java.text.{ParseException, SimpleDateFormat}
-import java.util.Date
-
 import com.google.common.base.Strings
-import javax.servlet.http.HttpServletRequest
 import nz.co.searchwellington.ReasonableWaits
 import nz.co.searchwellington.model.Image
-import nz.co.searchwellington.repositories.TagDAO
 import nz.co.searchwellington.repositories.mongo.MongoRepository
 import org.apache.log4j.Logger
 import org.joda.time.DateTime
@@ -15,17 +10,21 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.context.annotation.{Scope, ScopedProxyMode}
 import org.springframework.stereotype.Component
 
+import java.text.{ParseException, SimpleDateFormat}
+import java.util.Date
+import javax.servlet.http.HttpServletRequest
 import scala.concurrent.{Await, ExecutionContext}
 
 @Component
 @Scope(value = "request", proxyMode = ScopedProxyMode.TARGET_CLASS)
-class AdminRequestFilter @Autowired()(mongoRepository: MongoRepository, resourceParameterFilter: ResourceParameterFilter, tagsParameterFilter: TagsParameterFilter) extends ReasonableWaits {
+class AdminRequestFilter @Autowired()(mongoRepository: MongoRepository, resourceParameterFilter: ResourceParameterFilter,
+                                      tagsParameterFilter: TagsParameterFilter) extends ReasonableWaits {
 
   private val log = Logger.getLogger(classOf[AdminRequestFilter])
   private val DATE_FIELD = "date"
   private val EMBARGO_DATE_FIELD = "embargo_date"
 
-  def loadAttributesOntoRequest(request: HttpServletRequest)(implicit ec: ExecutionContext) {
+  def loadAttributesOntoRequest(request: HttpServletRequest)(implicit ec: ExecutionContext): Unit = {
 
     log.debug("Looking for tag parameter")
     if (request.getParameter("tag") != null) {
@@ -42,14 +41,14 @@ class AdminRequestFilter @Autowired()(mongoRepository: MongoRepository, resource
     parseTwitterIdfromRequest(request).foreach { twitterId =>
       request.setAttribute("twitterId", twitterId)
     }
-    val image = request.getParameter("image").asInstanceOf[String]
+    val image = request.getParameter("image")
     if (!Strings.isNullOrEmpty(image)) {
       request.setAttribute("image", new Image(image, null))
     }
 
     log.debug("Looking for date field")
-    if (request.getParameter(DATE_FIELD) != null && !request.getParameter(DATE_FIELD).isEmpty) {
-      val dateString = request.getParameter(DATE_FIELD).asInstanceOf[String]
+    if (request.getParameter(DATE_FIELD) != null && request.getParameter(DATE_FIELD).nonEmpty) {
+      val dateString = request.getParameter(DATE_FIELD)
       val df = new SimpleDateFormat("dd MMM yyyy")
       try {
         val date: Date = df.parse(dateString)
@@ -64,7 +63,7 @@ class AdminRequestFilter @Autowired()(mongoRepository: MongoRepository, resource
     }
 
     log.debug("Looking for embargoed field")
-    if (request.getParameter(EMBARGO_DATE_FIELD) != null && !request.getParameter(EMBARGO_DATE_FIELD).isEmpty) {
+    if (request.getParameter(EMBARGO_DATE_FIELD) != null && request.getParameter(EMBARGO_DATE_FIELD).nonEmpty) {
       // request.setAttribute(EMBARGO_DATE_FIELD, parseEmbargoDate(request.getParameter(EMBARGO_DATE_FIELD).asInstanceOf[String]).getOrElse(null))
     }
     if (request.getParameter("publisher") != null && !(request.getParameter("publisher") == "")) {
