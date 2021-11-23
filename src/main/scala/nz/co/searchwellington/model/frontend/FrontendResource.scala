@@ -7,7 +7,8 @@ import reactivemongo.api.bson.BSONObjectID
 import uk.co.eelpieconsulting.common.views.rss.RssFeedable
 
 import java.io.Serializable
-import java.util.{Date, List}
+import java.util
+import java.util.Date
 import scala.jdk.CollectionConverters._
 
 @JsonInclude(Include.NON_NULL)
@@ -52,9 +53,9 @@ trait FrontendResource extends RssFeedable with Serializable {
   @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ssXXX")
   final def getLiveTime: Date = liveTime
 
-  final def getTags: List[Tag] = tags.map(_.asJava).orNull
+  final def getTags: util.List[Tag] = tags.map(_.asJava).orNull
 
-  final def getHandTags: List[Tag] = handTags.map(_.asJava).orNull
+  final def getHandTags: util.List[Tag] = handTags.map(_.asJava).orNull
 
   final def getOwner: String = owner
 
@@ -85,9 +86,7 @@ trait FrontendResource extends RssFeedable with Serializable {
   @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ssXXX")
   def getLastChanged: Date = lastChanged.orNull
 
-  def getActions: List[Action] = {
-    actions.asJava
-  }
+  def getActions: util.List[Action] = actions.asJava
 
   def getTaggingStatus: String = {
     (for {
@@ -106,7 +105,7 @@ trait FrontendResource extends RssFeedable with Serializable {
     }).orNull
   }
 
-  def getTaggingsToShow: List[Tag] = {
+  def getTaggingsToShow: util.List[Tag] = {
     (for {
       handTags <- handTags
       tags <- tags

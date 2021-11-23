@@ -10,7 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
 import org.springframework.web.servlet.ModelAndView
 
-import java.util.List
+import java.util
 import javax.servlet.http.HttpServletRequest
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
@@ -132,10 +132,10 @@ import scala.jdk.CollectionConverters._
   }
 
   def getViewName(mv: ModelAndView, loggedInUser: Option[User]): String = {
-    val mainContent = mv.getModel.get(MAIN_CONTENT).asInstanceOf[List[Resource]]
-    val taggedWebsites = mv.getModel.get(WEBSITES).asInstanceOf[List[Resource]]
-    val tagWatchlist = mv.getModel.get(TAG_WATCHLIST).asInstanceOf[List[Resource]]
-    val tagFeeds = mv.getModel.get(TAG_FEEDS).asInstanceOf[List[Resource]]
+    val mainContent = mv.getModel.get(MAIN_CONTENT).asInstanceOf[util.List[Resource]]
+    val taggedWebsites = mv.getModel.get(WEBSITES).asInstanceOf[util.List[Resource]]
+    val tagWatchlist = mv.getModel.get(TAG_WATCHLIST).asInstanceOf[util.List[Resource]]
+    val tagFeeds = mv.getModel.get(TAG_FEEDS).asInstanceOf[util.List[Resource]]
 
     val hasSecondaryContent = !taggedWebsites.isEmpty || !tagWatchlist.isEmpty || !tagFeeds.isEmpty
     val isOneContentType = mainContent.isEmpty || !hasSecondaryContent

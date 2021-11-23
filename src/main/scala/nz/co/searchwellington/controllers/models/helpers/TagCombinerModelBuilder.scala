@@ -11,7 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
 import org.springframework.web.servlet.ModelAndView
 
-import java.util.List
+import java.util
 import javax.servlet.http.HttpServletRequest
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
@@ -97,7 +97,7 @@ import scala.jdk.CollectionConverters._
 
   def getViewName(mv: ModelAndView, loggedInUser: Option[User]): String = {
     val taggedNewsitemsCount = mv.getModel.get("main_content_total").asInstanceOf[Long]
-    val taggedWebsites = mv.getModel.get("websites").asInstanceOf[List[Resource]]
+    val taggedWebsites = mv.getModel.get("websites").asInstanceOf[util.List[Resource]]
     val isOneContentType = taggedNewsitemsCount == 0 || taggedWebsites.size == 0
     if (isOneContentType) {
       "tagCombinedOneContentType"
