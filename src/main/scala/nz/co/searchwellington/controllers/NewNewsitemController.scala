@@ -34,9 +34,9 @@ class NewNewsitemController @Autowired()(contentUpdateService: ContentUpdateServ
 
   @RequestMapping(value = Array("/new-newsitem"), method = Array(RequestMethod.GET))
   def prompt(): ModelAndView = {
-    val newsitem = new NewNewsitem()
-    newsitem.setDate(dateFormatter.print(DateTime.now()))
-    new ModelAndView("newNewsitem").addObject("newNewsitem", newsitem)
+    val newNewsitem = new NewNewsitem()
+    newNewsitem.setDate(dateFormatter.print(DateTime.now()))
+    renderNewNewsitemForm(newNewsitem)
   }
 
   @RequestMapping(value = Array("/new-newsitem"), method = Array(RequestMethod.POST))

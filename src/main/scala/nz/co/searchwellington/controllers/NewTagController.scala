@@ -80,7 +80,7 @@ class NewTagController @Autowired()(mongoRepository: MongoRepository,
   private def renderForm(newTag: NewTag): ModelAndView = {
     new ModelAndView("newTag").
       addObject("heading", "Adding a tag").
-      addObject("newTag", newTag)
+      addObject("formObject", newTag)
   }
 
 }
