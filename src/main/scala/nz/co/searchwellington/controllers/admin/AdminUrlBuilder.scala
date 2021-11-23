@@ -8,9 +8,7 @@ import org.springframework.beans.factory.annotation.{Autowired, Value}
 import org.springframework.stereotype.Component
 
 @Component
-class AdminUrlBuilder @Autowired()(urlBuilder: UrlBuilder,
-                                   @Value("${whakaoko.url}") whakaokoUrl: String,
-                                   @Value("${whakaoko.username}") whakaokoUsername: String) {
+class AdminUrlBuilder @Autowired()(urlBuilder: UrlBuilder, @Value("${whakaoko.url}") whakaokoUrl: String) {
 
   def adminPage(): String = "/admin"
 

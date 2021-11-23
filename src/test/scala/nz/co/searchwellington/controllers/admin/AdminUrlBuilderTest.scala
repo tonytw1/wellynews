@@ -14,7 +14,7 @@ class AdminUrlBuilderTest {
   private val frontendWebsite = FrontendWebsite(id = "123", name = "My local sports team", urlWords = "my-local-sports-team")
 
   private val urlWordsGenerator = new UrlWordsGenerator(new DateFormatter(DateTimeZone.UTC))
-  private val adminUrlBuilder = new AdminUrlBuilder(new UrlBuilder(new SiteInformation(), urlWordsGenerator), "", "")
+  private val adminUrlBuilder = new AdminUrlBuilder(new UrlBuilder(new SiteInformation(), urlWordsGenerator), "")
 
   @Test
   def canConstructEditUrlForFrontendWebsite(): Unit = {
