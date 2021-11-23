@@ -1,7 +1,7 @@
 package nz.co.searchwellington.controllers
 
 import nz.co.searchwellington.ReasonableWaits
-import nz.co.searchwellington.controllers.submission.EndUserInputs
+import nz.co.searchwellington.controllers.submission.{EndUserInputs, GeotagParsing}
 import nz.co.searchwellington.forms.NewNewsitem
 import nz.co.searchwellington.model.{Newsitem, Website}
 import nz.co.searchwellington.modification.ContentUpdateService
@@ -27,7 +27,7 @@ class NewNewsitemController @Autowired()(contentUpdateService: ContentUpdateServ
                                          mongoRepository: MongoRepository, urlBuilder: UrlBuilder,
                                          val anonUserService: AnonUserService,
                                          val urlCleaner: UrlCleaner) extends ReasonableWaits
-                                         with EnsuredSubmitter with EndUserInputs {
+                                         with EnsuredSubmitter with EndUserInputs with GeotagParsing {
 
   private val log = Logger.getLogger(classOf[NewNewsitemController])
   private val dateFormatter = ISODateTimeFormat.basicDate()
@@ -40,17 +40,17 @@ class NewNewsitemController @Autowired()(contentUpdateService: ContentUpdateServ
   }
 
   @RequestMapping(value = Array("/new-newsitem"), method = Array(RequestMethod.POST))
-  def submit(@Valid @ModelAttribute("formObject") newNewsitem: NewNewsitem, result: BindingResult, request: HttpServletRequest): ModelAndView = {
+  def submit(@Valid @ModelAttribute("formObject") formObject: NewNewsitem, result: BindingResult, request: HttpServletRequest): ModelAndView = {
     val loggedInUser = getLoggedInUser(request)
     if (result.hasErrors) {
       log.warn("New newsitem submission has errors: " + result)
-      renderNewNewsitemForm(newNewsitem)
+      renderNewNewsitemForm(formObject)
 
     } else {
-      log.info("Got valid new newsitem submission: " + newNewsitem)
-      val parsedDate = dateFormatter.parseDateTime(newNewsitem.getDate)
+      log.info("Got valid new newsitem submission: " + formObject)
+      val parsedDate = dateFormatter.parseDateTime(formObject.getDate)
 
-      val eventualMaybePublisher = trimToOption(newNewsitem.getPublisher).map { publisherName =>
+      val eventualMaybePublisher = trimToOption(formObject.getPublisher).map { publisherName =>
         mongoRepository.getWebsiteByName(publisherName)
       }.getOrElse {
         Future.successful(None)
@@ -59,12 +59,20 @@ class NewNewsitemController @Autowired()(contentUpdateService: ContentUpdateServ
       val eventualModelAndView = for {
         maybePublisher <- eventualMaybePublisher
         mv <- {
+
+          val geocode = Option(formObject.getGeocode).flatMap { address =>
+            Option(formObject.getOsm).flatMap { osmId =>
+              parseGeotag(address, osmId)
+            }
+          }
+
           val newsitem = Newsitem(
-            title = Some(processTitle(newNewsitem.getTitle)),
-            page = cleanUrl(newNewsitem.getUrl),
+            title = Some(processTitle(formObject.getTitle)),
+            page = cleanUrl(formObject.getUrl),
             date = Some(parsedDate.toDate),
             publisher = maybePublisher.map(_._id),
-            description = Some(newNewsitem.getDescription.trim)
+            description = Some(formObject.getDescription.trim),
+            geocode = geocode
           )
 
           val submittingUser = ensuredSubmittingUser(loggedInUser)
