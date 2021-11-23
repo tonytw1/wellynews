@@ -14,10 +14,7 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
 import uk.co.eelpieconsulting.common.geo.model.OsmId
 
-import java.util.{Calendar, Date}
 import javax.servlet.http.HttpServletRequest
-import scala.concurrent.Await
-import scala.concurrent.ExecutionContext.Implicits.global
 import scala.jdk.CollectionConverters.CollectionHasAsScala
 
 @Component class SubmissionProcessingService @Autowired()(tagDAO: TagDAO,
@@ -91,9 +88,6 @@ import scala.jdk.CollectionConverters.CollectionHasAsScala
     if (request.getParameter("has_tag_select") != null) {
       processTagSelect(request, editResource, user)
     }
-    if (request.getParameter("additional_tags") != null) {
-      processAdditionalTags(request, editResource, user)
-    }
     else {
       log.debug("No additional tag string found.")
     }
@@ -124,43 +118,6 @@ import scala.jdk.CollectionConverters.CollectionHasAsScala
          // log.info("Found publisher: " + publisher.title)
           // (editResource.asInstanceOf[PublishedResource]).setPublisher(publisher)
        // }
-      }
-    }
-  }
-
-  private def processAdditionalTags(request: HttpServletRequest, editResource: Resource, user: User): Unit = {
-    val additionalTagString: String = request.getParameter("additional_tags").trim
-    log.debug("Found additional tag string: " + additionalTagString)
-    val fields: Array[String] = additionalTagString.split(",")
-    if (fields.length > 0) {
-      var i: Int = 0
-      while (i < fields.length) {
-        {
-          var field: String = fields(i).trim
-          val displayName: String = field
-          field = cleanTagName(field)
-          log.debug("Wants additional tag: " + field)
-          if (isValidTagName(field)) {
-
-            Await.result(mongoRepository.getTagByUrlWords(field), TenSeconds).map { existingTag =>
-              log.debug("Found an existing tag in the additional list: " + existingTag.getName + "; adding.")
-              //tagVoteDAO.addTag(user, existingTag, editResource)
-
-            }.getOrElse {
-              log.debug("Tag '" + field + "' is a new tag. Needs to be created.")
-              val newTag = Tag(name = field, display_name = displayName)
-              Await.result(mongoRepository.saveTag(newTag), TenSeconds)
-              //tagVoteDAO.addTag(user, newTag, editResource)
-            }
-          }
-          else {
-            log.debug("Ignoring invalid tag name: " + field)
-          }
-        }
-        {
-          i += 1;
-          i - 1
-        }
       }
     }
   }
