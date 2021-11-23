@@ -9,8 +9,7 @@ import org.apache.log4j.Logger
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
 
-import scala.concurrent.Await
-import scala.concurrent.ExecutionContext.Implicits.global // TODO
+import scala.concurrent.{Await, ExecutionContext, Future}
 
 @Component class TagModificationService @Autowired()(val tagDAO: TagDAO,
                                                      val handTaggingService: HandTaggingService,
@@ -20,7 +19,7 @@ import scala.concurrent.ExecutionContext.Implicits.global // TODO
 
   private val log = Logger.getLogger(classOf[TagModificationService])
 
-  def deleteTag(tag: Tag): Boolean = {
+  def deleteTag(tag: Tag)(implicit ec: ExecutionContext): Boolean = {
     log.info("Deleting tag " + tag.getName)
     val eventualOutcome = handTaggingService.clearTaggingsForTag(tag).flatMap { tagClearanceOutcome =>
       if (tag.getParent != null) {
@@ -32,16 +31,20 @@ import scala.concurrent.ExecutionContext.Implicits.global // TODO
   }
 
   // Reindex resources which may have been effected by a change to a tag
-  def updateEffectedResources(tag: Tag, updatedTag: Tag): Unit = {
+  def updateAffectedResources(tag: Tag, updatedTag: Tag)(implicit ec: ExecutionContext): Future[Int] = {
     val parentHasChanged = tag.parent != updatedTag.parent
-    if (parentHasChanged) {
+    val geocodeChanged = tag.geocode != updatedTag.geocode
+    val needToUpdateTagsResource = parentHasChanged || geocodeChanged
+    if (needToUpdateTagsResource) {
       mongoRepository.getResourceIdsByTag(tag).flatMap { taggedResourceIds =>
-        elasticSearchIndexRebuildService.reindexResources(taggedResourceIds)  // TODO unmapped
-      }.map { i =>
-        log.info("Reindexed resource after tag parent change: " + i)
+        elasticSearchIndexRebuildService.reindexResources(taggedResourceIds)
+      }.map { numberReindexed =>
+        log.info("Reindexed resource after tag parent change: " + numberReindexed)
+        numberReindexed
       }
+    } else {
+      Future.successful(0)
     }
-    // TODO reindex when tag geocode change
   }
 
 }

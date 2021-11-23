@@ -1,18 +1,14 @@
 package nz.co.searchwellington.modification
 
-import nz.co.searchwellington.model.Tag
-import nz.co.searchwellington.repositories.HandTaggingService
-import nz.co.searchwellington.repositories.TagDAO
+import nz.co.searchwellington.model.{Geocode, Newsitem, Tag}
+import nz.co.searchwellington.repositories.{HandTaggingService, TagDAO}
 import nz.co.searchwellington.repositories.elasticsearch.ElasticSearchIndexRebuildService
 import nz.co.searchwellington.repositories.mongo.MongoRepository
-import org.junit.Before
 import org.junit.Test
-import org.mockito.Mock
-import org.mockito.Mockito
 import org.mockito.Mockito.{mock, verify, when}
-import org.mockito.MockitoAnnotations
 
 import scala.concurrent.Future
+import scala.concurrent.ExecutionContext.Implicits.global
 
 class TagModificationServiceTest {
 
@@ -21,12 +17,12 @@ class TagModificationServiceTest {
   private val mongoRepository = mock(classOf[MongoRepository])
   private val elasticSearchIndexRebuildService = mock(classOf[ElasticSearchIndexRebuildService])
 
-  private val tagModificationService =  new TagModificationService(tagDAO, handTaggingService, mongoRepository, elasticSearchIndexRebuildService)
+  private val tagModificationService = new TagModificationService(tagDAO, handTaggingService, mongoRepository, elasticSearchIndexRebuildService)
 
   private val tag = Tag(name = "Tag")
 
   @Test
-  def tagDeletionShouldResultInTheRemovalOfTheTag(): Unit = {
+  def tagDeletionsShouldDeleteTheTag(): Unit = {
     when(handTaggingService.clearTaggingsForTag(tag)).thenReturn(Future.successful(true))
     when(tagDAO.deleteTag(tag)).thenReturn(Future.successful(true))
 
@@ -36,13 +32,25 @@ class TagModificationServiceTest {
   }
 
   @Test
-  def tagDeletionShouldResultInTheRemovalOfAllHandTaggingVotesForThatTag():Unit = {
+  def tagDeletionShouldRemoveAllHandTaggingForTagTag(): Unit = {
     when(handTaggingService.clearTaggingsForTag(tag)).thenReturn(Future.successful(true))
     when(tagDAO.deleteTag(tag)).thenReturn(Future.successful(true))
 
     tagModificationService.deleteTag(tag)
 
     verify(handTaggingService).clearTaggingsForTag(tag)
+  }
+
+  @Test
+  def changingTagsGeocodeShouldReindexAffectedResources(): Unit = {
+    val updatedWithGeocode = tag.copy(geocode = Some(Geocode(address = Some("Somewhere"))))
+    val taggedResource = Newsitem()
+
+    when(mongoRepository.getResourceIdsByTag(tag)).thenReturn(Future.successful(Seq(taggedResource._id)))
+
+    tagModificationService.updateAffectedResources(tag, updatedWithGeocode)
+
+    verify(elasticSearchIndexRebuildService).reindexResources(Seq(taggedResource._id))
   }
 
 }
