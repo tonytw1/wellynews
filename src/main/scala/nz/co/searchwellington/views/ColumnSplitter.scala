@@ -1,21 +1,20 @@
 package nz.co.searchwellington.views
 
-import java.math.{BigDecimal, RoundingMode}
-import java.util
-import java.util.List
-
 import org.springframework.stereotype.Component
 
+import java.math.{BigDecimal, RoundingMode}
+import java.util
+
 @Component
-class ColumnSplitter[T <: Object] {
+class ColumnSplitter[T <: AnyVal] {
 
   val NUMBER_OF_COLUMNS: BigDecimal = new BigDecimal(2)
 
-  def left(source: List[T]): List[T] = {
+  def left(source: util.List[T]): util.List[T] = {
     source.subList(0, splitPointFor(source))
   }
 
-  def right(source: List[T]): List[T] = {
+  def right(source: util.List[T]): util.List[T] = {
     source.subList(splitPointFor(source), source.size)
   }
 
