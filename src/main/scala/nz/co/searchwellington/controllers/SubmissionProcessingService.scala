@@ -33,7 +33,7 @@ import scala.jdk.CollectionConverters.CollectionHasAsScala
   private val REQUEST_SELECTED_GEOCODE = "selectedGeocode"
   private val REQUEST_EMBARGO_DATE_NAME = "embargo_date"
 
-  def processImage(request: HttpServletRequest, editResource: Newsitem, loggedInUser: User) {
+  def processImage(request: HttpServletRequest, editResource: Newsitem, loggedInUser: User): Unit = {
     val image = request.getAttribute("image").asInstanceOf[Image]
     // editResource.setImage(image)
   }
@@ -63,11 +63,11 @@ import scala.jdk.CollectionConverters.CollectionHasAsScala
     }
   }
 
-  def processEmbargoDate(request: HttpServletRequest, editResource: Resource) {
+  def processEmbargoDate(request: HttpServletRequest, editResource: Resource): Unit = {
     //editResource.setEmbargoedUntil(request.getAttribute(REQUEST_EMBARGO_DATE_NAME).asInstanceOf[Date])
   }
 
-  def processDescription(request: HttpServletRequest, editResource: Resource) {
+  def processDescription(request: HttpServletRequest, editResource: Resource): Unit = {
     var description = request.getParameter(REQUEST_DESCRIPTION_NAME)
     if (description != null) {
       description = StringEscapeUtils.unescapeHtml(description)
@@ -76,7 +76,7 @@ import scala.jdk.CollectionConverters.CollectionHasAsScala
     //editResource.setDescription(description)
   }
 
-  def processHeld(request: HttpServletRequest, editResource: Resource) {
+  def processHeld(request: HttpServletRequest, editResource: Resource): Unit = {
     if (request.getParameter("has_held") != null) {
       if (request.getParameter("held") != null) {
       //  editResource.setHeld(true)
@@ -86,7 +86,7 @@ import scala.jdk.CollectionConverters.CollectionHasAsScala
     }
   }
 
-  def processTags(request: HttpServletRequest, editResource: Resource, user: User) {
+  def processTags(request: HttpServletRequest, editResource: Resource, user: User): Unit = {
     log.info("Processing tags")
     if (request.getParameter("has_tag_select") != null) {
       processTagSelect(request, editResource, user)
@@ -99,7 +99,8 @@ import scala.jdk.CollectionConverters.CollectionHasAsScala
     }
   }
 
-  @SuppressWarnings(Array("unchecked")) private def processTagSelect(request: HttpServletRequest, editResource: Resource, user: User) {
+  @SuppressWarnings(Array("unchecked"))
+  private def processTagSelect(request: HttpServletRequest, editResource: Resource, user: User): Unit = {
     log.info("Processing tag select")
     if (request.getAttribute("tags") != null) {
       val requestTagsList = request.getAttribute("tags").asInstanceOf[java.util.List[Tag]].asScala.toSeq
@@ -113,7 +114,7 @@ import scala.jdk.CollectionConverters.CollectionHasAsScala
     }
   }
 
-  def processPublisher(request: HttpServletRequest, editResource: Resource) {
+  def processPublisher(request: HttpServletRequest, editResource: Resource): Unit = {
     val isPublishedResource: Boolean = editResource.isInstanceOf[PublishedResource]
     if (isPublishedResource) {
       if (request.getParameter("publisherName") != null && !(request.getParameter("publisherName") == "")) {
@@ -127,7 +128,7 @@ import scala.jdk.CollectionConverters.CollectionHasAsScala
     }
   }
 
-  private def processAdditionalTags(request: HttpServletRequest, editResource: Resource, user: User) {
+  private def processAdditionalTags(request: HttpServletRequest, editResource: Resource, user: User): Unit = {
     val additionalTagString: String = request.getParameter("additional_tags").trim
     log.debug("Found additional tag string: " + additionalTagString)
     val fields: Array[String] = additionalTagString.split(",")

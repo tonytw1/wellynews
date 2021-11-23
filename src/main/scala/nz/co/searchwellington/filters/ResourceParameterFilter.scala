@@ -17,7 +17,7 @@ import scala.concurrent.ExecutionContext.Implicits.global
 
   private val log = Logger.getLogger(classOf[ResourceParameterFilter])
 
-  def filter(request: HttpServletRequest) {
+  def filter(request: HttpServletRequest): Unit = {
 
     def processResourceId(request: HttpServletRequest, resourceParameter: String): Unit = {
       try {

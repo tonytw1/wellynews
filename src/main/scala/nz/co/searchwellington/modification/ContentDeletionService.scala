@@ -49,7 +49,7 @@ import scala.concurrent.{Await, Future}
     }
   }
 
-  private def removePublisherFromPublishersContent(publisher: Website) {
+  private def removePublisherFromPublishersContent(publisher: Website): Unit = {
     mongoRepository.getResourcesIdsForPublisher(publisher).map { published =>
       published.foreach { publishedResourceId =>
         mongoRepository.getResourceByObjectId(publishedResourceId).map { maybeResource =>

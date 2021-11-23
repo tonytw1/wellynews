@@ -15,7 +15,7 @@ import scala.concurrent.{Await, ExecutionContext}
   private val log = Logger.getLogger(classOf[WhakaokoFeedSyncService])
 
   // @Scheduled(fixedRate = 3600000)
-  def run {
+  def run(): Unit = {
     //registerFeedsWithWhakaoko(Await.result(mongoReposity.getAllFeeds, TenSeconds))
   }
 
