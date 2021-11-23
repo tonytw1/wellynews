@@ -32,9 +32,7 @@ class NewWebsiteController @Autowired()(contentUpdateService: ContentUpdateServi
   private val log = Logger.getLogger(classOf[NewWebsiteController])
 
   @RequestMapping(value = Array("/new-website"), method = Array(RequestMethod.GET))
-  def prompt(): ModelAndView = {
-      renderNewWebsiteForm(new NewWebsite());
-  }
+  def prompt(): ModelAndView = renderNewWebsiteForm(new NewWebsite())
 
   @RequestMapping(value = Array("/new-website"), method = Array(RequestMethod.POST))
   def submit(@Valid @ModelAttribute("formObject") newWebsite: NewWebsite, result: BindingResult, request: HttpServletRequest): ModelAndView = {
