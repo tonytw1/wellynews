@@ -4,10 +4,9 @@ import nz.co.searchwellington.ReasonableWaits
 import nz.co.searchwellington.controllers.submission.GeotagParsing
 import nz.co.searchwellington.forms.EditTag
 import nz.co.searchwellington.geocoding.osm.GeoCodeService
-import nz.co.searchwellington.model.{Tag, UrlWordsGenerator, User}
-import nz.co.searchwellington.modification.{ContentUpdateService, TagModificationService}
+import nz.co.searchwellington.model.{Tag, User}
+import nz.co.searchwellington.modification.TagModificationService
 import nz.co.searchwellington.repositories.TagDAO
-import nz.co.searchwellington.repositories.elasticsearch.ElasticSearchIndexRebuildService
 import nz.co.searchwellington.repositories.mongo.MongoRepository
 import nz.co.searchwellington.urls.UrlBuilder
 import nz.co.searchwellington.views.Errors
@@ -26,13 +25,10 @@ import scala.concurrent.ExecutionContext.Implicits.global
 import scala.jdk.CollectionConverters._
 
 @Controller
-class EditTagController @Autowired()(contentUpdateService: ContentUpdateService,
-                                     mongoRepository: MongoRepository, tagDAO: TagDAO,
-                                     urlWordsGenerator: UrlWordsGenerator,
+class EditTagController @Autowired()(mongoRepository: MongoRepository, tagDAO: TagDAO,
                                      urlBuilder: UrlBuilder,
                                      val loggedInUserFilter: LoggedInUserFilter,
                                      tagModificationService: TagModificationService,
-                                     elasticSearchIndexRebuildService: ElasticSearchIndexRebuildService,
                                      val geocodeService: GeoCodeService)
   extends ReasonableWaits with Errors with InputParsing with GeotagParsing with RequiringLoggedInUser {
 
@@ -107,15 +103,7 @@ class EditTagController @Autowired()(contentUpdateService: ContentUpdateService,
 
           Await.result(mongoRepository.saveTag(updatedTag), TenSeconds)
           log.info("Updated tag: " + updatedTag)
-
-          val parentHasChanged = tag.parent != updatedTag.parent
-          if (parentHasChanged) {
-            mongoRepository.getResourceIdsByTag(tag).flatMap { taggedResourceIds =>
-              elasticSearchIndexRebuildService.reindexResources(taggedResourceIds)
-            }.map { i =>
-              log.info("Reindexed resource after tag parent change: " + i)
-            }
-          }
+          tagModificationService.updateEffectedResources(tag, updatedTag)
 
           new ModelAndView(new RedirectView(urlBuilder.getTagUrl(tag)))
         }
