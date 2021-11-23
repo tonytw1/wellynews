@@ -123,7 +123,7 @@ import scala.jdk.CollectionConverters.CollectionHasAsScala
   }
 
   private def isValidTagName(field: String): Boolean = {
-    field != null && field.length > 0 && field.matches("[a-zA-Z0-9]*")
+    field != null && field.nonEmpty && field.matches("[a-zA-Z0-9]*")
   }
 
   private def cleanTagName(i: String): String = {
