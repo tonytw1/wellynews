@@ -18,7 +18,7 @@ class InboxFeedsService @Autowired()(mongoRepository: MongoRepository, whakaokoS
   def getInboxFeeds()(implicit ec: ExecutionContext): Future[Seq[FrontendFeed]] = {
     val eventualWhakaokoSubscriptions = whakaokoService.getSubscriptions
     for {
-      allFeeds: Seq[Feed] <- mongoRepository.getAllFeeds
+      allFeeds <- mongoRepository.getAllFeeds
       suggestOnlyFeeds = allFeeds.filter(_.getAcceptancePolicy == FeedAcceptancePolicy.SUGGEST)
       whakaokoSubscriptions <- eventualWhakaokoSubscriptions
       inboxFeeds <- {
