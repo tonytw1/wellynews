@@ -3,6 +3,7 @@ package nz.co.searchwellington.controllers
 import nz.co.searchwellington.ReasonableWaits
 import nz.co.searchwellington.controllers.submission.{EndUserInputs, GeotagParsing}
 import nz.co.searchwellington.forms.NewNewsitem
+import nz.co.searchwellington.geocoding.osm.GeoCodeService
 import nz.co.searchwellington.model.{Newsitem, Website}
 import nz.co.searchwellington.modification.ContentUpdateService
 import nz.co.searchwellington.repositories.mongo.MongoRepository
@@ -26,7 +27,8 @@ import scala.concurrent.ExecutionContext.Implicits.global
 class NewNewsitemController @Autowired()(contentUpdateService: ContentUpdateService,
                                          mongoRepository: MongoRepository, urlBuilder: UrlBuilder,
                                          val anonUserService: AnonUserService,
-                                         val urlCleaner: UrlCleaner) extends ReasonableWaits
+                                         val urlCleaner: UrlCleaner,
+                                         val geocodeService: GeoCodeService) extends ReasonableWaits
                                          with EnsuredSubmitter with EndUserInputs with GeotagParsing {
 
   private val log = Logger.getLogger(classOf[NewNewsitemController])

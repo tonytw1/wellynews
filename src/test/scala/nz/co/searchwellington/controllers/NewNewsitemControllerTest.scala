@@ -1,6 +1,7 @@
 package nz.co.searchwellington.controllers
 
 import nz.co.searchwellington.forms.NewNewsitem
+import nz.co.searchwellington.geocoding.osm.GeoCodeService
 import nz.co.searchwellington.model.{Newsitem, Resource, User, Website}
 import nz.co.searchwellington.modification.ContentUpdateService
 import nz.co.searchwellington.repositories.mongo.MongoRepository
@@ -23,8 +24,9 @@ class NewNewsitemControllerTest {
   private val urlBuilder = mock(classOf[UrlBuilder])
   private val anonUserService = mock(classOf[AnonUserService])
   private val urlCleaner = mock(classOf[UrlCleaner])
+  private val geoCodeService = mock(classOf[GeoCodeService])
 
-  val controller = new NewNewsitemController(contentUpdateService, mongoRepository, urlBuilder, anonUserService, urlCleaner)
+  val controller = new NewNewsitemController(contentUpdateService, mongoRepository, urlBuilder, anonUserService, urlCleaner, geoCodeService)
 
   @Test
   def shouldSubmitNewsitems(): Unit = {
