@@ -22,13 +22,13 @@ import scala.concurrent.Future
 
       for {
         localCopy <- eventuallyLocalCopy
-        isSupressed <- eventuallyIsSuppressed
+        isSupressed <- eventuallyIsSuppressed // TODO not used?
       } yield {
         feedNewsitem match {
           case n: FrontendNewsitem =>
-            loggedInUser.map { l =>
+            loggedInUser.map { _ =>
               val acceptOrEditAction = localCopy.map { lc =>
-                Action("Edit local copy", adminUrlBuilder.getResourceEditUrl(lc))
+                Action("Edit local copy", adminUrlBuilder.getLocalCopyEditUrl(lc))
               }.getOrElse(
                 Action("Accept", adminUrlBuilder.getFeednewsItemAcceptUrl(n.acceptedFrom.get, n))
               )
