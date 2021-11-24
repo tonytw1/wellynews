@@ -105,9 +105,19 @@ public class Main {
         return new DateRegexCommentFeedDetector();
     }
 
-    @Bean
+    @Bean("feedReaderTaskExecutor")
     @Primary    // TODO work out why this is needed
-    public TaskExecutor taskExecutor() {
+    public TaskExecutor feedReaderTaskExecutor() {
+        ThreadPoolTaskExecutor threadPoolTaskExecutor = new ThreadPoolTaskExecutor();
+        threadPoolTaskExecutor.setCorePoolSize(4);
+        threadPoolTaskExecutor.setMaxPoolSize(5);
+        threadPoolTaskExecutor.setQueueCapacity(50000);
+        return threadPoolTaskExecutor;
+    }
+
+    @Bean("linkCheckerTaskExecutor")
+    @Primary    // TODO work out why this is needed
+    public TaskExecutor linkCheckerTaskExecutor() {
         ThreadPoolTaskExecutor threadPoolTaskExecutor = new ThreadPoolTaskExecutor();
         threadPoolTaskExecutor.setCorePoolSize(4);
         threadPoolTaskExecutor.setMaxPoolSize(5);

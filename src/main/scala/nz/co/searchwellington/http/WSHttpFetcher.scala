@@ -8,18 +8,17 @@ import nz.co.searchwellington.ReasonableWaits
 import nz.co.searchwellington.model.SiteInformation
 import org.apache.log4j.Logger
 import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.core.task.TaskExecutor
 import org.springframework.stereotype.Component
 import play.api.libs.ws.ahc._
 
 import scala.concurrent.{ExecutionContext, Future}
 
 @Component
-class WSHttpFetcher @Autowired()(taskExecutor: TaskExecutor, siteInformation: SiteInformation) extends HttpFetcher with ReasonableWaits { // TODO seperate executor
+class WSHttpFetcher @Autowired()(siteInformation: SiteInformation) extends HttpFetcher with ReasonableWaits {
 
   private val log = Logger.getLogger(classOf[WSHttpFetcher])
 
-  implicit val system: ActorSystem = ActorSystem()
+  implicit val system: ActorSystem = ActorSystem()  // TODO what ec are these running in?
   implicit val materializer: ActorMaterializer = ActorMaterializer()
 
   private val wsClient = StandaloneAhcWSClient()

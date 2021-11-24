@@ -4,14 +4,14 @@ import com.rabbitmq.client.{AMQP, Channel, DefaultConsumer, Envelope}
 import io.micrometer.core.instrument.MeterRegistry
 import nz.co.searchwellington.queues.{LinkCheckerQueue, RabbitConnectionFactory}
 import org.apache.log4j.Logger
-import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.beans.factory.annotation.{Autowired, Qualifier}
 import org.springframework.core.task.TaskExecutor
 import org.springframework.stereotype.Component
 
 import scala.concurrent.{ExecutionContext, ExecutionContextExecutor}
 
 @Component class LinkCheckerListener @Autowired()(linkChecker: LinkChecker, rabbitConnectionFactory: RabbitConnectionFactory,
-                                                  linkCheckerTaskExecutor: TaskExecutor,
+                                                  @Qualifier("linkCheckerTaskExecutor") linkCheckerTaskExecutor: TaskExecutor,
                                                   registry: MeterRegistry) {
 
   private val log = Logger.getLogger(classOf[LinkCheckerListener])
