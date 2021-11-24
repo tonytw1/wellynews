@@ -26,7 +26,7 @@ class TitleAutocompleteAjaxController @Autowired()(viewFactory: ViewFactory, log
   private val log = Logger.getLogger(classOf[TitleAutocompleteAjaxController])
 
   @GetMapping(Array("/ajax/title-autofill"))
-  def handleRequest(request: HttpServletRequest, response: HttpServletResponse): ModelAndView = {
+  def handleRequest(request: HttpServletRequest): ModelAndView = {
     val loggedInUser = loggedInUserFilter.getLoggedInUser
 
     /* Given the url of a new page fetch it and try to extract the HTML title.
