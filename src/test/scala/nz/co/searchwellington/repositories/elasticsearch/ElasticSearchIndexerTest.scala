@@ -18,7 +18,7 @@ import scala.concurrent.{Await, Future}
 
 class ElasticSearchIndexerTest extends ReasonableWaits {
   
-  private val databaseAndIndexName = "wellynews-" + UUID.randomUUID().toString()
+  private val databaseAndIndexName = "wellynews-" + UUID.randomUUID().toString
 
   private val mongoHost = {
     var mongoHost = System.getenv("MONGO_HOST");
@@ -54,7 +54,7 @@ class ElasticSearchIndexerTest extends ReasonableWaits {
   private val allNewsitems = ResourceQuery(`type` = Some(Set("N")))
 
   @Test
-  def canFilterByType {
+  def canFilterByType(): Unit = {
     val newsitem = Newsitem()
     Await.result(mongoRepository.saveResource(newsitem), TenSeconds)
     val website = Website()
@@ -78,7 +78,7 @@ class ElasticSearchIndexerTest extends ReasonableWaits {
   }
 
   @Test
-  def canFilterByFeedAcceptancePolicy {
+  def canFilterByFeedAcceptancePolicy(): Unit = {
     val acceptedFeed = Feed(acceptance = FeedAcceptancePolicy.ACCEPT)
     Await.result(mongoRepository.saveResource(acceptedFeed), TenSeconds)
     val ignoredFeed = Feed(acceptance = FeedAcceptancePolicy.IGNORE)
@@ -94,7 +94,7 @@ class ElasticSearchIndexerTest extends ReasonableWaits {
   }
 
   @Test
-  def canFilterByTag {
+  def canFilterByTag(): Unit = {
     val tag = Tag()
     Await.result(mongoRepository.saveTag(tag), TenSeconds)
     val taggingUser = User()
@@ -133,7 +133,7 @@ class ElasticSearchIndexerTest extends ReasonableWaits {
   }
 
   @Test
-  def canFilterByPublisher {
+  def canFilterByPublisher() {
     val publisher = Website()
     Await.result(mongoRepository.saveResource(publisher), TenSeconds)
     val anotherPublisher = Website()
@@ -156,7 +156,7 @@ class ElasticSearchIndexerTest extends ReasonableWaits {
   }
 
   @Test
-  def canGetFeedsForPublisher {
+  def canGetFeedsForPublisher() {
     val publisher = Website()
     Await.result(mongoRepository.saveResource(publisher), TenSeconds)
     val feed = Feed()
@@ -175,7 +175,7 @@ class ElasticSearchIndexerTest extends ReasonableWaits {
   }
 
   @Test
-  def canGetNewsitemMonthlyCounts {
+  def canGetNewsitemMonthlyCounts() {
     val newsitem = Newsitem(date = Some(new DateTime(2019, 1, 1, 0, 0, 0).toDate))
     Await.result(mongoRepository.saveResource(newsitem), TenSeconds)
     val anotherNewsitem = Newsitem(date = Some(new DateTime(2018, 3, 7, 0, 0, 0).toDate))
@@ -195,7 +195,7 @@ class ElasticSearchIndexerTest extends ReasonableWaits {
   }
 
   @Test
-  def canFilterNewsitemsByDateRange {
+  def canFilterNewsitemsByDateRange() {
     val newsitem = Newsitem(date = Some(new DateTime(2016, 2, 10, 0, 0, 0).toDate))
     Await.result(mongoRepository.saveResource(newsitem), TenSeconds)
     val anotherNewsitem = Newsitem(date = Some(new DateTime(2016, 3, 1, 0, 0, 0).toDate))
@@ -213,7 +213,7 @@ class ElasticSearchIndexerTest extends ReasonableWaits {
   }
 
   @Test
-  def canCountArchiveTypes: Unit = {
+  def canCountArchiveTypes(): Unit = {
     val newsitem = Newsitem()
     Await.result(mongoRepository.saveResource(newsitem), TenSeconds)
     val website = Website()
@@ -232,7 +232,7 @@ class ElasticSearchIndexerTest extends ReasonableWaits {
   }
 
   @Test
-  def canFilterResourcesByHostname: Unit = {
+  def canFilterResourcesByHostname(): Unit = {
     val fooWebsite = Website(page = "http://foo.local")
     val barWebsite = Website(page = "http://bar.local")
     val fooNewsitem = Website(page = "http://foo.local/123")
@@ -252,7 +252,7 @@ class ElasticSearchIndexerTest extends ReasonableWaits {
 
     eventually(timeout(TenSeconds), interval(TenMilliSeconds), fooResources.contains(fooWebsite))
     eventually(timeout(TenSeconds), interval(TenMilliSeconds), fooResources.contains(fooNewsitem))
-    eventually(timeout(TenSeconds), interval(TenMilliSeconds), barResources.contains(barResources))
+    eventually(timeout(TenSeconds), interval(TenMilliSeconds), barResources.contains(barWebsite))
 
     eventually(timeout(TenSeconds), interval(TenMilliSeconds), fooResources.size == 2)
     eventually(timeout(TenSeconds), interval(TenMilliSeconds), barResources.size == 1)

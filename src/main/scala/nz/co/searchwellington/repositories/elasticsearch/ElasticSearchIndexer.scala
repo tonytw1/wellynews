@@ -86,10 +86,16 @@ class ElasticSearchIndexer @Autowired()(val showBrokenDecisionService: ShowBroke
         }
 
         val result = Await.result(eventualCreateIndexResult, OneMinute)
-        log.info("Create indexes result: " + result)
+        log.info("Create index result: " + result)
+        if (!result.isSuccess) {
+          log.info("Create index failed; throwing exception")
+          throw new RuntimeException("Could not create elastic index: " + result.error.reason)
+        }
 
       } catch {
-        case e: Exception => log.error("Failed to created index", e)
+        case e: Exception =>
+          log.error("Failed to create elastic index", e)
+          throw new RuntimeException(e)
       }
     }
 
