@@ -19,8 +19,8 @@ class WSHttpFetcher @Autowired()(taskExecutor: TaskExecutor, siteInformation: Si
 
   private val log = Logger.getLogger(classOf[WSHttpFetcher])
 
-  implicit val system = ActorSystem()
-  implicit val materializer = ActorMaterializer()
+  implicit val system: ActorSystem = ActorSystem()
+  implicit val materializer: ActorMaterializer = ActorMaterializer()
 
   private val wsClient = StandaloneAhcWSClient()
 

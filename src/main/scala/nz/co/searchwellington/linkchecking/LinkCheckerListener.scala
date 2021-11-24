@@ -16,20 +16,18 @@ import scala.concurrent.ExecutionContext
 
   private val log = Logger.getLogger(classOf[LinkCheckerListener])
 
-  val QUEUE_NAME = LinkCheckerQueue.QUEUE_NAME
-
   private val pulledCounter = registry.counter("linkchecker_pulled")
 
-  implicit val executionContext = ExecutionContext.fromExecutor(linkCheckerTaskExecutor)
+  private implicit val executionContext = ExecutionContext.fromExecutor(linkCheckerTaskExecutor)
 
   {
     log.info("Starting link check listener")
     try {
       val connection = rabbitConnectionFactory.connect
       val channel = connection.createChannel
-      channel.queueDeclare(QUEUE_NAME, false, false, false, null)
+      channel.queueDeclare(LinkCheckerQueue.QUEUE_NAME, false, false, false, null)
       val consumer = new LinkCheckerConsumer(channel)
-      val consumerTag = channel.basicConsume(QUEUE_NAME, false, consumer)
+      val consumerTag = channel.basicConsume(LinkCheckerQueue.QUEUE_NAME, false, consumer)
       log.info(s"Link checker consumer thread started with consumer tag: $consumerTag")
 
     } catch {

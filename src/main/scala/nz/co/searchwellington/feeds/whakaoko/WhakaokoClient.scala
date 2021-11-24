@@ -9,7 +9,7 @@ import org.apache.log4j.Logger
 import org.joda.time.{DateTime, Duration}
 import org.springframework.beans.factory.annotation.{Autowired, Value}
 import org.springframework.stereotype.Component
-import play.api.libs.json.{JodaReads, Json}
+import play.api.libs.json.{JodaReads, Json, Reads}
 import play.api.libs.ws.JsonBodyWritables.writeableOf_JsValue
 import play.api.libs.ws.StandaloneWSRequest
 import play.api.libs.ws.ahc.StandaloneAhcWSClient
@@ -25,16 +25,16 @@ class WhakaokoClient @Autowired()(@Value("${whakaoko.url}") whakaokoUrl: String,
 
   private val ApplicationJsonHeader = "Content-Type" -> "application/json; charset=UTF8"
 
-  implicit val system = ActorSystem()
-  implicit val materializer = ActorMaterializer()
+  implicit val system: ActorSystem = ActorSystem()
+  implicit val materializer: ActorMaterializer = ActorMaterializer()
 
   private val wsClient = StandaloneAhcWSClient()
 
-  private implicit val dr = JodaReads.DefaultJodaDateTimeReads
-  private implicit val llr = Json.reads[LatLong]
-  private implicit val pr = Json.reads[Place]
-  private implicit val fir = Json.reads[FeedItem]
-  private implicit val sr = Json.reads[Subscription]
+  private implicit val dr: Reads[DateTime] = JodaReads.DefaultJodaDateTimeReads
+  private implicit val llr: Reads[LatLong] = Json.reads[LatLong]
+  private implicit val pr: Reads[Place] = Json.reads[Place]
+  private implicit val fir: Reads[FeedItem] = Json.reads[FeedItem]
+  private implicit val sr: Reads[Subscription] = Json.reads[Subscription]
 
   def createFeedSubscription(feedUrl: String)(implicit ec: ExecutionContext): Future[Option[Subscription]] = {
     val createFeedSubscriptionUrl = whakaokoUrl + "/subscriptions"

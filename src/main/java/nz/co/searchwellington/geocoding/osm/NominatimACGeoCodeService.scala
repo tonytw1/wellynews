@@ -7,7 +7,7 @@ import org.apache.http.HttpStatus
 import org.apache.log4j.Logger
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
-import play.api.libs.json.Json
+import play.api.libs.json.{Json, Reads}
 import play.api.libs.ws.ahc.StandaloneAhcWSClient
 import uk.co.eelpieconsulting.common.geo.model.{LatLong, OsmId, OsmType, Place}
 
@@ -18,12 +18,12 @@ class NominatimACGeoCodeService @Autowired()() extends GeoCodeService with Reaso
 
   private val log = Logger.getLogger(classOf[NominatimACGeoCodeService])
 
-  implicit val system = ActorSystem()
-  implicit val materializer = ActorMaterializer()
+  implicit val system: ActorSystem = ActorSystem()
+  implicit val materializer: ActorMaterializer = ActorMaterializer()
 
   private val wsClient = StandaloneAhcWSClient()
 
-  private implicit val ec = ExecutionContext.Implicits.global
+  private implicit val ec: ExecutionContext = ExecutionContext.Implicits.global
 
   override def resolveOsmId(osmId: OsmId): Place = {
     val url = "https://nominatim-ac.eelpieconsulting.co.uk/places/" + osmId.getId + osmId.getType.toString.take(1)
@@ -32,8 +32,8 @@ class NominatimACGeoCodeService @Autowired()() extends GeoCodeService with Reaso
       withRequestTimeout(TenSeconds).get.map { result =>
         result.status match {
           case HttpStatus.SC_OK =>
-            implicit val nacll = Json.reads[NominatimACLatLong]
-            implicit val nacpr = Json.reads[NominatimACPlace]
+            implicit val nacll: Reads[NominatimACLatLong] = Json.reads[NominatimACLatLong]
+            implicit val nacpr: Reads[NominatimACPlace] = Json.reads[NominatimACPlace]
 
             val body = result.body
             log.info("Nominatim AC response: " + body)
