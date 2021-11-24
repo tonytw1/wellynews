@@ -22,6 +22,8 @@ import scala.concurrent.{Await, ExecutionContext, ExecutionContextExecutor, Futu
   def readFeeds(): Unit = {
     implicit val executionContext: ExecutionContextExecutor = ExecutionContext.fromExecutor(feedReaderTaskExecutor)
 
+    def getFeedReaderUser: Future[Option[User]] = mongoRepository.getUserByProfilename(FEED_READER_PROFILE_NAME)
+
     def readAllFeeds(feeds: Seq[Feed]): Future[Boolean] = {
       getFeedReaderUser.map { maybyFeedUser =>
         maybyFeedUser.map { feedReaderUser =>
@@ -50,7 +52,5 @@ import scala.concurrent.{Await, ExecutionContext, ExecutionContextExecutor, Futu
       log.info("Finished reading feeds.")
     }
   }
-
-  private def getFeedReaderUser: Future[Option[User]] = mongoRepository.getUserByProfilename(FEED_READER_PROFILE_NAME)
 
 }
