@@ -103,7 +103,7 @@ class EditTagController @Autowired()(mongoRepository: MongoRepository, tagDAO: T
 
           Await.result(mongoRepository.saveTag(updatedTag), TenSeconds)
           log.info("Updated tag: " + updatedTag)
-          tagModificationService.updateEffectedResources(tag, updatedTag)
+          tagModificationService.updateAffectedResources(tag, updatedTag)
 
           new ModelAndView(new RedirectView(urlBuilder.getTagUrl(tag)))
         }
