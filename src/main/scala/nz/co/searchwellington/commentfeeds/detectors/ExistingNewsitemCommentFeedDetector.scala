@@ -1,7 +1,7 @@
 package nz.co.searchwellington.commentfeeds.detectors
 
 import nz.co.searchwellington.ReasonableWaits
-import nz.co.searchwellington.model.Newsitem
+import nz.co.searchwellington.model.{Newsitem, Resource}
 import nz.co.searchwellington.repositories.mongo.MongoRepository
 import org.apache.log4j.Logger
 import org.springframework.beans.factory.annotation.Autowired
@@ -24,12 +24,14 @@ class ExistingNewsitemCommentFeedDetector @Autowired()(mongoRepository: MongoRep
     feedSuffixes.exists { suffix =>
       if (url.endsWith(suffix)) {
         val newsitemUrl = url.dropRight(suffix.length)
-        Await.result(mongoRepository.getResourceByUrl(newsitemUrl), TenSeconds) match {
-          case n: Some[Newsitem] =>
-            log.info(s"Feed url $url appears to be a comment feed for newsitem: " + n)
-            true
-          case None => false
-          case _ => false
+        val maybeResource = Await.result(mongoRepository.getResourceByUrl(newsitemUrl), TenSeconds)
+        maybeResource.exists { resource =>
+          resource match {
+            case n: Newsitem =>
+              log.info(s"Feed url $url appears to be a comment feed for newsitem: " + n)
+              true
+            case _ => false
+          }
         }
       } else {
         false
