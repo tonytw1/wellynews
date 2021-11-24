@@ -9,7 +9,7 @@ import org.springframework.core.task.TaskExecutor
 import org.springframework.scheduling.annotation.Scheduled
 import org.springframework.stereotype.Component
 
-import scala.concurrent.{Await, ExecutionContext, Future}
+import scala.concurrent.{Await, ExecutionContext, ExecutionContextExecutor, Future}
 
 @Component class FeedReaderRunner @Autowired()(feedReader: FeedReader, mongoRepository: MongoRepository,
                                                feedReaderTaskExecutor: TaskExecutor) // TODO named bean
@@ -18,10 +18,10 @@ import scala.concurrent.{Await, ExecutionContext, Future}
   private val log = Logger.getLogger(classOf[FeedReaderRunner])
   private val FEED_READER_PROFILE_NAME = "feedreader"
 
-  implicit val executionContext = ExecutionContext.fromExecutor(feedReaderTaskExecutor)
-
   @Scheduled(cron = "0 */10 * * * *")
   def readFeeds(): Unit = {
+    implicit val executionContext: ExecutionContextExecutor = ExecutionContext.fromExecutor(feedReaderTaskExecutor)
+
     def readAllFeeds(feeds: Seq[Feed]): Future[Boolean] = {
       getFeedReaderUser.map { maybyFeedUser =>
         maybyFeedUser.map { feedReaderUser =>

@@ -9,7 +9,7 @@ import org.apache.log4j.Logger
 import org.joda.time.{DateTime, Duration}
 import org.springframework.beans.factory.annotation.{Autowired, Value}
 import org.springframework.stereotype.Component
-import play.api.libs.json.{JodaReads, Json, Reads}
+import play.api.libs.json.{JodaReads, Json, OWrites, Reads}
 import play.api.libs.ws.JsonBodyWritables.writeableOf_JsValue
 import play.api.libs.ws.StandaloneWSRequest
 import play.api.libs.ws.ahc.StandaloneAhcWSClient
@@ -44,7 +44,7 @@ class WhakaokoClient @Autowired()(@Value("${whakaoko.url}") whakaokoUrl: String,
       channel = whakaokoChannel
     )
 
-    implicit val csrw = Json.writes[CreateSubscriptionRequest]
+    implicit val csrw: OWrites[CreateSubscriptionRequest] = Json.writes[CreateSubscriptionRequest]
     withWhakaokoAuth(wsClient.url(createFeedSubscriptionUrl)).
       withRequestTimeout(TenSeconds).
       post(Json.toJson(createSubscriptionRequest)).map { r =>
@@ -123,7 +123,7 @@ class WhakaokoClient @Autowired()(@Value("${whakaoko.url}") whakaokoUrl: String,
   }
 
   def updateSubscriptionName(subscriptionId: String, title: String)(implicit ec: ExecutionContext): Future[Unit] = {
-    implicit val supw = Json.writes[SubscriptionUpdateRequest]
+    implicit val supw: OWrites[SubscriptionUpdateRequest] = Json.writes[SubscriptionUpdateRequest]
     val request = wsClient.url(subscriptionUrl(subscriptionId)).
       withHttpHeaders(ApplicationJsonHeader).
       withRequestTimeout(TenSeconds)

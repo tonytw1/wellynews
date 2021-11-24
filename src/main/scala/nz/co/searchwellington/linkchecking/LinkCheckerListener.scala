@@ -8,7 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.core.task.TaskExecutor
 import org.springframework.stereotype.Component
 
-import scala.concurrent.ExecutionContext
+import scala.concurrent.{ExecutionContext, ExecutionContextExecutor}
 
 @Component class LinkCheckerListener @Autowired()(linkChecker: LinkChecker, rabbitConnectionFactory: RabbitConnectionFactory,
                                                   linkCheckerTaskExecutor: TaskExecutor,
@@ -17,8 +17,6 @@ import scala.concurrent.ExecutionContext
   private val log = Logger.getLogger(classOf[LinkCheckerListener])
 
   private val pulledCounter = registry.counter("linkchecker_pulled")
-
-  private implicit val executionContext = ExecutionContext.fromExecutor(linkCheckerTaskExecutor)
 
   {
     log.info("Starting link check listener")
@@ -37,6 +35,8 @@ import scala.concurrent.ExecutionContext
   }
 
   class LinkCheckerConsumer(channel: Channel) extends DefaultConsumer(channel: Channel) {
+    private implicit val executionContext: ExecutionContextExecutor = ExecutionContext.fromExecutor(linkCheckerTaskExecutor)
+
     override def handleDelivery(consumerTag: String, envelope: Envelope, properties: AMQP.BasicProperties, body: Array[Byte]): Unit = {
       try {
         log.info(s"Link checker handling delivery with consumer tag: $consumerTag")
