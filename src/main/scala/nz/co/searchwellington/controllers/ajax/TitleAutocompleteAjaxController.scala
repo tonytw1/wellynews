@@ -64,7 +64,7 @@ class TitleAutocompleteAjaxController @Autowired()(viewFactory: ViewFactory, log
 
         } catch {
           case _: IllegalArgumentException =>
-            log.warn("Likely invalid url; ignoring: " + url);
+            log.warn("Likely invalid url; ignoring: " + url)
             Future.successful(None)
           case _: Throwable =>
             Future.successful(None)

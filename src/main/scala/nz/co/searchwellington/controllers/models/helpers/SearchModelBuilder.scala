@@ -64,8 +64,8 @@ import scala.jdk.CollectionConverters._
         addObject("tag", maybeTag.orNull).
         addObject("publisher", maybeFrontendPublisher.orNull)
 
-      mv.addObject("secondary_heading", "Matching websites");
-      mv.addObject("secondary_content", matchingWebsites._1.asJava);
+      mv.addObject("secondary_heading", "Matching websites")
+      mv.addObject("secondary_content", matchingWebsites._1.asJava)
 
       if (tagRefinements.nonEmpty) {
         mv.addObject("related_tags", tagRefinements.asJava)
