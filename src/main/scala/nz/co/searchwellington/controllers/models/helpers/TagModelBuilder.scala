@@ -1,7 +1,7 @@
 package nz.co.searchwellington.controllers.models.helpers
 
 import nz.co.searchwellington.ReasonableWaits
-import nz.co.searchwellington.controllers.RssUrlBuilder
+import nz.co.searchwellington.controllers.{CommonModelObjectsService, RssUrlBuilder}
 import nz.co.searchwellington.model.{Resource, Tag, User}
 import nz.co.searchwellington.repositories.{ContentRetrievalService, TagDAO}
 import nz.co.searchwellington.tagging.RelatedTagsService
@@ -20,7 +20,7 @@ import scala.jdk.CollectionConverters._
                                               relatedTagsService: RelatedTagsService,
                                               val contentRetrievalService: ContentRetrievalService,
                                               commonAttributesModelBuilder: CommonAttributesModelBuilder, tagDAO: TagDAO) extends ModelBuilder
-  with CommonSizes with Pagination with ReasonableWaits {
+  with CommonSizes with Pagination with ReasonableWaits with CommonModelObjectsService {
 
   private val PAGE = "page"
   private val TAG = "tag"
@@ -72,6 +72,7 @@ import scala.jdk.CollectionConverters._
           def paginationLinks(page: Int): String = {
             urlBuilder.getTagPageUrl(tag, page)
           }
+
           populatePagination(mv, startIndex, totalNewsitems, MAX_NEWSITEMS, paginationLinks)
           if (taggedNewsitems.nonEmpty) {
             commonAttributesModelBuilder.setRss(mv, rssUrlBuilder.getRssTitleForTag(tag), rssUrlBuilder.getRssUrlForTag(tag))
@@ -98,7 +99,6 @@ import scala.jdk.CollectionConverters._
     val eventualRelatedPublishersForTag = relatedTagsService.getRelatedPublishersForTag(tag, 8, loggedInUser)
     val eventualTagWatchlist = contentRetrievalService.getTagWatchlist(tag, loggedInUser)
     val eventualTagFeeds = contentRetrievalService.getTaggedFeeds(tag, loggedInUser)
-    val eventualLatestNewsitems = contentRetrievalService.getLatestNewsitems(5, loggedInUser = loggedInUser)
 
     for {
       geotaggedNewsitems <- eventualGeotaggedNewsitems
@@ -107,27 +107,25 @@ import scala.jdk.CollectionConverters._
       relatedPublishersForTag <- eventualRelatedPublishersForTag
       tagWatchList <- eventualTagWatchlist
       tagFeeds <- eventualTagFeeds
-      latestNewsitems <- eventualLatestNewsitems
+      withSecondaryContent = {
+        mv.addObject(WEBSITES, taggedWebsites.asJava)
 
-    } yield {
-      def populateGeocoded(mv: ModelAndView, tag: Tag): Unit = {
+        if (relatedTagLinks.nonEmpty) {
+          mv.addObject("related_tags", relatedTagLinks.asJava)
+        }
+        if (relatedPublishersForTag.nonEmpty) {
+          mv.addObject("related_publishers", relatedPublishersForTag.asJava)
+        }
         if (geotaggedNewsitems.nonEmpty) {
           mv.addObject("geocoded", geotaggedNewsitems.asJava)
         }
+        mv.addObject(TAG_WATCHLIST, tagWatchList.asJava)
+        mv.addObject(TAG_FEEDS, tagFeeds.asJava)
+        mv
       }
-
-      mv.addObject(WEBSITES, taggedWebsites.asJava)
-
-      if (relatedTagLinks.nonEmpty) {
-        mv.addObject("related_tags", relatedTagLinks.asJava)
-      }
-      if (relatedPublishersForTag.nonEmpty) {
-        mv.addObject("related_publishers", relatedPublishersForTag.asJava)
-      }
-      populateGeocoded(mv, tag)
-      mv.addObject(TAG_WATCHLIST, tagWatchList.asJava)
-      mv.addObject(TAG_FEEDS, tagFeeds.asJava)
-      mv.addObject("latest_newsitems", latestNewsitems.asJava)
+      mv <- withLatestNewsitems(withSecondaryContent, loggedInUser)
+    } yield {
+      mv
     }
   }
 
