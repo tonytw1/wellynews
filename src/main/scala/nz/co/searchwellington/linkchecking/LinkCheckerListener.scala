@@ -39,9 +39,9 @@ import scala.concurrent.{ExecutionContext, ExecutionContextExecutor}
 
     override def handleDelivery(consumerTag: String, envelope: Envelope, properties: AMQP.BasicProperties, body: Array[Byte]): Unit = {
       try {
-        log.info(s"Link checker handling delivery with consumer tag: $consumerTag")
+        log.debug(s"Link checker handling delivery with consumer tag: $consumerTag")
         val message = new String(body)
-        log.info("Received link checker message: " + message)
+        log.debug("Received link checker message: " + message)
         pulledCounter.increment()
         linkChecker.scanResource(message)
       } catch {
