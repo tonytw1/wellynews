@@ -1,6 +1,6 @@
 package nz.co.searchwellington.linkchecking
 
-import com.rabbitmq.client.{Channel, QueueingConsumer}
+import com.rabbitmq.client.{AMQP, Channel, DefaultConsumer, Envelope}
 import io.micrometer.core.instrument.MeterRegistry
 import nz.co.searchwellington.queues.{LinkCheckerQueue, RabbitConnectionFactory}
 import org.apache.log4j.Logger
@@ -10,9 +10,9 @@ import org.springframework.stereotype.Component
 
 import scala.concurrent.ExecutionContext
 
-@Component class LinkCheckerListener @Autowired() (linkChecker: LinkChecker, rabbitConnectionFactory: RabbitConnectionFactory,
-                                                   linkCheckerTaskExecutor: TaskExecutor,
-                                                   registry: MeterRegistry) {
+@Component class LinkCheckerListener @Autowired()(linkChecker: LinkChecker, rabbitConnectionFactory: RabbitConnectionFactory,
+                                                  linkCheckerTaskExecutor: TaskExecutor,
+                                                  registry: MeterRegistry) {
 
   private val log = Logger.getLogger(classOf[LinkCheckerListener])
 
@@ -28,9 +28,9 @@ import scala.concurrent.ExecutionContext
       val connection = rabbitConnectionFactory.connect
       val channel = connection.createChannel
       channel.queueDeclare(QUEUE_NAME, false, false, false, null)
-      val consumerThread = new Thread(new ConsumerThread(channel, linkChecker))
-      consumerThread.start()
-      log.info("Link checker consumer thread started")
+      val consumer = new LinkCheckerConsumer(channel)
+      val consumerTag = channel.basicConsume(QUEUE_NAME, false, consumer)
+      log.info(s"Link checker consumer thread started with consumer tag: $consumerTag")
 
     } catch {
       case e: Exception =>
@@ -38,33 +38,14 @@ import scala.concurrent.ExecutionContext
     }
   }
 
-  private[linkchecking] class ConsumerThread(channel: Channel, linkChecker: LinkChecker) extends Runnable {
-
-    private val QUEUE_NAME = LinkCheckerQueue.QUEUE_NAME
-    private val log = Logger.getLogger(classOf[LinkCheckerListener])
-
-    override def run(): Unit = {
-      log.info("Link checker consumer thread running")
-
-      val consumer = new QueueingConsumer(channel)
-      try channel.basicConsume(QUEUE_NAME, true, consumer)
-      catch {
-        case e: Exception =>
-          log.error(e)
-      }
-
-
-      while ( {
-        true
-
-      }) try {
-        log.info("Link checker consumer awaiting delivery ")
-        val delivery = consumer.nextDelivery
-        val message = new String(delivery.getBody)
-        log.info("Received: " + message)
+  class LinkCheckerConsumer(channel: Channel) extends DefaultConsumer(channel: Channel) {
+    override def handleDelivery(consumerTag: String, envelope: Envelope, properties: AMQP.BasicProperties, body: Array[Byte]): Unit = {
+      try {
+        log.info(s"Link checker handling delivery with consumer tag: $consumerTag")
+        val message = new String(body)
+        log.info("Received link checker message: " + message)
         pulledCounter.increment()
         linkChecker.scanResource(message)
-
       } catch {
         case e: Exception =>
           log.error("Error while processing link checker message: ", e)
