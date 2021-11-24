@@ -1,13 +1,13 @@
 package nz.co.searchwellington
 
-import scala.concurrent.duration.{Duration, MILLISECONDS, MINUTES, SECONDS}
+import scala.concurrent.duration.{Duration, FiniteDuration, MILLISECONDS, MINUTES, SECONDS}
 
 trait ReasonableWaits {
 
-  val ThirtySeconds = Duration(30, SECONDS)
-  val TenSeconds = Duration(10, SECONDS)
-  val OneMinute = Duration(1, MINUTES)
-  val FiveMinutes = Duration(5, MINUTES)
-  val TenMilliSeconds = Duration(10, MILLISECONDS)
-  val OneHundredMilliSeconds = Duration(100, MILLISECONDS)
+  val ThirtySeconds: FiniteDuration = Duration(30, SECONDS)
+  val TenSeconds: FiniteDuration = Duration(10, SECONDS)
+  val OneMinute: FiniteDuration = Duration(1, MINUTES)
+  val FiveMinutes: FiniteDuration = Duration(5, MINUTES)
+  val TenMilliSeconds: FiniteDuration = Duration(10, MILLISECONDS)
+  val OneHundredMilliSeconds: FiniteDuration = Duration(100, MILLISECONDS)
 }
