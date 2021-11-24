@@ -138,10 +138,6 @@ class UrlBuilder @Autowired()(siteInformation: SiteInformation, urlWordsGenerato
     "/geotagged"
   }
 
-  def getPublicTaggingSubmissionUrl(resource: Resource): String = {
-    "/tagging/submit"
-  }
-
   def getArchiveUrl: String = {
     "/archive"
   }
