@@ -15,6 +15,6 @@ case class DiscoveredFeed(_id: BSONObjectID = BSONObjectID.generate, url: String
 }
 
 case class DiscoveredFeedOccurrence(referencedFrom: String, seen: Date) {
-  def getReferencedFrom = referencedFrom
-  def getSeen = seen
+  def getReferencedFrom: String = referencedFrom
+  def getSeen: Date = seen
 }
