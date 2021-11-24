@@ -21,11 +21,17 @@
                 <label for="${status.expression}">Display name:</label>
                 <input name="${status.expression}" class="title" value="$!{status.value}" />
                 <br />
+                #foreach($error in $status.errorMessages)
+                    <div class="alert">$error</div>
+                #end
 
                 #springBind("newTag.description")
                 <label for="${status.expression}">Description:</label>
                 <input name="${status.expression}" class="title" value="$!{status.value}" />
                 <br />
+                #foreach($error in $status.errorMessages)
+                    <div class="alert">$error</div>
+                #end
 
                 <input type="submit" value="Add" />
             </fieldset>

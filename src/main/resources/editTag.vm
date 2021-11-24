@@ -21,11 +21,17 @@
                 <label for="${status.expression}">Display name:</label>
                 <input name="${status.expression}" class="title" value="$!{status.value}" />
                 <br />
+                #foreach($error in $status.errorMessages)
+                    <div class="alert">$error</div>
+                #end
 
                 #springBind("formObject.description")
                 <label for="${status.expression}">Description:</label>
                 <input name="${status.expression}" class="title" value="$!{status.value}" />
                 <br />
+                #foreach($error in $status.errorMessages)
+                    <div class="alert">$error</div>
+                #end
 
                 #springBind("formObject.parent")
                 <label for="${status.expression}">Parent:</label>
@@ -36,17 +42,26 @@
                     #end
                 </select>
                 <br />
+                #foreach($error in $status.errorMessages)
+                    <div class="alert">$error</div>
+                #end
 
                 #springBind("formObject.autotagHints")
                 <label for="${status.expression}">Autotag Hints:</label>
                 <input name="${status.expression}" class="title" value="$!{status.value}" />
                 <br />
+                #foreach($error in $status.errorMessages)
+                    <div class="alert">$error</div>
+                #end
 
                 #springBind("formObject.featured")
                 <label for="${status.expression}">Featured:</label>
                 <input name="${status.expression}" type="checkbox:" value="$!{status.value}" />
                 $!{status.value}
                 <br />
+                #foreach($error in $status.errorMessages)
+                    <div class="alert">$error</div>
+                #end
 
                #parse("includes/location_picker.vm")
 

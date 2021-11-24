@@ -16,21 +16,33 @@
                 <label for="${status.expression}">Title:</label>
                 <input name="${status.expression}" class="title" value="$!{status.value}" />
                 <br />
+                #foreach($error in $status.errorMessages)
+                    <div class="alert">$error</div>
+                #end
 
                 #springBind("formObject.url")
                 <label for="${status.expression}">URL:</label>
                 <input name="${status.expression}" class="title" value="$!{status.value}" />
                 <br />
+                #foreach($error in $status.errorMessages)
+                    <div class="alert">$error</div>
+                #end
 
                 #springBind("formObject.publisher")
                 <label for="${status.expression}">Publisher:</label>
                 <input id="publisher" name="${status.expression}" class="title" value="$!{status.value}" />
                 <br />
+                #foreach($error in $status.errorMessages)
+                    <div class="alert">$error</div>
+                #end
 
                 #springBind("formObject.description")
                 <label for="${status.expression}">Description:</label>
                 <textarea name="${status.expression}" rows="6" cols="40">$!{status.value}</textarea>
                 <br />
+                #foreach($error in $status.errorMessages)
+                    <div class="alert">$error</div>
+                #end
 
                 #springBind("formObject.tags")
                 <label for="${status.expression}">Tags:</label>
@@ -40,6 +52,9 @@
                     #end
                 </select>
                 <br />
+                #foreach($error in $status.errorMessages)
+                    <div class="alert">$error</div>
+                #end
 
 				<input type="submit" value="Submit" />
 			</fieldset>
