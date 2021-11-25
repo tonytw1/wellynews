@@ -9,26 +9,34 @@ trait GeotagParsing {
 
   def parseGeotag(address: String, osmId: String): Option[Geocode] = {
     if (osmId.nonEmpty) {
-      val osm = parseOsmId(osmId)
+      val osm = parseOsmId(osmId).get // TODO naked get
       val commonOsm = new uk.co.eelpieconsulting.common.geo.model.OsmId(
         osm.id, uk.co.eelpieconsulting.common.geo.model.OsmType.valueOf(osm.`type`)
       )
 
       Option(geocodeService.resolveOsmId(commonOsm)).map { rp =>
         val resolvedLatLong = rp.getLatLong
-        Geocode(address = Some(address), osmId = Some(osm),
+        Geocode(
+          address = Some(address),
+          osmId = Some(osm),
           latitude = Some(resolvedLatLong.getLatitude),
-          longitude = Some(resolvedLatLong.getLongitude))
+          longitude = Some(resolvedLatLong.getLongitude)
+        )
       }
     } else {
       None
     }
   }
 
-  def parseOsmId(osmIdString: String): OsmId = {
-    val id = osmIdString.split("/")(0).toLong
-    val `type` = osmIdString.split("/")(1)
-    OsmId(id = id, `type` = `type`)
+  def parseOsmId(osmIdString: String): Option[OsmId] = {
+    val splits = osmIdString.split("/")
+    if (splits.length == 2) {
+      val id = splits(0).toLong
+      val `type` = splits(1)
+      Some(OsmId(id = id, `type` = `type`))
+    } else {
+      None
+    }
   }
 
   def osmToString(osmId: OsmId): String = {
