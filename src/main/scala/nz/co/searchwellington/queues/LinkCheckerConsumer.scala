@@ -35,6 +35,7 @@ import scala.concurrent.{ExecutionContext, ExecutionContextExecutor}
   }
 
   class LinkCheckerConsumer(channel: Channel) extends DefaultConsumer(channel: Channel) {
+    private implicit val executionContext: ExecutionContextExecutor = ExecutionContext.fromExecutor(linkCheckerTaskExecutor)
 
     override def handleDelivery(consumerTag: String, envelope: Envelope, properties: AMQP.BasicProperties, body: Array[Byte]): Unit = {
       try {
@@ -42,10 +43,7 @@ import scala.concurrent.{ExecutionContext, ExecutionContextExecutor}
         val message = new String(body)
         log.debug("Received link checker message: " + message)
         pulledCounter.increment()
-
-        private implicit val executionContext: ExecutionContextExecutor = ExecutionContext.fromExecutor(linkCheckerTaskExecutor)
         linkChecker.scanResource(message)
-
       } catch {
         case e: Exception =>
           log.error("Error while processing link checker message: ", e)
