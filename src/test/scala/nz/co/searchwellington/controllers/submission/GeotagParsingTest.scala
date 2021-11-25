@@ -1,10 +1,12 @@
 package nz.co.searchwellington.controllers.submission
 
 import nz.co.searchwellington.geocoding.osm.GeoCodeService
+import nz.co.searchwellington.model.{Geocode, OsmId}
 import org.junit.Assert.assertEquals
 import org.junit.Test
-import org.mockito.Mockito.mock
-import uk.co.eelpieconsulting.common.geo.model.OsmType
+import org.mockito.Mockito.{mock, when}
+import uk.co.eelpieconsulting.common.geo.model
+import uk.co.eelpieconsulting.common.geo.model.{LatLong, OsmType, Place}
 
 class GeotagParsingTest extends GeotagParsing {
 
@@ -16,4 +18,13 @@ class GeotagParsingTest extends GeotagParsing {
     assertEquals(None, parseOsmId("123/A"))
   }
 
+
+  @Test
+  def shouldParseUserInputToPlace(): Unit = {
+    when(geocodeService.resolveOsmId(new model.OsmId(456L, OsmType.RELATION))).thenReturn(new Place(null, new LatLong(51.0, -0.3), null))
+
+    val result = parseGeotag("Somewhere", "456/R")
+
+    assertEquals(Some(Geocode(address = Some("Somewhere"), Some(51.0), Some(-0.3), osmId = Some(OsmId(456L, "R")))), result)
+  }
 }

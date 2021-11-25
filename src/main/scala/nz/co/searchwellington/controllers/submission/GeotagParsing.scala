@@ -2,6 +2,7 @@ package nz.co.searchwellington.controllers.submission
 
 import nz.co.searchwellington.geocoding.osm.GeoCodeService
 import nz.co.searchwellington.model.{Geocode, OsmId}
+import uk.co.eelpieconsulting.common.geo.model
 import uk.co.eelpieconsulting.common.geo.model.OsmType
 
 trait GeotagParsing {
@@ -10,7 +11,7 @@ trait GeotagParsing {
 
   def parseGeotag(address: String, osmId: String): Option[Geocode] = {
     if (osmId.nonEmpty) {
-      parseOsmId(osmId).flatMap { osm =>
+      parseOsmId(osmId).flatMap { osm: uk.co.eelpieconsulting.common.geo.model.OsmId =>
         val resolvedPlace = geocodeService.resolveOsmId(osm)
         Option(resolvedPlace).map { rp =>
           val resolvedLatLong = rp.getLatLong
