@@ -13,10 +13,10 @@ import reactivemongo.api.bson.BSONObjectID
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.{Await, Future}
 
-@Component class LinkCheckerScheduler @Autowired()(mongoRepository: MongoRepository, linkCheckerQueue: LinkCheckerQueue)
+@Component class CheckWatchlistsAndLongTail @Autowired()(mongoRepository: MongoRepository, linkCheckerQueue: LinkCheckerQueue)
   extends ReasonableWaits {
 
-  private val log = Logger.getLogger(classOf[LinkCheckerScheduler])
+  private val log = Logger.getLogger(classOf[CheckWatchlistsAndLongTail])
 
   @Scheduled(fixedRate = 86400000, initialDelay = 600000)
   def queueWatchlistItems(): Unit = {
