@@ -44,7 +44,7 @@ import scala.util.Try
       mayByResource.filter(_.page.nonEmpty)
     }
 
-    val y: Future[Boolean] = eventualMaybeResourceWithUrl.flatMap { maybeResourceWithUrl =>
+    eventualMaybeResourceWithUrl.flatMap { maybeResourceWithUrl =>
       val a = maybeResourceWithUrl.map { resource =>
         log.info("Checking: " + resource.title.getOrElse(resource.page) + " (" + resource.page + ")")
 
@@ -74,8 +74,6 @@ import scala.util.Try
         failedCounter.increment()
         Future.successful(false)
     }
-
-    Await.result(y, OneMinute)
   }
 
   // Given a URL load it and return the http status and the page contents
