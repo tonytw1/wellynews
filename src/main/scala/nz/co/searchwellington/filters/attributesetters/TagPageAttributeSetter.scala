@@ -30,15 +30,13 @@ import scala.concurrent.ExecutionContext.Implicits.global
 
         if (tagUrlWords.trim.nonEmpty) {
           log.debug("Looking for tag '" + tagUrlWords + "'")
-          Await.result(mongoRepository.getTagByUrlWords(tagUrlWords), TenSeconds).map { tag =>
+          Await.result(mongoRepository.getTagByUrlWords(tagUrlWords), TenSeconds).exists { tag =>
             log.debug("Setting tag: " + tag.getName)
             request.setAttribute("tag", tag) // TODO deprecate
-          val tags = Seq(tag)
+            val tags = Seq(tag)
             log.debug("Setting tags: " + tags)
             request.setAttribute("tags", tags)
             true
-          }.getOrElse {
-            false
           }
         } else {
           false
