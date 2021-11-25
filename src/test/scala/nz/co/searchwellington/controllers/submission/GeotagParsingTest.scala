@@ -1,10 +1,10 @@
 package nz.co.searchwellington.controllers.submission
 
 import nz.co.searchwellington.geocoding.osm.GeoCodeService
-import nz.co.searchwellington.model.OsmId
 import org.junit.Assert.assertEquals
 import org.junit.Test
 import org.mockito.Mockito.mock
+import uk.co.eelpieconsulting.common.geo.model.OsmType
 
 class GeotagParsingTest extends GeotagParsing {
 
@@ -12,7 +12,7 @@ class GeotagParsingTest extends GeotagParsing {
 
   @Test
   def shouldParseStringOsmIdToOsmId(): Unit = {
-    assertEquals(Some(OsmId(123L, "N")), parseOsmId("123/N")) // TODO why is this not an enum?
+    assertEquals(Some(new uk.co.eelpieconsulting.common.geo.model.OsmId(123L, OsmType.NODE)), parseOsmId("123/N")) // TODO why is this not an enum?
     assertEquals(None, parseOsmId("123/A"))
   }
 
