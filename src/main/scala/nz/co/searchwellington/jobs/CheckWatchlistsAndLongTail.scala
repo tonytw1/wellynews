@@ -24,8 +24,8 @@ import scala.concurrent.{Await, Future}
     val eventuallyQueued = mongoRepository.getAllWatchlists.map { watchlists =>
       watchlists.map(_._id).map(queueBsonIDs)
     }
-    val queued= Await.result(eventuallyQueued, TenSeconds)
-    log.info("Queued watchlists: " + queued.flatten.size)
+    val queued = Await.result(eventuallyQueued, TenSeconds)
+    log.info("Queued watchlists: " + queued.size)
   }
 
   @Scheduled(cron = "0 */10 * * * *")
