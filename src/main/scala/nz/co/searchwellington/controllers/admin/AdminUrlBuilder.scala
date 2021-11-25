@@ -24,11 +24,18 @@ class AdminUrlBuilder @Autowired()(urlBuilder: UrlBuilder, @Value("${whakaoko.ur
         "/edit-watchlist/" + l.id
     }
   }
-  def getLocalCopyEditUrl(resource: Resource): String = {
+
+  @Deprecated
+  def getResourceEditUrl(resource: Resource): String = {
     resource match {
+      case f: Feed =>
+        "/edit-feed/" + f.id
       case n: Newsitem =>
         "/edit-newsitem/" + n.id
-      case _ => null
+      case w: Website =>
+        "/edit-website/" + w.id
+      case l: Watchlist =>
+        "/edit-watchlist/" + l.id
     }
   }
 
