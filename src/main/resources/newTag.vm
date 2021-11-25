@@ -11,13 +11,13 @@
         <h2>Adding a tag</h2>
 
         <form action="$adminUrlBuilder.addTagUrl" method="POST" class="editForm">
-            #springBind("newTag")
+            #springBind("formObject")
             #foreach($error in $status.errorMessages)
                 <div class="alert">$error</div>
             #end
 
             <fieldset>
-                #springBind("newTag.displayName")
+                #springBind("formObject.displayName")
                 <label for="${status.expression}">Display name:</label>
                 <input name="${status.expression}" class="title" value="$!{status.value}" />
                 <br />
@@ -25,7 +25,7 @@
                     <div class="alert">$error</div>
                 #end
 
-                #springBind("newTag.description")
+                #springBind("formObject.description")
                 <label for="${status.expression}">Description:</label>
                 <input name="${status.expression}" class="title" value="$!{status.value}" />
                 <br />
