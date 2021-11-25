@@ -24,8 +24,6 @@ class AdminUrlBuilder @Autowired()(urlBuilder: UrlBuilder, @Value("${whakaoko.ur
         "/edit-watchlist/" + l.id
     }
   }
-
-  @Deprecated
   def getResourceEditUrl(resource: Resource): String = {
     resource match {
       case f: Feed =>
