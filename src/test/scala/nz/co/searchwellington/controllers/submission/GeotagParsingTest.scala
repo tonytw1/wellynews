@@ -12,9 +12,8 @@ class GeotagParsingTest extends GeotagParsing {
 
   @Test
   def shouldParseStringOsmIdToOsmId(): Unit = {
-    val maybeId = parseOsmId("123/N")
-
-    assertEquals(Some(OsmId(123L, "N")), maybeId) // TODO why is this not an enum?
+    assertEquals(Some(OsmId(123L, "N")), parseOsmId("123/N")) // TODO why is this not an enum?
+    assertEquals(None, parseOsmId("123/A"))
   }
 
 }

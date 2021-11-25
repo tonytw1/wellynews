@@ -2,6 +2,7 @@ package nz.co.searchwellington.controllers.submission
 
 import nz.co.searchwellington.geocoding.osm.GeoCodeService
 import nz.co.searchwellington.model.{Geocode, OsmId}
+import uk.co.eelpieconsulting.common.geo.model.OsmType
 
 trait GeotagParsing {
 
@@ -33,7 +34,13 @@ trait GeotagParsing {
     if (splits.length == 2) {
       val id = splits(0).toLong
       val `type` = splits(1)
-      Some(OsmId(id = id, `type` = `type`))
+
+      val osmType = OsmType.values().toSeq.find { t =>
+        t.name().take(1) == `type`
+      }
+      osmType.map { osmType =>
+        OsmId(id = id, `type` = osmType.name().take(1))
+      }
     } else {
       None
     }
