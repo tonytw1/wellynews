@@ -1,6 +1,7 @@
-package nz.co.searchwellington.feeds
+package nz.co.searchwellington.jobs
 
 import nz.co.searchwellington.ReasonableWaits
+import nz.co.searchwellington.feeds.FeedReader
 import nz.co.searchwellington.model.{Feed, User}
 import nz.co.searchwellington.repositories.mongo.MongoRepository
 import org.apache.log4j.Logger
@@ -11,12 +12,12 @@ import org.springframework.stereotype.Component
 
 import scala.concurrent.{Await, ExecutionContext, ExecutionContextExecutor, Future}
 
-@Component class FeedReaderRunner @Autowired()(feedReader: FeedReader,
-                                               mongoRepository: MongoRepository,
-                                               @Qualifier("feedReaderTaskExecutor") feedReaderTaskExecutor: TaskExecutor)
+@Component class ReadFeeds @Autowired()(feedReader: FeedReader,
+                                        mongoRepository: MongoRepository,
+                                        @Qualifier("feedReaderTaskExecutor") feedReaderTaskExecutor: TaskExecutor)
   extends ReasonableWaits {
 
-  private val log = Logger.getLogger(classOf[FeedReaderRunner])
+  private val log = Logger.getLogger(classOf[ReadFeeds])
   private val FEED_READER_PROFILE_NAME = "feedreader"
 
   @Scheduled(cron = "0 */10 * * * *")
