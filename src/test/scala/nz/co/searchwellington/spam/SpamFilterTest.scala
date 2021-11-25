@@ -12,21 +12,21 @@ class SpamFilterTest extends TestCase {
   private val filter = new SpamFilter
 
   @Test
-  def testAllowsNormalSubmission {
+  def shouldAllowNormalSubmission(): Unit = {
     val okResource = Website(id = UUID.randomUUID().toString, title = Some("Test site"), page = "http://www.test.com.localhost", description = Some("test test"))
 
     assertFalse(filter.isSpam(okResource))
   }
 
   @Test
-  def testShouldBlockRFID {
+  def testShouldBlockRFIDUrl(): Unit = {
     val spamResource = Website(id = UUID.randomUUID().toString, title = Some("Test site"), page = "http://www.rfid.com", description = Some("test test"))
 
     assertTrue(filter.isSpam(spamResource))
   }
 
   @Test
-  def testShouldBlockByDescription {
+  def testShouldBlockByDescription(): Unit = {
     val spamResource = Website(id = UUID.randomUUID().toString, title = Some("Test site"), page = "http://www.test.com.localhost", description = Some("test rfid test"))
 
     assertTrue(filter.isSpam(spamResource))
