@@ -9,7 +9,6 @@ import nz.co.searchwellington.repositories.mongo.MongoRepository
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
 
-import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
 @Component class FeedItemActionDecorator @Autowired()(mongoRepository: MongoRepository, suppressionDAO: SuppressionDAO,
