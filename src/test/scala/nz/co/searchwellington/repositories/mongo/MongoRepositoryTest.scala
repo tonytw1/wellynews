@@ -11,22 +11,19 @@ import scala.concurrent.Await
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.util.Random
 
+object MongoRepositoryTest {
+  private val databaseName = "wellynews-" + UUID.randomUUID().toString
+  private val mongoHost = Option(System.getenv("MONGO_HOST")).getOrElse("localhost")
+
+  private val mongoRepository = new MongoRepository(s"mongodb://$mongoHost:27017/" + databaseName)
+}
+
 class MongoRepositoryTest extends ReasonableWaits {
 
-  val databaseName = "wellynews-" + UUID.randomUUID().toString
-
-  private val mongoHost = {
-    var mongoHost = System.getenv("MONGO_HOST");
-    if (mongoHost == null) {
-      mongoHost = "localhost";
-    }
-    mongoHost
-  }
-
-  val mongoRepository = new MongoRepository(s"mongodb://$mongoHost:27017/" + databaseName)
+  private val mongoRepository = MongoRepositoryTest.mongoRepository
 
   @Test
-  def canPersistResources = {
+  def canPersistResources() = {
     val newsitem = Newsitem(title = Some(testName))
 
     Await.result(mongoRepository.saveResource(newsitem), TenSeconds)
