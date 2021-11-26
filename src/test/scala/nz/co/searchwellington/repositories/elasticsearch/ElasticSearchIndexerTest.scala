@@ -244,7 +244,6 @@ class ElasticSearchIndexerTest extends ReasonableWaits {
     eventually(timeout(TenSeconds), interval(TenMilliSeconds), fooResources.size == 2)
     eventually(timeout(TenSeconds), interval(TenMilliSeconds), barResources.size == 1)
 
-    Thread.sleep(1000)  // TODO Something is not fixed after eventually passes for the first time
     assertFalse(fooResources.contains(barWebsite))
     assertFalse(barResources.contains(fooWebsite))
   }
