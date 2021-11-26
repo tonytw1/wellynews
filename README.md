@@ -7,9 +7,9 @@ Aggregates community news items and RSS feeds from my hometown Wellington, New Z
 The content is automatically categorised and can be output as customised RSS feeds.
 
 For example:
-- [Transport related newsitems](https://welington.gen.nz/transport) (a tag feed)
-- [Consultation about the Central Library](https://welington.gen.nz/consultation+central-library)) (a tag combiner feed)
-- Newsitems published by [Wellington City Council about the airport runway extension](https://welington.gen.nz/wellington-city-council+runway-extension) (a publisher tag combiner feed).
+- [Transport related newsitems](https://wellington.gen.nz/transport) (a tag feed)
+- [Consultation about the Central Library](https://wellington.gen.nz/consultation+central-library) (a tag combiner feed)
+- Newsitems published by [Wellington City Council about the airport runway extension](https://wellington.gen.nz/wellington-city-council+runway-extension) (a publisher tag combiner feed).
 
 
 This a long running project (> 10 years of continuous operation) and the code base has changed alot over the years.
