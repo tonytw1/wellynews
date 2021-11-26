@@ -1,9 +1,9 @@
 package nz.co.searchwellington.modification
 
 import nz.co.searchwellington.model.{Newsitem, Watchlist}
+import nz.co.searchwellington.repositories.SuppressionDAO
 import nz.co.searchwellington.repositories.elasticsearch.ElasticSearchIndexer
 import nz.co.searchwellington.repositories.mongo.MongoRepository
-import nz.co.searchwellington.repositories.{HandTaggingDAO, SuppressionDAO}
 import org.junit.Assert.assertTrue
 import org.junit.Test
 import org.mockito.Mockito.{mock, verify, when}
@@ -16,13 +16,10 @@ class ContentDeletionServiceTest {
 
   private val suppressionDAO = mock(classOf[SuppressionDAO])
   private val mongoRepository = mock(classOf[MongoRepository])
-  private val handTaggingDAO = mock(classOf[HandTaggingDAO])
   private val elasticSearchIndexer = mock(classOf[ElasticSearchIndexer])
   private val contentUpdateService = mock(classOf[ContentUpdateService])
 
-  private val contentDeletionService = new ContentDeletionService(suppressionDAO, mongoRepository, handTaggingDAO, elasticSearchIndexer, contentUpdateService)
-
-
+  private val contentDeletionService = new ContentDeletionService(suppressionDAO, mongoRepository, elasticSearchIndexer, contentUpdateService)
 
   @Test
   def canDeleteResources(): Unit = {

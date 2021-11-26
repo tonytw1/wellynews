@@ -14,7 +14,6 @@ import scala.concurrent.{Await, Future}
 
 @Component class ContentDeletionService @Autowired()(suppressionDAO: SuppressionDAO,
                                                      mongoRepository: MongoRepository,
-                                                     handTaggingDAO: HandTaggingDAO,
                                                      elasticSearchIndexer: ElasticSearchIndexer,
                                                      contentUpdateService: ContentUpdateService)
   extends ReasonableWaits {
