@@ -43,8 +43,9 @@ class ContentDeletionServiceTest {
     val newsitem = Newsitem(page = "http://localhost/some-page")
     when(elasticSearchIndexer.deleteResource(newsitem._id)).thenReturn(Future.successful(true))
 
-    contentDeletionService.performDelete(newsitem)
+    val result =contentDeletionService.performDelete(newsitem)
 
+    assertTrue(result)
     verify(suppressionDAO).addSuppression("http://localhost/some-page")
   }
 
