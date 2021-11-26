@@ -9,7 +9,6 @@ import nz.co.searchwellington.model.{PublisherArchiveLink, Tag, User, Website}
 import nz.co.searchwellington.repositories.ContentRetrievalService
 import nz.co.searchwellington.tagging.RelatedTagsService
 import nz.co.searchwellington.urls.UrlBuilder
-import org.apache.log4j.Logger
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
 import org.springframework.web.servlet.ModelAndView
@@ -27,8 +26,6 @@ import scala.jdk.CollectionConverters._
                                                     commonAttributesModelBuilder: CommonAttributesModelBuilder,
                                                     frontendResourceMapper: FrontendResourceMapper) extends ModelBuilder
   with CommonSizes with Pagination with ReasonableWaits {
-
-  private val logger = Logger.getLogger(classOf[PublisherModelBuilder])
 
   def isValid(request: HttpServletRequest): Boolean = {
     val tag = request.getAttribute("tag").asInstanceOf[Tag]
@@ -77,7 +74,6 @@ import scala.jdk.CollectionConverters._
       }
     }
 
-    logger.info("Building publisher page model")
     val publisher = request.getAttribute("publisher").asInstanceOf[Website]
     val page = getPage(request)
     populatePublisherPageModelAndView(publisher, page)
@@ -110,7 +106,7 @@ import scala.jdk.CollectionConverters._
       if (publisherArchiveLinks.nonEmpty) {
         mv.addObject("publisher_archive_links", publisherArchiveLinks.asJava)
       }
-      mv.addObject("latest_newsitems", latestNewsitems.asJava)  // TODO use wrapper
+      mv.addObject("latest_newsitems", latestNewsitems.asJava)  // TODO Duplication use wrapper
     }
   }
 
