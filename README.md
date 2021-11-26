@@ -2,19 +2,19 @@
 
 Source code for https://wellington.gen.nz and [@wellynews](https://twitter.com/wellynews).
 
-Aggregates community news from my hometown Wellington, New Zealand into a newslog.
-Content is curated from community group websites and RSS feeds.
+Aggregates community news items and RSS feeds from my hometown Wellington, New Zealand into a newslog.
 
-The content is automatically tagged and can be output as customised RSS feeds.
+The content is automatically categorised and can be output as customised RSS feeds.
 
 For example:
-- Transport related newsitems (a tag feed)
-- Consultation newsitems relating to the Central Library (a tag combiner feed)
-- Newsitems Wellington City Council has published about the airport runway extension (a publisher tag combiner feed).
+- [Transport related newsitems](https://welington.gen.nz/transport) (a tag feed)
+- [Consultation about the Central Library](https://welington.gen.nz/consultation+central-library)) (a tag combiner feed)
+- Newsitems published by [Wellington City Council about the airport runway extension](https://welington.gen.nz/wellington-city-council+runway-extension) (a publisher tag combiner feed).
+
 
 This a long running project (> 10 years of continuous operation) and the code base has changed alot over the years.
 
-Currently implemented as Scala controllers served from Spring Boot and built with Maven :grimace:
+Currently implemented as Scala controllers served from Spring Boot and built with Maven.
 MongoDB is used for persistence and Elasticsearch for indexing.
 
 
@@ -34,33 +34,51 @@ Specific details of RSS and Twitter have been pushed into these potentially reus
 The website of a content publisher such as Wellington City Council.  
 Newsitems and feeds found on this website will be attributed to this publisher.
 
-### Newsitems
+### Newsitem
 
-A news item published on a publisher's website. A page with a unique URL containing a press release or a match report.
+A news item published on a publisher's website.
+A page with a unique URL containing a press release or a match report.
+
 
 ### Feeds
 
-An RSS feed published by a given website. Newsitems accepted from this feed will be attributed to the feed's publisher.
+An RSS feed published by a given website.
+Newsitems accepted from this feed will be attributed to this feed's publisher.
+
 
 ### Watchlist
 
 A page on a publishers website which is known to contain links to new newsitems.
-For publishers with interesting content who do not provide a feed watchlist page.
 This might be a homepage or a news page.
+
+Used when a publisher with interesting content does not provide a feed.
+
 Polled regularly to detect changes which might indicate new newsitems.
-See detecting page changes below.
+See detecting page changes (below)[(#detecting-changes)].
 
 
 ## Tagging
 
 Been able to automatically arrange newsitems into meaningful categories like consultation and transport is something we really want.
-We use tags todo this and infer an items tags from what we know about where it came from.
+We use tags todo this.
+
+Tags have a name and an optional parent tag.
+
+Tags can be arranged into a hierarchy.
+ie. Trains is a child of Transport.
+
+Newsitems about trains should be included in the transport tag's newsitems.
+
+
 
 ### Index tags
 
 Index tags determine which tags give resources appear under.
 For example an item tagged trains will also appear under transport.
 Some slightly interesting things happen to automatically calculate the index tags
+
+We can infer alot about an item's tags from what we know about where it came from.
+
 
 #### Tagging votes
 
@@ -103,7 +121,7 @@ This is represented as a hand tagging applied by the autotagger user.
 
 
 
-### Detecting page changes
+### Detecting changes
 
 Changes in pages can be detected by periodically downloading and checking them.
 Changes in content checksums indicate potential new content.
