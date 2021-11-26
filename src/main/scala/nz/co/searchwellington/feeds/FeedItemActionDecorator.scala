@@ -9,12 +9,12 @@ import nz.co.searchwellington.repositories.mongo.MongoRepository
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
 
-import scala.concurrent.Future
+import scala.concurrent.{ExecutionContext, Future}
 
 @Component class FeedItemActionDecorator @Autowired()(mongoRepository: MongoRepository, suppressionDAO: SuppressionDAO,
                                                       adminUrlBuilder: AdminUrlBuilder) extends ReasonableWaits {
 
-  def withFeedItemSpecificActions(feedNewsitems: Seq[FrontendResource], loggedInUser: Option[User]): Future[Seq[FrontendResource]] = {
+  def withFeedItemSpecificActions(feedNewsitems: Seq[FrontendResource], loggedInUser: Option[User])(implicit ec: ExecutionContext): Future[Seq[FrontendResource]] = {
     def addFeedItemsActions(feedNewsitem: FrontendResource): Future[FrontendResource] = {
       val eventuallyLocalCopy = mongoRepository.getResourceByUrl(feedNewsitem.url)
       val eventuallyIsSuppressed = suppressionDAO.isSupressed(feedNewsitem.url)

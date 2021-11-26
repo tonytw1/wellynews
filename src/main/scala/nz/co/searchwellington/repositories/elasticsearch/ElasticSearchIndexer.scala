@@ -20,7 +20,7 @@ import org.springframework.beans.factory.annotation.{Autowired, Value}
 import org.springframework.stereotype.Component
 import reactivemongo.api.bson.BSONObjectID
 
-import scala.concurrent.{Await, Future}
+import scala.concurrent.{Await, ExecutionContext, Future}
 import scala.util.Try
 
 @Component
@@ -45,6 +45,7 @@ class ElasticSearchIndexer @Autowired()(val showBrokenDecisionService: ShowBroke
   private val Index = elasticsearchIndex
 
   private val client = {
+    import scala.concurrent.ExecutionContext.Implicits.global
     def ensureIndexes(client: ElasticClient): Unit = {
       val exists = Await.result((client execute indexExists(Index)).map { r =>
         if (r.isSuccess) {
@@ -105,7 +106,7 @@ class ElasticSearchIndexer @Autowired()(val showBrokenDecisionService: ShowBroke
     client
   }
 
-  def updateMultipleContentItems(resources: Seq[(Resource, Seq[String])]): Future[Response[BulkResponse]] = {
+  def updateMultipleContentItems(resources: Seq[(Resource, Seq[String])])(implicit ec: ExecutionContext): Future[Response[BulkResponse]] = {
     log.debug("Index batch of size: " + resources.size)
 
     val eventualIndexDefinitions: Seq[Future[IndexRequest]] = resources.map { r =>
@@ -172,7 +173,7 @@ class ElasticSearchIndexer @Autowired()(val showBrokenDecisionService: ShowBroke
     }
   }
 
-  def deleteResource(id: BSONObjectID): Future[Boolean] = {
+  def deleteResource(id: BSONObjectID)(implicit ec: ExecutionContext): Future[Boolean] = {
     (client execute (
       delete(id.stringify) from Index
       )).map { response =>
@@ -180,15 +181,15 @@ class ElasticSearchIndexer @Autowired()(val showBrokenDecisionService: ShowBroke
     }
   }
 
-  def getResources(query: ResourceQuery, order: SearchRequest => SearchRequest = byDateDescending, loggedInUser: Option[User]): Future[(Seq[BSONObjectID], Long)] = {
+  def getResources(query: ResourceQuery, order: SearchRequest => SearchRequest = byDateDescending, loggedInUser: Option[User])(implicit ec: ExecutionContext): Future[(Seq[BSONObjectID], Long)] = {
     executeResourceQuery(query, order, loggedInUser)
   }
 
-  def getPublisherAggregationFor(query: ResourceQuery, loggedInUser: Option[User]): Future[Seq[(String, Long)]] = {
+  def getPublisherAggregationFor(query: ResourceQuery, loggedInUser: Option[User])(implicit ec: ExecutionContext): Future[Seq[(String, Long)]] = {
     getAggregationFor(query, Publisher, loggedInUser)
   }
 
-  def getAggregationFor(query: ResourceQuery, aggName: String, loggedInUser: Option[User]): Future[Seq[(String, Long)]] = {
+  def getAggregationFor(query: ResourceQuery, aggName: String, loggedInUser: Option[User])(implicit ec: ExecutionContext): Future[Seq[(String, Long)]] = {
     val aggs = Seq(termsAgg(aggName, aggName) size Integer.MAX_VALUE)
     val request = (search(Index) query composeQueryFor(query, loggedInUser)) limit 0 aggregations aggs
     client.execute(request).map { r =>
@@ -196,7 +197,7 @@ class ElasticSearchIndexer @Autowired()(val showBrokenDecisionService: ShowBroke
     }
   }
 
-  def getArchiveCounts(loggedInUser: Option[User]): Future[Map[String, Long]] = {
+  def getArchiveCounts(loggedInUser: Option[User])(implicit ec: ExecutionContext): Future[Map[String, Long]] = {
     val everyThing = matchAllQuery
     val aggs = Seq(termsAgg("type", "type"))
     val request = search(Index) query withModeration(everyThing, loggedInUser) limit 0 aggregations aggs
@@ -209,7 +210,7 @@ class ElasticSearchIndexer @Autowired()(val showBrokenDecisionService: ShowBroke
     }
   }
 
-  private def executeResourceQuery(query: ResourceQuery, order: SearchRequest => SearchRequest, loggedInUser: Option[User]): Future[(Seq[BSONObjectID], Long)] = {
+  private def executeResourceQuery(query: ResourceQuery, order: SearchRequest => SearchRequest, loggedInUser: Option[User])(implicit ec: ExecutionContext): Future[(Seq[BSONObjectID], Long)] = {
     val request = order(search(Index) query composeQueryFor(query, loggedInUser)) start query.startIndex limit query.maxItems
 
     val start = DateTime.now()
@@ -287,7 +288,7 @@ class ElasticSearchIndexer @Autowired()(val showBrokenDecisionService: ShowBroke
     withModeration(must(conditions), loggedInUser)
   }
 
-  def createdMonthAggregationFor(query: ResourceQuery, loggedInUser: Option[User]): Future[Seq[(Interval, Long)]] = {
+  def createdMonthAggregationFor(query: ResourceQuery, loggedInUser: Option[User])(implicit ec: ExecutionContext): Future[Seq[(Interval, Long)]] = {
     val aggs = Seq(dateHistogramAgg("date", "date").calendarInterval(DateHistogramInterval.Month))
     val request = search(Index) query composeQueryFor(query, loggedInUser) limit 0 aggregations aggs
 

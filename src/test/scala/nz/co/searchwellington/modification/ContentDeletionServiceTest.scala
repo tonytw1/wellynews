@@ -9,7 +9,8 @@ import org.junit.Test
 import org.mockito.Mockito.{mock, verify, when}
 import reactivemongo.api.commands.WriteResult
 
-import scala.concurrent.{ExecutionContext, Future}
+import scala.concurrent.ExecutionContext.Implicits.global
+import scala.concurrent.Future
 
 class ContentDeletionServiceTest {
 
@@ -24,8 +25,7 @@ class ContentDeletionServiceTest {
 
 
   @Test
-  def canDeleteResources() = {
-    implicit val ec = ExecutionContext.Implicits.global
+  def canDeleteResources(): Unit = {
     val successfulWrite = mock(classOf[WriteResult])
 
     val watchlist = Watchlist(page = "http://localhost/some-page")
@@ -39,7 +39,7 @@ class ContentDeletionServiceTest {
 
 
   @Test
-  def shouldSuppressNewsitemUrlsWhenDeletingToStopThemFromBeenReaccepted() = {
+  def shouldSuppressNewsitemUrlsWhenDeletingToStopThemFromBeenReaccepted(): Unit = {
     val newsitem = Newsitem(page = "http://localhost/some-page")
     when(elasticSearchIndexer.deleteResource(newsitem._id)).thenReturn(Future.successful(true))
 
