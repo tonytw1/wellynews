@@ -13,6 +13,7 @@ import uk.co.eelpieconsulting.common.views.ViewFactory
 
 import javax.servlet.http.{HttpServletRequest, HttpServletResponse}
 import scala.concurrent.Future
+import scala.concurrent.ExecutionContext.Implicits.global
 
 @Controller class TagAjaxController @Autowired()(val loggedInUserFilter: LoggedInUserFilter,
                                                  val viewFactory: ViewFactory,
@@ -27,7 +28,7 @@ import scala.concurrent.Future
 
   override protected def getSuggestions(q: String, loggedInUser: Option[User]): Future[Seq[String]] = {
     log.debug("Looking up possible tags starting with: " + q)
-    contentRetrievalService.getTagNamesStartingWith(q, loggedInUser)
+    contentRetrievalService.getTagNamesStartingWith(q)
   }
 
 }

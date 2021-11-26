@@ -13,6 +13,7 @@ import org.springframework.mock.web.MockHttpServletRequest
 
 import scala.concurrent.{Await, Future}
 import scala.jdk.CollectionConverters._
+import scala.concurrent.ExecutionContext.Implicits.global
 
 class WatchlistModelBuilderTest extends ReasonableWaits with ContentFields {
 
@@ -24,7 +25,7 @@ class WatchlistModelBuilderTest extends ReasonableWaits with ContentFields {
   private val modelBuilder = new WatchlistModelBuilder(contentRetrievalService, rssUrlBuilder, urlBuilder, commonAttributesModelBuilder)
 
   @Test
-  def mainContentShouldBeWatchlistItems() {
+  def mainContentShouldBeWatchlistItems(): Unit = {
     val request = new MockHttpServletRequest
     val watchlistItems = (Seq(FrontendWatchlist(id = "789", lastChanged = None, lastScanned = None)), 40L)
 

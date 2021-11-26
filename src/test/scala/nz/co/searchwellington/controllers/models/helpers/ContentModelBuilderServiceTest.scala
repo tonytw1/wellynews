@@ -14,25 +14,26 @@ import uk.co.eelpieconsulting.common.views.json.JsonView
 import uk.co.eelpieconsulting.common.views.rss.RssView
 
 import scala.concurrent.{Await, Future}
+import scala.concurrent.ExecutionContext.Implicits.global
 
 class ContentModelBuilderServiceTest extends ReasonableWaits {
 
   private val viewFactory = mock(classOf[ViewFactory])
   private val contentRetrievalService = mock(classOf[ContentRetrievalService])
 
-  private val request = new MockHttpServletRequest
+  private val request = {
+    val request = new MockHttpServletRequest
+    request.setRequestURI("/something")
+    request
+  }
 
   private val validModelAndView = new ModelAndView("")
 
   private val invalidModelBuilder = mock(classOf[ModelBuilder])
   private val validModelBuilder =  mock(classOf[ModelBuilder])
 
-  @Before def setup {
-    request.setRequestURI("/something")
-  }
-
   @Test
-  def shouldDelegateModelBuildingToTheFirstBuildWhoSaysTheyAreValid() {
+  def shouldDelegateModelBuildingToTheFirstBuildWhoSaysTheyAreValid(): Unit = {
     when(invalidModelBuilder.isValid(request)).thenReturn(false)
     when(validModelBuilder.isValid(request)).thenReturn(true)
     when(validModelBuilder.populateContentModel(request, None)).thenReturn(Future.successful(Some(validModelAndView)))
@@ -52,7 +53,7 @@ class ContentModelBuilderServiceTest extends ReasonableWaits {
   }
 
   @Test
-  def shouldReturnNullIfNoModelBuilderWasFoundForRequest() {
+  def shouldReturnNullIfNoModelBuilderWasFoundForRequest(): Unit = {
     when(invalidModelBuilder.isValid(request)).thenReturn(false)
     val contentModelBuilderService = new ContentModelBuilderService(viewFactory, contentRetrievalService, Seq(invalidModelBuilder))
 
@@ -62,7 +63,7 @@ class ContentModelBuilderServiceTest extends ReasonableWaits {
   }
 
   @Test
-  def rssSuffixedRequestsShouldBeGivenTheRssView() {
+  def rssSuffixedRequestsShouldBeGivenTheRssView(): Unit = {
     when(invalidModelBuilder.isValid(request)).thenReturn(false)
     when(validModelBuilder.isValid(request)).thenReturn(true)
     when(validModelBuilder.populateContentModel(request, None)).thenReturn(Future.successful(Some(validModelAndView)))
@@ -80,7 +81,7 @@ class ContentModelBuilderServiceTest extends ReasonableWaits {
   }
 
   @Test
-  def jsonSuffixedRequestsShouldBeGivenTheRssView() {
+  def jsonSuffixedRequestsShouldBeGivenTheRssView(): Unit = {
     when(invalidModelBuilder.isValid(request)).thenReturn(false)
     when(validModelBuilder.isValid(request)).thenReturn(true)
     when(validModelBuilder.populateContentModel(request, None)).thenReturn(Future.successful(Some(validModelAndView)))

@@ -7,10 +7,11 @@ import nz.co.searchwellington.model.helpers.ArchiveLinksService
 import nz.co.searchwellington.repositories.ContentRetrievalService
 import nz.co.searchwellington.urls.UrlBuilder
 import org.junit.Assert.{assertEquals, assertTrue}
-import org.junit.{Before, Test}
+import org.junit.Test
 import org.mockito.Mockito.{mock, when}
 import org.springframework.mock.web.MockHttpServletRequest
 
+import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.{Await, Future}
 import scala.jdk.CollectionConverters._
 
@@ -22,7 +23,11 @@ class IndexModelBuilderTest extends ReasonableWaits with ContentFields {
   private val archiveLinksService = mock(classOf[ArchiveLinksService])
   private val commonAttributesModelBuilder = mock(classOf[CommonAttributesModelBuilder])
 
-  val request = new MockHttpServletRequest
+  private val request = {
+    val request = new MockHttpServletRequest
+    request.setRequestURI("/")
+    request
+  }
 
   private val newsitem = mock(classOf[FrontendResource])
   private val anotherNewsitem = mock(classOf[FrontendResource])
@@ -32,30 +37,25 @@ class IndexModelBuilderTest extends ReasonableWaits with ContentFields {
 
   val modelBuilder =  new IndexModelBuilder(contentRetrievalService, rssUrlBuilder, urlBuilder, archiveLinksService, commonAttributesModelBuilder)
 
-  @Before
-  def setup {
-    request.setRequestURI("/")
-  }
-
   @Test
-  def isValidForHomePageUrl {
+  def isValidForHomePageUrl(): Unit = {
     assertTrue(modelBuilder.isValid(request))
   }
 
   @Test
-  def isValidForMainRssUrl {
+  def isValidForMainRssUrl(): Unit = {
     request.setRequestURI("/rss")
     assertTrue(modelBuilder.isValid(request))
   }
 
   @Test
-  def isValidForMainJsonUrl {
+  def isValidForMainJsonUrl(): Unit = {
     request.setRequestURI("/json")
     assertTrue(modelBuilder.isValid(request))
   }
 
   @Test
-  def indexPageMainContentIsTheLatestNewsitems {
+  def indexPageMainContentIsTheLatestNewsitems(): Unit = {
     when(contentRetrievalService.getLatestNewsitems(30, 1, loggedInUser)).thenReturn(Future.successful(latestNewsitems))
 
     val mv = Await.result(modelBuilder.populateContentModel(request), TenSeconds).get

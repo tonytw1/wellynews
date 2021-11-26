@@ -10,6 +10,7 @@ import uk.co.eelpieconsulting.common.views.ViewFactory
 
 import javax.servlet.http.{HttpServletRequest, HttpServletResponse}
 import scala.jdk.CollectionConverters._
+import scala.concurrent.ExecutionContext.Implicits.global
 
 @Controller
 class PublisherGuessController @Autowired()(publisherGuessingService: PublisherGuessingService, viewFactory: ViewFactory, loggedInUserFilter: LoggedInUserFilter) {

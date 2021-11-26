@@ -8,6 +8,7 @@ import org.junit.Test
 import org.mockito.Mockito.{mock, when}
 
 import scala.concurrent.Future
+import scala.concurrent.ExecutionContext.Implicits.global
 
 class PublisherGuessingServiceTest {
 
@@ -17,14 +18,14 @@ class PublisherGuessingServiceTest {
   private val adminUser = User(admin = true)
 
   @Test
-  def shouldNotMatchIfNoMatchingPublishers() {
+  def shouldNotMatchIfNoMatchingPublishers(): Unit = {
     when(contentRetrievalService.getWebsitesByHostname("www.spammer.com", Some(adminUser))).thenReturn(Future.successful(Seq.empty))
 
     assertEquals(None, publisherGuessingService.guessPublisherBasedOnUrl("http://www.spammer.com", Some(adminUser)))
   }
 
   @Test
-  def shouldMatchIfMultipleAvailable() {
+  def shouldMatchIfMultipleAvailable(): Unit = {
     val golfCourseSite = Website(page = "http://www.wellington.govt.nz/services/berhgolf/index.html")
     val heritageInventory = Website(page = "http://www.wellington.govt.nz/services/heritage/inventory/index.html")
     val wccMainSite = Website(page = "http://www.wellington.govt.nz")
@@ -36,7 +37,7 @@ class PublisherGuessingServiceTest {
   }
 
   @Test
-  def shouldMatchIfOnlyOnePossiblePublisher() {
+  def shouldMatchIfOnlyOnePossiblePublisher(): Unit = {
     val wellingtonista = Website(title = Some("The Wellingtonista"), page = "http://www.wellingtonista.com")
     val possiblePublishers = Seq(wellingtonista)
     when(contentRetrievalService.getWebsitesByHostname("www.wellingtonista.com", Some(adminUser))).thenReturn(Future.successful(possiblePublishers))
@@ -45,7 +46,7 @@ class PublisherGuessingServiceTest {
   }
 
   @Test
-  def shouldNotMatchJustBecauseTheHostNameMatches() {
+  def shouldNotMatchJustBecauseTheHostNameMatches(): Unit = {
     val hostedOne = Website(page = "http://homepages.paradise.net.nz/~titahi/")
     val hostedTwo = Website(page = "http://homepages.ihug.co.nz/~waicoll/")
 

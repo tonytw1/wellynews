@@ -16,6 +16,7 @@ import reactivemongo.api.bson.BSONObjectID
 import java.util.UUID
 import scala.concurrent.{Await, Future}
 import scala.jdk.CollectionConverters._
+import scala.concurrent.ExecutionContext.Implicits.global
 
 class TagCombinerModelBuilderTest extends ReasonableWaits with ContentFields {
 

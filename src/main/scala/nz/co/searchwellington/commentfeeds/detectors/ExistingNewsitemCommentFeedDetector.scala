@@ -1,7 +1,7 @@
 package nz.co.searchwellington.commentfeeds.detectors
 
 import nz.co.searchwellington.ReasonableWaits
-import nz.co.searchwellington.model.{Newsitem, Resource}
+import nz.co.searchwellington.model.Newsitem
 import nz.co.searchwellington.repositories.mongo.MongoRepository
 import org.apache.log4j.Logger
 import org.springframework.beans.factory.annotation.Autowired

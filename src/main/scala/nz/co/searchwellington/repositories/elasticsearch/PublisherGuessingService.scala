@@ -4,11 +4,10 @@ import nz.co.searchwellington.ReasonableWaits
 import nz.co.searchwellington.model.{Resource, User, Website}
 import nz.co.searchwellington.repositories.ContentRetrievalService
 import nz.co.searchwellington.urls.UrlParser
-import org.apache.log4j.Logger
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
 
-import scala.concurrent.{Await, Future}
+import scala.concurrent.{Await, ExecutionContext, Future}
 
 @Component class PublisherGuessingService @Autowired()(contentRetrievalService: ContentRetrievalService, var urlParser: UrlParser) extends ReasonableWaits {
   /*
@@ -18,9 +17,7 @@ import scala.concurrent.{Await, Future}
     Given a newsitem then the publisher is likely to be one of the websites with the same hostname.
    */
 
-  private val log = Logger.getLogger(classOf[PublisherGuessingService])
-
-  def guessPublisherBasedOnUrl(url: String, loggedInUser: Option[User]): Option[Website] = {
+  def guessPublisherBasedOnUrl(url: String, loggedInUser: Option[User])(implicit ec: ExecutionContext): Option[Website] = {
 
     def guessPossiblePublishersForUrl(url: String): Future[Seq[Resource]] = {
       Option(urlParser.extractHostnameFrom(url)).map { hostname =>
