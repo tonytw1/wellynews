@@ -5,6 +5,7 @@ import nz.co.searchwellington.feeds.FeedReader
 import nz.co.searchwellington.model.{Feed, User}
 import nz.co.searchwellington.repositories.mongo.MongoRepository
 import org.apache.log4j.Logger
+import org.joda.time.{DateTime, Duration}
 import org.springframework.beans.factory.annotation.{Autowired, Qualifier}
 import org.springframework.core.task.TaskExecutor
 import org.springframework.scheduling.annotation.Scheduled
@@ -29,15 +30,20 @@ import scala.concurrent.{Await, ExecutionContext, ExecutionContextExecutor, Futu
     def readAllFeeds(feeds: Seq[Feed]): Future[Boolean] = {
       getFeedReaderUser.map { maybyFeedUser =>
         maybyFeedUser.map { feedReaderUser =>
-          log.info("Reading " + feeds.size + " feeds as user " + feedReaderUser.name)
-          feeds.foreach { feed =>
+          val start = DateTime.now()
+          log.info(s"Reading $feeds.size feeds as user $feedReaderUser.name")
+          val accepted = feeds.map { feed =>
             try {
               Await.result(feedReader.processFeed(feed, feedReaderUser), TenSeconds)
             } catch {
               case e: Exception =>
                 log.error("Error reading feed: " + feed, e)
+                0
             }
-          }
+          }.sum
+
+          val duration = new Duration(start, DateTime.now)
+          log.info(s"Accepted $accepted newsitems from ${feeds.size} in ${duration.getStandardSeconds} seconds")
           true
 
         }.getOrElse {
