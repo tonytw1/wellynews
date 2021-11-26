@@ -34,7 +34,7 @@ class MongoRepository @Autowired()(@Value("${mongo.uri}") mongoUri: String) exte
     val eventualDatabase = eventualParsedUri.flatMap { parsedUri =>
       val eventualConnection: Future[MongoConnection] = driver.connect(parsedUri)
       eventualConnection.flatMap { connection =>
-          connection.database(parsedUri.db)
+        connection.database(parsedUri.db)
       }
     }
 
