@@ -1,6 +1,5 @@
 package nz.co.searchwellington.repositories.elasticsearch
 
-import java.util.UUID
 import nz.co.searchwellington.ReasonableWaits
 import nz.co.searchwellington.controllers.ShowBrokenDecisionService
 import nz.co.searchwellington.model._
@@ -10,47 +9,35 @@ import nz.co.searchwellington.tagging.{IndexTagsService, TaggingReturnsOfficerSe
 import org.joda.time.{DateTime, Interval}
 import org.junit.Assert.{assertFalse, assertTrue}
 import org.junit.Test
-import org.mockito.Mockito.{mock, when}
 import org.scalatest.concurrent.Eventually.{eventually, interval, _}
 
+import java.util.UUID
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.{Await, Future}
 
-class ElasticSearchIndexerTest extends ReasonableWaits {
-  
+object ElasticSearchIndexerTest {
   private val databaseAndIndexName = "wellynews-" + UUID.randomUUID().toString
 
-  private val mongoHost = {
-    var mongoHost = System.getenv("MONGO_HOST");
-    if (mongoHost == null) {
-      mongoHost = "localhost";
-    }
-    mongoHost
-  }
+  private val mongoHost = Option(System.getenv("MONGO_HOST")).getOrElse("localhost")
+  private val mongoRepository = new MongoRepository(s"mongodb://$mongoHost:27017/" + databaseAndIndexName)
 
-  val mongoRepository = new MongoRepository(s"mongodb://$mongoHost:27017/" + databaseAndIndexName)
+  private val elasticHost = Option(System.getenv("ELASTIC_HOST")).getOrElse("localhost")
 
-  private val showBrokenDecisionService = mock(classOf[ShowBrokenDecisionService])
+  private val showBrokenDecisionService = new ShowBrokenDecisionService
+
   val taggingReturnsOfficerService = new TaggingReturnsOfficerService(new HandTaggingDAO(mongoRepository), mongoRepository)
   val indexTagsService = new IndexTagsService(taggingReturnsOfficerService)
 
-  private val elasticHost = {
-    var elasticHost = System.getenv("ELASTIC_HOST");
-    if (elasticHost == null) {
-      elasticHost = "localhost";
-    }
-    elasticHost
-  }
+  val elasticSearchIndexer = new ElasticSearchIndexer(showBrokenDecisionService, s"http://$elasticHost:9200",
+    ElasticSearchIndexerTest.databaseAndIndexName, indexTagsService)
+}
 
-  val elasticSearchIndexer = new ElasticSearchIndexer(showBrokenDecisionService, s"http://$elasticHost:9200", databaseAndIndexName, indexTagsService)
-  val rebuild = new ElasticSearchIndexRebuildService(mongoRepository, elasticSearchIndexer, indexTagsService)
+class ElasticSearchIndexerTest extends ReasonableWaits {
+
+  val mongoRepository: MongoRepository = ElasticSearchIndexerTest.mongoRepository
+  val elasticSearchIndexer: ElasticSearchIndexer = ElasticSearchIndexerTest.elasticSearchIndexer
 
   private val loggedInUser = User()
-
-  {
-    when(showBrokenDecisionService.shouldShowBroken(Some(loggedInUser))).thenReturn(true) // TODO This is in an awkward position
-  }
-
   private val allNewsitems = ResourceQuery(`type` = Some(Set("N")))
 
   @Test
