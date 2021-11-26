@@ -26,10 +26,11 @@ class ContentDeletionServiceTest {
 
   @Test
   def canDeleteResources(): Unit = {
-    val successfulWrite = mock(classOf[WriteResult])
-
     val watchlist = Watchlist(page = "http://localhost/some-page")
+
     when(elasticSearchIndexer.deleteResource(watchlist._id)).thenReturn(Future.successful(true))
+    val successfulWrite = mock(classOf[WriteResult])
+    when(successfulWrite.writeErrors).thenReturn(Seq.empty)
     when(mongoRepository.removeResource(watchlist)).thenReturn(Future.successful(successfulWrite))
 
     val result = contentDeletionService.performDelete(watchlist)
@@ -41,9 +42,13 @@ class ContentDeletionServiceTest {
   @Test
   def shouldSuppressNewsitemUrlsWhenDeletingToStopThemFromBeenReaccepted(): Unit = {
     val newsitem = Newsitem(page = "http://localhost/some-page")
-    when(elasticSearchIndexer.deleteResource(newsitem._id)).thenReturn(Future.successful(true))
 
-    val result =contentDeletionService.performDelete(newsitem)
+    when(elasticSearchIndexer.deleteResource(newsitem._id)).thenReturn(Future.successful(true))
+    val successfulWrite = mock(classOf[WriteResult])
+    when(successfulWrite.writeErrors).thenReturn(Seq.empty)
+    when(mongoRepository.removeResource(newsitem)).thenReturn(Future.successful(successfulWrite))
+
+    val result = contentDeletionService.performDelete(newsitem)
 
     assertTrue(result)
     verify(suppressionDAO).addSuppression("http://localhost/some-page")
