@@ -13,7 +13,7 @@ import org.joda.time.DateTime
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Controller
 import org.springframework.validation.{BindingResult, ObjectError}
-import org.springframework.web.bind.annotation.{ModelAttribute, RequestMapping, RequestMethod}
+import org.springframework.web.bind.annotation.{GetMapping, ModelAttribute, PostMapping}
 import org.springframework.web.servlet.ModelAndView
 import org.springframework.web.servlet.view.RedirectView
 
@@ -34,7 +34,7 @@ class NewFeedController @Autowired()(contentUpdateService: ContentUpdateService,
 
   private val log = Logger.getLogger(classOf[NewFeedController])
 
-  @RequestMapping(value = Array("/new-feed"), method = Array(RequestMethod.GET))
+  @GetMapping(Array("/new-feed"))
   def prompt(publisher: String): ModelAndView = {
     val prepopulatedPublisher = {
       Option(publisher).flatMap { p =>
@@ -58,7 +58,7 @@ class NewFeedController @Autowired()(contentUpdateService: ContentUpdateService,
     renderForm(newFeedForm)
   }
 
-  @RequestMapping(value = Array("/new-feed"), method = Array(RequestMethod.POST))
+  @PostMapping(Array("/new-feed"))
   def submit(@Valid @ModelAttribute("formObject") newFeed: NewFeed, result: BindingResult, request: HttpServletRequest): ModelAndView = {
     val loggedInUser = getLoggedInUser(request)
     if (!result.hasErrors) {

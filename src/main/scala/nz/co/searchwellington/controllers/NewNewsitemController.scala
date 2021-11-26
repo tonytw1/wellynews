@@ -14,14 +14,14 @@ import org.joda.time.format.ISODateTimeFormat
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Controller
 import org.springframework.validation.BindingResult
-import org.springframework.web.bind.annotation.{ModelAttribute, RequestMapping, RequestMethod}
+import org.springframework.web.bind.annotation.{GetMapping, ModelAttribute, PostMapping}
 import org.springframework.web.servlet.ModelAndView
 import org.springframework.web.servlet.view.RedirectView
 
 import javax.servlet.http.HttpServletRequest
 import javax.validation.Valid
-import scala.concurrent.{Await, Future}
 import scala.concurrent.ExecutionContext.Implicits.global
+import scala.concurrent.{Await, Future}
 
 @Controller
 class NewNewsitemController @Autowired()(contentUpdateService: ContentUpdateService,
@@ -34,14 +34,14 @@ class NewNewsitemController @Autowired()(contentUpdateService: ContentUpdateServ
   private val log = Logger.getLogger(classOf[NewNewsitemController])
   private val dateFormatter = ISODateTimeFormat.basicDate()
 
-  @RequestMapping(value = Array("/new-newsitem"), method = Array(RequestMethod.GET))
+  @GetMapping(Array("/new-newsitem"))
   def prompt(): ModelAndView = {
     val newNewsitem = new NewNewsitem()
     newNewsitem.setDate(dateFormatter.print(DateTime.now()))
     renderNewNewsitemForm(newNewsitem)
   }
 
-  @RequestMapping(value = Array("/new-newsitem"), method = Array(RequestMethod.POST))
+  @PostMapping(Array("/new-newsitem"))
   def submit(@Valid @ModelAttribute("formObject") formObject: NewNewsitem, result: BindingResult, request: HttpServletRequest): ModelAndView = {
     val loggedInUser = getLoggedInUser(request)
     if (result.hasErrors) {

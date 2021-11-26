@@ -12,7 +12,7 @@ import org.joda.time.DateTime
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Controller
 import org.springframework.validation.{BindingResult, ObjectError}
-import org.springframework.web.bind.annotation.{ModelAttribute, RequestMapping, RequestMethod}
+import org.springframework.web.bind.annotation.{GetMapping, ModelAttribute, PostMapping, RequestMapping, RequestMethod}
 import org.springframework.web.servlet.ModelAndView
 import org.springframework.web.servlet.view.RedirectView
 
@@ -31,13 +31,13 @@ class NewWatchlistController @Autowired()(contentUpdateService: ContentUpdateSer
 
   private val log = Logger.getLogger(classOf[NewWatchlistController])
 
-  @RequestMapping(value = Array("/new-watchlist"), method = Array(RequestMethod.GET))
+  @GetMapping(Array("/new-watchlist"))
   def prompt(): ModelAndView = {
     renderNewWatchlistForm(new NewWatchlist())
   }
 
-  @RequestMapping(value = Array("/new-watchlist"), method = Array(RequestMethod.POST))
-  def submit(@Valid @ModelAttribute("newWatchlist") newWatchlist: NewWatchlist, result: BindingResult, request: HttpServletRequest): ModelAndView = {
+  @PostMapping(Array("/new-watchlist"))
+  def submit(@Valid @ModelAttribute("formObject") newWatchlist: NewWatchlist, result: BindingResult, request: HttpServletRequest): ModelAndView = {
     val loggedInUser = getLoggedInUser(request)
     if (result.hasErrors) {
       log.warn("New website submission has errors: " + result)

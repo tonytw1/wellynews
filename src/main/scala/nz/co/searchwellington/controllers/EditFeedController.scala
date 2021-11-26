@@ -12,7 +12,7 @@ import org.apache.log4j.Logger
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Controller
 import org.springframework.validation.BindingResult
-import org.springframework.web.bind.annotation.{ModelAttribute, PathVariable, RequestMapping, RequestMethod}
+import org.springframework.web.bind.annotation.{GetMapping, ModelAttribute, PathVariable, PostMapping}
 import org.springframework.web.servlet.ModelAndView
 import org.springframework.web.servlet.view.RedirectView
 
@@ -32,7 +32,7 @@ class EditFeedController @Autowired()(contentUpdateService: ContentUpdateService
 
   private val log = Logger.getLogger(classOf[EditFeedController])
 
-  @RequestMapping(value = Array("/edit-feed/{id}"), method = Array(RequestMethod.GET))
+  @GetMapping(Array("/edit-feed/{id}"))
   def prompt(@PathVariable id: String): ModelAndView = {
     def showForm(loggedInUser: User): ModelAndView = {
       getFeedById(id).map { f =>
@@ -57,7 +57,7 @@ class EditFeedController @Autowired()(contentUpdateService: ContentUpdateService
     requiringAdminUser(showForm)
   }
 
-  @RequestMapping(value = Array("/edit-feed/{id}"), method = Array(RequestMethod.POST))
+  @PostMapping(Array("/edit-feed/{id}"))
   def submit(@PathVariable id: String, @Valid @ModelAttribute("formObject") formObject: EditFeed, result: BindingResult): ModelAndView = {
     def handleSubmission(loggedInUser: User): ModelAndView = {
       getFeedById(id).map { f =>

@@ -12,7 +12,7 @@ import org.joda.time.DateTime
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Controller
 import org.springframework.validation.{BindingResult, ObjectError}
-import org.springframework.web.bind.annotation.{ModelAttribute, RequestMapping, RequestMethod}
+import org.springframework.web.bind.annotation.{GetMapping, ModelAttribute, PostMapping, RequestMapping, RequestMethod}
 import org.springframework.web.servlet.ModelAndView
 import org.springframework.web.servlet.view.RedirectView
 
@@ -31,10 +31,10 @@ class NewWebsiteController @Autowired()(contentUpdateService: ContentUpdateServi
 
   private val log = Logger.getLogger(classOf[NewWebsiteController])
 
-  @RequestMapping(value = Array("/new-website"), method = Array(RequestMethod.GET))
+  @GetMapping(Array("/new-website"))
   def prompt(): ModelAndView = renderNewWebsiteForm(new NewWebsite())
 
-  @RequestMapping(value = Array("/new-website"), method = Array(RequestMethod.POST))
+  @PostMapping(Array("/new-website"))
   def submit(@Valid @ModelAttribute("formObject") newWebsite: NewWebsite, result: BindingResult, request: HttpServletRequest): ModelAndView = {
     val loggedInUser = getLoggedInUser(request)
 

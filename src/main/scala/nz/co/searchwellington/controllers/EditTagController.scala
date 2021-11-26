@@ -14,7 +14,7 @@ import org.apache.log4j.Logger
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Controller
 import org.springframework.validation.{BindingResult, ObjectError}
-import org.springframework.web.bind.annotation.{ModelAttribute, PathVariable, RequestMapping, RequestMethod}
+import org.springframework.web.bind.annotation.{GetMapping, ModelAttribute, PathVariable, PostMapping}
 import org.springframework.web.servlet.ModelAndView
 import org.springframework.web.servlet.view.RedirectView
 import reactivemongo.api.bson.BSONObjectID
@@ -34,7 +34,7 @@ class EditTagController @Autowired()(mongoRepository: MongoRepository, tagDAO: T
 
   private val log = Logger.getLogger(classOf[EditTagController])
 
-  @RequestMapping(value = Array("/edit-tag/{id}"), method = Array(RequestMethod.GET))
+  @GetMapping(Array("/edit-tag/{id}"))
   def prompt(@PathVariable id: String): ModelAndView = {
 
     def promptForEditTag(loggedInUser: User): ModelAndView = {
@@ -61,7 +61,7 @@ class EditTagController @Autowired()(mongoRepository: MongoRepository, tagDAO: T
     requiringAdminUser(promptForEditTag)
   }
 
-  @RequestMapping(value = Array("/edit-tag/{id}"), method = Array(RequestMethod.POST))
+  @PostMapping(Array("/edit-tag/{id}"))
   def submit(@PathVariable id: String, @Valid @ModelAttribute("formObject") editTag: EditTag, result: BindingResult): ModelAndView = {
 
     def submitEditTag(loggedInUser: User): ModelAndView = {

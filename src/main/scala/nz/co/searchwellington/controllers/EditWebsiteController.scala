@@ -15,7 +15,7 @@ import org.apache.log4j.Logger
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Controller
 import org.springframework.validation.BindingResult
-import org.springframework.web.bind.annotation.{ModelAttribute, PathVariable, RequestMapping, RequestMethod}
+import org.springframework.web.bind.annotation.{GetMapping, ModelAttribute, PathVariable, PostMapping}
 import org.springframework.web.servlet.ModelAndView
 import org.springframework.web.servlet.view.RedirectView
 
@@ -37,7 +37,7 @@ class EditWebsiteController @Autowired()(contentUpdateService: ContentUpdateServ
 
   private val log = Logger.getLogger(classOf[EditWebsiteController])
 
-  @RequestMapping(value = Array("/edit-website/{id}"), method = Array(RequestMethod.GET))
+  @GetMapping(Array("/edit-website/{id}"))
   def prompt(@PathVariable id: String): ModelAndView = {
     def showForm(loggedInUser: User): ModelAndView = {
       getWebsiteById(id).map { w =>
@@ -66,8 +66,8 @@ class EditWebsiteController @Autowired()(contentUpdateService: ContentUpdateServ
     requiringAdminUser(showForm)
   }
 
-  @RequestMapping(value = Array("/edit-website/{id}"), method = Array(RequestMethod.POST))
-  def submit(@PathVariable id: String, @Valid @ModelAttribute("editWebsite") editWebsite: EditWebsite, result: BindingResult): ModelAndView = {
+  @PostMapping(Array("/edit-website/{id}"))
+  def submit(@PathVariable id: String, @Valid @ModelAttribute("formObject") editWebsite: EditWebsite, result: BindingResult): ModelAndView = {
     def handleSubmission(loggedInUser: User): ModelAndView = {
       getWebsiteById(id).map { w =>
         if (result.hasErrors) {

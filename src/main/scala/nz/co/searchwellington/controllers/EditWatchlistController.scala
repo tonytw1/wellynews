@@ -14,7 +14,7 @@ import org.apache.log4j.Logger
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Controller
 import org.springframework.validation.BindingResult
-import org.springframework.web.bind.annotation.{ModelAttribute, PathVariable, RequestMapping, RequestMethod}
+import org.springframework.web.bind.annotation.{GetMapping, ModelAttribute, PathVariable, PostMapping, RequestMapping, RequestMethod}
 import org.springframework.web.servlet.ModelAndView
 import org.springframework.web.servlet.view.RedirectView
 
@@ -35,7 +35,7 @@ class EditWatchlistController @Autowired()(contentUpdateService: ContentUpdateSe
 
   private val log = Logger.getLogger(classOf[EditWatchlistController])
 
-  @RequestMapping(value = Array("/edit-watchlist/{id}"), method = Array(RequestMethod.GET))
+  @GetMapping(Array("/edit-watchlist/{id}"))
   def prompt(@PathVariable id: String): ModelAndView = {
     def showForm(loggedInUser: User): ModelAndView = {
       getWatchlistById(id).map { w =>
@@ -76,7 +76,7 @@ class EditWatchlistController @Autowired()(contentUpdateService: ContentUpdateSe
     editWatchlist
   }
 
-  @RequestMapping(value = Array("/edit-watchlist/{id}"), method = Array(RequestMethod.POST))
+  @PostMapping(Array("/edit-watchlist/{id}"))
   def submit(@PathVariable id: String, @Valid @ModelAttribute("editWatchlist") editWatchlist: EditWatchlist, result: BindingResult): ModelAndView = {
     def handleSubmission(loggedInUser: User): ModelAndView = {
       getWatchlistById(id).map { w =>

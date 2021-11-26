@@ -14,7 +14,7 @@ import org.joda.time.format.ISODateTimeFormat
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Controller
 import org.springframework.validation.BindingResult
-import org.springframework.web.bind.annotation.{ModelAttribute, PathVariable, RequestMapping, RequestMethod}
+import org.springframework.web.bind.annotation.{GetMapping, ModelAttribute, PathVariable, PostMapping}
 import org.springframework.web.servlet.ModelAndView
 import org.springframework.web.servlet.view.RedirectView
 
@@ -36,7 +36,7 @@ class EditNewsitemController @Autowired()(contentUpdateService: ContentUpdateSer
 
   private val formDateFormat = ISODateTimeFormat.basicDate
 
-  @RequestMapping(value = Array("/edit-newsitem/{id}"), method = Array(RequestMethod.GET))
+  @GetMapping(value = Array("/edit-newsitem/{id}"))
   def prompt(@PathVariable id: String): ModelAndView = {
     def showForm(loggedInUser: User): ModelAndView = {
       getNewsitemById(id).map { newsitem =>
@@ -50,7 +50,7 @@ class EditNewsitemController @Autowired()(contentUpdateService: ContentUpdateSer
     requiringAdminUser(showForm)
   }
 
-  @RequestMapping(value = Array("/edit-newsitem/{id}"), method = Array(RequestMethod.POST))
+  @PostMapping(Array("/edit-newsitem/{id}"))
   def submit(@PathVariable id: String, @Valid @ModelAttribute("formObject") formObject: EditNewsitem, result: BindingResult): ModelAndView = {
     def handleSubmission(loggedInUser: User): ModelAndView = {
       getNewsitemById(id).map { newsitem =>
