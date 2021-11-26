@@ -24,7 +24,7 @@ class TwitterPhotoDetector extends LinkCheckerProcessor {
           val tags = parser.extractAllNodesThatMatch(twitterPhotoMetaTags).toNodeArray.toSeq.map(_.asInstanceOf[Tag])
           val imageURLs = tags.flatMap(tag => Option(tag.getAttribute("content")))
           if (imageURLs.nonEmpty) {
-            log.info("Found twitter:images: " + imageURLs)
+            log.info("Found twitter:images: " + imageURLs.mkString(", "))
           }
         }
       } match {
