@@ -14,8 +14,9 @@ class GeotagParsingTest extends GeotagParsing {
 
   @Test
   def shouldParseStringOsmIdToOsmId(): Unit = {
-    assertEquals(Some(new uk.co.eelpieconsulting.common.geo.model.OsmId(123L, OsmType.NODE)), parseOsmId("123/N")) // TODO why is this not an enum?
-    assertEquals(None, parseOsmId("123/A"))
+    assertEquals(Some(new uk.co.eelpieconsulting.common.geo.model.OsmId(123L, OsmType.NODE)), parseOsmId("123/NODE")) // TODO why is this not an enum?
+    assertEquals(None, parseOsmId("123/APPLE"))
+    assertEquals(None, parseOsmId("123ABC"))
   }
 
 
@@ -23,7 +24,7 @@ class GeotagParsingTest extends GeotagParsing {
   def shouldParseUserInputToPlace(): Unit = {
     when(geocodeService.resolveOsmId(new model.OsmId(456L, OsmType.RELATION))).thenReturn(new Place(null, new LatLong(51.0, -0.3), null))
 
-    val result = parseGeotag("Somewhere", "456/R")
+    val result = parseGeotag("Somewhere", "456/RELATION")
 
     assertEquals(Some(Geocode(address = Some("Somewhere"), Some(51.0), Some(-0.3), osmId = Some(OsmId(456L, "R")))), result)
   }

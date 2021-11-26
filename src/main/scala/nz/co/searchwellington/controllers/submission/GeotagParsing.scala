@@ -34,7 +34,7 @@ trait GeotagParsing {
       val `type` = splits(1)
 
       val osmType = OsmType.values().toSeq.find { t =>
-        t.name().take(1) == `type`
+        t.name() == `type`
       }
       osmType.map { osmType =>
           new uk.co.eelpieconsulting.common.geo.model.OsmId(
