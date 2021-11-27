@@ -84,29 +84,30 @@ import scala.jdk.CollectionConverters._
     val frontendPublisher = mv.getModel.get("publisher").asInstanceOf[FrontendResource]
 
     val eventualPublisherWatchlist = contentRetrievalService.getPublisherWatchlist(publisher, loggedInUser)
-    val eventualLatestNewsitems = contentRetrievalService.getLatestNewsitems(maxItems = 5, loggedInUser = loggedInUser)
     val eventualArchiveLinks = contentRetrievalService.getPublisherArchiveMonths(publisher, loggedInUser)
     val eventualRelatedTagsForPublisher = relatedTagsService.getRelatedTagsForPublisher(publisher, loggedInUser)
 
     for {
       publisherWatchlist <- eventualPublisherWatchlist
-      latestNewsitems <- eventualLatestNewsitems
       archiveLinks <- eventualArchiveLinks
       relatedTagsForPublisher <- eventualRelatedTagsForPublisher
+      withSecondaryContent = {
+        val publisherArchiveLinks = archiveLinks.map { a =>
+          PublisherArchiveLink(publisher = frontendPublisher, interval = a.interval, count = a.count)
+        }
+        mv.addObject("watchlist", publisherWatchlist.asJava)
+        if (relatedTagsForPublisher.nonEmpty) {
+          mv.addObject("related_tags", relatedTagsForPublisher.asJava)
+        }
+        if (publisherArchiveLinks.nonEmpty) {
+          mv.addObject("publisher_archive_links", publisherArchiveLinks.asJava)
+        }
+        mv
+      }
+      withLatestNewsitems <- withLatestNewsitems(withSecondaryContent, loggedInUser)
 
     } yield {
-      val publisherArchiveLinks = archiveLinks.map { a =>
-        PublisherArchiveLink(publisher = frontendPublisher, interval = a.interval, count = a.count)
-      }
-
-      mv.addObject("watchlist", publisherWatchlist.asJava)
-      if (relatedTagsForPublisher.nonEmpty) {
-        mv.addObject("related_tags", relatedTagsForPublisher.asJava)
-      }
-      if (publisherArchiveLinks.nonEmpty) {
-        mv.addObject("publisher_archive_links", publisherArchiveLinks.asJava)
-      }
-      mv.addObject("latest_newsitems", latestNewsitems.asJava)  // TODO Duplication use wrapper
+      withLatestNewsitems
     }
   }
 
