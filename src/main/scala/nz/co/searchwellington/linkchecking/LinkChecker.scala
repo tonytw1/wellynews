@@ -82,7 +82,11 @@ import scala.util.Try
   private def httpCheck(url: URL)(implicit ec: ExecutionContext): Future[Either[Int, (Integer, Option[String])]] = {
     httpFetcher.httpFetch(url).map { httpResult =>
       log.info("Http status for " + url + " set was: " + httpResult.status)
-      Right(httpResult.status, Some(httpResult.body))
+      var status = httpResult.status
+      if (url.getHost.equals("www.wellingtoncivictrust.org")) {
+        status = 200  // TODO interesting 500 status returns from this host
+      }
+      Right(status, Some(httpResult.body))
     }.recoverWith {
       case e: UnknownHostException =>
         log.warn(s"Link check http fetch failed with unknown host: $url")
