@@ -175,10 +175,9 @@ class ElasticSearchIndexerTest extends ReasonableWaits {
     def archiveLinks = Await.result(elasticSearchIndexer.createdMonthAggregationFor(allNewsitems, loggedInUser = Some(loggedInUser)), TenSeconds)
     def monthStrings = archiveLinks.map(_._1.getStart.toDate.toString)
 
-    // TODO Explain test flake
-    //eventually(timeout(TenSeconds), interval(TenMilliSeconds), monthStrings.contains("Tue Jan 01 00:00:00 GMT 2019"))
-    //eventually(timeout(TenSeconds), interval(TenMilliSeconds), monthStrings.contains("Thu Mar 01 00:00:00 GMT 2018"))
-    //eventually(timeout(TenSeconds), interval(TenMilliSeconds), monthStrings.contains("Sat Jul 01 01:00:00 BST 2017"))
+    eventually(timeout(TenSeconds), interval(TenMilliSeconds), monthStrings.contains("Tue Jan 01 00:00:00 GMT 2019"))
+    eventually(timeout(TenSeconds), interval(TenMilliSeconds), monthStrings.contains("Thu Mar 01 00:00:00 GMT 2018"))
+    eventually(timeout(TenSeconds), interval(TenMilliSeconds), monthStrings.contains("Sat Jul 01 01:00:00 BST 2017"))
   }
 
   @Test
