@@ -6,7 +6,7 @@ import nz.co.searchwellington.model.mappers.FrontendResourceMapper
 import nz.co.searchwellington.model.{PublisherContentCount, Tag, TagContentCount, Website}
 import nz.co.searchwellington.repositories.ContentRetrievalService
 import nz.co.searchwellington.urls.UrlBuilder
-import org.junit.Assert.{assertEquals, assertFalse, assertTrue}
+import org.junit.Assert.{assertEquals, assertFalse, assertNull, assertTrue}
 import org.junit.Test
 import org.mockito.Mockito.{mock, when}
 import org.springframework.mock.web.MockHttpServletRequest
@@ -95,13 +95,19 @@ class SearchModelBuilderTest extends ReasonableWaits with ContentFields {
 
     when(contentRetrievalService.getNewsitemsMatchingKeywords("sausages", 0, 30, noLoggedInUser, tag = None, publisher = Some(publisher))).
       thenReturn(Future.successful(publisherNewsitemSearchResults))
-    when(contentRetrievalService.getNewsitemKeywordSearchRelatedTags("sausages", noLoggedInUser)).thenReturn(Future.successful(Seq.empty))
-    when(contentRetrievalService.getNewsitemKeywordSearchRelatedPublishers("sausages", noLoggedInUser)).thenReturn(Future.successful(Seq.empty))
-    when(contentRetrievalService.getWebsitesMatchingKeywords("sausages", None, 0, 30, noLoggedInUser)).thenReturn(Future.successful(emptySearchResults))
     when(frontendResourceMapper.createFrontendResourceFrom(publisher, None)).thenReturn(Future.successful(FrontendWebsite(id = "123")))
+
     val mv = Await.result(modelBuilder.populateContentModel(request), TenSeconds).get
 
     assertEquals(publisherNewsitemSearchResults._1.asJava, mv.getModel.get(MAIN_CONTENT))
+
+    // Do not show refinements when a publisher refinement has been selected
+    assertNull(mv.getModel.get("related_tags"))
+    assertNull(mv.getModel.get("related_publishers"))
+
+    // Do not show publishers when a publisher is selected
+    assertNull( mv.getModel.get("secondary_content"))
+    assertNull(mv.getModel.get("secondary_heading"))
   }
 
   @Test
@@ -127,14 +133,16 @@ class SearchModelBuilderTest extends ReasonableWaits with ContentFields {
     request.setAttribute("tag", tag)
     when(contentRetrievalService.getNewsitemsMatchingKeywords("widgets", 0, 30, noLoggedInUser, tag = Some(tag), publisher = None)).
       thenReturn(Future.successful(tagKeywordNewsitemResults))
-    when(contentRetrievalService.getNewsitemKeywordSearchRelatedTags("widgets", noLoggedInUser)).thenReturn(Future.successful(Seq.empty))
-    when(contentRetrievalService.getNewsitemKeywordSearchRelatedPublishers("widgets", noLoggedInUser)).thenReturn(Future.successful(Seq.empty))
     when(contentRetrievalService.getWebsitesMatchingKeywords("widgets", Some(tag), 0, 30, noLoggedInUser)).thenReturn(Future.successful(emptySearchResults))
 
     val mv = Await.result(modelBuilder.populateContentModel(request), TenSeconds).get
 
     assertEquals(tagKeywordNewsitemResults._1.asJava, mv.getModel.get(MAIN_CONTENT))
     assertEquals(2L, mv.getModel.get("main_content_total"))
+
+    // Do not show refinements when a publisher refinement has been selected
+    assertNull(mv.getModel.get("related_tags"))
+    assertNull(mv.getModel.get("related_publishers"))
   }
 
   @Test

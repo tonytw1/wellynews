@@ -17,16 +17,20 @@
 
         #parse("includes/search_widget.vm")
 
-        <ul class="childtags">
-            #foreach ($related_tag in $related_tags)
-                <li><a href="$urlBuilder.getTagSearchUrl($related_tag.tag, $query)">$related_tag.tag.displayName.toLowerCase()</a> ($related_tag.count)</li>
-            #end
-        </ul>
-        <ul class="childtags">
-            #foreach ($related_publisher in $related_publishers)
-                <li><a href="$urlBuilder.getPublisherSearchUrl($related_publisher.publisher, $query)">$related_publisher.publisher.title</a> ($related_publisher.count)</li>
-            #end
-        </ul>
+        #if($related_tags)
+            <ul class="childtags">
+                #foreach ($related_tag in $related_tags)
+                    <li><a href="$urlBuilder.getTagSearchUrl($related_tag.tag, $query)">$related_tag.tag.displayName.toLowerCase()</a> ($related_tag.count)</li>
+                #end
+            </ul>
+        #end
+        #if($related_publishers)
+            <ul class="childtags">
+                #foreach ($related_publisher in $related_publishers)
+                    <li><a href="$urlBuilder.getPublisherSearchUrl($related_publisher.publisher, $query)">$related_publisher.publisher.title</a> ($related_publisher.count)</li>
+                #end
+            </ul>
+        #end
 
         <div class="tag_main_content">
             #parse("includes/main_content.vm")

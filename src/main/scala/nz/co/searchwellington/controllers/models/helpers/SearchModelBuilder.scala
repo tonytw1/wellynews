@@ -44,12 +44,20 @@ import scala.jdk.CollectionConverters._
       Future.successful(None)
     }
 
-    val eventualTagRefinements = contentRetrievalService.getNewsitemKeywordSearchRelatedTags(keywords, loggedInUser)
-    val eventualPublisherRefinements = contentRetrievalService.getNewsitemKeywordSearchRelatedPublishers(keywords, loggedInUser)
+    val shouldShowRefinements = maybeTag.isEmpty && maybePublisher.isEmpty
+    val eventualTagRefinements = if (shouldShowRefinements) contentRetrievalService.getNewsitemKeywordSearchRelatedTags(keywords, loggedInUser) else Future.successful(Seq.empty)
+    val eventualPublisherRefinements = if (shouldShowRefinements) contentRetrievalService.getNewsitemKeywordSearchRelatedPublishers(keywords, loggedInUser) else Future.successful(Seq.empty)
+    val eventualMatchingPublishers = {
+      if (maybePublisher.isEmpty) {
+        contentRetrievalService.getWebsitesMatchingKeywords(keywords, maybeTag, 0, MAX_NEWSITEMS, loggedInUser)
+      } else {
+        Future.successful((Seq.empty, 0L))
+      }
+    }
 
     for {
       newsitemsWithCount <- contentRetrievalService.getNewsitemsMatchingKeywords(keywords, startIndex, MAX_NEWSITEMS, loggedInUser, maybeTag, maybePublisher)
-      matchingWebsites <- contentRetrievalService.getWebsitesMatchingKeywords(keywords, maybeTag, 0, MAX_NEWSITEMS, loggedInUser)
+      matchingWebsites <- eventualMatchingPublishers
       maybeFrontendPublisher <- eventualMaybeFrontendPublisher
       tagRefinements <- eventualTagRefinements
       publisherRefinements <- eventualPublisherRefinements
@@ -64,9 +72,10 @@ import scala.jdk.CollectionConverters._
         addObject("tag", maybeTag.orNull).
         addObject("publisher", maybeFrontendPublisher.orNull)
 
-      mv.addObject("secondary_heading", "Matching websites")
-      mv.addObject("secondary_content", matchingWebsites._1.asJava)
-
+      if (matchingWebsites._2 > 0) {
+        mv.addObject("secondary_heading", "Matching websites")
+        mv.addObject("secondary_content", matchingWebsites._1.asJava)
+      }
       if (tagRefinements.nonEmpty) {
         mv.addObject("related_tags", tagRefinements.asJava)
       }
