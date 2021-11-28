@@ -28,7 +28,7 @@ class SearchModelBuilderTest extends ReasonableWaits with ContentFields {
 
   private val keywordNewsitemResults = (Seq.empty, 0L)
   private val tagKeywordNewsitemResults = (Seq(tagNewsitem, anotherTagNewsitem), 2L)
-
+  private val websitesMatchingTag = (Seq(FrontendWebsite(id = UUID.randomUUID().toString), FrontendWebsite(id = UUID.randomUUID().toString)), 2L)
   private val noLoggedInUser = None
 
   private val modelBuilder = new SearchModelBuilder(contentRetrievalService, urlBuilder, frontendResourceMapper)
@@ -133,7 +133,7 @@ class SearchModelBuilderTest extends ReasonableWaits with ContentFields {
     request.setAttribute("tag", tag)
     when(contentRetrievalService.getNewsitemsMatchingKeywords("widgets", 0, 30, noLoggedInUser, tag = Some(tag), publisher = None)).
       thenReturn(Future.successful(tagKeywordNewsitemResults))
-    when(contentRetrievalService.getWebsitesMatchingKeywords("widgets", Some(tag), 0, 30, noLoggedInUser)).thenReturn(Future.successful(emptySearchResults))
+    when(contentRetrievalService.getWebsitesMatchingKeywords("widgets", Some(tag), 0, 30, noLoggedInUser)).thenReturn(Future.successful(websitesMatchingTag))
 
     val mv = Await.result(modelBuilder.populateContentModel(request), TenSeconds).get
 
@@ -143,6 +143,8 @@ class SearchModelBuilderTest extends ReasonableWaits with ContentFields {
     // Do not show refinements when a publisher refinement has been selected
     assertNull(mv.getModel.get("related_tags"))
     assertNull(mv.getModel.get("related_publishers"))
+
+    assertEquals(websitesMatchingTag._1.asJava, mv.getModel.get("secondary_content"))
   }
 
   @Test
