@@ -38,7 +38,6 @@
         </div>
 
         <div class="tag_secondary_content">
-            <p>$secondary_content</p>
             #parse("includes/secondary_content.vm")
         </div>
     </div>
