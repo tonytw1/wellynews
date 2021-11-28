@@ -10,7 +10,7 @@
         #if($tag)
             <h2><a href="$urlBuilder.getSearchUrlFor($query)">&ldquo;$query&rdquo;</a> / <a href="$urlBuilder.getTagUrl($tag)">$tag.displayName</a></h2>
         #elseif($publisher)
-            <h2><a href="$urlBuilder.getSearchUrlFor($query)">&ldquo;$query&rdquo;</a> / <a href="$urlBuilder.getPublisherUrl">$publisher.name</a></h2>
+            <h2><a href="$urlBuilder.getSearchUrlFor($query)">&ldquo;$query&rdquo;</a> / <a href="$urlBuilder.getPublisherUrl($publisher)">$publisher.name</a></h2>
         #else
             <h2>Search / &ldquo;$query&rdquo;</h2>
         #end
