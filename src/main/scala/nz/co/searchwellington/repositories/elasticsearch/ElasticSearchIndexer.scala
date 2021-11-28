@@ -72,6 +72,7 @@ class ElasticSearchIndexer @Autowired()(val showBrokenDecisionService: ShowBroke
             dateField(Date),
             textField(Description),
             keywordField(Tags),
+            keywordField(HandTags),
             keywordField(TaggingUsers),
             keywordField(Publisher),
             booleanField(Held),
@@ -106,7 +107,7 @@ class ElasticSearchIndexer @Autowired()(val showBrokenDecisionService: ShowBroke
     client
   }
 
-  def updateMultipleContentItems(resources: Seq[(Resource, Seq[String])])(implicit ec: ExecutionContext): Future[Response[BulkResponse]] = {
+  def updateMultipleContentItems(resources: Seq[(Resource, Seq[String], Seq[String])])(implicit ec: ExecutionContext): Future[Response[BulkResponse]] = {
     log.debug("Index batch of size: " + resources.size)
 
     val eventualIndexDefinitions: Seq[Future[IndexRequest]] = resources.map { r =>
@@ -152,6 +153,7 @@ class ElasticSearchIndexer @Autowired()(val showBrokenDecisionService: ShowBroke
           r._1.description.map(d => Description -> d),
           r._1.date.map(d => Date -> new DateTime(d)),
           Some(Tags, r._2),
+          Some(HandTags, r._3),
           publisher.map(p => Publisher -> p.stringify),
           Some(Held -> r._1.held),
           r._1.owner.map(o => Owner -> o.stringify),

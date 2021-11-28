@@ -9,6 +9,7 @@ trait ElasticFields {
   val Description = "description"
   val Date = "date"
   val Tags = "tags"
+  val HandTags = "hand_tags"
   val TaggingUsers = "tagging_users"
   val Publisher = "publisher"
   val Held = "held"

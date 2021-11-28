@@ -4,6 +4,7 @@ import nz.co.searchwellington.ReasonableWaits
 import nz.co.searchwellington.controllers.ShowBrokenDecisionService
 import nz.co.searchwellington.model._
 import nz.co.searchwellington.repositories.HandTaggingDAO
+import nz.co.searchwellington.repositories.elasticsearch.ElasticSearchIndexerTest.indexTagsService
 import nz.co.searchwellington.repositories.mongo.MongoRepository
 import nz.co.searchwellington.tagging.{IndexTagsService, TaggingReturnsOfficerService}
 import org.joda.time.{DateTime, Interval}
@@ -248,7 +249,11 @@ class ElasticSearchIndexerTest extends ReasonableWaits {
   }
 
   private def indexResources(resources: Seq[Resource]) = {
-    def indexWithHandTaggings(resource: Resource) = (resource, resource.resource_tags.map(_.tag_id.stringify))
+    def indexWithHandTaggings(resource: Resource) = {
+      val handTags = resource.resource_tags.map(_.tag_id.stringify)
+      val indexTags = Await.result(indexTagsService.getIndexTagsForResource(resource), TenSeconds).map(_._id.stringify)
+      (resource, indexTags, handTags)
+    }
 
     Await.result(elasticSearchIndexer.updateMultipleContentItems(resources.map(indexWithHandTaggings)), TenSeconds)
   }

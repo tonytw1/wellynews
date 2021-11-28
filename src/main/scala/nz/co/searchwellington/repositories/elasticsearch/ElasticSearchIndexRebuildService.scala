@@ -63,17 +63,15 @@ import scala.concurrent.{ExecutionContext, Future}
     }
   }
 
-  private def withTags(resource: Resource)(implicit ec: ExecutionContext): Future[(Resource, Seq[String])] = {
+  private def withTags(resource: Resource)(implicit ec: ExecutionContext): Future[(Resource, Seq[String], Seq[String])] = {
     // TODO this is a confusing overloading of resource.resource_tags; elastic indexer also calls out got geo taggings itself.
     // Push down to the Elastic indexer or introduce a POJO?
-    getIndexTagIdsFor(resource).map { tagIds =>
-      (resource, tagIds)
-    }
-  }
-
-  private def getIndexTagIdsFor(resource: Resource)(implicit ec: ExecutionContext): Future[Seq[String]] = {
-    indexTagsService.getIndexTagsForResource(resource).map { tags =>
-      tags.map(_._id.stringify)
+    for {
+      indexTags <- indexTagsService.getIndexTagsForResource(resource)
+    } yield {
+      val indexTagIds = indexTags.map(_._id.stringify)
+      val handTagIds = resource.resource_tags.map(_.tag_id.stringify).distinct
+      (resource, indexTagIds, handTagIds)
     }
   }
 
