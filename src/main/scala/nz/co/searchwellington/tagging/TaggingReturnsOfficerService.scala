@@ -17,24 +17,22 @@ import scala.concurrent.{ExecutionContext, Future}
   extends ReasonableWaits with TagAncestors {
 
   def getTaggingsVotesForResource(resource: Tagged)(implicit ec: ExecutionContext): Future[Seq[TaggingVote]] = {
+    val eventualAncestorTagVotes = {
+      handTaggingDAO.getHandTaggingsForResource(resource).map { handTaggings =>
+        val handTags = handTaggings.map(_.tag).distinct
+        handTags.map { rt =>
+          parentsOf(rt).map(parents => parents.map(fat => GeneratedTaggingVote(fat, s"Ancestor of tag ${rt.name}")))
+        }
+      }.flatMap(Future.sequence(_)).map(_.flatten)
+    }
+
     val eventualPublisherVotes = resource match {
       case p: PublishedResource =>
-        val eventualAncestorTagVotes = {
-          handTaggingDAO.getHandTaggingsForResource(resource).map { handTaggings =>
-            val handTags = handTaggings.map(_.tag).distinct
-            handTags.map { rt =>
-              parentsOf(rt).map(parents => parents.map(fat => GeneratedTaggingVote(fat, s"Ancestor of tag ${rt.name}")))
-            }
-          }.flatMap(Future.sequence(_)).map(_.flatten)
-        }
-
         val eventualGeneratePublisherDerivedTagVotes = generatePublisherDerivedTagVotes(p)
-
         for {
-          ancestorTagVotes <- eventualAncestorTagVotes
           generatePublisherDerivedTagVotes <- eventualGeneratePublisherDerivedTagVotes
         } yield {
-          Seq(ancestorTagVotes, generatePublisherDerivedTagVotes).flatten // TODO test coverage for ancestor tag votes
+          Seq(generatePublisherDerivedTagVotes).flatten
         }
 
       case _ =>
@@ -52,8 +50,9 @@ import scala.concurrent.{ExecutionContext, Future}
       handTaggings <- handTaggingDAO.getHandTaggingsForResource(resource)
       publisherVotes <- eventualPublisherVotes
       newsitemSpecificVotes <- eventualNewsitemSpecificVotes
+      ancestorTagVotes <- eventualAncestorTagVotes  // TODO test coverage for ancestor tag votes
     } yield {
-      handTaggings ++ publisherVotes ++ newsitemSpecificVotes
+      handTaggings ++ ancestorTagVotes ++ publisherVotes ++ newsitemSpecificVotes
     }
   }
 
