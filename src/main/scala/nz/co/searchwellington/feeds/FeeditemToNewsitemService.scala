@@ -4,7 +4,6 @@ import nz.co.searchwellington.controllers.submission.EndUserInputs
 import nz.co.searchwellington.feeds.whakaoko.model.FeedItem
 import nz.co.searchwellington.model.{Feed, Newsitem}
 import nz.co.searchwellington.urls.UrlCleaner
-import org.apache.log4j.Logger
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
 
@@ -12,8 +11,6 @@ import org.springframework.stereotype.Component
 class FeeditemToNewsitemService @Autowired()(placeToGeocodeMapper: PlaceToGeocodeMapper, val urlCleaner: UrlCleaner) extends EndUserInputs {
 
   private val MAXIMUM_BODY_LENGTH = 400
-
-  private val log = Logger.getLogger(classOf[FeeditemToNewsitemService])
 
   def makeNewsitemFromFeedItem(feedItem: FeedItem, feed: Feed): Newsitem = {
     val newsitem = Newsitem(
@@ -29,12 +26,6 @@ class FeeditemToNewsitemService @Autowired()(placeToGeocodeMapper: PlaceToGeocod
 
     if (feedItem.imageUrl != null) {  // TODO option
       // newsitem.setImage(new Image(feedNewsitem.getFrontendImage.getUrl, ""))
-    }
-
-    feedItem.categories.foreach { categories =>
-      if (categories.nonEmpty) {
-        log.info("Saw a feed item with RSS categories; we should use these as an autotagging signal: " + categories.map(_.value).mkString(","))
-      }
     }
 
     newsitem

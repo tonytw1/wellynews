@@ -51,7 +51,7 @@ class FeedReaderUpdateServiceTest extends ReasonableWaits {
     ))).thenReturn(Future.successful(acceptedNewsitem))
     when(meterRegistry.counter("feedreader_accepted")).thenReturn(counter)
 
-    val created = Await.result(feedReaderUpdateService.acceptFeeditem(feedReaderUser, newsitem, feed), TenSeconds)
+    val created = Await.result(feedReaderUpdateService.acceptFeeditem(feedReaderUser, newsitem, feed, Seq.empty), TenSeconds)
 
     assertEquals(created, acceptedNewsitem)
   }

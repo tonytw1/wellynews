@@ -67,11 +67,13 @@ import scala.concurrent.{ExecutionContext, Future}
   }
 
   private def processFeedItems(feed: Feed, feedReaderUser: User, acceptancePolicy: FeedAcceptancePolicy, feedItems: Seq[FeedItem])(implicit ec: ExecutionContext): Future[Seq[Resource]] = {
-    val newsItems = feedItems.map(i => feeditemToNewsItemService.makeNewsitemFromFeedItem(i, feed))
-    val eventualProcessed = newsItems.map { newsitem =>
+    val eventualProcessed = feedItems.map { feedItem =>
+      val newsitem = feeditemToNewsItemService.makeNewsitemFromFeedItem(feedItem, feed)
       feedItemAcceptanceDecider.getAcceptanceErrors(newsitem, acceptancePolicy).flatMap { acceptanceErrors =>
         if (acceptanceErrors.isEmpty) {
-          feedReaderUpdateService.acceptFeeditem(feedReaderUser, newsitem, feed).map { acceptedNewsitem =>
+          feedReaderUpdateService.acceptFeeditem(feedReaderUser, newsitem, feed,
+            feedItem.categories.getOrElse(Seq.empty)
+          ).map { acceptedNewsitem =>
             Some(acceptedNewsitem)
           }.recover {
             case e: Exception =>
