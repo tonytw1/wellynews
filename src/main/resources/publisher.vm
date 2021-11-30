@@ -43,6 +43,8 @@
     #if($main_content)
         <div class="tag_main_content">
             #if ($main_content.size() > 0)
+                <p>Heading: $heading</p>
+                <p>Main heading: $main_heading</p>
                 #set($main_heading = "$heading newsitems")
                 #parse("includes/main_content.vm")
                 #parse("includes/page_links.vm")
