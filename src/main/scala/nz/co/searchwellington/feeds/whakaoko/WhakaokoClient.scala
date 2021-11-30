@@ -3,7 +3,7 @@ package nz.co.searchwellington.feeds.whakaoko
 import akka.actor.ActorSystem
 import akka.stream.ActorMaterializer
 import nz.co.searchwellington.ReasonableWaits
-import nz.co.searchwellington.feeds.whakaoko.model.{FeedItem, LatLong, Place, Subscription}
+import nz.co.searchwellington.feeds.whakaoko.model.{Category, FeedItem, LatLong, Place, Subscription}
 import org.apache.http.HttpStatus
 import org.apache.log4j.Logger
 import org.joda.time.{DateTime, Duration}
@@ -33,6 +33,7 @@ class WhakaokoClient @Autowired()(@Value("${whakaoko.url}") whakaokoUrl: String,
   private implicit val dr: Reads[DateTime] = JodaReads.DefaultJodaDateTimeReads
   private implicit val llr: Reads[LatLong] = Json.reads[LatLong]
   private implicit val pr: Reads[Place] = Json.reads[Place]
+  private implicit val cr: Reads[Category] = Json.reads[Category]
   private implicit val fir: Reads[FeedItem] = Json.reads[FeedItem]
   private implicit val sr: Reads[Subscription] = Json.reads[Subscription]
 
