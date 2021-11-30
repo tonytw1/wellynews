@@ -31,14 +31,14 @@ class PublisherModelBuilderTest extends ReasonableWaits with ContentFields {
   private val commonAttributesModelBuilder = mock(classOf[CommonAttributesModelBuilder])
   private val frontendResourceMapper = mock(classOf[FrontendResourceMapper])
 
-  private val publisher = Website()
+  private val publisher = Website(title = Some("A publisher"))
   private val frontendPublisher = FrontendWebsite(id = UUID.randomUUID().toString)
 
   private val modelBuilder = new PublisherModelBuilder(rssUrlBuilder, relatedTagsService, contentRetrievalService, urlBuilder,
     geotaggedNewsitemExtractor, commonAttributesModelBuilder, frontendResourceMapper)
 
   @Test
-  def mainContentShouldBePublisherNewsitems() {
+  def mainContentShouldBePublisherNewsitems(): Unit = {
     val request = new MockHttpServletRequest
     request.setAttribute("publisher", publisher)
     val publisherNewsitems = Seq(FrontendNewsitem(id = "456"))
@@ -52,10 +52,11 @@ class PublisherModelBuilderTest extends ReasonableWaits with ContentFields {
 
     assertEquals(publisherNewsitems.asJava, mv.getModel.get(MAIN_CONTENT))
     assertEquals(publisherFeeds.asJava, mv.getModel.get("feeds"))
+    assertEquals("A publisher newsitems", mv.getModel.get("main_heading"))
   }
 
   @Test
-  def shouldHighlightPublishersGeotaggedContent() {
+  def shouldHighlightPublishersGeotaggedContent(): Unit = {
     val loggedInUser = None
 
     val newsitem = FrontendNewsitem(id = UUID.randomUUID().toString)

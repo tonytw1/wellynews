@@ -58,6 +58,7 @@ import scala.jdk.CollectionConverters._
         val totalPublisherNewsitems = publisherNewsitems._2
         if (publisherNewsitems._1.nonEmpty) {
           mv.addObject(MAIN_CONTENT, publisherNewsitems._1.asJava)
+          mv.addObject("main_heading", publisher.getTitle + " newsitems")
 
           def paginationLinks(page: Int): String = {
             urlBuilder.getPublisherPageUrl(publisher, page)
