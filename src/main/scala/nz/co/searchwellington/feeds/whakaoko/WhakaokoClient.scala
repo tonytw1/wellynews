@@ -79,7 +79,6 @@ class WhakaokoClient @Autowired()(@Value("${whakaoko.url}") whakaokoUrl: String,
       addQueryStringParameters("page" -> page.toString).
       addQueryStringParameters("subscriptions" -> subscriptions.getOrElse(Seq.empty).mkString(",")). // TODO This is an Option - decide
       withRequestTimeout(TenSeconds)
-    log.info("Calling: " + self.toString)
     self.get.map { r =>
         log.info("Channel channel items returned after: " + new Duration(start, DateTime.now).getMillis)
         r.status match {
