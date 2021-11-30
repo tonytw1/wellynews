@@ -47,31 +47,30 @@ class TagModelBuilderTest extends ReasonableWaits with ContentFields {
   private val modelBuilder = new TagModelBuilder(rssUrlBuilder, urlBuilder, relatedTagsService,
     contentRetrievalService, commonAttributesModelBuilder, tagDAO)
 
-  @Before
-  def setup() {
+  {
     when(tagDAO.loadTagsByParent(tag._id)).thenReturn(Future.successful(List.empty))
     when(tagDAO.loadTagByObjectId(parentTag._id)).thenReturn(Future.successful(Some(parentTag)))
   }
 
   @Test
-  def isNotValidIfNotTagsAreOnTheRequest {
+  def isNotValidIfNotTagsAreOnTheRequest(): Unit = {
     assertFalse(modelBuilder.isValid(request))
   }
 
   @Test
-  def isValidIsOneTagIsOnTheRequest {
+  def isValidIsOneTagIsOnTheRequest(): Unit = {
     request.setAttribute("tags", Seq(tag))
     assertTrue(modelBuilder.isValid(request))
   }
 
   @Test
-  def isNotValidIfMoreThanOneTagIsOnTheRequest() {
+  def isNotValidIfMoreThanOneTagIsOnTheRequest(): Unit = {
     request.setAttribute("tags", Seq(tag, tag))
     assertFalse(modelBuilder.isValid(request))
   }
 
   @Test
-  def tagPageHeadingShouldBeTheTagDisplayName() {
+  def tagPageHeadingShouldBeTheTagDisplayName(): Unit = {
     request.setAttribute("tags", Seq(tag))
     when(contentRetrievalService.getTaggedNewsitems(tag, 0, 30, loggedInUser)).thenReturn(Future.successful(noNewsitems))
 
@@ -89,6 +88,7 @@ class TagModelBuilderTest extends ReasonableWaits with ContentFields {
     val mv = Await.result(modelBuilder.populateContentModel(request), TenSeconds).get
 
     assertEquals(tagNewsitems.asJava, mv.getModel.get(MAIN_CONTENT))
+    assertEquals("Penguins related newsitems", mv.getModel.get("main_heading"))
   }
 
   @Test

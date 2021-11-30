@@ -68,6 +68,7 @@ import scala.jdk.CollectionConverters._
 
           val taggedNewsitems = taggedNewsitemsAndTotalCount._1
           mv.addObject(MAIN_CONTENT, taggedNewsitems.asJava)
+          mv.addObject("main_heading", tag.display_name + " related newsitems")
 
           def paginationLinks(page: Int): String = {
             urlBuilder.getTagPageUrl(tag, page)

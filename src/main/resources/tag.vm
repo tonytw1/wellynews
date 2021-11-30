@@ -51,8 +51,6 @@
 			#if ($tag.getMainImage()) 
 				<img src="$urlBuilder.getImageUrl($tag.getMainImage())" width="320" class="mainimage" >
 			#end
-	
-			#set($main_heading = "$tag.getDisplayName() related newsitems")
 
 			#parse("includes/main_content.vm")
 						
