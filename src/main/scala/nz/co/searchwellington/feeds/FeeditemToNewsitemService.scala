@@ -31,9 +31,10 @@ class FeeditemToNewsitemService @Autowired()(placeToGeocodeMapper: PlaceToGeocod
       // newsitem.setImage(new Image(feedNewsitem.getFrontendImage.getUrl, ""))
     }
 
-    val categories = feedItem.categories
-    if (categories.nonEmpty) {
-      log.info("Saw a feed item with RSS categories; we should use these as an autotagging signal: " + categories.map(_.value).mkString(","))
+    feedItem.categories.foreach { categories =>
+      if (categories.nonEmpty) {
+        log.info("Saw a feed item with RSS categories; we should use these as an autotagging signal: " + categories.map(_.value).mkString(","))
+      }
     }
 
     newsitem

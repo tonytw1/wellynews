@@ -10,4 +10,4 @@ case class FeedItem(id: String,
                     imageUrl: Option[String] = None,
                     date: Option[DateTime] = None,
                     place: Option[Place] = None,
-                    categories: Seq[Category] = Seq.empty)
+                    categories: Option[Seq[Category]] = None)
