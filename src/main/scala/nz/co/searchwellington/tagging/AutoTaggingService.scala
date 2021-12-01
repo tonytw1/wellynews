@@ -3,7 +3,7 @@ package nz.co.searchwellington.tagging
 import nz.co.searchwellington.ReasonableWaits
 import nz.co.searchwellington.feeds.whakaoko.model.Category
 import nz.co.searchwellington.model.taggingvotes.HandTagging
-import nz.co.searchwellington.model.{Newsitem, Tag, User}
+import nz.co.searchwellington.model.{Newsitem, Tag}
 import nz.co.searchwellington.repositories.mongo.MongoRepository
 import org.apache.log4j.Logger
 import org.springframework.beans.factory.annotation.Autowired
@@ -17,45 +17,39 @@ import scala.concurrent.{ExecutionContext, Future}
   extends ReasonableWaits {
 
   private val log = Logger.getLogger(classOf[AutoTaggingService])
+
   private val AUTOTAGGER_PROFILE_NAME = "autotagger"
 
   def autoTagsForFeedCategories(feedItemCategories: Seq[Category])(implicit ec: ExecutionContext): Future[Set[HandTagging]] = {
-    mongoRepository.getUserByProfilename(AUTOTAGGER_PROFILE_NAME).flatMap { maybyAutotagUser =>
-      maybyAutotagUser.map { autotagUser =>
-        tagHintAutoTagger.suggestFeedCategoryTags(feedItemCategories).map { tags =>
-          toHandTagging(autotagUser = autotagUser, tags)
-        }
-      }.getOrElse {
-        log.warn("Could not find auto tagger user: " + AUTOTAGGER_PROFILE_NAME + "; not autotagging.")
-        Future.successful(Set.empty)
-      }
-    }
+    tagHintAutoTagger.suggestFeedCategoryTags(feedItemCategories).flatMap(toHandTagging)
   }
 
   def autotag(resource: Newsitem)(implicit ec: ExecutionContext): Future[Set[HandTagging]] = {
-    mongoRepository.getUserByProfilename(AUTOTAGGER_PROFILE_NAME).flatMap { maybyAutotagUser =>
-      maybyAutotagUser.map { autotagUser =>
-        val eventualSuggestedPlaces = placeAutoTagger.suggestTags(resource)
-        val eventualAutoTags = tagHintAutoTagger.suggestTags(resource)
-        for {
-          suggestedPlaces <- eventualSuggestedPlaces
-          suggestedAutoTags <- eventualAutoTags
-
-        } yield {
-          val suggestedTags = suggestedPlaces ++ suggestedAutoTags
-          log.info("Suggested tags for '" + resource.title + "' are: " + suggestedTags)
-          toHandTagging(autotagUser, suggestedTags)
-        }
-
-      }.getOrElse {
-        log.warn("Could not find auto tagger user: " + AUTOTAGGER_PROFILE_NAME + "; not autotagging.")
-        Future.successful(Set.empty)
+    val eventualSuggestedPlaces = placeAutoTagger.suggestTags(resource)
+    val eventualAutoTags = tagHintAutoTagger.suggestTags(resource)
+    for {
+      suggestedPlaces <- eventualSuggestedPlaces
+      suggestedAutoTags <- eventualAutoTags
+      suggestedTags = {
+        val suggestedTags = suggestedPlaces ++ suggestedAutoTags
+        log.info("Suggested tags for '" + resource.title + "' are: " + suggestedTags)
+        suggestedTags
       }
+      handTaggings <- toHandTagging(suggestedTags)
+    } yield {
+      handTaggings
     }
   }
 
-  private def toHandTagging(autotagUser: User, suggestedTags: Set[Tag]): Set[HandTagging] = {
-    suggestedTags.map(t => HandTagging(tag = t, user = autotagUser))
+  private def toHandTagging(suggestedTags: Set[Tag])(implicit ec: ExecutionContext): Future[Set[HandTagging]] = {
+    mongoRepository.getUserByProfilename(AUTOTAGGER_PROFILE_NAME).map { maybyAutotagUser =>
+      maybyAutotagUser.map { autotagUser =>
+        suggestedTags.map(t => HandTagging(tag = t, user = autotagUser))
+      }.getOrElse {
+        log.warn("Could not find auto tagger user: " + AUTOTAGGER_PROFILE_NAME + "; not autotagging.")
+        Set.empty
+      }
+    }
   }
 
 }
