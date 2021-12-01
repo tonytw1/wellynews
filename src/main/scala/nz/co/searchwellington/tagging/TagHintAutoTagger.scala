@@ -24,12 +24,16 @@ class TagHintAutoTagger @Autowired()(tagDAO: TagDAO) {
   }
 
   def suggestFeedCategoryTags(feedItemCategories: Seq[Category])(implicit ec: ExecutionContext): Future[Set[Tag]] = {
-    // Given all tags look for autohints with vaguely match the categories presented
-    tagDAO.getAllTags.map { allTags =>
-      allTags.filter { tag =>
-        val intersections = tag.autotag_hints.toSet.intersect(feedItemCategories.map(_.value).toSet)
-        intersections.nonEmpty
-      }.toSet
+    if (feedItemCategories.nonEmpty) {
+      // Given all tags look for autohints with vaguely match the categories presented
+      tagDAO.getAllTags.map { allTags =>
+        allTags.filter { tag =>
+          val intersections = tag.autotag_hints.toSet.intersect(feedItemCategories.map(_.value).toSet)
+          intersections.nonEmpty
+        }.toSet
+      }
+    } else {
+      Future.successful(Set.empty)
     }
   }
 
