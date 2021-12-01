@@ -43,6 +43,7 @@ class FeedReaderUpdateServiceTest extends ReasonableWaits {
 
     when(feedItemAcceptor.acceptFeedItem(feedReaderUser, (newsitem, feed))).thenReturn(acceptedNewsitem)
     when(autoTaggingService.autotag(acceptedNewsitem.copy(held = false))).thenReturn(Future.successful(autoTaggings))
+    when(autoTaggingService.autoTagsForFeedCategories(Seq.empty)).thenReturn(Future.successful(Set.empty))
     when(contentUpdateService.create(acceptedNewsitem.copy(held = false,
       resource_tags = Seq(
         Tagging(tag_id = atag._id, user_id = autoTagUser._id),

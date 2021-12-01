@@ -3,6 +3,7 @@ package nz.co.searchwellington.feeds
 import io.micrometer.core.instrument.MeterRegistry
 import nz.co.searchwellington.feeds.whakaoko.model.Category
 import nz.co.searchwellington.model._
+import nz.co.searchwellington.model.taggingvotes.HandTagging
 import nz.co.searchwellington.modification.ContentUpdateService
 import nz.co.searchwellington.tagging.AutoTaggingService
 import org.apache.log4j.Logger
@@ -26,23 +27,15 @@ import scala.concurrent.{ExecutionContext, Future}
     log.info("Got newsitem to accept: " + newsitem)
     val notHeld = newsitem.copy(held = false)
 
-
     val eventualAutoTaggings = autoTagger.autotag(notHeld)
-    val eventualFeedCategoryAutoTaggings = {
-      if (feedItemCategories.nonEmpty) {
-        log.info("Saw a feed item with RSS categories; we can use these as an autotagging signal: " + feedItemCategories.map(_.value).mkString(","))
-        autoTagger.autoTagsForFeedCategories(feedItemCategories)
-      } else {
-        Future.successful(Set.empty)
-      }
-    }
+    val eventualFeedCategoryAutoTaggings = autoTagger.autoTagsForFeedCategories(feedItemCategories)
 
     val withAutoTaggings = for {
       autoTaggings <- eventualAutoTaggings
       feedCategoryAutoTaggings <- eventualFeedCategoryAutoTaggings
       withAutoTaggings <- {
-        log.info("Got autotaggings: " + autoTaggings)
-        log.info("Got feed category auto taggings: " + feedCategoryAutoTaggings)
+        log.info("Got autotaggings: " + asCommaList(autoTaggings))
+        log.info("Got feed category auto taggings: " + asCommaList(feedCategoryAutoTaggings))
 
         val allTaggings = autoTaggings ++ feedCategoryAutoTaggings
 
@@ -61,5 +54,7 @@ import scala.concurrent.{ExecutionContext, Future}
 
     withAutoTaggings
   }
+
+   private def asCommaList(tags: Set[HandTagging]): String = tags.map(_.tag.id).mkString(",")
 
 }

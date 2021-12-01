@@ -32,7 +32,7 @@ import scala.concurrent.{ExecutionContext, Future}
       suggestedAutoTags <- eventualAutoTags
       suggestedTags = {
         val suggestedTags = suggestedPlaces ++ suggestedAutoTags
-        log.info("Suggested tags for '" + resource.title + "' are: " + suggestedTags)
+        log.info("Suggested tags for '" + resource.title + "' are: " + suggestedTags.map(_.id).mkString(","))
         suggestedTags
       }
       handTaggings <- toHandTagging(suggestedTags)
