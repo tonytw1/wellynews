@@ -120,6 +120,13 @@ When newsitem text matches keywords associated with specific tags we apply an au
 This is represented as a hand tagging applied by the autotagger user.
 
 
+#### RSS feed item categories
+
+If an RSS feed item contains RSS `category` tags, the autotagger wil try to match the values of these category tags
+to tag autotag hints.
+
+An item with a category of 'events' will be matched to the tag Events.
+
 
 ### Detecting changes
 
