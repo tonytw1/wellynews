@@ -1,8 +1,11 @@
 package nz.co.searchwellington.model
 
-import java.util.UUID
+import com.google.common.base.{Splitter, Strings}
 
+import java.util.UUID
 import reactivemongo.api.bson.BSONObjectID
+
+import scala.jdk.CollectionConverters.IterableHasAsScala
 
 case class Tag(_id: BSONObjectID = BSONObjectID.generate,
                id: String = UUID.randomUUID.toString,
@@ -31,7 +34,15 @@ case class Tag(_id: BSONObjectID = BSONObjectID.generate,
 
   def getSecondaryImage: String = secondary_image.orNull
 
+  // TODO All of this suggests we should be persisting autotags hints as a list
   def getAutotagHints: Option[String] = autotag_hints
+  def autoTagHints: Seq[String] = {
+    val commaSplitter = Splitter.on(",")
+    val autotagHints = autotag_hints.map { autotagHints =>
+      commaSplitter.split(autotagHints).asScala.map(_.trim).toSeq
+    }.getOrElse(Seq.empty)
+    autotagHints.filter(!Strings.isNullOrEmpty(_))
+  }
 
   def isHidden: Boolean = hidden
 
