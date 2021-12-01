@@ -1,5 +1,6 @@
 package nz.co.searchwellington.controllers
 
+import com.google.common.base.{Splitter, Strings}
 import nz.co.searchwellington.ReasonableWaits
 import nz.co.searchwellington.controllers.submission.GeotagParsing
 import nz.co.searchwellington.forms.EditTag
@@ -92,13 +93,18 @@ class EditTagController @Autowired()(mongoRepository: MongoRepository, tagDAO: T
           renderEditForm(tag, editTag)
 
         } else {
+          val hints = {
+            val commaSplitter = Splitter.on(",")
+            commaSplitter.split(editTag.getAutotagHints).asScala.map(_.trim).filter(!Strings.isNullOrEmpty(_)).toSeq
+          }
           val updatedTag = tag.copy(
             display_name = editTag.getDisplayName,
             description = Option(editTag.getDescription),
             parent = parentTag.map(_._id),
             autotag_hints = Some(editTag.getAutotagHints),
             featured = editTag.getFeatured,
-            geocode = resolvedGeocode
+            geocode = resolvedGeocode,
+            hints = hints
           )
 
           Await.result(mongoRepository.saveTag(updatedTag), TenSeconds)

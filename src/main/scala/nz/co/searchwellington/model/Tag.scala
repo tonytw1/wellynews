@@ -18,7 +18,8 @@ case class Tag(_id: BSONObjectID = BSONObjectID.generate,
                description: Option[String] = None,
                main_image: Option[String] = None,
                secondary_image: Option[String] = None,
-               autotag_hints: Option[String] = None) {
+               autotag_hints: Option[String] = None,
+               hints: Seq[String] = Seq.empty) {
 
   def getId: String = id
 
