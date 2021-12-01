@@ -36,9 +36,9 @@ import scala.concurrent.ExecutionContext.Implicits.global
       val tags = Await.result(mongoRepository.getAllTags(), TenSeconds)
       tags.foreach { tag =>
         val hints = tag.autotag_hints.map(splitCommaDelimited).getOrElse(Seq.empty)
-        tag.copy(hints = hints)
-        log.info(s"Tag ${tag.name} migrated hints: $hints")
-        mongoRepository.saveTag(tag)
+        val migratedTag = tag.copy(hints = hints)
+        log.info(s"Tag ${tag.name} migrated hints: ${migratedTag.hints.mkString(",")}")
+        mongoRepository.saveTag(migratedTag)
       }
       val view = viewFactory.getJsonView()
       new ModelAndView (view).addObject ("data", "ok")
