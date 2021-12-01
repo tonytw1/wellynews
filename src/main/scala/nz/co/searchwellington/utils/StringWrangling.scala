@@ -1,6 +1,9 @@
 package nz.co.searchwellington.utils
 
+import com.google.common.base.{Splitter, Strings}
 import org.apache.commons.lang.StringUtils
+
+import scala.jdk.CollectionConverters.IterableHasAsScala
 
 trait StringWrangling {
 
@@ -18,6 +21,11 @@ trait StringWrangling {
       if (trimmed.contains(".")) return StringUtils.substringBefore(trimmed, ".") + "."
     }
     description
+  }
+
+  def splitCommaDelimited(commaSeperated: String): Seq[String] = {
+    val commaSplitter = Splitter.on(",")
+    commaSplitter.split(commaSeperated).asScala.map(_.trim).filter(!Strings.isNullOrEmpty(_)).toSeq
   }
 
   private def isCapitalised(input: String) = input == StringUtils.upperCase(input)

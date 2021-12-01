@@ -1,6 +1,5 @@
 package nz.co.searchwellington.controllers
 
-import com.google.common.base.{Splitter, Strings}
 import nz.co.searchwellington.ReasonableWaits
 import nz.co.searchwellington.controllers.submission.GeotagParsing
 import nz.co.searchwellington.forms.EditTag
@@ -10,6 +9,7 @@ import nz.co.searchwellington.modification.TagModificationService
 import nz.co.searchwellington.repositories.TagDAO
 import nz.co.searchwellington.repositories.mongo.MongoRepository
 import nz.co.searchwellington.urls.UrlBuilder
+import nz.co.searchwellington.utils.StringWrangling
 import nz.co.searchwellington.views.Errors
 import org.apache.log4j.Logger
 import org.springframework.beans.factory.annotation.Autowired
@@ -31,7 +31,8 @@ class EditTagController @Autowired()(mongoRepository: MongoRepository, tagDAO: T
                                      val loggedInUserFilter: LoggedInUserFilter,
                                      tagModificationService: TagModificationService,
                                      val geocodeService: GeoCodeService)
-  extends ReasonableWaits with Errors with InputParsing with GeotagParsing with RequiringLoggedInUser {
+  extends ReasonableWaits with Errors with InputParsing with GeotagParsing with RequiringLoggedInUser
+    with StringWrangling {
 
   private val log = Logger.getLogger(classOf[EditTagController])
 
@@ -93,10 +94,7 @@ class EditTagController @Autowired()(mongoRepository: MongoRepository, tagDAO: T
           renderEditForm(tag, editTag)
 
         } else {
-          val hints = {
-            val commaSplitter = Splitter.on(",")
-            commaSplitter.split(editTag.getAutotagHints).asScala.map(_.trim).filter(!Strings.isNullOrEmpty(_)).toSeq
-          }
+          val hints = splitCommaDelimited(editTag.getAutotagHints)
           val updatedTag = tag.copy(
             display_name = editTag.getDisplayName,
             description = Option(editTag.getDescription),
