@@ -26,20 +26,40 @@ import scala.concurrent.{ExecutionContext, Future}
     log.info("Got newsitem to accept: " + newsitem)
     val notHeld = newsitem.copy(held = false)
 
-    if (feedItemCategories.nonEmpty) {
-      log.info("Saw a feed item with RSS categories; we should use these as an autotagging signal: " + feedItemCategories.map(_.value).mkString(","))
-    }
 
-    autoTagger.autotag(notHeld).flatMap { autoTaggings =>
-      log.info("Got autotaggings: " + autoTaggings)
-      val withAutoTaggings = notHeld.withTaggings(autoTaggings.map(t => Tagging(tag_id = t.tag._id, user_id = t.user._id)).toSeq)
-      log.info("With autotaggings: " + withAutoTaggings)
-      contentUpdateService.create(withAutoTaggings).map { created =>
-        log.info("Created accepted newsitem: " + withAutoTaggings)
-        acceptedCount.increment()
-        created
+    val eventualAutoTaggings = autoTagger.autotag(notHeld)
+    val eventualFeedCategoryAutoTaggings = {
+      if (feedItemCategories.nonEmpty) {
+        log.info("Saw a feed item with RSS categories; we can use these as an autotagging signal: " + feedItemCategories.map(_.value).mkString(","))
+        autoTagger.autoTagsForFeedCategories(feedItemCategories)
+      } else {
+        Future.successful(Set.empty)
       }
     }
+
+    val withAutoTaggings = for {
+      autoTaggings <- eventualAutoTaggings
+      feedCategoryAutoTaggings <- eventualFeedCategoryAutoTaggings
+      withAutoTaggings <- {
+        log.info("Got autotaggings: " + autoTaggings)
+        log.info("Got feed category auto taggings: " + feedCategoryAutoTaggings)
+
+        val allTaggings = autoTaggings ++ feedCategoryAutoTaggings
+
+        val withAutoTaggings = notHeld.withTaggings(allTaggings.map(t => Tagging(tag_id = t.tag._id, user_id = t.user._id)).toSeq)
+        log.info("With autotaggings: " + withAutoTaggings)
+
+        contentUpdateService.create(withAutoTaggings).map { created =>
+          log.info("Created accepted newsitem: " + withAutoTaggings)
+          acceptedCount.increment()
+          created
+        }
+      }
+    } yield {
+      withAutoTaggings
+    }
+
+    withAutoTaggings
   }
 
 }
