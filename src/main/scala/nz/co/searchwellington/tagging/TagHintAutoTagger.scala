@@ -14,7 +14,7 @@ class TagHintAutoTagger @Autowired()(tagDAO: TagDAO) {
   def suggestTags(resource: Resource)(implicit ec: ExecutionContext): Future[Set[Tag]] = {
 
     def matches(resourceContent: String, tag: Tag): Boolean = {
-      tag.autoTagHints.exists(keyword => resourceContent.contains(keyword.toLowerCase))
+      tag.hints.exists(keyword => resourceContent.contains(keyword.toLowerCase))
     }
 
     val resourceContent = (resource.title + " " + resource.description).toLowerCase
@@ -28,7 +28,7 @@ class TagHintAutoTagger @Autowired()(tagDAO: TagDAO) {
       // Given all tags look for autohints with vaguely match the categories presented
       tagDAO.getAllTags.map { allTags =>
         allTags.filter { tag =>
-          val intersections = tag.autotag_hints.toSet.intersect(feedItemCategories.map(_.value).toSet)
+          val intersections = tag.hints.toSet.intersect(feedItemCategories.map(_.value).toSet)
           intersections.nonEmpty
         }.toSet
       }

@@ -44,7 +44,7 @@ class EditTagController @Autowired()(mongoRepository: MongoRepository, tagDAO: T
         val editTag = new EditTag(tag.display_name,
           tag.description.getOrElse(""),
           tag.parent.map(_.stringify).orNull,
-          tag.getAutotagHints.orNull,
+          tag.hints.mkString(","),
           tag.isFeatured,
         )
         tag.geocode.foreach { g =>
@@ -99,7 +99,6 @@ class EditTagController @Autowired()(mongoRepository: MongoRepository, tagDAO: T
             display_name = editTag.getDisplayName,
             description = Option(editTag.getDescription),
             parent = parentTag.map(_._id),
-            autotag_hints = Some(editTag.getAutotagHints),
             featured = editTag.getFeatured,
             geocode = resolvedGeocode,
             hints = hints

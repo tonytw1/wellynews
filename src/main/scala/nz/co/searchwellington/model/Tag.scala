@@ -16,7 +16,6 @@ case class Tag(_id: BSONObjectID = BSONObjectID.generate,
                description: Option[String] = None,
                main_image: Option[String] = None,
                secondary_image: Option[String] = None,
-               autotag_hints: Option[String] = None,
                hints: Seq[String] = Seq.empty) extends StringWrangling {
 
   def getId: String = id
@@ -32,12 +31,6 @@ case class Tag(_id: BSONObjectID = BSONObjectID.generate,
   def getMainImage: String = main_image.orNull
 
   def getSecondaryImage: String = secondary_image.orNull
-
-  // TODO All of this suggests we should be persisting autotags hints as a list
-  def getAutotagHints: Option[String] = autotag_hints
-  def autoTagHints: Seq[String] = {
-    autotag_hints.map(splitCommaDelimited).getOrElse(Seq.empty)
-  }
 
   def isHidden: Boolean = hidden
 
