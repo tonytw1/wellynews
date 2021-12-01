@@ -80,6 +80,13 @@ trait FrontendResource extends RssFeedable with Serializable {
 
   }.orNull
 
+  @Override
+  override def getCategories: util.List[String] = {
+    tags.map { tags =>
+      tags.map(_.name)
+    }.getOrElse(Seq.empty).asJava
+  }
+
   @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ssXXX")
   def getLastScanned: Date = lastScanned.orNull
 
