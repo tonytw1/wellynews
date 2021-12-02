@@ -17,7 +17,7 @@
 	<li>#parse("includes/rss_icon.vm") <code>$rss_url</code></li>
 </ul>
 
-<p>Feeds are also available for individual tags. For example:</p>
+<p>Feeds are also available for individual <a href="/tags">tags</a>. For example:</p>
 
 <ul>
 #foreach ($tag in $feedable_tags)
