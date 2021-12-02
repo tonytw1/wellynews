@@ -139,6 +139,11 @@ This should be filtered out before checksum pages.
 
 ### Admin actions
 
+#### Backfill new tag
+
+The autotag prompt allows a new tag to be backfilled with existing news items which match the new 
+tag's autotagging rules.
+
 #### Gather publisher resources
 
 Given a publisher, find newsitems and feeds which based on their urls should be assigned to this publisher.
