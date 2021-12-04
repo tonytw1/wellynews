@@ -12,7 +12,7 @@
 <div class="main">
 
 <div class="rss">
-#parse("includes/rss_widget_for_publisher.vm")
+#parse("includes/rss_widget.vm")
 </div>
 
 #if ($publisher) 

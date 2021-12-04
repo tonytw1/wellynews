@@ -1,5 +1,6 @@
 package nz.co.searchwellington.controllers.models.helpers
 
+import nz.co.searchwellington.controllers.RssUrlBuilder
 import nz.co.searchwellington.filters.RequestPath
 import nz.co.searchwellington.model.frontend.FrontendResource
 import nz.co.searchwellington.model.mappers.FrontendResourceMapper
@@ -18,7 +19,8 @@ import scala.concurrent.Future
 import scala.jdk.CollectionConverters._
 
 @Component class PublisherMonthModelBuilder @Autowired()(val contentRetrievalService: ContentRetrievalService,
-                                                         frontendResourceMapper: FrontendResourceMapper, dateFormatter: DateFormatter)
+                                                         frontendResourceMapper: FrontendResourceMapper,
+                                                         dateFormatter: DateFormatter, rssUrlBuilder: RssUrlBuilder)
   extends ModelBuilder with ArchiveMonth {
 
   private val PublisherMonthPath = "/*/[0-9]+-.*?"
@@ -41,9 +43,9 @@ import scala.jdk.CollectionConverters._
           Some(new ModelAndView().
             addObject("publisher", eventualFrontendWebsite).
             addObject(MAIN_CONTENT, newsitemsForMonth.asJava).
-            addObject("heading", publisher.getTitle + " - " + dateFormatter.fullMonthYear(month.getStart.toDate)
-          )
-            addObject("month", month))
+            addObject("heading", publisher.getTitle + " - " + dateFormatter.fullMonthYear(month.getStart.toDate)).
+            addObject("month", month).
+            addObject("rss_url", rssUrlBuilder.getRssUrlForPublisher(publisher)))
         }
 
       }.getOrElse {

@@ -1,6 +1,7 @@
 package nz.co.searchwellington.controllers.models.helpers
 
 import nz.co.searchwellington.ReasonableWaits
+import nz.co.searchwellington.controllers.RssUrlBuilder
 import nz.co.searchwellington.filters.RequestPath
 import nz.co.searchwellington.model.helpers.ArchiveLinksService
 import nz.co.searchwellington.model.{ArchiveLink, PublisherArchiveLink, User}
@@ -17,7 +18,7 @@ import scala.concurrent.Future
 import scala.jdk.CollectionConverters._
 
 @Component class ArchiveModelBuilder @Autowired()(val contentRetrievalService: ContentRetrievalService, archiveLinksService: ArchiveLinksService,
-                                                  dateFormatter: DateFormatter) extends
+                                                  dateFormatter: DateFormatter, rssUrlBuilder: RssUrlBuilder) extends
   ModelBuilder with ReasonableWaits with ArchiveMonth {
 
   private val archiveMonthPath = "^/archive/.*?$"
@@ -35,7 +36,8 @@ import scala.jdk.CollectionConverters._
         Some(new ModelAndView().
           addObject("heading", monthLabel).
           addObject("description", "Archived newsitems for the month of " + monthLabel).
-          addObject(MAIN_CONTENT, newsitemsForMonth.asJava))
+          addObject(MAIN_CONTENT, newsitemsForMonth.asJava).
+          addObject("rss_url", rssUrlBuilder.getBaseRssUrl))
       }
     }.getOrElse {
       Future.successful(None)

@@ -73,7 +73,7 @@ import uk.co.eelpieconsulting.common.geo.model.{LatLong, OsmId, Place}
     siteInformation.getSitename + " - " + publisher.title.getOrElse("") + " + " + tag.getDisplayName
   }
 
-  def getRssUrlForPublisherCombiner(publisher: Website, tag: Tag): String = {
+  def getRssUrlForPublisherTagCombiner(publisher: Website, tag: Tag): String = {
     siteInformation.getUrl + "/" + publisher.url_words.getOrElse("") + "+" + tag.getName + "/rss"
   }
 

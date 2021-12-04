@@ -5,7 +5,7 @@ import nz.co.searchwellington.controllers.RssUrlBuilder
 import nz.co.searchwellington.controllers.models.GeotaggedNewsitemExtractor
 import nz.co.searchwellington.model.frontend.{FrontendFeed, FrontendNewsitem, FrontendResource, FrontendWebsite}
 import nz.co.searchwellington.model.mappers.FrontendResourceMapper
-import nz.co.searchwellington.model.{ArchiveLink, Geocode, PublisherArchiveLink, Website}
+import nz.co.searchwellington.model.{ArchiveLink, Geocode, PublisherArchiveLink, SiteInformation, Website}
 import nz.co.searchwellington.repositories.ContentRetrievalService
 import nz.co.searchwellington.tagging.RelatedTagsService
 import nz.co.searchwellington.urls.UrlBuilder
@@ -23,15 +23,15 @@ import scala.jdk.CollectionConverters._
 
 class PublisherModelBuilderTest extends ReasonableWaits with ContentFields {
 
-  private val rssUrlBuilder = mock(classOf[RssUrlBuilder])
+  private val rssUrlBuilder = new RssUrlBuilder(new SiteInformation())
   private val urlBuilder = mock(classOf[UrlBuilder])
   private val relatedTagsService = mock(classOf[RelatedTagsService])
   private val contentRetrievalService = mock(classOf[ContentRetrievalService])
-  private val geotaggedNewsitemExtractor = new GeotaggedNewsitemExtractor()
-  private val commonAttributesModelBuilder = mock(classOf[CommonAttributesModelBuilder])
+  private val geotaggedNewsitemExtractor = new GeotaggedNewsitemExtractor
+  private val commonAttributesModelBuilder = new CommonAttributesModelBuilder
   private val frontendResourceMapper = mock(classOf[FrontendResourceMapper])
 
-  private val publisher = Website(title = Some("A publisher"))
+  private val publisher = Website(title = Some("A publisher"), url_words = Some("a-publisher"))
   private val frontendPublisher = FrontendWebsite(id = UUID.randomUUID().toString)
 
   private val modelBuilder = new PublisherModelBuilder(rssUrlBuilder, relatedTagsService, contentRetrievalService, urlBuilder,
@@ -53,6 +53,7 @@ class PublisherModelBuilderTest extends ReasonableWaits with ContentFields {
     assertEquals(publisherNewsitems.asJava, mv.getModel.get(MAIN_CONTENT))
     assertEquals(publisherFeeds.asJava, mv.getModel.get("feeds"))
     assertEquals("A publisher newsitems", mv.getModel.get("main_heading"))
+    assertEquals("/a-publisher/rss", mv.getModel.get("rss_url"));
   }
 
   @Test

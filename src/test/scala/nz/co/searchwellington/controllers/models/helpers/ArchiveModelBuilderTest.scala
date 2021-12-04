@@ -1,7 +1,8 @@
 package nz.co.searchwellington.controllers.models.helpers
 
 import nz.co.searchwellington.ReasonableWaits
-import nz.co.searchwellington.model.ArchiveLink
+import nz.co.searchwellington.controllers.RssUrlBuilder
+import nz.co.searchwellington.model.{ArchiveLink, SiteInformation}
 import nz.co.searchwellington.model.frontend.FrontendNewsitem
 import nz.co.searchwellington.model.helpers.ArchiveLinksService
 import nz.co.searchwellington.repositories.ContentRetrievalService
@@ -28,7 +29,8 @@ class ArchiveModelBuilderTest extends ReasonableWaits with ContentFields {
 
   private val loggedInUser = None
 
-  val modelBuilder =  new ArchiveModelBuilder(contentRetrievalService, new ArchiveLinksService(), new DateFormatter(DateTimeZone.UTC))
+  val modelBuilder =  new ArchiveModelBuilder(contentRetrievalService, new ArchiveLinksService(),
+    new DateFormatter(DateTimeZone.UTC), new RssUrlBuilder(new SiteInformation()))
 
   @Before
   def setup() {
@@ -49,6 +51,7 @@ class ArchiveModelBuilderTest extends ReasonableWaits with ContentFields {
     val mv = Await.result(modelBuilder.populateContentModel(request), TenSeconds).get
 
     assertEquals(monthNewsitems.asJava, mv.getModel.get(MAIN_CONTENT))
+    assertEquals("/rss", mv.getModel.get("rss_url"));
   }
 
   @Test

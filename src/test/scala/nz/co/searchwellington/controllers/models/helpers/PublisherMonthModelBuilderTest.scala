@@ -1,7 +1,8 @@
 package nz.co.searchwellington.controllers.models.helpers
 
 import nz.co.searchwellington.ReasonableWaits
-import nz.co.searchwellington.model.Website
+import nz.co.searchwellington.controllers.RssUrlBuilder
+import nz.co.searchwellington.model.{SiteInformation, Website}
 import nz.co.searchwellington.model.frontend.{FrontendResource, FrontendWebsite}
 import nz.co.searchwellington.model.mappers.FrontendResourceMapper
 import nz.co.searchwellington.repositories.ContentRetrievalService
@@ -28,7 +29,8 @@ class PublisherMonthModelBuilderTest extends ReasonableWaits with ContentFields 
   private val anotherNewsitem = mock(classOf[FrontendResource])
   private val monthNewsitems = Seq(newsitem, anotherNewsitem)
 
-  private val modelBuilder = new PublisherMonthModelBuilder(contentRetrievalService, frontendResourceMapper, new DateFormatter(DateTimeZone.UTC))
+  private val modelBuilder = new PublisherMonthModelBuilder(contentRetrievalService, frontendResourceMapper,
+    new DateFormatter(DateTimeZone.UTC), new RssUrlBuilder(new SiteInformation()))
 
   @Test
   def testPathMatcher(): Unit = {

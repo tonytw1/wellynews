@@ -4,7 +4,7 @@ import nz.co.searchwellington.ReasonableWaits
 import nz.co.searchwellington.controllers.RssUrlBuilder
 import nz.co.searchwellington.model.frontend.{FrontendNewsitem, FrontendWebsite}
 import nz.co.searchwellington.model.mappers.FrontendResourceMapper
-import nz.co.searchwellington.model.{Tag, Website}
+import nz.co.searchwellington.model.{SiteInformation, Tag, Website}
 import nz.co.searchwellington.repositories.ContentRetrievalService
 import nz.co.searchwellington.tagging.RelatedTagsService
 import nz.co.searchwellington.urls.UrlBuilder
@@ -20,14 +20,14 @@ import scala.jdk.CollectionConverters._
 class PublisherTagCombinerModelBuilderTest extends ReasonableWaits with ContentFields {
 
   private val contentRetrievalService = mock(classOf[ContentRetrievalService])
-  private val rssUrlBuilder = mock(classOf[RssUrlBuilder])
+  private val rssUrlBuilder = new RssUrlBuilder(new SiteInformation())
   private val urlBuilder = mock(classOf[UrlBuilder])
   private val relatedTagsService = mock(classOf[RelatedTagsService])
   private val commonAttributesModelBuilder = mock(classOf[CommonAttributesModelBuilder])
   private val frontendResourceMapper = mock(classOf[FrontendResourceMapper])
 
-  private val apublisher = Website(title = Some("A publisher"))
-  private val atag = Tag(name = "A tag")
+  private val apublisher = Website(title = Some("A publisher"), url_words = Some("a-publisher"))
+  private val atag = Tag(name = "atag", display_name = "A tag")
 
   private val modelBuilder = new PublisherTagCombinerModelBuilder(contentRetrievalService, rssUrlBuilder, urlBuilder,
     relatedTagsService, commonAttributesModelBuilder, frontendResourceMapper)
@@ -56,6 +56,7 @@ class PublisherTagCombinerModelBuilderTest extends ReasonableWaits with ContentF
     assertEquals(expectedNewsitems.asJava, mv.getModel.get(MAIN_CONTENT))
     assertNotNull(mv.getModel.get("publisher"))
     assertNotNull(mv.getModel.get("tag"))
+    assertEquals("/a-publisher+atag/rss", mv.getModel.get("rss_url"));
   }
 
 }
