@@ -20,7 +20,10 @@ class RssLinkExtractorTest {
 
   @Test
   def discoveredLinksShouldBeUnescaped(): Unit = {
-    val htmlWithEncodedAutoDiscoverUrls = "<html>" + "<head>" + "<link rel=\"alternate\" type=\"application/rss+xml\" title=\"Encoded link\" href=\"http://wellington.scoop.co.nz/?feed=rss2&amp;p=34601\">" + "</head>" + "</html>"
+    val htmlWithEncodedAutoDiscoverUrls =
+      """
+        <html><head><link rel="alternate" type="application/rss+xml" title="Encoded link" href="http://wellington.scoop.co.nz/?feed=rss2&amp;p=34601"></head></html>
+        """
 
     val extractedLinks = rssLinkExtractor.extractFeedLinks(htmlWithEncodedAutoDiscoverUrls)
 
@@ -30,7 +33,10 @@ class RssLinkExtractorTest {
 
   @Test
   def shouldGracefullyIgnoreLinksTagsWithNoHrefAttributes(): Unit = {
-    val htmlWithEncodedAutoDiscoverUrls = "<html>" + "<head>" + "<link rel=\"alternate\" type=\"application/rss+xml\" title=\"Encoded link\">" + "</head>" + "</html>"
+    val htmlWithEncodedAutoDiscoverUrls =
+      """
+      <html><head><link rel="alternate" type="application/rss+xml" title="Encoded link"></head></html>
+    """
 
     val extractedLinks = rssLinkExtractor.extractFeedLinks(htmlWithEncodedAutoDiscoverUrls)
 
