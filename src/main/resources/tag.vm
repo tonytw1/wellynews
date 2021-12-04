@@ -11,18 +11,6 @@
 	</div>
 	
 	<div class="main">
-	
-		<div class="yellow">	
-            #if ($searchterm)
-                <p>This site has matches for '$searchterm' on the following pages:</p>
-                    <ul class="childtags">
-                    #foreach ($related_tag in $searchfacets)
-                        <li><a href="$urlBuilder.getTagUrl($related_tag.tag)">$related_tag.tag.displayName.toLowerCase()</a> ($related_tag.count)</li>
-                    #end
-                    </ul>
-            #end
-		</div>
-	
 		<div class="rss">
 			#parse("includes/rss_widget_for_tag.vm")
 		</div>
