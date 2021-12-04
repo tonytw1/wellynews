@@ -9,8 +9,8 @@ class RssLinkExtractorTest {
   private val rssLinkExtractor = new RssLinkExtractor
 
   @Test
-  def canExtractRssAutodiscoverLinksFromHtmlPage = {
-    val pageWithRssLink = IOUtils.toString(this.getClass.getClassLoader.getResourceAsStream("page-with-rss-autodiscoverable-feed.html"))
+  def shouldExtractRssAutodiscoverLinksFromHtmlPage(): Unit = {
+    val pageWithRssLink = loadTestFile("page-with-rss-autodiscoverable-feed.html")
 
     val extractedLinks = rssLinkExtractor.extractFeedLinks(pageWithRssLink)
 
@@ -19,7 +19,7 @@ class RssLinkExtractorTest {
   }
 
   @Test
-  def discoveredLinksShouldBeUnescaped = {
+  def discoveredLinksShouldBeUnescaped(): Unit = {
     val htmlWithEncodedAutoDiscoverUrls = "<html>" + "<head>" + "<link rel=\"alternate\" type=\"application/rss+xml\" title=\"Encoded link\" href=\"http://wellington.scoop.co.nz/?feed=rss2&amp;p=34601\">" + "</head>" + "</html>"
 
     val extractedLinks = rssLinkExtractor.extractFeedLinks(htmlWithEncodedAutoDiscoverUrls)
@@ -29,12 +29,18 @@ class RssLinkExtractorTest {
   }
 
   @Test
-  def shouldGracefullyIgnoreLinksTagsWithNoHrefAttributes = {
+  def shouldGracefullyIgnoreLinksTagsWithNoHrefAttributes(): Unit = {
     val htmlWithEncodedAutoDiscoverUrls = "<html>" + "<head>" + "<link rel=\"alternate\" type=\"application/rss+xml\" title=\"Encoded link\">" + "</head>" + "</html>"
 
     val extractedLinks = rssLinkExtractor.extractFeedLinks(htmlWithEncodedAutoDiscoverUrls)
 
     assertTrue(extractedLinks.isEmpty)
+  }
+
+  private def loadTestFile(filename: String): String = {
+    IOUtils.toString(this.getClass.getClassLoader.getResourceAsStream(filename),
+      java.nio.charset.StandardCharsets.UTF_8
+    )
   }
 
 }
