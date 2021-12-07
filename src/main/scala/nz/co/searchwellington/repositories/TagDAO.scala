@@ -36,9 +36,10 @@ import scala.concurrent.{ExecutionContext, Future}
     getAllTags.map(ts => ts.filter(t => t.parent.isEmpty))
   }
 
-  def deleteTag(tag: Tag): Future[Boolean] = {
-    // sessionFactory.getCurrentSession.delete(tag)
-    Future.successful(false) // TODO
+  def deleteTag(tag: Tag)(implicit ec: ExecutionContext): Future[Boolean] = {
+    mongoRepository.deleteTag(tag).map { writeResult =>
+      writeResult.writeErrors.isEmpty
+    }
   }
 
   def getTagNamesStartingWith(q: String)(implicit ec: ExecutionContext): Future[Seq[String]] = getAllTags.map(ts => ts.filter(t => t.name.startsWith(q)).map(t => t.name))

@@ -30,8 +30,8 @@ import scala.concurrent.{Await, Future}
 
   def clearTaggingsForTag(tag: Tag): Future[Boolean] = {
     def withTagRemoved(resource: Resource, tag: Tag): Resource = {
-      val tagsToRetain = resource.resource_tags.filterNot(t => t.tag_id == tag._id)
-      resource.withTaggings(tagsToRetain)
+      val taggingsToRetain = resource.resource_tags.filterNot(t => t.tag_id == tag._id)
+      resource.withTaggings(taggingsToRetain)
     }
 
     log.info("Clearing tagging votes for tag: " + tag.getName)
@@ -39,7 +39,7 @@ import scala.concurrent.{Await, Future}
       log.info(resourceIdsTaggedWithTag.size + " votes will needs to be cleared and the frontend resources updated.")
 
       val eventualResources = Future.sequence(resourceIdsTaggedWithTag.map { rid =>
-        mongoRepository.getResourceByObjectId(rid)
+        mongoRepository.getResourceByObjectId(rid)  // TODO don't bring all into memory once
       }).map(_.flatten)
 
       eventualResources.flatMap { taggedResources =>

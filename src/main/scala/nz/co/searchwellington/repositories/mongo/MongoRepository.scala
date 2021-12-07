@@ -194,6 +194,11 @@ class MongoRepository @Autowired()(@Value("${mongo.uri}") mongoUri: String) exte
     resourceCollection.delete.one(byId)
   }
 
+  def deleteTag(tag: Tag)(implicit ec: ExecutionContext): Future[WriteResult] = {
+    val byId = BSONDocument("_id" -> tag._id)
+    tagCollection.delete.one(byId)
+  }
+
   def removeUser(user: User)(implicit ec: ExecutionContext): Future[Boolean] = {
     val byId = BSONDocument("_id" -> user._id)
     userCollection.delete.one(byId).map { wr: WriteResult =>
