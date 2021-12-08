@@ -11,7 +11,6 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
 import org.springframework.web.servlet.ModelAndView
 
-import java.util
 import javax.servlet.http.HttpServletRequest
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
@@ -24,7 +23,7 @@ import scala.concurrent.Future
   private val log = Logger.getLogger(classOf[TagGeotaggedModelBuilder])
 
   def isValid(request: HttpServletRequest): Boolean = {
-    val tags = request.getAttribute("tags").asInstanceOf[util.List[Tag]]
+    val tags = request.getAttribute("tags").asInstanceOf[Seq[Tag]]
     val isSingleTagPage = tags != null && tags.size == 1
     val hasCommentPath = RequestPath.getPathFrom(request).matches("^(.*?)/geotagged(/(rss|json))?$")
     isSingleTagPage && hasCommentPath
@@ -50,8 +49,8 @@ import scala.concurrent.Future
     }
 
     log.debug("Building tag geotagged page model")
-    val tags = request.getAttribute("tags").asInstanceOf[util.List[Tag]]
-    val tag = tags.get(0)
+    val tags = request.getAttribute("tags").asInstanceOf[Seq[Tag]]
+    val tag = tags.head
     populateTagCommentPageModelAndView(tag)
   }
 
