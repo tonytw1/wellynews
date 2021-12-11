@@ -14,6 +14,7 @@ import org.springframework.web.servlet.ModelAndView
 import javax.servlet.http.HttpServletRequest
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
+import scala.jdk.CollectionConverters._
 
 @Component class TagGeotaggedModelBuilder @Autowired()(val contentRetrievalService: ContentRetrievalService,
                                                        urlBuilder: UrlBuilder, rssUrlBuilder: RssUrlBuilder,
@@ -39,7 +40,7 @@ import scala.concurrent.Future
           addObject("heading", tag.getDisplayName + " geotagged").
           addObject("description", "Geotagged " + tag.getDisplayName + " newsitems").
           addObject("link", urlBuilder.fullyQualified(urlBuilder.getTagGeocodedUrl(tag))).
-          addObject(MAIN_CONTENT, newsitems)
+          addObject(MAIN_CONTENT, newsitems.asJava)
 
         if (newsitems.nonEmpty) {
           commonAttributesModelBuilder.setRss(mv, rssUrlBuilder.getRssTitleForTagGeotagged(tag), rssUrlBuilder.getRssUrlForTagGeotagged(tag))
