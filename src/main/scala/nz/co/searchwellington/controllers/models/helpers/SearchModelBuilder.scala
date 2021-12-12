@@ -5,7 +5,7 @@ import nz.co.searchwellington.model.mappers.FrontendResourceMapper
 import nz.co.searchwellington.model.{Tag, User, Website}
 import nz.co.searchwellington.repositories.ContentRetrievalService
 import nz.co.searchwellington.urls.UrlBuilder
-import org.apache.log4j.Logger
+import org.apache.commons.logging.LogFactory
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
 import org.springframework.web.servlet.ModelAndView
@@ -19,7 +19,7 @@ import scala.jdk.CollectionConverters._
                                                  val urlBuilder: UrlBuilder, frontendResourceMapper: FrontendResourceMapper)
   extends ModelBuilder with CommonSizes with Pagination with ReasonableWaits {
 
-  private val log = Logger.getLogger(classOf[SearchModelBuilder])
+  private val log = LogFactory.getLog(classOf[SearchModelBuilder])
   private val KEYWORDS_PARAMETER = "q"
 
   def isValid(request: HttpServletRequest): Boolean = {

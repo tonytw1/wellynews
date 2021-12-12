@@ -6,7 +6,7 @@ import nz.co.searchwellington.feeds.{FeedReaderUpdateService, FeeditemToNewsitem
 import nz.co.searchwellington.repositories.mongo.MongoRepository
 import nz.co.searchwellington.urls.UrlBuilder
 import nz.co.searchwellington.views.Errors
-import org.apache.log4j.Logger
+import org.apache.commons.logging.LogFactory
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Controller
 import org.springframework.web.bind.annotation.GetMapping
@@ -25,7 +25,7 @@ class AcceptFeedItemController @Autowired()(mongoRepository: MongoRepository,
                                             feeditemToNewsItemService: FeeditemToNewsitemService
                                             ) extends ReasonableWaits with AcceptancePolicyOptions with Errors {
 
-  private val log = Logger.getLogger(classOf[AcceptFeedItemController])
+  private val log = LogFactory.getLog(classOf[AcceptFeedItemController])
 
   @GetMapping(value = Array("/accept-feed-item"))
   def accept(feed: String, url: String): ModelAndView = {

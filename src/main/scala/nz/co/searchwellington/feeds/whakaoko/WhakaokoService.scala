@@ -1,7 +1,7 @@
 package nz.co.searchwellington.feeds.whakaoko
 
 import nz.co.searchwellington.feeds.whakaoko.model.{FeedItem, Subscription}
-import org.apache.log4j.Logger
+import org.apache.commons.logging.LogFactory
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
 
@@ -17,7 +17,7 @@ import scala.concurrent.{ExecutionContext, Future}
    This class seems to exist solely to wrap the client calls with Eithers
   */
 
-  private val log = Logger.getLogger(classOf[WhakaokoService])
+  private val log = LogFactory.getLog(classOf[WhakaokoService])
 
   def createFeedSubscription(feedUrl: String)(implicit ec: ExecutionContext): Future[Option[String]] = {
     log.info("Requesting Whakaoko subscription for feed: " + feedUrl)

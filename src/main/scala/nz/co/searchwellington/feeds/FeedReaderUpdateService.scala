@@ -6,7 +6,7 @@ import nz.co.searchwellington.model._
 import nz.co.searchwellington.model.taggingvotes.HandTagging
 import nz.co.searchwellington.modification.ContentUpdateService
 import nz.co.searchwellington.tagging.AutoTaggingService
-import org.apache.log4j.Logger
+import org.apache.commons.logging.LogFactory
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
 
@@ -17,7 +17,7 @@ import scala.concurrent.{ExecutionContext, Future}
                                                       feedItemAcceptor: FeedItemAcceptor,
                                                       registry: MeterRegistry) {
 
-  private val log = Logger.getLogger(classOf[FeedReaderUpdateService])
+  private val log = LogFactory.getLog(classOf[FeedReaderUpdateService])
 
   private lazy val acceptedCount = registry.counter("feedreader_accepted")
 

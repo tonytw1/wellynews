@@ -3,7 +3,7 @@ package nz.co.searchwellington.jobs
 import nz.co.searchwellington.ReasonableWaits
 import nz.co.searchwellington.queues.LinkCheckerQueue
 import nz.co.searchwellington.repositories.mongo.MongoRepository
-import org.apache.log4j.Logger
+import org.apache.commons.logging.LogFactory
 import org.joda.time.DateTime
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.scheduling.annotation.Scheduled
@@ -16,7 +16,7 @@ import scala.concurrent.{Await, Future}
 @Component class CheckWatchlistsAndLongTail @Autowired()(mongoRepository: MongoRepository, linkCheckerQueue: LinkCheckerQueue)
   extends ReasonableWaits {
 
-  private val log = Logger.getLogger(classOf[CheckWatchlistsAndLongTail])
+  private val log = LogFactory.getLog(classOf[CheckWatchlistsAndLongTail])
 
   @Scheduled(fixedRate = 86400000, initialDelay = 600000)
   def queueWatchlistItems(): Unit = {

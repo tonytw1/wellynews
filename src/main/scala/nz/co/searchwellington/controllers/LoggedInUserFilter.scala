@@ -2,7 +2,7 @@ package nz.co.searchwellington.controllers
 
 import javax.servlet.http.HttpServletRequest
 import nz.co.searchwellington.model.User
-import org.apache.log4j.Logger
+import org.apache.commons.logging.LogFactory
 import org.springframework.context.annotation.{Scope, ScopedProxyMode}
 import org.springframework.stereotype.Component
 
@@ -10,7 +10,7 @@ import org.springframework.stereotype.Component
 @Scope(value = "request", proxyMode = ScopedProxyMode.TARGET_CLASS)
 class LoggedInUserFilter {
 
-  private val log = Logger.getLogger(classOf[LoggedInUserFilter])
+  private val log = LogFactory.getLog(classOf[LoggedInUserFilter])
 
   private var loggedInUser: Option[User] = None
 

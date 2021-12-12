@@ -5,7 +5,7 @@ import nz.co.searchwellington.controllers.{LoggedInUserFilter, RequiringLoggedIn
 import nz.co.searchwellington.filters.AdminRequestFilter
 import nz.co.searchwellington.model.{Resource, User}
 import nz.co.searchwellington.queues.LinkCheckerQueue
-import org.apache.log4j.Logger
+import org.apache.commons.logging.LogFactory
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Controller
 import org.springframework.web.bind.annotation.RequestMapping
@@ -17,7 +17,7 @@ import scala.concurrent.ExecutionContext.Implicits.global
 @Controller class LinkCheckerController @Autowired()(requestFilter: AdminRequestFilter, queue: LinkCheckerQueue, urlStack: UrlStack,
                                                      val loggedInUserFilter: LoggedInUserFilter) extends RequiringLoggedInUser {
 
-  private val log = Logger.getLogger(classOf[LinkCheckerController])
+  private val log = LogFactory.getLog(classOf[LinkCheckerController])
 
   @RequestMapping(Array("/admin/linkchecker/add"))
   def addToQueue(request: HttpServletRequest): ModelAndView = {

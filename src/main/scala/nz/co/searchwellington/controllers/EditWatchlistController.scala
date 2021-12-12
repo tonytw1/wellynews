@@ -10,7 +10,7 @@ import nz.co.searchwellington.repositories.mongo.MongoRepository
 import nz.co.searchwellington.repositories.{HandTaggingService, TagDAO}
 import nz.co.searchwellington.urls.UrlBuilder
 import nz.co.searchwellington.views.Errors
-import org.apache.log4j.Logger
+import org.apache.commons.logging.LogFactory
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Controller
 import org.springframework.validation.BindingResult
@@ -33,7 +33,7 @@ class EditWatchlistController @Autowired()(contentUpdateService: ContentUpdateSe
                                            handTaggingService: HandTaggingService
                                         ) extends ReasonableWaits with AcceptancePolicyOptions with Errors with GeotagParsing with RequiringLoggedInUser {
 
-  private val log = Logger.getLogger(classOf[EditWatchlistController])
+  private val log = LogFactory.getLog(classOf[EditWatchlistController])
 
   @GetMapping(Array("/edit-watchlist/{id}"))
   def prompt(@PathVariable id: String): ModelAndView = {

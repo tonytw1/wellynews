@@ -2,7 +2,7 @@ package nz.co.searchwellington.repositories.mongo
 
 import nz.co.searchwellington.ReasonableWaits
 import nz.co.searchwellington.model._
-import org.apache.log4j.Logger
+import org.apache.commons.logging.LogFactory
 import org.joda.time.DateTime
 import org.springframework.beans.factory.annotation.{Autowired, Value}
 import org.springframework.stereotype.Component
@@ -21,7 +21,7 @@ import scala.util.Try
 @Component
 class MongoRepository @Autowired()(@Value("${mongo.uri}") mongoUri: String) extends ReasonableWaits {
 
-  private val log = Logger.getLogger(classOf[MongoRepository])
+  private val log = LogFactory.getLog(classOf[MongoRepository])
 
   private val AllDocuments: Int = Integer.MAX_VALUE
 

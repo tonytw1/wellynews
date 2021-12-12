@@ -4,7 +4,7 @@ import com.google.common.base.Strings
 import nz.co.searchwellington.ReasonableWaits
 import nz.co.searchwellington.model.Image
 import nz.co.searchwellington.repositories.mongo.MongoRepository
-import org.apache.log4j.Logger
+import org.apache.commons.logging.LogFactory
 import org.joda.time.DateTime
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.context.annotation.{Scope, ScopedProxyMode}
@@ -20,7 +20,7 @@ import scala.concurrent.{Await, ExecutionContext}
 class AdminRequestFilter @Autowired()(mongoRepository: MongoRepository, resourceParameterFilter: ResourceParameterFilter,
                                       tagsParameterFilter: TagsParameterFilter) extends ReasonableWaits {
 
-  private val log = Logger.getLogger(classOf[AdminRequestFilter])
+  private val log = LogFactory.getLog(classOf[AdminRequestFilter])
   private val DATE_FIELD = "date"
   private val EMBARGO_DATE_FIELD = "embargo_date"
 

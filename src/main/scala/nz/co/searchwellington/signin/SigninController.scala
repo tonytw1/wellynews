@@ -3,7 +3,7 @@ package nz.co.searchwellington.signin
 import nz.co.searchwellington.controllers.{AnonUserService, LoggedInUserFilter, LoginResourceOwnershipService, UrlStack}
 import nz.co.searchwellington.model.User
 import nz.co.searchwellington.repositories.mongo.MongoRepository
-import org.apache.log4j.Logger
+import org.apache.commons.logging.LogFactory
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Controller
 import org.springframework.web.bind.annotation.GetMapping
@@ -15,7 +15,7 @@ import scala.concurrent.ExecutionContext.Implicits.global
 
 @Controller class SigninController @Autowired()(loggedInUserFilter: LoggedInUserFilter, mongoRepository: MongoRepository, anonUserService: AnonUserService, loginResourceOwnershipService: LoginResourceOwnershipService, urlStack: UrlStack, signinHandler: SigninHandler) {
 
-  private val log = Logger.getLogger(classOf[SigninController])
+  private val log = LogFactory.getLog(classOf[SigninController])
 
   @GetMapping(Array("/twitter/login"))
   def login(request: HttpServletRequest, response: HttpServletResponse): ModelAndView = {

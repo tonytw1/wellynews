@@ -3,7 +3,7 @@ package nz.co.searchwellington.commentfeeds.detectors
 import nz.co.searchwellington.ReasonableWaits
 import nz.co.searchwellington.model.Newsitem
 import nz.co.searchwellington.repositories.mongo.MongoRepository
-import org.apache.log4j.Logger
+import org.apache.commons.logging.LogFactory
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
 
@@ -14,7 +14,7 @@ import scala.concurrent.ExecutionContext.Implicits.global
 class ExistingNewsitemCommentFeedDetector @Autowired()(mongoRepository: MongoRepository)
   extends CommentFeedDetector with ReasonableWaits {
 
-  private val log = Logger.getLogger(classOf[ExistingNewsitemCommentFeedDetector])
+  private val log = LogFactory.getLog(classOf[ExistingNewsitemCommentFeedDetector])
 
   private val feedSuffixes = Seq("/feed", "/feed/")
 

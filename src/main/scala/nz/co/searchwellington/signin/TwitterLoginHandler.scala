@@ -6,7 +6,7 @@ import nz.co.searchwellington.model.User
 import nz.co.searchwellington.repositories.mongo.MongoRepository
 import nz.co.searchwellington.twitter.TwitterApiFactory
 import nz.co.searchwellington.urls.UrlBuilder
-import org.apache.log4j.Logger
+import org.apache.commons.logging.LogFactory
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
 import org.springframework.web.servlet.ModelAndView
@@ -21,7 +21,7 @@ import scala.concurrent.ExecutionContext.Implicits.global
 @Component class TwitterLoginHandler @Autowired()(mongoRepository: MongoRepository, twitterApiFactory: TwitterApiFactory,
                                                   urlBuilder: UrlBuilder) extends SigninHandler with ReasonableWaits {
 
-  private val log = Logger.getLogger(classOf[TwitterLoginHandler])
+  private val log = LogFactory.getLog(classOf[TwitterLoginHandler])
 
   private val tokens = mutable.Map.empty[String, RequestToken]
 

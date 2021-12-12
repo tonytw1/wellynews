@@ -6,7 +6,7 @@ import nz.co.searchwellington.commentfeeds.CommentFeedDetectorService
 import nz.co.searchwellington.htmlparsing.RssLinkExtractor
 import nz.co.searchwellington.model.{DiscoveredFeed, DiscoveredFeedOccurrence, Resource}
 import nz.co.searchwellington.repositories.mongo.MongoRepository
-import org.apache.log4j.Logger
+import org.apache.commons.logging.LogFactory
 import org.joda.time.DateTime
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
@@ -18,7 +18,7 @@ import scala.concurrent.{ExecutionContext, Future}
                                                          commentFeedDetector: CommentFeedDetectorService)
   extends LinkCheckerProcessor with ReasonableWaits {
 
-  private val log = Logger.getLogger(classOf[FeedAutodiscoveryProcesser])
+  private val log = LogFactory.getLog(classOf[FeedAutodiscoveryProcesser])
 
   override def process(checkResource: Resource, pageContent: Option[String], seen: DateTime)(implicit ec: ExecutionContext): Future[Boolean] = {
     if (!checkResource.`type`.equals("F")) {

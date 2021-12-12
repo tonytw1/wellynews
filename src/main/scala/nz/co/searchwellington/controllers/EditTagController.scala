@@ -11,7 +11,7 @@ import nz.co.searchwellington.repositories.mongo.MongoRepository
 import nz.co.searchwellington.urls.UrlBuilder
 import nz.co.searchwellington.utils.StringWrangling
 import nz.co.searchwellington.views.Errors
-import org.apache.log4j.Logger
+import org.apache.commons.logging.LogFactory
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Controller
 import org.springframework.validation.{BindingResult, ObjectError}
@@ -34,7 +34,7 @@ class EditTagController @Autowired()(mongoRepository: MongoRepository, tagDAO: T
   extends ReasonableWaits with Errors with InputParsing with GeotagParsing with RequiringLoggedInUser
     with StringWrangling {
 
-  private val log = Logger.getLogger(classOf[EditTagController])
+  private val log = LogFactory.getLog(classOf[EditTagController])
 
   @GetMapping(Array("/edit-tag/{id}"))
   def prompt(@PathVariable id: String): ModelAndView = {

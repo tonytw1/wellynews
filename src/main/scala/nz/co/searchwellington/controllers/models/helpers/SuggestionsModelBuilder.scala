@@ -11,7 +11,7 @@ import nz.co.searchwellington.repositories.ContentRetrievalService
 import nz.co.searchwellington.repositories.mongo.MongoRepository
 import nz.co.searchwellington.signin.SigninController
 import nz.co.searchwellington.urls.UrlBuilder
-import org.apache.log4j.Logger
+import org.apache.commons.logging.LogFactory
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
 import org.springframework.web.servlet.ModelAndView
@@ -32,7 +32,7 @@ import scala.jdk.CollectionConverters._
   with ReasonableWaits {
 
   private val MAX_SUGGESTIONS = 50
-  private val log = Logger.getLogger(classOf[SigninController])
+  private val log = LogFactory.getLog(classOf[SigninController])
 
   def isValid(request: HttpServletRequest): Boolean = {
     RequestPath.getPathFrom(request).matches("^/feeds/inbox(/(rss|json))?$")

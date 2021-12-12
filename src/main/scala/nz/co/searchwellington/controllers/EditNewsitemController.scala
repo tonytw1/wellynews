@@ -9,7 +9,7 @@ import nz.co.searchwellington.modification.ContentUpdateService
 import nz.co.searchwellington.repositories.mongo.MongoRepository
 import nz.co.searchwellington.repositories.{HandTaggingService, TagDAO}
 import nz.co.searchwellington.views.Errors
-import org.apache.log4j.Logger
+import org.apache.commons.logging.LogFactory
 import org.joda.time.format.ISODateTimeFormat
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Controller
@@ -32,7 +32,7 @@ class EditNewsitemController @Autowired()(contentUpdateService: ContentUpdateSer
                                           handTaggingService: HandTaggingService)
   extends ReasonableWaits with AcceptancePolicyOptions with Errors with GeotagParsing with RequiringLoggedInUser {
 
-  private val log = Logger.getLogger(classOf[EditNewsitemController])
+  private val log = LogFactory.getLog(classOf[EditNewsitemController])
 
   private val formDateFormat = ISODateTimeFormat.basicDate
 

@@ -6,7 +6,7 @@ import javax.servlet.http.HttpServletRequest
 import nz.co.searchwellington.ReasonableWaits
 import nz.co.searchwellington.filters.RequestPath
 import nz.co.searchwellington.repositories.mongo.MongoRepository
-import org.apache.log4j.Logger
+import org.apache.commons.logging.LogFactory
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
 
@@ -16,7 +16,7 @@ import scala.concurrent.ExecutionContext.Implicits.global
 @Component class PublisherPageAttributeSetter @Autowired()(mongoRepository: MongoRepository)
   extends AttributeSetter with ReasonableWaits {
 
-  private val log = Logger.getLogger(classOf[PublisherPageAttributeSetter])
+  private val log = LogFactory.getLog(classOf[PublisherPageAttributeSetter])
   private val publisherPagePathPattern = Pattern.compile("^/(.*?)(/(geotagged|.*?-.*?))?(/(rss|json))?$")
 
   def setAttributes(request: HttpServletRequest): Boolean = {

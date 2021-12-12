@@ -4,7 +4,7 @@ import nz.co.searchwellington.ReasonableWaits
 import nz.co.searchwellington.model.Resource
 import nz.co.searchwellington.repositories.mongo.MongoRepository
 import nz.co.searchwellington.tagging.IndexTagsService
-import org.apache.log4j.Logger
+import org.apache.commons.logging.LogFactory
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
 import reactivemongo.api.bson.BSONObjectID
@@ -15,7 +15,7 @@ import scala.concurrent.{ExecutionContext, Future}
                                                                elasticSearchIndexer: ElasticSearchIndexer,
                                                                indexTagsService: IndexTagsService) extends ReasonableWaits {
 
-  private val log = Logger.getLogger(classOf[ElasticSearchIndexRebuildService])
+  private val log = LogFactory.getLog(classOf[ElasticSearchIndexRebuildService])
 
   private val BATCH_COMMIT_SIZE = 100
 

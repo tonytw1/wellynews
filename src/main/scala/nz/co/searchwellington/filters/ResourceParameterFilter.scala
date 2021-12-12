@@ -4,7 +4,7 @@ import com.google.common.base.Strings
 import javax.servlet.http.HttpServletRequest
 import nz.co.searchwellington.ReasonableWaits
 import nz.co.searchwellington.repositories.mongo.MongoRepository
-import org.apache.log4j.Logger
+import org.apache.commons.logging.LogFactory
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.context.annotation.Scope
 import org.springframework.stereotype.Component
@@ -15,7 +15,7 @@ import scala.concurrent.ExecutionContext.Implicits.global
 @Component
 @Scope("request") class ResourceParameterFilter @Autowired()(var mongoRepository: MongoRepository) extends RequestAttributeFilter with ReasonableWaits {
 
-  private val log = Logger.getLogger(classOf[ResourceParameterFilter])
+  private val log = LogFactory.getLog(classOf[ResourceParameterFilter])
 
   def filter(request: HttpServletRequest): Unit = {
 

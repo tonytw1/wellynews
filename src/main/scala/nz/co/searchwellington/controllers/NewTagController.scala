@@ -6,7 +6,7 @@ import nz.co.searchwellington.forms.NewTag
 import nz.co.searchwellington.model.{Tag, UrlWordsGenerator, User}
 import nz.co.searchwellington.repositories.mongo.MongoRepository
 import nz.co.searchwellington.urls.UrlBuilder
-import org.apache.log4j.Logger
+import org.apache.commons.logging.LogFactory
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Controller
 import org.springframework.validation.{BindingResult, ObjectError}
@@ -24,7 +24,7 @@ class NewTagController @Autowired()(mongoRepository: MongoRepository,
                                     val loggedInUserFilter: LoggedInUserFilter) extends ReasonableWaits
   with AcceptancePolicyOptions with InputParsing with RequiringLoggedInUser {
 
-  private val log = Logger.getLogger(classOf[NewTagController])
+  private val log = LogFactory.getLog(classOf[NewTagController])
 
   @GetMapping(Array("/new-tag"))
   def prompt(): ModelAndView = {

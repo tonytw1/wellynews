@@ -8,7 +8,7 @@ import nz.co.searchwellington.modification.ContentUpdateService
 import nz.co.searchwellington.repositories.ContentRetrievalService
 import nz.co.searchwellington.repositories.mongo.MongoRepository
 import nz.co.searchwellington.urls.UrlParser
-import org.apache.log4j.Logger
+import org.apache.commons.logging.LogFactory
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Controller
 import org.springframework.web.bind.annotation.{GetMapping, PostMapping}
@@ -26,7 +26,7 @@ import scala.concurrent.ExecutionContext.Implicits.global
                                                              val loggedInUserFilter: LoggedInUserFilter) extends
   ReasonableWaits with CommonModelObjectsService with RequiringLoggedInUser {
 
-  private val log = Logger.getLogger(classOf[PublisherAutoGatherController])
+  private val log = LogFactory.getLog(classOf[PublisherAutoGatherController])
 
   @GetMapping(Array("/admin/gather/prompt"))  // TODO incorrect path
   def prompt(request: HttpServletRequest): ModelAndView = {

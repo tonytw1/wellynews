@@ -7,7 +7,7 @@ import nz.co.searchwellington.model.User
 import nz.co.searchwellington.repositories.ContentRetrievalService
 import nz.co.searchwellington.tagging.RelatedTagsService
 import nz.co.searchwellington.urls.UrlBuilder
-import org.apache.log4j.Logger
+import org.apache.commons.logging.LogFactory
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
 import org.springframework.web.servlet.ModelAndView
@@ -25,7 +25,7 @@ import scala.jdk.CollectionConverters._
                                                     commonAttributesModelBuilder: CommonAttributesModelBuilder)
   extends ModelBuilder with CommonSizes with Pagination with ReasonableWaits {
 
-  private val log = Logger.getLogger(classOf[GeotaggedModelBuilder])
+  private val log = LogFactory.getLog(classOf[GeotaggedModelBuilder])
 
   private val HOW_FAR_IS_CLOSE_IN_KILOMETERS = 1.0
 

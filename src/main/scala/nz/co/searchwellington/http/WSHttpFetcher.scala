@@ -6,7 +6,7 @@ import akka.actor.ActorSystem
 import akka.stream.ActorMaterializer
 import nz.co.searchwellington.ReasonableWaits
 import nz.co.searchwellington.model.SiteInformation
-import org.apache.log4j.Logger
+import org.apache.commons.logging.LogFactory
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
 import play.api.libs.ws.ahc._
@@ -16,7 +16,7 @@ import scala.concurrent.{ExecutionContext, Future}
 @Component
 class WSHttpFetcher @Autowired()(siteInformation: SiteInformation) extends HttpFetcher with ReasonableWaits {
 
-  private val log = Logger.getLogger(classOf[WSHttpFetcher])
+  private val log = LogFactory.getLog(classOf[WSHttpFetcher])
 
   implicit val system: ActorSystem = ActorSystem()  // TODO what ec are these running in?
   implicit val materializer: ActorMaterializer = ActorMaterializer()

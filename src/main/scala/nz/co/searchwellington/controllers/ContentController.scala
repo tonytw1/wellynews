@@ -1,14 +1,14 @@
 package nz.co.searchwellington.controllers
 
-import javax.servlet.http.{HttpServletRequest, HttpServletResponse}
 import nz.co.searchwellington.controllers.models.ContentModelBuilderServiceFactory
-import org.apache.log4j.Logger
+import org.apache.commons.logging.LogFactory
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.core.annotation.Order
 import org.springframework.stereotype.Controller
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.servlet.ModelAndView
 
+import javax.servlet.http.{HttpServletRequest, HttpServletResponse}
 import scala.concurrent.Await
 import scala.concurrent.duration.{Duration, SECONDS}
 
@@ -16,7 +16,7 @@ import scala.concurrent.duration.{Duration, SECONDS}
 @Controller
 class ContentController @Autowired()(contentModelBuilderServiceFactory: ContentModelBuilderServiceFactory, urlStack: UrlStack, loggedInUserFilter: LoggedInUserFilter) {
 
-  private val log = Logger.getLogger(classOf[ContentController])
+  private val log = LogFactory.getLog(classOf[ContentController])
 
   private val contentModelBuilderService = contentModelBuilderServiceFactory.makeContentModelBuilderService()
 

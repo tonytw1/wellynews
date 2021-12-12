@@ -2,7 +2,7 @@ package nz.co.searchwellington.jobs
 
 import nz.co.searchwellington.model.User
 import nz.co.searchwellington.repositories.mongo.MongoRepository
-import org.apache.log4j.Logger
+import org.apache.commons.logging.LogFactory
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.scheduling.annotation.Scheduled
 import org.springframework.stereotype.Component
@@ -11,7 +11,7 @@ import scala.concurrent.ExecutionContext.Implicits.global
 
 @Component class DeleteAnonUsers @Autowired()(mongoRepository: MongoRepository) {
 
-  private val log = Logger.getLogger(classOf[DeleteAnonUsers])
+  private val log = LogFactory.getLog(classOf[DeleteAnonUsers])
 
   // Delete users with no submissions or taggings.
   // Typically these will be spammers who's spam contributions have been deleted

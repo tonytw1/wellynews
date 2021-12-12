@@ -9,7 +9,7 @@ import nz.co.searchwellington.repositories.mongo.MongoRepository
 import nz.co.searchwellington.repositories.{HandTaggingDAO, TagDAO}
 import nz.co.searchwellington.utils.{StringWrangling, UrlFilters}
 import org.apache.commons.lang.{StringEscapeUtils, StringUtils}
-import org.apache.log4j.Logger
+import org.apache.commons.logging.LogFactory
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
 import uk.co.eelpieconsulting.common.geo.model.OsmId
@@ -22,7 +22,7 @@ import scala.jdk.CollectionConverters.CollectionHasAsScala
                                                           osmIdParser: OsmIdParser, placeToGeocodeMapper: PlaceToGeocodeMapper,
                                                           mongoRepository: MongoRepository) extends ReasonableWaits with StringWrangling {
 
-  private val log = Logger.getLogger(classOf[SubmissionProcessingService])
+  private val log = LogFactory.getLog(classOf[SubmissionProcessingService])
 
   private val REQUEST_TITLE_NAME = "title"
   private val REQUEST_DATE_NAME = "date"

@@ -7,7 +7,7 @@ import nz.co.searchwellington.ReasonableWaits
 import nz.co.searchwellington.filters.RequestPath
 import nz.co.searchwellington.repositories.TagDAO
 import nz.co.searchwellington.repositories.mongo.MongoRepository
-import org.apache.log4j.Logger
+import org.apache.commons.logging.LogFactory
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
 
@@ -17,7 +17,7 @@ import scala.concurrent.ExecutionContext.Implicits.global
 @Component class TagPageAttributeSetter @Autowired()(var tagDAO: TagDAO, mongoRepository: MongoRepository) extends AttributeSetter
   with ReasonableWaits {
 
-  private val log = Logger.getLogger(classOf[TagPageAttributeSetter])
+  private val log = LogFactory.getLog(classOf[TagPageAttributeSetter])
   private val tagPagePathPattern = Pattern.compile("^/(.*?)(/(comment|geotagged|autotag))?(/(rss|json))?$")
 
   override def setAttributes(request: HttpServletRequest): Boolean = {

@@ -7,7 +7,7 @@ import nz.co.searchwellington.model.frontend.FrontendResource
 import nz.co.searchwellington.model.mappers.FrontendResourceMapper
 import nz.co.searchwellington.repositories.elasticsearch._
 import nz.co.searchwellington.repositories.mongo.MongoRepository
-import org.apache.log4j.Logger
+import org.apache.commons.logging.LogFactory
 import org.joda.time.{DateTime, Interval}
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
@@ -21,7 +21,7 @@ import scala.concurrent.{ExecutionContext, Future}
                                                       elasticSearchIndexer: ElasticSearchIndexer,
                                                       mongoRepository: MongoRepository) extends ReasonableWaits with CommonSizes {
 
-  private val log = Logger.getLogger(classOf[ContentRetrievalService])
+  private val log = LogFactory.getLog(classOf[ContentRetrievalService])
 
   val ALL_ITEMS = 1000
 

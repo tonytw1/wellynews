@@ -9,7 +9,7 @@ import nz.co.searchwellington.model.mappers.FrontendResourceMapper
 import nz.co.searchwellington.model.{Feed, FeedAcceptancePolicy, Newsitem, User}
 import nz.co.searchwellington.repositories.SuppressionDAO
 import nz.co.searchwellington.repositories.mongo.MongoRepository
-import org.apache.log4j.Logger
+import org.apache.commons.logging.LogFactory
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
 
@@ -23,7 +23,7 @@ import scala.concurrent.{ExecutionContext, Future}
                                                         suppressionDAO: SuppressionDAO) extends
   ReasonableWaits {
 
-  private val log = Logger.getLogger(classOf[SuggestedFeeditemsService])
+  private val log = LogFactory.getLog(classOf[SuggestedFeeditemsService])
 
   private val MaximumChannelPagesToScan = 5
 

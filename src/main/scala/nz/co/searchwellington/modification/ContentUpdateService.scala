@@ -4,7 +4,7 @@ import nz.co.searchwellington.model.Resource
 import nz.co.searchwellington.queues.LinkCheckerQueue
 import nz.co.searchwellington.repositories.FrontendContentUpdater
 import nz.co.searchwellington.repositories.mongo.MongoRepository
-import org.apache.log4j.Logger
+import org.apache.commons.logging.LogFactory
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
 
@@ -14,7 +14,7 @@ import scala.concurrent.{ExecutionContext, Future}
                                                    frontendContentUpdater: FrontendContentUpdater,
                                                    linkCheckerQueue: LinkCheckerQueue) {
 
-  private val log = Logger.getLogger(classOf[ContentUpdateService])
+  private val log = LogFactory.getLog(classOf[ContentUpdateService])
 
   def update(resource: Resource)(implicit ec: ExecutionContext): Future[Boolean] = {
     log.debug("Updating content for: " + resource.title + " - " + resource.http_status + " " + resource.page)

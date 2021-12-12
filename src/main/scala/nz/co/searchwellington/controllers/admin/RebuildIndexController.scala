@@ -6,7 +6,7 @@ import nz.co.searchwellington.controllers.{AcceptFeedItemController, LoggedInUse
 import nz.co.searchwellington.model.User
 import nz.co.searchwellington.repositories.elasticsearch.ElasticSearchIndexRebuildService
 import nz.co.searchwellington.repositories.mongo.MongoRepository
-import org.apache.log4j.Logger
+import org.apache.commons.logging.LogFactory
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.core.annotation.Order
 import org.springframework.stereotype.Controller
@@ -23,7 +23,7 @@ import scala.concurrent.ExecutionContext.Implicits.global
                                                       adminUrlBuilder: AdminUrlBuilder) extends ReasonableWaits
   with RequiringLoggedInUser {
 
-  private val log = Logger.getLogger(classOf[AcceptFeedItemController])
+  private val log = LogFactory.getLog(classOf[AcceptFeedItemController])
 
   @RequestMapping(value = Array("/admin/rebuild-index"), method = Array(RequestMethod.GET))
   def prompt(request: HttpServletRequest, response: HttpServletResponse): ModelAndView = {

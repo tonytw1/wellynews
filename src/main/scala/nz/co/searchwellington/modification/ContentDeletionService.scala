@@ -5,7 +5,7 @@ import nz.co.searchwellington.model._
 import nz.co.searchwellington.repositories.elasticsearch.ElasticSearchIndexer
 import nz.co.searchwellington.repositories.mongo.MongoRepository
 import nz.co.searchwellington.repositories.{HandTaggingDAO, SuppressionDAO}
-import org.apache.log4j.Logger
+import org.apache.commons.logging.LogFactory
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
 
@@ -18,7 +18,7 @@ import scala.concurrent.{Await, Future}
                                                      contentUpdateService: ContentUpdateService)
   extends ReasonableWaits {
 
-  private val log = Logger.getLogger(classOf[ContentDeletionService])
+  private val log = LogFactory.getLog(classOf[ContentDeletionService])
 
   def performDelete(resource: Resource): Boolean = {
     try {

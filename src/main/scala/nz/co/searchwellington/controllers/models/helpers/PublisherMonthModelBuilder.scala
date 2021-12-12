@@ -6,7 +6,6 @@ import nz.co.searchwellington.model.frontend.FrontendResource
 import nz.co.searchwellington.model.mappers.FrontendResourceMapper
 import nz.co.searchwellington.model.{PublisherArchiveLink, User, Website}
 import nz.co.searchwellington.repositories.ContentRetrievalService
-import org.apache.log4j.Logger
 import org.joda.time.Interval
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
@@ -22,10 +21,6 @@ import scala.jdk.CollectionConverters._
                                                          frontendResourceMapper: FrontendResourceMapper,
                                                          dateFormatter: DateFormatter, rssUrlBuilder: RssUrlBuilder)
   extends ModelBuilder with ArchiveMonth {
-
-  private val PublisherMonthPath = "/*/[0-9]+-.*?"
-
-  private val logger = Logger.getLogger(classOf[PublisherModelBuilder])
 
   override def isValid(request: HttpServletRequest): Boolean = {
     Option(request.getAttribute("publisher").asInstanceOf[Website]).flatMap { publisher =>

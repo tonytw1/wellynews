@@ -6,7 +6,7 @@ import nz.co.searchwellington.htmlparsing.TitleExtractor
 import nz.co.searchwellington.http.WSHttpFetcher
 import nz.co.searchwellington.repositories.elasticsearch.PublisherGuessingService
 import org.apache.commons.lang.StringEscapeUtils
-import org.apache.log4j.Logger
+import org.apache.commons.logging.LogFactory
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Controller
 import org.springframework.web.bind.annotation.GetMapping
@@ -23,7 +23,7 @@ class TitleAutocompleteAjaxController @Autowired()(viewFactory: ViewFactory, log
                                                    publisherGuessingService: PublisherGuessingService,
                                                    titleExtractor: TitleExtractor) extends ReasonableWaits {
 
-  private val log = Logger.getLogger(classOf[TitleAutocompleteAjaxController])
+  private val log = LogFactory.getLog(classOf[TitleAutocompleteAjaxController])
 
   @GetMapping(Array("/ajax/title-autofill"))
   def handleRequest(request: HttpServletRequest): ModelAndView = {

@@ -5,7 +5,7 @@ import nz.co.searchwellington.feeds.whakaoko.model.Category
 import nz.co.searchwellington.model.taggingvotes.HandTagging
 import nz.co.searchwellington.model.{Newsitem, Tag}
 import nz.co.searchwellington.repositories.mongo.MongoRepository
-import org.apache.log4j.Logger
+import org.apache.commons.logging.LogFactory
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
 
@@ -16,7 +16,7 @@ import scala.concurrent.{ExecutionContext, Future}
                                                  mongoRepository: MongoRepository)
   extends ReasonableWaits {
 
-  private val log = Logger.getLogger(classOf[AutoTaggingService])
+  private val log = LogFactory.getLog(classOf[AutoTaggingService])
 
   private val AUTOTAGGER_PROFILE_NAME = "autotagger"
 

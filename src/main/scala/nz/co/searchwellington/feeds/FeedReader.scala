@@ -5,7 +5,7 @@ import nz.co.searchwellington.feeds.whakaoko.WhakaokoFeedReader
 import nz.co.searchwellington.feeds.whakaoko.model.FeedItem
 import nz.co.searchwellington.model.{Feed, FeedAcceptancePolicy, Resource, User}
 import nz.co.searchwellington.modification.ContentUpdateService
-import org.apache.log4j.Logger
+import org.apache.commons.logging.LogFactory
 import org.joda.time.DateTime
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
@@ -19,7 +19,7 @@ import scala.concurrent.{ExecutionContext, Future}
                                          whakaokoFeedReader: WhakaokoFeedReader,
                                          feeditemToNewsItemService: FeeditemToNewsitemService) extends ReasonableWaits {
 
-  private val log = Logger.getLogger(classOf[FeedReader])
+  private val log = LogFactory.getLog(classOf[FeedReader])
 
   def processFeed(feed: Feed, loggedInUser: User)(implicit ec: ExecutionContext): Future[Int] = {
     processFeed(feed, loggedInUser, feed.getAcceptancePolicy)

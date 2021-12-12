@@ -3,13 +3,13 @@ package nz.co.searchwellington.controllers
 import javax.servlet.http.HttpServletRequest
 import nz.co.searchwellington.filters.RequestPath
 import nz.co.searchwellington.urls.UrlBuilder
-import org.apache.log4j.Logger
+import org.apache.commons.logging.LogFactory
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
 
 @Component class UrlStack @Autowired()(urlBuilder: UrlBuilder) {
 
-  private val log = Logger.getLogger(classOf[UrlStack])
+  private val log = LogFactory.getLog(classOf[UrlStack])
 
   def getExitUrlFromStack(request: HttpServletRequest): String = {
     Option(request.getSession.getAttribute("url").asInstanceOf[String]).map { uri =>

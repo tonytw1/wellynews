@@ -1,6 +1,6 @@
 package nz.co.searchwellington.linkchecking
 import nz.co.searchwellington.model.Resource
-import org.apache.log4j.Logger
+import org.apache.commons.logging.LogFactory
 import org.htmlparser.filters.{AndFilter, HasAttributeFilter, NodeClassFilter, TagNameFilter}
 import org.htmlparser.{Parser, Tag}
 import org.joda.time.DateTime
@@ -12,7 +12,7 @@ import scala.util.{Failure, Success, Try}
 @Component
 class TwitterPhotoDetector extends LinkCheckerProcessor {
 
-  private val log = Logger.getLogger(classOf[TwitterPhotoDetector])
+  private val log = LogFactory.getLog(classOf[TwitterPhotoDetector])
 
   private val metaTags = new AndFilter(new TagNameFilter("META"), new NodeClassFilter(classOf[Tag]))
   private val twitterPhotoMetaTags = new AndFilter(metaTags, new HasAttributeFilter("name", "twitter:image"))

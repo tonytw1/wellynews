@@ -7,7 +7,7 @@ import nz.co.searchwellington.model.{Tag, User, Website}
 import nz.co.searchwellington.repositories.ContentRetrievalService
 import nz.co.searchwellington.tagging.RelatedTagsService
 import nz.co.searchwellington.urls.UrlBuilder
-import org.apache.log4j.Logger
+import org.apache.commons.logging.LogFactory
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
 import org.springframework.web.servlet.ModelAndView
@@ -22,7 +22,7 @@ import scala.jdk.CollectionConverters._
                                                                frontendResourceMapper: FrontendResourceMapper) extends ModelBuilder
   with CommonSizes with ReasonableWaits with Pagination {
 
-  private val logger = Logger.getLogger(classOf[PublisherTagCombinerModelBuilder])
+  private val log = LogFactory.getLog(classOf[PublisherTagCombinerModelBuilder])
 
   def isValid(request: HttpServletRequest): Boolean = {
     val tag = request.getAttribute("tag").asInstanceOf[Tag]
@@ -31,7 +31,7 @@ import scala.jdk.CollectionConverters._
   }
 
   def populateContentModel(request: HttpServletRequest, loggedInUser: Option[User]): Future[Option[ModelAndView]] = {
-    logger.info("Building publisher tag combiner page model")
+    log.info("Building publisher tag combiner page model")
     val tag = request.getAttribute("tag").asInstanceOf[Tag]
     val publisher = request.getAttribute("publisher").asInstanceOf[Website]
     val eventualFrontendPublisher = frontendResourceMapper.createFrontendResourceFrom(publisher)

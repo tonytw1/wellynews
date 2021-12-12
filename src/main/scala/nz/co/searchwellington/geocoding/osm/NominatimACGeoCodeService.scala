@@ -4,7 +4,7 @@ import akka.actor.ActorSystem
 import akka.stream.ActorMaterializer
 import nz.co.searchwellington.ReasonableWaits
 import org.apache.http.HttpStatus
-import org.apache.log4j.Logger
+import org.apache.commons.logging.LogFactory
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
 import play.api.libs.json.{Json, Reads}
@@ -16,7 +16,7 @@ import scala.concurrent.{Await, ExecutionContext}
 @Component
 class NominatimACGeoCodeService @Autowired()() extends GeoCodeService with ReasonableWaits {
 
-  private val log = Logger.getLogger(classOf[NominatimACGeoCodeService])
+  private val log = LogFactory.getLog(classOf[NominatimACGeoCodeService])
 
   implicit val system: ActorSystem = ActorSystem()
   implicit val materializer: ActorMaterializer = ActorMaterializer()

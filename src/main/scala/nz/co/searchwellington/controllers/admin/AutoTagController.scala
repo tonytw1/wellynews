@@ -10,7 +10,7 @@ import nz.co.searchwellington.modification.ContentUpdateService
 import nz.co.searchwellington.repositories.mongo.MongoRepository
 import nz.co.searchwellington.repositories.{ContentRetrievalService, HandTaggingService}
 import nz.co.searchwellington.tagging.ImpliedTagService
-import org.apache.log4j.Logger
+import org.apache.commons.logging.LogFactory
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Controller
 import org.springframework.web.bind.annotation.{RequestMapping, RequestMethod}
@@ -31,7 +31,7 @@ import scala.jdk.CollectionConverters._
                                                  frontendResourceMapper: FrontendResourceMapper)
   extends ReasonableWaits with CommonModelObjectsService with RequiringLoggedInUser {
 
-  private val log = Logger.getLogger(classOf[AutoTagController])
+  private val log = LogFactory.getLog(classOf[AutoTagController])
 
   @RequestMapping(Array("/*/autotag")) def prompt(request: HttpServletRequest, response: HttpServletResponse): ModelAndView = {
     def prompt(loggedInUser: User): ModelAndView = {

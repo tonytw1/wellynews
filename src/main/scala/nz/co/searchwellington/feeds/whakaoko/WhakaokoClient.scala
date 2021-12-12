@@ -5,7 +5,7 @@ import akka.stream.ActorMaterializer
 import nz.co.searchwellington.ReasonableWaits
 import nz.co.searchwellington.feeds.whakaoko.model.{Category, FeedItem, LatLong, Place, Subscription}
 import org.apache.http.HttpStatus
-import org.apache.log4j.Logger
+import org.apache.commons.logging.LogFactory
 import org.joda.time.{DateTime, Duration}
 import org.springframework.beans.factory.annotation.{Autowired, Value}
 import org.springframework.stereotype.Component
@@ -21,7 +21,7 @@ class WhakaokoClient @Autowired()(@Value("${whakaoko.url}") whakaokoUrl: String,
                                   @Value("${whakaoko.channel}") whakaokoChannel: String,
                                   @Value("${whakaoko.token}") whakaokoToken: String) extends ReasonableWaits {
 
-  private val log = Logger.getLogger(classOf[WhakaokoClient])
+  private val log = LogFactory.getLog(classOf[WhakaokoClient])
 
   private val ApplicationJsonHeader = "Content-Type" -> "application/json; charset=UTF8"
 

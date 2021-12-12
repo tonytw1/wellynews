@@ -7,7 +7,7 @@ import nz.co.searchwellington.filters.AdminRequestFilter
 import nz.co.searchwellington.model.{Feed, FeedAcceptancePolicy, User}
 import nz.co.searchwellington.permissions.EditPermissionService
 import nz.co.searchwellington.urls.UrlBuilder
-import org.apache.log4j.Logger
+import org.apache.commons.logging.LogFactory
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Controller
 import org.springframework.web.bind.annotation.RequestMapping
@@ -20,7 +20,7 @@ import scala.concurrent.ExecutionContext.Implicits.global
                                                    editPermissionService: EditPermissionService, val loggedInUserFilter: LoggedInUserFilter)
   extends RequiringLoggedInUser {
 
-  private val log = Logger.getLogger(classOf[AdminFeedController])
+  private val log = LogFactory.getLog(classOf[AdminFeedController])
 
   @RequestMapping(Array("/admin/feed/accept-all"))
   def acceptAllFrom(request: HttpServletRequest): ModelAndView = {

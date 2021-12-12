@@ -1,7 +1,7 @@
 package nz.co.searchwellington.queues
 
 import io.micrometer.core.instrument.MeterRegistry
-import org.apache.log4j.Logger
+import org.apache.commons.logging.LogFactory
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
 
@@ -9,7 +9,7 @@ import org.springframework.stereotype.Component
 class LinkCheckerQueue @Autowired()(val rabbitConnectionFactory: RabbitConnectionFactory, val registry: MeterRegistry) {
   // Try to hide our current use of rabbitmq from the rest of the application
 
-  private val log = Logger.getLogger(classOf[LinkCheckerQueue])
+  private val log = LogFactory.getLog(classOf[LinkCheckerQueue])
 
   private val channel = rabbitConnectionFactory.connect.createChannel
   private val queuedCounter = registry.counter("linkchecker_queued")

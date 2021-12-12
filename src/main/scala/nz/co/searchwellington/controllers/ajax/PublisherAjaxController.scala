@@ -3,7 +3,7 @@ package nz.co.searchwellington.controllers.ajax
 import nz.co.searchwellington.controllers.LoggedInUserFilter
 import nz.co.searchwellington.model.User
 import nz.co.searchwellington.repositories.ContentRetrievalService
-import org.apache.log4j.Logger
+import org.apache.commons.logging.LogFactory
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Controller
 import org.springframework.web.bind.annotation.GetMapping
@@ -19,7 +19,7 @@ import scala.concurrent.Future
                                                        contentRetrievalService: ContentRetrievalService)
   extends BaseAjaxController {
 
-  private val log = Logger.getLogger(classOf[PublisherAjaxController])
+  private val log = LogFactory.getLog(classOf[PublisherAjaxController])
 
   @GetMapping(Array("/ajax/publishers"))
   override def handleRequest(request: HttpServletRequest, response: HttpServletResponse): ModelAndView = {

@@ -5,7 +5,7 @@ import nz.co.searchwellington.model.Tag
 import nz.co.searchwellington.repositories.elasticsearch.ElasticSearchIndexRebuildService
 import nz.co.searchwellington.repositories.mongo.MongoRepository
 import nz.co.searchwellington.repositories.{HandTaggingService, TagDAO}
-import org.apache.log4j.Logger
+import org.apache.commons.logging.LogFactory
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
 
@@ -17,7 +17,7 @@ import scala.concurrent.{Await, ExecutionContext, Future}
                                                      val elasticSearchIndexRebuildService: ElasticSearchIndexRebuildService)
   extends ReasonableWaits {
 
-  private val log = Logger.getLogger(classOf[TagModificationService])
+  private val log = LogFactory.getLog(classOf[TagModificationService])
 
   def deleteTag(tag: Tag)(implicit ec: ExecutionContext): Boolean = {
     log.info("Deleting tag " + tag.getName)

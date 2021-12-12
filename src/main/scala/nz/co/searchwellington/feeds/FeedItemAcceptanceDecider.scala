@@ -3,7 +3,7 @@ package nz.co.searchwellington.feeds
 import nz.co.searchwellington.model.{FeedAcceptancePolicy, Newsitem}
 import nz.co.searchwellington.repositories.SuppressionDAO
 import nz.co.searchwellington.repositories.mongo.MongoRepository
-import org.apache.log4j.Logger
+import org.apache.commons.logging.LogFactory
 import org.joda.time.DateTime
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
@@ -12,7 +12,7 @@ import scala.concurrent.{ExecutionContext, Future}
 
 @Component class FeedItemAcceptanceDecider @Autowired()(mongoRepository: MongoRepository, suppressionDAO: SuppressionDAO) {
 
-  private val log = Logger.getLogger(classOf[FeedItemAcceptanceDecider])
+  private val log = LogFactory.getLog(classOf[FeedItemAcceptanceDecider])
 
   def getAcceptanceErrors(newsitem: Newsitem, acceptancePolicy: FeedAcceptancePolicy)(implicit ec: ExecutionContext): Future[Seq[String]] = {
     val cannotBeSuppressed: Newsitem => Future[Option[String]] = (newsitem: Newsitem) => {

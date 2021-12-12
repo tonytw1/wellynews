@@ -8,7 +8,7 @@ import nz.co.searchwellington.model.frontend.{FrontendNewsitem, FrontendResource
 import nz.co.searchwellington.model.mappers.FrontendResourceMapper
 import nz.co.searchwellington.model.{Feed, User}
 import nz.co.searchwellington.repositories.ContentRetrievalService
-import org.apache.log4j.Logger
+import org.apache.commons.logging.LogFactory
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
 import org.springframework.web.servlet.ModelAndView
@@ -27,7 +27,7 @@ import scala.jdk.CollectionConverters._
                                                whakaokoFeedReader: WhakaokoFeedReader,
                                                whakaokoService: WhakaokoService) extends ModelBuilder with ReasonableWaits {
 
-  private val log = Logger.getLogger(classOf[FeedModelBuilder])
+  private val log = LogFactory.getLog(classOf[FeedModelBuilder])
   private val FEED_ATTRIBUTE = "feedAttribute"
 
   def isValid(request: HttpServletRequest): Boolean = {

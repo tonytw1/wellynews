@@ -7,7 +7,7 @@ import nz.co.searchwellington.model.{UrlWordsGenerator, User, Website}
 import nz.co.searchwellington.modification.ContentUpdateService
 import nz.co.searchwellington.repositories.mongo.MongoRepository
 import nz.co.searchwellington.urls.{UrlBuilder, UrlCleaner}
-import org.apache.log4j.Logger
+import org.apache.commons.logging.LogFactory
 import org.joda.time.DateTime
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Controller
@@ -29,7 +29,7 @@ class NewWebsiteController @Autowired()(contentUpdateService: ContentUpdateServi
                                         val urlCleaner: UrlCleaner) extends ReasonableWaits
   with EnsuredSubmitter with EndUserInputs {
 
-  private val log = Logger.getLogger(classOf[NewWebsiteController])
+  private val log = LogFactory.getLog(classOf[NewWebsiteController])
 
   @GetMapping(Array("/new-website"))
   def prompt(): ModelAndView = renderNewWebsiteForm(new NewWebsite())

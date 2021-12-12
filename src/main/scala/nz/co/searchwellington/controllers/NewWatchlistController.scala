@@ -7,7 +7,7 @@ import nz.co.searchwellington.model.{UrlWordsGenerator, Watchlist}
 import nz.co.searchwellington.modification.ContentUpdateService
 import nz.co.searchwellington.repositories.mongo.MongoRepository
 import nz.co.searchwellington.urls.{UrlBuilder, UrlCleaner}
-import org.apache.log4j.Logger
+import org.apache.commons.logging.LogFactory
 import org.joda.time.DateTime
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Controller
@@ -29,7 +29,7 @@ class NewWatchlistController @Autowired()(contentUpdateService: ContentUpdateSer
                                           val urlCleaner: UrlCleaner) extends ReasonableWaits
                                           with EnsuredSubmitter with EndUserInputs {
 
-  private val log = Logger.getLogger(classOf[NewWatchlistController])
+  private val log = LogFactory.getLog(classOf[NewWatchlistController])
 
   @GetMapping(Array("/new-watchlist"))
   def prompt(): ModelAndView = {

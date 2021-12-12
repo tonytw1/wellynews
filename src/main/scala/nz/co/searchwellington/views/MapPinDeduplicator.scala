@@ -1,7 +1,7 @@
 package nz.co.searchwellington.views
 
 import nz.co.searchwellington.model.{Geocode, Newsitem}
-import org.apache.log4j.Logger
+import org.apache.commons.logging.LogFactory
 import org.springframework.stereotype.Component
 import uk.co.eelpieconsulting.common.geo.DistanceMeasuringService
 import uk.co.eelpieconsulting.common.geo.model.LatLong
@@ -9,7 +9,7 @@ import uk.co.eelpieconsulting.common.geo.model.LatLong
 @Component class MapPinDeduplicator() {
 
   private val ONE_HUNDRED_METERS = 0.1
-  private val log = Logger.getLogger(classOf[MapPinDeduplicator])
+  private val log = LogFactory.getLog(classOf[MapPinDeduplicator])
 
   private val distanceMeasuringService = new DistanceMeasuringService
 

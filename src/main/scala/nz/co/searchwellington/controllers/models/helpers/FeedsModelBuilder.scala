@@ -6,7 +6,7 @@ import nz.co.searchwellington.filters.RequestPath
 import nz.co.searchwellington.model.{FeedAcceptancePolicy, User}
 import nz.co.searchwellington.repositories.ContentRetrievalService
 import nz.co.searchwellington.urls.UrlBuilder
-import org.apache.log4j.Logger
+import org.apache.commons.logging.LogFactory
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
 import org.springframework.web.servlet.ModelAndView
@@ -22,7 +22,7 @@ import scala.jdk.CollectionConverters._
                                                 commonAttributesModelBuilder: CommonAttributesModelBuilder) extends ModelBuilder
   with ReasonableWaits {
 
-  private val log = Logger.getLogger(classOf[FeedsModelBuilder])
+  private val log = LogFactory.getLog(classOf[FeedsModelBuilder])
 
   private val maxDiscoveredFeedsToShow = 10
 

@@ -1,12 +1,12 @@
 package nz.co.searchwellington.controllers
 
 import nz.co.searchwellington.model.User
-import org.apache.log4j.Logger
+import org.apache.commons.logging.LogFactory
 import org.springframework.web.servlet.ModelAndView
 
 trait RequiringLoggedInUser {
 
-  private val log = Logger.getLogger(classOf[RequiringLoggedInUser])
+  private val log = LogFactory.getLog(classOf[RequiringLoggedInUser])
 
   def loggedInUserFilter: LoggedInUserFilter
 

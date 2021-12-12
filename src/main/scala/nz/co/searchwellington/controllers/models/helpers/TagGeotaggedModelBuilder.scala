@@ -6,7 +6,7 @@ import nz.co.searchwellington.filters.RequestPath
 import nz.co.searchwellington.model.{Tag, User}
 import nz.co.searchwellington.repositories.ContentRetrievalService
 import nz.co.searchwellington.urls.UrlBuilder
-import org.apache.log4j.Logger
+import org.apache.commons.logging.LogFactory
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
 import org.springframework.web.servlet.ModelAndView
@@ -21,7 +21,7 @@ import scala.jdk.CollectionConverters._
                                                        commonAttributesModelBuilder: CommonAttributesModelBuilder) extends ModelBuilder
   with CommonSizes with ReasonableWaits {
 
-  private val log = Logger.getLogger(classOf[TagGeotaggedModelBuilder])
+  private val log = LogFactory.getLog(classOf[TagGeotaggedModelBuilder])
 
   def isValid(request: HttpServletRequest): Boolean = {
     val tags = request.getAttribute("tags").asInstanceOf[Seq[Tag]]

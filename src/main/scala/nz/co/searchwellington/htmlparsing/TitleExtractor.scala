@@ -1,6 +1,6 @@
 package nz.co.searchwellington.htmlparsing
 
-import org.apache.log4j.Logger
+import org.apache.commons.logging.LogFactory
 import org.htmlparser.Parser
 import org.htmlparser.filters.TagNameFilter
 import org.htmlparser.util.ParserException
@@ -9,7 +9,7 @@ import org.springframework.stereotype.Component
 @Component
 class TitleExtractor {
 
-  private val log = Logger.getLogger(classOf[TitleExtractor])
+  private val log = LogFactory.getLog(classOf[TitleExtractor])
 
   def extractTitle(htmlPage: String): Option[String] = {
     try {

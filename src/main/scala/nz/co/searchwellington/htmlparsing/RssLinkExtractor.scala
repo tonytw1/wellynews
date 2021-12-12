@@ -1,7 +1,7 @@
 package nz.co.searchwellington.htmlparsing
 
 import org.apache.commons.lang.StringEscapeUtils
-import org.apache.log4j.Logger
+import org.apache.commons.logging.LogFactory
 import org.htmlparser.filters.{AndFilter, HasAttributeFilter, NodeClassFilter, TagNameFilter}
 import org.htmlparser.{Parser, Tag}
 import org.springframework.stereotype.Component
@@ -10,7 +10,7 @@ import scala.util.{Failure, Success, Try}
 
 @Component class RssLinkExtractor {
 
-  private val log = Logger.getLogger(classOf[RssLinkExtractor])
+  private val log = LogFactory.getLog(classOf[RssLinkExtractor])
 
   private val filterNode = new AndFilter(new TagNameFilter("LINK"), new AndFilter(new HasAttributeFilter("rel"), new HasAttributeFilter("href")))
   private val filter = new AndFilter(filterNode, new NodeClassFilter(classOf[Tag]))

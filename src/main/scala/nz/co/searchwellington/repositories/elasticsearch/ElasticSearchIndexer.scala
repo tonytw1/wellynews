@@ -13,7 +13,7 @@ import nz.co.searchwellington.ReasonableWaits
 import nz.co.searchwellington.controllers.ShowBrokenDecisionService
 import nz.co.searchwellington.model._
 import nz.co.searchwellington.tagging.IndexTagsService
-import org.apache.log4j.Logger
+import org.apache.commons.logging.LogFactory
 import org.joda.time.format.ISODateTimeFormat
 import org.joda.time.{DateTime, Interval}
 import org.springframework.beans.factory.annotation.{Autowired, Value}
@@ -40,7 +40,7 @@ class ElasticSearchIndexer @Autowired()(val showBrokenDecisionService: ShowBroke
 
   def byAcceptedDate(request: SearchRequest): SearchRequest = request sortByFieldDesc AcceptedDate
 
-  private val log = Logger.getLogger(classOf[ElasticSearchIndexer])
+  private val log = LogFactory.getLog(classOf[ElasticSearchIndexer])
 
   private val Index = elasticsearchIndex
 

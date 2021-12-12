@@ -7,7 +7,7 @@ import nz.co.searchwellington.model.Resource
 import nz.co.searchwellington.modification.ContentUpdateService
 import nz.co.searchwellington.repositories.mongo.MongoRepository
 import org.apache.commons.validator.UrlValidator
-import org.apache.log4j.Logger
+import org.apache.commons.logging.LogFactory
 import org.joda.time.DateTime
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
@@ -23,7 +23,7 @@ import scala.util.Try
                                           registry: MeterRegistry,
                                           processors: java.util.List[LinkCheckerProcessor]) extends ReasonableWaits {
 
-  private val log = Logger.getLogger(classOf[LinkChecker])
+  private val log = LogFactory.getLog(classOf[LinkChecker])
   private val CANT_CONNECT = -1
 
   private val checkedCounter = registry.counter("linkchecker_checked")

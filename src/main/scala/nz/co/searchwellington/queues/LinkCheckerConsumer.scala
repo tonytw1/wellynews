@@ -3,7 +3,7 @@ package nz.co.searchwellington.queues
 import com.rabbitmq.client.{AMQP, Channel, DefaultConsumer, Envelope}
 import io.micrometer.core.instrument.MeterRegistry
 import nz.co.searchwellington.linkchecking.LinkChecker
-import org.apache.log4j.Logger
+import org.apache.commons.logging.LogFactory
 import org.springframework.beans.factory.annotation.{Autowired, Qualifier}
 import org.springframework.core.task.TaskExecutor
 import org.springframework.stereotype.Component
@@ -14,7 +14,7 @@ import scala.concurrent.{ExecutionContext, ExecutionContextExecutor}
                                                   @Qualifier("linkCheckerTaskExecutor") linkCheckerTaskExecutor: TaskExecutor,
                                                   registry: MeterRegistry) {
 
-  private val log = Logger.getLogger(classOf[LinkCheckerConsumer])
+  private val log = LogFactory.getLog(classOf[LinkCheckerConsumer])
 
   private val pulledCounter = registry.counter("linkchecker_pulled")
 

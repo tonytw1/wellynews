@@ -2,7 +2,7 @@ package nz.co.searchwellington.linkchecking
 
 import nz.co.searchwellington.model.Resource
 import nz.co.searchwellington.utils.UrlFilters
-import org.apache.log4j.Logger
+import org.apache.commons.logging.LogFactory
 import org.joda.time.DateTime
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
@@ -11,7 +11,7 @@ import scala.concurrent.{ExecutionContext, Future}
 
 @Component class ContentHasChangedProcesser @Autowired()(snapshotArchive: InMemorySnapshotArchive) extends LinkCheckerProcessor {
 
-  private val log = Logger.getLogger(classOf[ContentHasChangedProcesser])
+  private val log = LogFactory.getLog(classOf[ContentHasChangedProcesser])
 
   override def process(checkResource: Resource, pageContent: Option[String], seen: DateTime)(implicit ec: ExecutionContext): Future[Boolean] = {
     checkForChangeUsingSnapshots(checkResource, pageContent)

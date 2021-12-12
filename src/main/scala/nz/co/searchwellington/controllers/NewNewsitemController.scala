@@ -8,7 +8,7 @@ import nz.co.searchwellington.model.{Newsitem, Website}
 import nz.co.searchwellington.modification.ContentUpdateService
 import nz.co.searchwellington.repositories.mongo.MongoRepository
 import nz.co.searchwellington.urls.{UrlBuilder, UrlCleaner}
-import org.apache.log4j.Logger
+import org.apache.commons.logging.LogFactory
 import org.joda.time.DateTime
 import org.joda.time.format.ISODateTimeFormat
 import org.springframework.beans.factory.annotation.Autowired
@@ -31,7 +31,7 @@ class NewNewsitemController @Autowired()(contentUpdateService: ContentUpdateServ
                                          val geocodeService: GeoCodeService) extends ReasonableWaits
                                          with EnsuredSubmitter with EndUserInputs with GeotagParsing {
 
-  private val log = Logger.getLogger(classOf[NewNewsitemController])
+  private val log = LogFactory.getLog(classOf[NewNewsitemController])
   private val dateFormatter = ISODateTimeFormat.basicDate()
 
   @GetMapping(Array("/new-newsitem"))

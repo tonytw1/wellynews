@@ -1,13 +1,13 @@
 package nz.co.searchwellington.commentfeeds
 
 import nz.co.searchwellington.commentfeeds.detectors.CommentFeedDetector
-import org.apache.log4j.Logger
+import org.apache.commons.logging.LogFactory
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
 
 @Component class CommentFeedDetectorService @Autowired()(detectors: Array[CommentFeedDetector]) {
 
-  private val log = Logger.getLogger(classOf[CommentFeedDetectorService])
+  private val log = LogFactory.getLog(classOf[CommentFeedDetectorService])
 
   log.info("Autowired " + detectors.length + " comment detectors: " + detectors.toSeq.map(_.getClass.getSimpleName).mkString(", "))
 
