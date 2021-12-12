@@ -12,7 +12,7 @@
 	
 	<div class="main">
 		<div class="rss">
-			#parse("includes/rss_widget_with_heading.vm")
+			#parse("includes/rss_widget.vm")
 		</div>
 
 		#if ($tags && $tags.size() > 1)

@@ -62,6 +62,7 @@ import scala.jdk.CollectionConverters._
             addObject(PAGE, page).
             addObject(TAG, tag).
             addObject("heading", tag.display_name).
+            addObject("rss_feed_label", tag.display_name.toLowerCase).
             addObject("description", rssUrlBuilder.getRssDescriptionForTag(tag)).
             addObject("link", urlBuilder.fullyQualified(urlBuilder.getTagUrl(tag))).
             addObject("parent", maybeParent.orNull)
