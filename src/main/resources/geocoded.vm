@@ -25,7 +25,6 @@
 			
 <form action="$siteInformation.url/geotagged">
 	<fieldset>
-	    $locationQuery
         <label for="geocode">Geocode:</label>
         <input id="geocode" name="geocode" />
         <br />

@@ -12,7 +12,7 @@ import org.junit.Test
 import org.mockito.Matchers._
 import org.mockito.Mockito.{mock, when}
 import org.springframework.mock.web.MockHttpServletRequest
-import uk.co.eelpieconsulting.common.geo.model.{LatLong, Place}
+import uk.co.eelpieconsulting.common.geo.model.{LatLong, OsmId, OsmType, Place}
 
 import scala.concurrent.{Await, Future}
 import scala.jdk.CollectionConverters._
@@ -29,7 +29,7 @@ class GeotaggedModelBuilderTest extends ReasonableWaits with ContentFields {
   private val newsitemsNearPetoneStationSecondPage: Seq[FrontendResource] = Seq.empty
 
   private val request = new MockHttpServletRequest
-  private val validLocation = new Place("Petone Station", new LatLong(1.1, 2.2), null)
+  private val validLocation = new Place("Petone Station", new LatLong(1.1, 2.2), new OsmId(123, OsmType.NODE))
   private val invalidLocation = new Place("No where", null, null)
 
   private val TOTAL_GEOTAGGED_COUNT = 512L
@@ -80,6 +80,10 @@ class GeotaggedModelBuilderTest extends ReasonableWaits with ContentFields {
     val modelAndView = Await.result(modelBuilder.populateContentModel(request), TenSeconds).get
 
     assertEquals(newsitemsNearPetoneStationFirstPage.asJava, modelAndView.getModel.get(MAIN_CONTENT))
+
+    // User selected location should be available to the view
+    assertEquals("Petone Station", modelAndView.getModel.get("location").asInstanceOf[Place].getAddress)
+    assertEquals(new OsmId(123, OsmType.NODE), modelAndView.getModel.get("location").asInstanceOf[Place].getOsmId)
   }
 
   @Test
