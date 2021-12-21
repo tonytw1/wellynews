@@ -8,7 +8,7 @@ import nz.co.searchwellington.model._
 import nz.co.searchwellington.repositories.mongo.MongoRepository
 import nz.co.searchwellington.repositories.{HandTaggingDAO, TagDAO}
 import nz.co.searchwellington.utils.{StringWrangling, UrlFilters}
-import org.apache.commons.lang.{StringEscapeUtils, StringUtils}
+import org.apache.commons.lang3.{StringEscapeUtils, StringUtils}
 import org.apache.commons.logging.LogFactory
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
@@ -67,7 +67,7 @@ import scala.jdk.CollectionConverters.CollectionHasAsScala
   def processDescription(request: HttpServletRequest, editResource: Resource): Unit = {
     var description = request.getParameter(REQUEST_DESCRIPTION_NAME)
     if (description != null) {
-      description = StringEscapeUtils.unescapeHtml(description)
+      description = StringEscapeUtils.unescapeHtml4(description)
       description = UrlFilters.stripHtml(description)
     }
     //editResource.setDescription(description)

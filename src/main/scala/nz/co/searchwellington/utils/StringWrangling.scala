@@ -1,7 +1,7 @@
 package nz.co.searchwellington.utils
 
 import com.google.common.base.{Splitter, Strings}
-import org.apache.commons.lang.StringUtils
+import org.apache.commons.lang3.StringUtils
 
 import scala.jdk.CollectionConverters.IterableHasAsScala
 

@@ -1,6 +1,6 @@
 package nz.co.searchwellington.htmlparsing
 
-import org.apache.commons.lang.StringEscapeUtils
+import org.apache.commons.lang3.StringEscapeUtils
 import org.apache.commons.logging.LogFactory
 import org.htmlparser.filters.{AndFilter, HasAttributeFilter, NodeClassFilter, TagNameFilter}
 import org.htmlparser.{Parser, Tag}
@@ -27,7 +27,7 @@ import scala.util.{Failure, Success, Try}
         }
 
         feedLinks.map { feedLink =>
-          StringEscapeUtils.unescapeHtml(feedLink.getAttribute("href"))
+          StringEscapeUtils.unescapeHtml4(feedLink.getAttribute("href"))
         }
       }
 
