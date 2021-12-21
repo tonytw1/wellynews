@@ -2,10 +2,10 @@ package nz.co.searchwellington.controllers
 
 import nz.co.searchwellington.model.{SiteInformation, UrlWordsGenerator}
 import nz.co.searchwellington.urls.UrlBuilder
-import org.apache.struts.mock.MockHttpServletRequest
 import org.joda.time.DateTimeZone
 import org.junit.Assert.assertEquals
 import org.junit.Test
+import org.springframework.mock.web.MockHttpServletRequest
 import uk.co.eelpieconsulting.common.dates.DateFormatter
 
 class UrlStackTest {

@@ -6,11 +6,10 @@ import nz.co.searchwellington.model.{Feed, Newsitem, UrlWordsGenerator, User}
 import nz.co.searchwellington.repositories.mongo.MongoRepository
 import nz.co.searchwellington.repositories.{HandTaggingDAO, TagDAO}
 import nz.co.searchwellington.urls.UrlCleaner
-import org.apache.struts.mock.MockHttpServletRequest
-import org.joda.time.{DateTime, DateTimeZone}
-import org.junit.{Before, Test}
-import org.mockito.Mockito.verify
+import org.joda.time.DateTimeZone
+import org.junit.Before
 import org.mockito.{Mock, MockitoAnnotations}
+import org.springframework.mock.web.MockHttpServletRequest
 import uk.co.eelpieconsulting.common.dates.DateFormatter
 
 import java.util.UUID

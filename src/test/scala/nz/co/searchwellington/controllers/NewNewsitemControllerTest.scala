@@ -6,12 +6,12 @@ import nz.co.searchwellington.model.{Newsitem, Resource, User, Website}
 import nz.co.searchwellington.modification.ContentUpdateService
 import nz.co.searchwellington.repositories.mongo.MongoRepository
 import nz.co.searchwellington.urls.{UrlBuilder, UrlCleaner}
-import org.apache.struts.mock.MockHttpServletRequest
 import org.joda.time.DateTime
 import org.junit.Assert.assertEquals
 import org.junit.Test
 import org.mockito.Mockito.{mock, verify, when}
 import org.mockito.{ArgumentCaptor, Matchers}
+import org.springframework.mock.web.MockHttpServletRequest
 import org.springframework.validation.BindingResult
 import reactivemongo.api.bson.BSONObjectID
 
