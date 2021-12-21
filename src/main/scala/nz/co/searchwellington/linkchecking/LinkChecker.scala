@@ -7,6 +7,7 @@ import nz.co.searchwellington.model.Resource
 import nz.co.searchwellington.modification.ContentUpdateService
 import nz.co.searchwellington.repositories.mongo.MongoRepository
 import org.apache.commons.logging.LogFactory
+import org.apache.commons.validator.routines.UrlValidator
 import org.joda.time.DateTime
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
@@ -24,6 +25,8 @@ import scala.util.Try
 
   private val log = LogFactory.getLog(classOf[LinkChecker])
   private val CANT_CONNECT = -1
+
+  private val urlValidator = new UrlValidator()
 
   private val checkedCounter = registry.counter("linkchecker_checked")
   private val failedCounter = registry.counter("linkchecker_failed")
@@ -98,13 +101,13 @@ import scala.util.Try
 
   def checkResource(resource: Resource)(implicit ec: ExecutionContext): Future[Boolean] = {
     val parsedUrl = {
-      //if TODO (new UrlValidator().isValid(resource.page)) {  // java.net.URL's construct is too permissive; ie. http:////
+      if (urlValidator.isValid(resource.page)) {  // java.net.URL's construct is too permissive; ie. http:////
         Try {
           new java.net.URL(resource.page)
         }.toOption
-    //  } else {
-      //  None
-     // }
+     } else {
+        None
+      }
     }
 
     parsedUrl.map { url =>

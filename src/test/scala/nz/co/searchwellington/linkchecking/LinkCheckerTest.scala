@@ -16,13 +16,13 @@ import scala.jdk.CollectionConverters._
 
 class LinkCheckerTest extends ReasonableWaits {
 
-  val mongoRepository = mock(classOf[MongoRepository])
-  val contentUpdateService = mock(classOf[ContentUpdateService])
-  val httpFetcher = mock(classOf[RobotsAwareHttpFetcher])
-  val feedAutodiscoveryProcesser = mock(classOf[FeedAutodiscoveryProcesser])
-  val twitterPhotoDetector = mock(classOf[TwitterPhotoDetector])
-  val contentHasChangedProcesser = mock(classOf[ContentHasChangedProcesser])
-  val meterRegistry = mock(classOf[MeterRegistry])
+  private val mongoRepository = mock(classOf[MongoRepository])
+  private val contentUpdateService = mock(classOf[ContentUpdateService])
+  private  val httpFetcher = mock(classOf[RobotsAwareHttpFetcher])
+  private val feedAutodiscoveryProcesser = mock(classOf[FeedAutodiscoveryProcesser])
+  private val twitterPhotoDetector = mock(classOf[TwitterPhotoDetector])
+  private val contentHasChangedProcesser = mock(classOf[ContentHasChangedProcesser])
+  private val meterRegistry = mock(classOf[MeterRegistry])
 
   @Test
   def returnsFalseForUnparsableResourceUrls(): Unit = {
