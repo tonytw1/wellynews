@@ -131,6 +131,7 @@ public class Main {
         Properties vp = new Properties();
         vp.setProperty("resource.loader", "class");
         vp.setProperty("class.resource.loader.class", "org.apache.velocity.runtime.resource.loader.ClasspathResourceLoader");
+        vp.setProperty("velocimacro.library", "spring.vm");
         velocityEngineFactory.setVelocityProperties(vp);
         return velocityEngineFactory;
     }
