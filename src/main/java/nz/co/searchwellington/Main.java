@@ -2,7 +2,10 @@ package nz.co.searchwellington;
 
 import nz.co.searchwellington.commentfeeds.detectors.*;
 import nz.co.searchwellington.filters.RequestObjectLoadingFilter;
+import nz.co.searchwellington.model.SiteInformation;
+import nz.co.searchwellington.urls.UrlBuilder;
 import org.apache.log4j.Logger;
+import org.apache.velocity.spring.VelocityEngineFactoryBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.SpringApplication;
@@ -21,6 +24,7 @@ import uk.co.eelpieconsulting.common.caching.MemcachedCache;
 import uk.co.eelpieconsulting.common.dates.DateFormatter;
 
 import java.io.IOException;
+import java.util.Properties;
 
 @SpringBootApplication
 @EnableAutoConfiguration(exclude = {DataSourceAutoConfiguration.class})
@@ -119,6 +123,16 @@ public class Main {
     @Bean
     public DateFormatter dateFormatter() {
         return new uk.co.eelpieconsulting.common.dates.DateFormatter("Europe/London");
+    }
+
+    @Bean("velocityEngine")
+    public VelocityEngineFactoryBean velocityEngineFactoryBean(@Autowired UrlBuilder urlBuilder, SiteInformation siteInformation) throws Exception {
+        VelocityEngineFactoryBean velocityEngineFactory= new VelocityEngineFactoryBean();
+        Properties vp = new Properties();
+        vp.setProperty("resource.loader", "class");
+        vp.setProperty("class.resource.loader.class", "org.apache.velocity.runtime.resource.loader.ClasspathResourceLoader");
+        velocityEngineFactory.setVelocityProperties(vp);
+        return velocityEngineFactory;
     }
 
 }
