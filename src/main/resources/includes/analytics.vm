@@ -1,4 +1,4 @@
-#if (!$loggedInUserFilter.loggedInUser)
+#if (!$loggedInUser)
 	$siteInformation.trackingCode
 #else
 <!-- Stats disabled -->

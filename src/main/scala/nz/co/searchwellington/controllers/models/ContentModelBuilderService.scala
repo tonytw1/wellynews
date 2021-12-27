@@ -25,6 +25,8 @@ class ContentModelBuilderService(viewFactory: ViewFactory,
       log.info("Using " + mb.getClass.getName + " to serve path: " + RequestPath.getPathFrom(request))
       mb.populateContentModel(request, loggedInUser).flatMap { eventualMaybeModelAndView =>
         eventualMaybeModelAndView.map { mv =>
+          mv.addObject("loggedInUser", loggedInUser.orNull)
+
           val path = RequestPath.getPathFrom(request)
           if (path.endsWith("/rss")) {
             Future.successful(Some(rssViewOf(mv)))

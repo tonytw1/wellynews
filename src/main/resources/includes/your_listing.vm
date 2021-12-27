@@ -3,13 +3,12 @@
 	<div class="box">
 	<h2>Your Submissions</h2>
 
-	#if ($loggedInUserFilter.getLoggedInUser().isUnlinkedAccount()) 		
+	#if ($loggedInUser.isUnlinkedAccount())
 		<p>
 			You have submitted an item or made changes as an anonomous temporary user.
 			If you'd like to keep ownership of these changes, 
-			<a href="$urlBuilder.getProfileUrl($loggedInUserFilter.getLoggedInUser())">you can register using an OpenID</a>.
+			<a href="$urlBuilder.getProfileUrl($loggedInUser)">you can register using an OpenID</a>.
 		</p>
-		
 	#end
 
 	<p>You have submitted these items:</p>

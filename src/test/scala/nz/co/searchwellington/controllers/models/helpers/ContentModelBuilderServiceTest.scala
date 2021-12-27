@@ -2,6 +2,7 @@ package nz.co.searchwellington.controllers.models.helpers
 
 import nz.co.searchwellington.ReasonableWaits
 import nz.co.searchwellington.controllers.models.ContentModelBuilderService
+import nz.co.searchwellington.model.User
 import nz.co.searchwellington.repositories.ContentRetrievalService
 import org.junit.Assert.assertEquals
 import org.junit.{Before, Test}
@@ -50,6 +51,29 @@ class ContentModelBuilderServiceTest extends ReasonableWaits {
     val result = Await.result(contentModelBuilderService.populateContentModel(request), TenSeconds)
 
     assertEquals(Some(validModelAndView), result)
+  }
+
+
+  @Test
+  def shouldSetLoggedInUser(): Unit = {
+    val loggedInUser = User(name = Some("A user"))
+
+    when(invalidModelBuilder.isValid(request)).thenReturn(false)
+    when(validModelBuilder.isValid(request)).thenReturn(true)
+    when(validModelBuilder.populateContentModel(request, Some(loggedInUser))).thenReturn(Future.successful(Some(validModelAndView)))
+    when(validModelBuilder.populateExtraModelContent(request, validModelAndView, Some(loggedInUser))).thenReturn(Future.successful(validModelAndView))
+
+    when(contentRetrievalService.getTopLevelTags).thenReturn(Future.successful(Seq.empty))
+    when(contentRetrievalService.getFeaturedTags).thenReturn(Future.successful(Seq.empty))
+
+    val contentModelBuilderService = new ContentModelBuilderService(viewFactory,
+      contentRetrievalService,
+      Seq(invalidModelBuilder, validModelBuilder)
+    )
+
+    val result = Await.result(contentModelBuilderService.populateContentModel(request, Some(loggedInUser)), TenSeconds)
+
+    assertEquals(loggedInUser, result.get.getModel().get("loggedInUser"))
   }
 
   @Test

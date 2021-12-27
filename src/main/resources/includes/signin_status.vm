@@ -1,9 +1,9 @@
 <div class="signinstatus">
 	<ul>
-	#if ($loggedInUserFilter.isSignedIn())
+	#if ($loggedInUser)
 		<li>Signed in as
-            #if ($loggedInUserFilter.getLoggedInUserOrNull().getProfilename())
-                <a href="$urlBuilder.getProfileUrl($loggedInUserFilter.getLoggedInUserOrNull())">$loggedInUserFilter.getLoggedInUserOrNull().getProfilename()</a>
+            #if ($loggedInUser.getProfilename())
+                <a href="$urlBuilder.getProfileUrl($loggedInUser)">$loggedInUser.getProfilename()</a>
             #else
                 <a href="$urlBuilder.getProfileUrl()">new user with no profile name</a>
             #end
