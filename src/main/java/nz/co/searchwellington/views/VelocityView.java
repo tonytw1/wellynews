@@ -5,6 +5,7 @@ import org.apache.velocity.spring.VelocityEngineUtils;
 import org.springframework.web.servlet.View;
 import org.springframework.web.servlet.support.RequestContext;
 
+import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.util.HashMap;
@@ -32,8 +33,10 @@ public class VelocityView extends VelocityEngineUtils implements View {
         combined.putAll(attributes);
 
         // Expose RequestContext instance for Spring macros.
+
+        ServletContext servletContext = null;   // TODO Should be sourced from a Spring abstract class to be sure
         combined.put(SPRING_MACRO_REQUEST_CONTEXT_ATTRIBUTE,
-                new RequestContext(httpServletRequest, httpServletResponse, null, combined));
+                new RequestContext(httpServletRequest, httpServletResponse, servletContext, combined));
 
         httpServletResponse.setContentType("text/html;charset=UTF-8");
         mergeTemplate(velocityEngine, viewname, "UTF-8", combined, httpServletResponse.getWriter());
