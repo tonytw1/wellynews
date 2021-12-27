@@ -26,6 +26,7 @@ public class VelocityView extends VelocityEngineUtils implements View {
         Map<String, Object> combined = new HashMap<>();
         combined.putAll(map);
         combined.putAll(attributes);
+        httpServletResponse.setContentType("text/html;charset=UTF-8");
         mergeTemplate(velocityEngine, viewname, "UTF-8", combined, httpServletResponse.getWriter());
     }
 }
