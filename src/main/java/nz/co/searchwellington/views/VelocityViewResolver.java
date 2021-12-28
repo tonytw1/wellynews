@@ -44,6 +44,7 @@ public class VelocityViewResolver extends AbstractTemplateViewResolver {
 
         setViewClass(requiredViewClass());
         setSuffix(".vm");
+        setContentType("text/html;charset=UTF-8");
     }
 
     @Override

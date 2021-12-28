@@ -126,7 +126,7 @@ public class Main {
     }
 
     @Bean("velocityEngine")
-    public VelocityEngineFactoryBean velocityEngineFactoryBean(@Autowired UrlBuilder urlBuilder, SiteInformation siteInformation) throws Exception {
+    public VelocityEngineFactoryBean velocityEngineFactoryBean() {
         VelocityEngineFactoryBean velocityEngineFactory= new VelocityEngineFactoryBean();
         Properties vp = new Properties();
         vp.setProperty("resource.loader", "class");
