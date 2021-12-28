@@ -55,6 +55,7 @@ public class VelocityViewResolver extends AbstractTemplateViewResolver {
     protected AbstractUrlBasedView buildView(String viewName) throws Exception {
         VelocityView view = (VelocityView) super.buildView(viewName);
 
+        // TODO push to config
         Map<String, Object> attributes = new HashMap<>();
         attributes.put("urlBuilder", urlBuilder);
         attributes.put("adminUrlBuilder", adminUrlBuilder);
