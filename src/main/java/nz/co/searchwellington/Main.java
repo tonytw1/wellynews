@@ -1,10 +1,7 @@
 package nz.co.searchwellington;
 
 import com.google.common.collect.Maps;
-import nz.co.searchwellington.backports.VelocityConfigurer;
-import nz.co.searchwellington.backports.VelocityViewResolver;
 import nz.co.searchwellington.commentfeeds.detectors.*;
-import nz.co.searchwellington.controllers.LoggedInUserFilter;
 import nz.co.searchwellington.controllers.RssUrlBuilder;
 import nz.co.searchwellington.controllers.admin.AdminUrlBuilder;
 import nz.co.searchwellington.filters.RequestObjectLoadingFilter;
@@ -13,9 +10,10 @@ import nz.co.searchwellington.permissions.EditPermissionService;
 import nz.co.searchwellington.urls.UrlBuilder;
 import nz.co.searchwellington.utils.EscapeTools;
 import nz.co.searchwellington.views.ColumnSplitter;
+import nz.co.searchwellington.views.VelocityViewResolver;
 import org.apache.log4j.Logger;
 import org.apache.velocity.app.Velocity;
-import org.apache.velocity.runtime.RuntimeConstants;
+import org.apache.velocity.spring.VelocityEngineFactoryBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.SpringApplication;
@@ -35,6 +33,7 @@ import uk.co.eelpieconsulting.common.dates.DateFormatter;
 
 import java.io.IOException;
 import java.util.Map;
+import java.util.Properties;
 
 @SpringBootApplication
 @EnableAutoConfiguration(exclude = {DataSourceAutoConfiguration.class})
@@ -141,23 +140,18 @@ public class Main {
             ColumnSplitter columnSplitter,
             DateFormatter dateFormatter,
             EditPermissionService editPermissionService,
-            LoggedInUserFilter loggedInUserFilter,
             RssUrlBuilder rssUrlBuilder,
             SiteInformation siteInformation,
             UrlBuilder urlBuilder) {
         final VelocityViewResolver viewResolver = new VelocityViewResolver();
-        viewResolver.setCache(true);
-        viewResolver.setPrefix("");
         viewResolver.setSuffix(".vm");
         viewResolver.setContentType("text/html;charset=UTF-8");
-
         final Map<String, Object> attributes = Maps.newHashMap();
         attributes.put("adminUrlBuilder", adminUrlBuilder);
         attributes.put("columnSplitter", columnSplitter);
         attributes.put("dateFormatter", dateFormatter);
         attributes.put("editPermissionService", editPermissionService);
         attributes.put("escape", new EscapeTools());
-        attributes.put("loggedInUserFilter", loggedInUserFilter);   // TODO not very functional
         attributes.put("rssUrlBuilder", rssUrlBuilder);
         attributes.put("siteInformation", siteInformation);
         attributes.put("urlBuilder", urlBuilder);
@@ -165,16 +159,17 @@ public class Main {
         return viewResolver;
     }
 
-    @Bean
-    public VelocityConfigurer velocityConfigurer() {
-        final VelocityConfigurer vc = new VelocityConfigurer();
-        final Map<String, Object> velocityPropertiesMap = Maps.newHashMap();
-        velocityPropertiesMap.put(Velocity.OUTPUT_ENCODING, "UTF-8");
-        velocityPropertiesMap.put(Velocity.INPUT_ENCODING, "UTF-8");
-        velocityPropertiesMap.put(RuntimeConstants.RESOURCE_LOADER, "classpath");
-        velocityPropertiesMap.put("eventhandler.referenceinsertion.class", "org.apache.velocity.app.event.implement.EscapeHtmlReference");
-        vc.setVelocityPropertiesMap(velocityPropertiesMap);
-        return vc;
+    @Bean("velocityEngine")
+    public VelocityEngineFactoryBean velocityEngineFactoryBean() {
+        VelocityEngineFactoryBean velocityEngineFactory= new VelocityEngineFactoryBean();
+        Properties vp = new Properties();
+        vp.setProperty(Velocity.INPUT_ENCODING, "UTF-8");
+        vp.setProperty(Velocity.EVENTHANDLER_REFERENCEINSERTION, "org.apache.velocity.app.event.implement.EscapeHtmlReference");
+        vp.setProperty("resource.loader", "class");
+        vp.setProperty("class.resource.loader.class", "org.apache.velocity.runtime.resource.loader.ClasspathResourceLoader");
+        vp.setProperty("velocimacro.library", "spring.vm");
+        velocityEngineFactory.setVelocityProperties(vp);
+        return velocityEngineFactory;
     }
 
 }
