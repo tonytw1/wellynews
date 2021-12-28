@@ -1,7 +1,16 @@
 package nz.co.searchwellington;
 
+import com.google.common.collect.Maps;
 import nz.co.searchwellington.commentfeeds.detectors.*;
+import nz.co.searchwellington.controllers.RssUrlBuilder;
+import nz.co.searchwellington.controllers.admin.AdminUrlBuilder;
 import nz.co.searchwellington.filters.RequestObjectLoadingFilter;
+import nz.co.searchwellington.model.SiteInformation;
+import nz.co.searchwellington.permissions.EditPermissionService;
+import nz.co.searchwellington.urls.UrlBuilder;
+import nz.co.searchwellington.utils.EscapeTools;
+import nz.co.searchwellington.views.ColumnSplitter;
+import nz.co.searchwellington.views.VelocityViewResolver;
 import org.apache.log4j.Logger;
 import org.apache.velocity.app.Velocity;
 import org.apache.velocity.spring.VelocityEngineFactoryBean;
@@ -23,6 +32,7 @@ import uk.co.eelpieconsulting.common.caching.MemcachedCache;
 import uk.co.eelpieconsulting.common.dates.DateFormatter;
 
 import java.io.IOException;
+import java.util.Map;
 import java.util.Properties;
 
 @SpringBootApplication
@@ -122,6 +132,31 @@ public class Main {
     @Bean
     public DateFormatter dateFormatter() {
         return new uk.co.eelpieconsulting.common.dates.DateFormatter("Europe/London");
+    }
+
+    @Bean
+    public VelocityViewResolver velocityViewResolver(
+            AdminUrlBuilder adminUrlBuilder,
+            ColumnSplitter columnSplitter,
+            DateFormatter dateFormatter,
+            EditPermissionService editPermissionService,
+            RssUrlBuilder rssUrlBuilder,
+            SiteInformation siteInformation,
+            UrlBuilder urlBuilder) {
+        final VelocityViewResolver viewResolver = new VelocityViewResolver();
+        viewResolver.setSuffix(".vm");
+        viewResolver.setContentType("text/html;charset=UTF-8");
+        final Map<String, Object> attributes = Maps.newHashMap();
+        attributes.put("adminUrlBuilder", adminUrlBuilder);
+        attributes.put("columnSplitter", columnSplitter);
+        attributes.put("dateFormatter", dateFormatter);
+        attributes.put("editPermissionService", editPermissionService);
+        attributes.put("escape", new EscapeTools());
+        attributes.put("rssUrlBuilder", rssUrlBuilder);
+        attributes.put("siteInformation", siteInformation);
+        attributes.put("urlBuilder", urlBuilder);
+        viewResolver.setAttributesMap(attributes);
+        return viewResolver;
     }
 
     @Bean("velocityEngine")
