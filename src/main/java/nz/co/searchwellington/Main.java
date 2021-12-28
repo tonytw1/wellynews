@@ -2,9 +2,8 @@ package nz.co.searchwellington;
 
 import nz.co.searchwellington.commentfeeds.detectors.*;
 import nz.co.searchwellington.filters.RequestObjectLoadingFilter;
-import nz.co.searchwellington.model.SiteInformation;
-import nz.co.searchwellington.urls.UrlBuilder;
 import org.apache.log4j.Logger;
+import org.apache.velocity.app.Velocity;
 import org.apache.velocity.spring.VelocityEngineFactoryBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -129,6 +128,8 @@ public class Main {
     public VelocityEngineFactoryBean velocityEngineFactoryBean() {
         VelocityEngineFactoryBean velocityEngineFactory= new VelocityEngineFactoryBean();
         Properties vp = new Properties();
+        vp.setProperty(Velocity.INPUT_ENCODING, "UTF-8");
+        vp.setProperty(Velocity.EVENTHANDLER_REFERENCEINSERTION, "org.apache.velocity.app.event.implement.EscapeHtmlReference");
         vp.setProperty("resource.loader", "class");
         vp.setProperty("class.resource.loader.class", "org.apache.velocity.runtime.resource.loader.ClasspathResourceLoader");
         vp.setProperty("velocimacro.library", "spring.vm");
