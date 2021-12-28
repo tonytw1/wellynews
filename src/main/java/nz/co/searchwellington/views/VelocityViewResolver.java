@@ -5,17 +5,19 @@ import nz.co.searchwellington.controllers.admin.AdminUrlBuilder;
 import nz.co.searchwellington.model.SiteInformation;
 import nz.co.searchwellington.permissions.EditPermissionService;
 import nz.co.searchwellington.urls.UrlBuilder;
-import org.apache.velocity.app.VelocityEngine;
+import nz.co.searchwellington.utils.EscapeTools;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.view.AbstractTemplateViewResolver;
+import org.springframework.web.servlet.view.AbstractUrlBasedView;
 import uk.co.eelpieconsulting.common.dates.DateFormatter;
+
+import java.util.HashMap;
+import java.util.Map;
 
 @Component("viewResolver")
 public class VelocityViewResolver extends AbstractTemplateViewResolver {
 
-    private final VelocityEngine velocityEngine;
-    private VelocityEngineUtils velocityEngineUtils;
     private AdminUrlBuilder adminUrlBuilder;
     private ColumnSplitter columnSplitter;
     private DateFormatter dateFormatter;
@@ -25,17 +27,13 @@ public class VelocityViewResolver extends AbstractTemplateViewResolver {
     private UrlBuilder urlBuilder;
 
     @Autowired
-    public VelocityViewResolver(VelocityEngine velocityEngine,
-                                VelocityEngineUtils velocityEngineUtils,
-                                AdminUrlBuilder adminUrlBuilder,
+    public VelocityViewResolver(AdminUrlBuilder adminUrlBuilder,
                                 ColumnSplitter columnSplitter,
                                 DateFormatter dateFormatter,
                                 EditPermissionService editPermissionService,
                                 RssUrlBuilder rssUrlBuilder,
                                 SiteInformation siteInformation,
                                 UrlBuilder urlBuilder) {
-        this.velocityEngine = velocityEngine;
-        this.velocityEngineUtils = velocityEngineUtils;
         this.adminUrlBuilder = adminUrlBuilder;
         this.columnSplitter = columnSplitter;
         this.dateFormatter = dateFormatter;
@@ -48,9 +46,15 @@ public class VelocityViewResolver extends AbstractTemplateViewResolver {
         setSuffix(".vm");
     }
 
-    /*
     @Override
-    public View resolveViewName(String viewname, Locale locale) throws Exception {
+    protected Class<?> requiredViewClass() {
+        return VelocityView.class;
+    }
+
+    @Override
+    protected AbstractUrlBasedView buildView(String viewName) throws Exception {
+        VelocityView view = (VelocityView) super.buildView(viewName);
+
         Map<String, Object> attributes = new HashMap<>();
         attributes.put("urlBuilder", urlBuilder);
         attributes.put("adminUrlBuilder", adminUrlBuilder);
@@ -60,15 +64,9 @@ public class VelocityViewResolver extends AbstractTemplateViewResolver {
         attributes.put("escape", new EscapeTools());    // TODO still used?
         attributes.put("rssUrlBuilder", rssUrlBuilder);
         attributes.put("siteInformation", siteInformation);
+        view.setAttributesMap(attributes);
 
-        return new VelocityView(viewname + ".vm", velocityEngine, attributes, velocityEngineUtils);
-    }
-
-     */
-
-    @Override
-    protected Class<?> requiredViewClass() {
-        return VelocityView.class;
+        return view;
     }
 
 }

@@ -10,24 +10,8 @@ import java.util.Map;
 
 public class VelocityView extends AbstractTemplateView {
 
-    /*
-    private final String viewname;
-    private final Map<String, Object> attributes;
-    private final VelocityEngine velocityEngine;
-    private final VelocityEngineUtils velocityEngineUtils;
-    */
-
     public VelocityView() {
     }
-
-    /*
-    public VelocityView(String viewname, VelocityEngine velocityEngine, Map<String, Object> attributes, VelocityEngineUtils velocityEngineUtils) {
-        this.viewname = viewname;
-        this.velocityEngine = velocityEngine;
-        this.attributes = attributes;   // TODO need to restore helper attributes
-        this.velocityEngineUtils = velocityEngineUtils;
-    }
-    */
 
     @Override
     protected void renderMergedTemplateModel(Map<String, Object> map, HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse) throws Exception {
