@@ -1,44 +1,43 @@
 package nz.co.searchwellington.views;
 
 import org.apache.velocity.app.VelocityEngine;
-import org.apache.velocity.spring.VelocityEngineUtils;
-import org.springframework.web.servlet.View;
-import org.springframework.web.servlet.support.RequestContext;
+import org.springframework.beans.factory.BeanFactoryUtils;
+import org.springframework.web.servlet.view.AbstractTemplateView;
 
-import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.util.HashMap;
 import java.util.Map;
 
-public class VelocityView extends VelocityEngineUtils implements View {
+public class VelocityView extends AbstractTemplateView {
 
-    // TODO is this still exists in a Spring abstract class we should work towards extending from it
-    private static final String SPRING_MACRO_REQUEST_CONTEXT_ATTRIBUTE = "springMacroRequestContext";
-
+    /*
     private final String viewname;
     private final Map<String, Object> attributes;
     private final VelocityEngine velocityEngine;
+    private final VelocityEngineUtils velocityEngineUtils;
+    */
 
-    public VelocityView(String viewname, VelocityEngine velocityEngine, Map<String, Object> attributes) {
+    public VelocityView() {
+    }
+
+    /*
+    public VelocityView(String viewname, VelocityEngine velocityEngine, Map<String, Object> attributes, VelocityEngineUtils velocityEngineUtils) {
         this.viewname = viewname;
         this.velocityEngine = velocityEngine;
-        this.attributes = attributes;
+        this.attributes = attributes;   // TODO need to restore helper attributes
+        this.velocityEngineUtils = velocityEngineUtils;
     }
+    */
 
     @Override
-    public void render(Map<String, ?> map, HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse) throws Exception {
-        Map<String, Object> combined = new HashMap<>();
-        combined.putAll(map);
-        combined.putAll(attributes);
+    protected void renderMergedTemplateModel(Map<String, Object> map, HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse) throws Exception {
+        // TODO move to creation time
+        VelocityEngine velocityEngine = BeanFactoryUtils.beanOfTypeIncludingAncestors(
+                obtainApplicationContext(), VelocityEngine.class, true, false);
+        VelocityEngineUtils velocityEngineUtils = BeanFactoryUtils.beanOfTypeIncludingAncestors(
+                obtainApplicationContext(), VelocityEngineUtils.class, true, false);
 
-        // Expose RequestContext instance for Spring macros.
-
-        ServletContext servletContext = null;   // TODO Should be sourced from a Spring abstract class to be sure
-        combined.put(SPRING_MACRO_REQUEST_CONTEXT_ATTRIBUTE,
-                new RequestContext(httpServletRequest, httpServletResponse, servletContext, combined));
-
-        httpServletResponse.setContentType("text/html;charset=UTF-8");
-        mergeTemplate(velocityEngine, viewname, "UTF-8", combined, httpServletResponse.getWriter());
+        velocityEngineUtils.mergeTemplate(velocityEngine, this.getUrl(), "UTF-8", map, httpServletResponse.getWriter());
     }
+
 }
