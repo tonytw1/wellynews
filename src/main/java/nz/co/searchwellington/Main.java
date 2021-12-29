@@ -144,6 +144,7 @@ public class Main {
             SiteInformation siteInformation,
             UrlBuilder urlBuilder) {
         final VelocityViewResolver viewResolver = new VelocityViewResolver();
+        viewResolver.setCache(true);
         viewResolver.setSuffix(".vm");
         viewResolver.setContentType("text/html;charset=UTF-8");
         final Map<String, Object> attributes = Maps.newHashMap();
