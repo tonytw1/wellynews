@@ -10,7 +10,7 @@
 
     <properties>
         <scala.version>2.13.7</scala.version>
-        <elastic4s.version>7.3.6</elastic4s.version>
+        <elastic4s.version>7.16.1</elastic4s.version>
         <jackson.version>2.11.4</jackson.version>
     </properties>
 
@@ -96,18 +96,18 @@
         <dependency>
             <groupId>org.reactivemongo</groupId>
             <artifactId>reactivemongo_2.13</artifactId>
-            <version>1.0.7</version>
+            <version>1.0.10</version>
         </dependency>
 
         <dependency>
             <groupId>com.sksamuel.elastic4s</groupId>
             <artifactId>elastic4s-core_2.13</artifactId>
-            <version>7.6.2</version>
+            <version>${elastic4s.version}</version>
         </dependency>
         <dependency>
             <groupId>com.sksamuel.elastic4s</groupId>
             <artifactId>elastic4s-client-esjava_2.13</artifactId>
-            <version>7.6.2</version>
+            <version>${elastic4s.version}</version>
         </dependency>
 
         <dependency>
