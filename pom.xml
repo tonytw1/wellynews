@@ -11,7 +11,7 @@
     <properties>
         <scala.version>2.13.7</scala.version>
         <elastic4s.version>7.16.1</elastic4s.version>
-        <jackson.version>2.11.4</jackson.version>
+        <jackson.version>2.12.5</jackson.version>
     </properties>
 
     <parent>
@@ -239,16 +239,6 @@
             <version>2.10.5</version>
         </dependency>
 
-        <dependency>
-            <groupId>com.fasterxml.jackson.core</groupId>
-            <artifactId>jackson-databind</artifactId>
-            <version>${jackson.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>com.fasterxml.jackson.core</groupId>
-            <artifactId>jackson-core</artifactId>
-            <version>${jackson.version}</version>
-        </dependency>
         <dependency>
             <groupId>com.fasterxml.jackson.core</groupId>
             <artifactId>jackson-annotations</artifactId>
