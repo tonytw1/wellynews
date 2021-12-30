@@ -6,12 +6,12 @@
     <artifactId>common-views</artifactId>
     <packaging>jar</packaging>
     <name>common-views</name>
-    <version>1.1.4</version>
+    <version>1.1.5</version>
     <description>Common JSON and RSS spring views</description>
 
     <properties>
-        <org.springframework.version>3.1.1.RELEASE</org.springframework.version>
-        <jackson.version>2.11.4</jackson.version>
+        <org.springframework.version>5.2.19.RELEASE</org.springframework.version>
+        <jackson.version>2.12.5</jackson.version>
     </properties>
 
     <repositories>
