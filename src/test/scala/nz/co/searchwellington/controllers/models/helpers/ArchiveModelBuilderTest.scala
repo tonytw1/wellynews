@@ -43,7 +43,7 @@ class ArchiveModelBuilderTest extends ReasonableWaits with ContentFields {
   }
 
   @Test
-  def indexPageMainContentIsTheArchiveMonthNewsitems(): Unit = {
+  def archivePageMainContentIsTheArchiveMonthNewsitems(): Unit = {
     val july = new DateTime(2020, 7, 1, 0, 0, DateTimeZone.UTC)
     val monthOfJuly = new Interval(july, july.plusMonths(1))
     when(contentRetrievalService.getNewsitemsForInterval(monthOfJuly, loggedInUser)).thenReturn(Future.successful(monthNewsitems))
@@ -51,7 +51,8 @@ class ArchiveModelBuilderTest extends ReasonableWaits with ContentFields {
     val mv = Await.result(modelBuilder.populateContentModel(request), TenSeconds).get
 
     assertEquals(monthNewsitems.asJava, mv.getModel.get(MAIN_CONTENT))
-    assertEquals("/rss", mv.getModel.get("rss_url"));
+    assertEquals("July 2020", mv.getModel.get("heading"))
+    assertEquals("/rss", mv.getModel.get("rss_url"))
   }
 
   @Test
