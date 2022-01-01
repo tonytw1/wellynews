@@ -94,17 +94,19 @@ import scala.jdk.CollectionConverters._
     feedOnRequest.map { feed =>
       val eventualFrontendFeed = frontendResourceMapper.createFrontendResourceFrom(feed, loggedInUser)
       val eventualFeedItems = feedItemsFor(feed)
-      val eventualMaybeSubscription = feed.whakaokoSubscription.map(subscriptionId => whakaokoService.getSubscription(subscriptionId)).getOrElse(Future.successful(None))
+      val eventualGetSubscriptionResult = feed.whakaokoSubscription.map(subscriptionId => whakaokoService.getSubscription(subscriptionId)).getOrElse(Future.successful(Right(None)))
 
       for {
         frontendFeed <- eventualFrontendFeed
         feedItems <- eventualFeedItems
-        maybeSubscription <- eventualMaybeSubscription
+        getSubscriptionResult <- eventualGetSubscriptionResult
 
       } yield {
+        val maybeMaybeSubscription = getSubscriptionResult.toOption.flatten
+
         val mv = new ModelAndView().
           addObject("feed", frontendFeed).
-          addObject("subscription", maybeSubscription.orNull)
+          addObject("subscription", maybeMaybeSubscription.orNull)
 
         commonAttributesModelBuilder.setRss(mv, feed.title.getOrElse(""), feed.page)
         populateFeedItems(mv, feedItems) // TODO inline

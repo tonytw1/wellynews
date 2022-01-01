@@ -28,8 +28,12 @@ import scala.concurrent.{ExecutionContext, Future}
 
   def getSubscriptions()(implicit ec: ExecutionContext): Future[Seq[Subscription]] = client.getChannelSubscriptions() // TODO catch errors
 
-  def getSubscription(subscriptionID: String)(implicit ec: ExecutionContext): Future[Option[Subscription]] = { // TODO catch errors
-    client.getSubscription(subscriptionID)
+  def getSubscription(subscriptionID: String)(implicit ec: ExecutionContext): Future[Either[String, Option[Subscription]]] = {
+    client.getSubscription(subscriptionID).map { r =>
+      Right(r)
+    }.recover{
+      case e: Throwable => Left(s"Failed to fetch subscription: ${e.getMessage}")
+    }
   }
 
   def getSubscriptionFeedItems(subscriptionId: String)(implicit ec: ExecutionContext): Future[Either[String, (Seq[FeedItem], Long)]] = {
