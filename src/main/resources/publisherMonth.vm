@@ -1,7 +1,7 @@
 #parse("includes/header.vm")
 
 <div class="page">
-	#parse("includes/topbar.vm")
+    #parse("includes/topbar.vm")
 <div class="left">
 
 #parse("includes/related_publisher_tags.vm")
@@ -14,17 +14,18 @@
         #parse("includes/rss_widget.vm")
     </div>
 
-    <h2><a href="$urlBuilder.getPublisherUrl($publisher)">$publisher.name</a> / $dateFormatter.fullMonthYear($month.start.toDate())</h2>
+    <h2><a href="$urlBuilder.getPublisherUrl($publisher)">$publisher.name</a> /
+        <a href="$urlBuilder.getIntervalUrl($month)">$dateFormatter.fullMonthYear($month.start.toDate())</a></h2>
 
     #set($page_content = $publisher)
     #if ($publisher.description)
         <p>$publisher.description</p>
     #end
-	#parse("includes/page_content_tags.vm")
+    #parse("includes/page_content_tags.vm")
 
-	<div class="main_content">
-		#parse("includes/main_content.vm")
-	</div>
+    <div class="main_content">
+        #parse("includes/main_content.vm")
+    </div>
 </div>
 
 <div class="right">
