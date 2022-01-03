@@ -25,12 +25,8 @@
 			
 <form action="$siteInformation.url/geotagged">
 	<fieldset>
-        <label for="geocode">Geocode:</label>
         <input id="geocode" name="geocode" />
-        <br />
-        <label for="osm">Selected geocode:</label>
-        <input id="osm" name="osm" />
-        <br />
+        <input id="osm" name="osm" type="hidden" />
 		<input type="submit" value="Search by location" />
 	</fieldset>
 </form>
