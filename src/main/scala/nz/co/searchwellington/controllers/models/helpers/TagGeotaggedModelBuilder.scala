@@ -56,7 +56,11 @@ import scala.jdk.CollectionConverters._
   }
 
   def populateExtraModelContent(request: HttpServletRequest, mv: ModelAndView, loggedInUser: Option[User]): Future[ModelAndView] = {
-    Future.successful(mv)
+    for {
+      mv <- withLatestNewsitems(mv, loggedInUser)
+    } yield {
+      mv
+    }
   }
 
   def getViewName(mv: ModelAndView, loggedInUser: Option[User]): String = "tagGeotagged"
