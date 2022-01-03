@@ -22,7 +22,9 @@ class ContentController @Autowired()(contentModelBuilderServiceFactory: ContentM
 
   // Ant-style path patterns
   @GetMapping(path = Array("/", "/*", "/search", "/archive/*", "/profiles/**", "/*/geotagged", "/feed/*",
-    "/feed/*/json", "/feeds/inbox", "/publishers", "/publishers/json", "/tags", "/tags/json", "/*/json", "/*/rss", "/newsitem/*",
+    "/feed/*/json", "/feeds/inbox", "/publishers", "/publishers/json", "/tags", "/tags/json", "/*/json", "/*/rss",
+    "/*/geotagged/rss", "/*/geotagged/json",
+    "/newsitem/*",
     "/{\\w+}/{year:\\d+}-{month:\\w+}"
   ))
   def normal(request: HttpServletRequest, response: HttpServletResponse): ModelAndView = {
