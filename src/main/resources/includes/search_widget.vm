@@ -2,11 +2,11 @@
     <fieldset>
         <input name="q" #if ($search_keywords) value="$search_keywords" #end />
         <input type="submit" value="Search" />
-        #if ($tag)
-            <input type="checkbox" name="tag" value="$tag.name">Just $tag.displayName
-        #end
         #if ($publisher)
-            <input type="checkbox" checked name="publisher" value="$publisher.urlWords">Just $publisher.name
+                    <input type="checkbox" checked name="publisher" value="$publisher.urlWords">Just $publisher.name
+                #end
+        #if ($tag)
+            <input type="checkbox" checked name="tag" value="$tag.name">Just $tag.displayName
         #end
     </fieldset>
 </form>
