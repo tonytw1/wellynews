@@ -56,8 +56,8 @@
 
                 #springBind("formObject.featured")
                 <label for="${status.expression}">Featured:</label>
-                <input name="${status.expression}" type="checkbox:" value="$!{status.value}" />
-                $!{status.value}
+                <input name="${status.expression}" type="checkbox" value="true"
+                    #if($status.value == "true") checked #end />
                 <br />
                 #foreach($error in $status.errorMessages)
                     <div class="alert">$error</div>
