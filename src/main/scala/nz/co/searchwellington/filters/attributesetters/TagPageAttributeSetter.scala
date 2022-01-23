@@ -18,7 +18,7 @@ import scala.concurrent.ExecutionContext.Implicits.global
   with ReasonableWaits {
 
   private val log = LogFactory.getLog(classOf[TagPageAttributeSetter])
-  private val tagPagePathPattern = Pattern.compile("^/(.*?)(/(comment|geotagged|autotag))?(/(rss|json))?$")
+  private val tagPagePathPattern = Pattern.compile("^/(.*?)(/(comment|geotagged|autotag|.*?-.*?))?(/(rss|json))?$")
 
   override def setAttributes(request: HttpServletRequest): Boolean = {
     log.debug("Looking for single tag path")

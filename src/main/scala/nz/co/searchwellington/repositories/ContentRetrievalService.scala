@@ -168,6 +168,11 @@ import scala.concurrent.{ExecutionContext, Future}
     elasticSearchIndexer.getResources(publisherNewsitemsForMonth, loggedInUser = loggedInUser).flatMap(i => fetchByIds(i._1, loggedInUser))
   }
 
+  def getNewsitemsForTagInterval(tag: Tag, interval: Interval, loggedInUser: Option[User])(implicit ec: ExecutionContext): Future[Seq[FrontendResource]] = {
+    val tagNewsitemsForMonth = ResourceQuery(`type` = newsitems, tags = Some(Set(tag)), interval = Some(interval), maxItems = ALL_ITEMS)
+    elasticSearchIndexer.getResources(tagNewsitemsForMonth, loggedInUser = loggedInUser).flatMap(i => fetchByIds(i._1, loggedInUser))
+  }
+
   def getPublishersForInterval(interval: Interval, loggedInUser: Option[User])(implicit ec: ExecutionContext): Future[Seq[(FrontendResource, Long)]] = {
 
     def getPublisherIdsAndCountsForInterval(interval: Interval, loggedInUser: Option[User]): Future[Seq[(String, Long)]] = {
