@@ -85,12 +85,12 @@ import scala.jdk.CollectionConverters._
     val frontendPublisher = mv.getModel.get("publisher").asInstanceOf[FrontendResource]
 
     val eventualPublisherWatchlist = contentRetrievalService.getPublisherWatchlist(publisher, loggedInUser)
-    val eventualArchiveLinks = contentRetrievalService.getPublisherArchiveMonths(publisher, loggedInUser)
+    val eventualPublisherArchiveLinks = contentRetrievalService.getPublisherArchiveMonths(publisher, loggedInUser)
     val eventualRelatedTagsForPublisher = relatedTagsService.getRelatedTagsForPublisher(publisher, loggedInUser)
 
     for {
       publisherWatchlist <- eventualPublisherWatchlist
-      archiveLinks <- eventualArchiveLinks
+      archiveLinks <- eventualPublisherArchiveLinks
       relatedTagsForPublisher <- eventualRelatedTagsForPublisher
       withSecondaryContent = {
         val publisherArchiveLinks = archiveLinks.map { a =>

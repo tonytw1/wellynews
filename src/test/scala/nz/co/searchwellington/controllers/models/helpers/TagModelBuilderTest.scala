@@ -3,21 +3,21 @@ package nz.co.searchwellington.controllers.models.helpers
 import nz.co.searchwellington.ReasonableWaits
 import nz.co.searchwellington.controllers.RssUrlBuilder
 import nz.co.searchwellington.model.frontend.{FrontendNewsitem, FrontendResource}
-import nz.co.searchwellington.model.{Geocode, SiteInformation, Tag, UrlWordsGenerator}
+import nz.co.searchwellington.model._
 import nz.co.searchwellington.repositories.{ContentRetrievalService, TagDAO}
 import nz.co.searchwellington.tagging.RelatedTagsService
 import nz.co.searchwellington.urls.UrlBuilder
-import org.joda.time.DateTimeZone
-import org.junit.Assert.{assertEquals, assertFalse, assertTrue}
-import org.junit.{Before, Test}
+import org.joda.time.{DateTime, DateTimeZone, Interval}
+import org.junit.Assert.{assertEquals, assertFalse, assertNotNull, assertTrue}
+import org.junit.Test
 import org.mockito.Mockito.{mock, when}
 import org.springframework.mock.web.MockHttpServletRequest
 import org.springframework.web.servlet.ModelAndView
 import uk.co.eelpieconsulting.common.dates.DateFormatter
 
+import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.{Await, Future}
 import scala.jdk.CollectionConverters._
-import scala.concurrent.ExecutionContext.Implicits.global
 
 class TagModelBuilderTest extends ReasonableWaits with ContentFields {
 
@@ -99,6 +99,35 @@ class TagModelBuilderTest extends ReasonableWaits with ContentFields {
     val mv = Await.result(modelBuilder.populateContentModel(request), TenSeconds).get
 
     assertEquals(parentTag, mv.getModel.get("parent"))
+  }
+
+  @Test
+  def shouldIncludeTagMonthArchiveLinksInExtraContent(): Unit = {
+    request.setAttribute("tags", Seq(tag))
+    val mv = new ModelAndView()
+    when(contentRetrievalService.getGeotaggedNewsitemsForTag(tag, 30, loggedInUser = None)).thenReturn(Future.successful(Seq.empty))
+    when(contentRetrievalService.getTaggedWebsites(tag, 500, loggedInUser = None)).thenReturn(Future.successful(Seq.empty))
+    when(relatedTagsService.getRelatedTagsForTag(tag, 8, None)).thenReturn(Future.successful(Seq.empty))
+    when(relatedTagsService.getRelatedPublishersForTag(tag, 8, None)).thenReturn(Future.successful(Seq.empty))
+    when(contentRetrievalService.getTagWatchlist(tag, None)).thenReturn(Future.successful(Seq.empty))
+    when(contentRetrievalService.getTaggedFeeds(tag, None)).thenReturn(Future.successful(Seq.empty))
+    when(contentRetrievalService.getLatestNewsitems(5, loggedInUser = None)).thenReturn(Future.successful(Seq.empty))
+
+    val january = new DateTime(2021, 1, 1, 0,0, 0, 0)
+    val start = new DateTime(january, DateTimeZone.UTC)
+    val a = ArchiveLink(count = 12L, interval = new Interval(start, start.plusMonths(1)))
+    val b = ArchiveLink(count = 24L, interval = new Interval(start.plusMonths(1), start.plusMonths(2)))
+    val tagArchiveMonths = Seq(a, b)
+
+    when(contentRetrievalService.getTagArchiveMonths(tag, loggedInUser = None)).thenReturn(Future.successful(tagArchiveMonths))
+
+    val withExtras = Await.result(modelBuilder.populateExtraModelContent(request, mv, None), TenSeconds)
+
+    val archiveLinksOnModel = withExtras.getModel.get("tag_archive_links").asInstanceOf[java.util.List[TagArchiveLink]]
+    assertNotNull(archiveLinksOnModel)
+    assertEquals(2, archiveLinksOnModel.size())
+    assertEquals(12L, archiveLinksOnModel.get(0).count)
+    assertEquals(tag, archiveLinksOnModel.get(0).tag)
   }
 
   @Test

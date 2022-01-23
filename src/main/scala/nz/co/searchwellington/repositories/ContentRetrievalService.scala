@@ -252,6 +252,14 @@ import scala.concurrent.{ExecutionContext, Future}
     getPublisherArchiveMonths(publisher, loggedInUser).map(archiveLinksFromIntervals)
   }
 
+  def getTagArchiveMonths(tag: Tag, loggedInUser: Option[User])(implicit ec: ExecutionContext): Future[Seq[ArchiveLink]] = {
+    def getTagArchiveMonths(tag: Tag, loggedInUser: Option[User]): Future[Seq[(Interval, Long)]] = {
+      val tagNewsitems = ResourceQuery(`type` = newsitems, tags = Some(Set(tag)))
+      elasticSearchIndexer.createdMonthAggregationFor(tagNewsitems, loggedInUser)
+    }
+    getTagArchiveMonths(tag, loggedInUser).map(archiveLinksFromIntervals)
+  }
+
   def getArchiveCounts(loggedInUser: Option[User])(implicit ec: ExecutionContext): Future[Map[String, Long]] = elasticSearchIndexer.getArchiveCounts(loggedInUser)
 
   def getFeeds(acceptancePolicy: Option[FeedAcceptancePolicy] = None, loggedInUser: Option[User])(implicit ec: ExecutionContext): Future[Seq[FrontendResource]] = {

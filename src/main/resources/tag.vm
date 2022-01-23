@@ -82,6 +82,18 @@
 			#parse("includes/latest_newsitems.vm")
 			<br clear="all"/>
 		</div>
+
+        #if($tag_archive_links)
+            <div class="box">
+                <h2>Archive</h2>
+                <p>Newsitems tagged with $tag.name have been publisher during these months.<p>
+                <ul>
+                    #foreach ($link in $tag_archive_links)
+                        <li><a href="$urlBuilder.getTagArchiveLinkUrl($link)">$dateFormatter.fullMonthYear($link.month)</a> ($link.count)</li>
+                    #end
+                </ul>
+            </div>
+        #end
 			
 		#parse("includes/tagless.vm")	
 	</div>

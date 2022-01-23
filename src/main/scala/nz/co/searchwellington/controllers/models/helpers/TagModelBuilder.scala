@@ -2,7 +2,7 @@ package nz.co.searchwellington.controllers.models.helpers
 
 import nz.co.searchwellington.ReasonableWaits
 import nz.co.searchwellington.controllers.{CommonModelObjectsService, RssUrlBuilder}
-import nz.co.searchwellington.model.{Resource, Tag, User}
+import nz.co.searchwellington.model.{Resource, Tag, TagArchiveLink, User}
 import nz.co.searchwellington.repositories.{ContentRetrievalService, TagDAO}
 import nz.co.searchwellington.tagging.RelatedTagsService
 import nz.co.searchwellington.urls.UrlBuilder
@@ -109,6 +109,7 @@ import scala.jdk.CollectionConverters._
       relatedPublishersForTag <- eventualRelatedPublishersForTag
       tagWatchList <- eventualTagWatchlist
       tagFeeds <- eventualTagFeeds
+      archiveLinks <- contentRetrievalService.getTagArchiveMonths(tag, loggedInUser)
       withSecondaryContent = {
         mv.addObject(WEBSITES, taggedWebsites.asJava)
 
@@ -120,6 +121,12 @@ import scala.jdk.CollectionConverters._
         }
         if (geotaggedNewsitems.nonEmpty) {
           mv.addObject("geocoded", geotaggedNewsitems.asJava)
+        }
+        if (archiveLinks.nonEmpty) {
+          val tagArchiveLinks = archiveLinks.map { a =>
+            TagArchiveLink(tag = tag, interval = a.interval, count = a.count)
+          }
+          mv.addObject("tag_archive_links", tagArchiveLinks.asJava)
         }
         mv.addObject(TAG_WATCHLIST, tagWatchList.asJava)
         mv.addObject(TAG_FEEDS, tagFeeds.asJava)

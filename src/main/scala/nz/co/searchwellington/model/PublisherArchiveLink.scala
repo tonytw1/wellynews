@@ -5,7 +5,7 @@ import java.util.Date
 import nz.co.searchwellington.model.frontend.FrontendResource
 import org.joda.time.Interval
 
-case class PublisherArchiveLink(var publisher: FrontendResource, var interval: Interval, var count: Long) {
+case class PublisherArchiveLink(publisher: FrontendResource, interval: Interval, count: Long) {
 
   def getPublisher: FrontendResource = publisher
   def getCount: Long = count
