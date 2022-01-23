@@ -70,7 +70,7 @@ import scala.jdk.CollectionConverters._
     Future.successful(mv)
   }
 
-  override def getViewName(mv: ModelAndView, loggedInUser: Option[User]): String = "publisherMonth"
+  override def getViewName(mv: ModelAndView, loggedInUser: Option[User]): String = "tagMonth"
 
   private def parseMonth(tag: Tag, path: String): Option[Interval] = {
     if (path.startsWith("/" + tag.name)) {
