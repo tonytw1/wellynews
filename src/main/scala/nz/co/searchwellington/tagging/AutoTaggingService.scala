@@ -21,7 +21,9 @@ import scala.concurrent.{ExecutionContext, Future}
   private val AUTOTAGGER_PROFILE_NAME = "autotagger"
 
   def autoTagsForFeedCategories(feedItemCategories: Seq[Category])(implicit ec: ExecutionContext): Future[Set[HandTagging]] = {
-    tagHintAutoTagger.suggestFeedCategoryTags(feedItemCategories).flatMap(toHandTagging)
+    tagHintAutoTagger.suggestFeedCategoryTags(feedItemCategories).flatMap(toHandTagging).map{ taggings =>
+      taggings.map(_.copy(reason = Some("RSS category")))
+    }
   }
 
   def autotag(resource: Newsitem)(implicit ec: ExecutionContext): Future[Set[HandTagging]] = {
