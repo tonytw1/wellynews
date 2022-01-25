@@ -1,16 +1,16 @@
 package nz.co.searchwellington.tagging
 
-import java.util.UUID
-
 import nz.co.searchwellington.ReasonableWaits
+import nz.co.searchwellington.feeds.whakaoko.model.Category
 import nz.co.searchwellington.model.{Newsitem, Tag}
 import nz.co.searchwellington.repositories.TagDAO
-import org.junit.Assert.{assertFalse, assertTrue}
+import org.junit.Assert.{assertEquals, assertFalse, assertTrue}
 import org.junit.Test
 import org.mockito.Mockito.{mock, when}
 
-import scala.concurrent.{Await, Future}
+import java.util.UUID
 import scala.concurrent.ExecutionContext.Implicits.global
+import scala.concurrent.{Await, Future}
 
 class TagHintAutoTaggerTest extends ReasonableWaits {
 
@@ -40,6 +40,20 @@ class TagHintAutoTaggerTest extends ReasonableWaits {
     val suggestions = Await.result(tagHintAutoTagger.suggestTags(resource), TenSeconds)
 
     assertFalse(suggestions.contains(tag))
+  }
+
+  @Test
+  def canSuggestTagsBasedOnRssCategories(): Unit = {
+    val tag = Tag(name = "events", hints = Seq("events"))
+    when(tagDAO.getAllTags).thenReturn(Future.successful(Seq(tag)))
+
+    val feedItemCategories = Seq{
+      Category(value = "events", domain = None) // TODO case sensitive
+    }
+
+    val suggestions = Await.result(tagHintAutoTagger.suggestFeedCategoryTags(feedItemCategories), TenSeconds)
+
+    assertEquals("events", suggestions.head.name)
   }
 
 }
