@@ -43,13 +43,21 @@ class TagHintAutoTaggerTest extends ReasonableWaits {
   }
 
   @Test
-  def canSuggestTagsBasedOnRssCategories(): Unit = {
+  def canSuggestTagsBasedOnRssCategoriesWhichMatchAutotagHints(): Unit = {
     val tag = Tag(name = "events", hints = Seq("events"))
     when(tagDAO.getAllTags).thenReturn(Future.successful(Seq(tag)))
+    val feedItemCategories = Seq(Category(value = "Events", domain = None))
 
-    val feedItemCategories = Seq{
-      Category(value = "events", domain = None) // TODO case sensitive
-    }
+    val suggestions = Await.result(tagHintAutoTagger.suggestFeedCategoryTags(feedItemCategories), TenSeconds)
+
+    assertEquals("events", suggestions.head.name)
+  }
+
+  @Test
+  def rssCategoriesAreCaseInsensitive(): Unit = {
+    val tag = Tag(name = "events", hints = Seq("events"))
+    when(tagDAO.getAllTags).thenReturn(Future.successful(Seq(tag)))
+    val feedItemCategories = Seq(Category(value = "Events", domain = None))
 
     val suggestions = Await.result(tagHintAutoTagger.suggestFeedCategoryTags(feedItemCategories), TenSeconds)
 

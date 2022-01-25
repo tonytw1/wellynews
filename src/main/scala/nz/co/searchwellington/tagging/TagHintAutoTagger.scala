@@ -28,7 +28,8 @@ class TagHintAutoTagger @Autowired()(tagDAO: TagDAO) {
       // Given all tags look for autohints with vaguely match the categories presented
       tagDAO.getAllTags.map { allTags =>
         allTags.filter { tag =>
-          val intersections = tag.hints.toSet.intersect(feedItemCategories.map(_.value).toSet)
+          val intersections = tag.hints.map(_.toLowerCase).toSet.
+            intersect(feedItemCategories.map(_.value.toLowerCase()).toSet)
           intersections.nonEmpty
         }.toSet
       }
