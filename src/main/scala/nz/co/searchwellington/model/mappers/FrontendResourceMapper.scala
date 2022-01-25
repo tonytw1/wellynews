@@ -27,7 +27,7 @@ import scala.concurrent.{ExecutionContext, Future}
     } yield {
       mapFrontendResource(contentItem, place).map { frontendResource =>
         val handTags = taggingVotes.filter { _ match {
-          case HandTagging(_, _) => true
+          case HandTagging(_, _, _) => true
           case _ => false
         }
         }.map(_.tag).distinct
