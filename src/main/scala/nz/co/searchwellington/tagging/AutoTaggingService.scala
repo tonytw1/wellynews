@@ -21,9 +21,8 @@ import scala.concurrent.{ExecutionContext, Future}
   private val AUTOTAGGER_PROFILE_NAME = "autotagger"
 
   def autoTagsForFeedCategories(feedItemCategories: Seq[Category])(implicit ec: ExecutionContext): Future[Set[HandTagging]] = {
-    tagHintAutoTagger.suggestFeedCategoryTags(feedItemCategories).flatMap(toHandTagging).map{ taggings =>
-      taggings.map(_.copy(reason = Some("RSS category")))
-    }
+    tagHintAutoTagger.suggestFeedCategoryTags(feedItemCategories).flatMap( suggestedTags =>
+      toHandTagging(suggestedTags, Some("RSS category")))
   }
 
   def autotag(resource: Newsitem)(implicit ec: ExecutionContext): Future[Set[HandTagging]] = {
@@ -43,10 +42,10 @@ import scala.concurrent.{ExecutionContext, Future}
     }
   }
 
-  private def toHandTagging(suggestedTags: Set[Tag])(implicit ec: ExecutionContext): Future[Set[HandTagging]] = {
+  private def toHandTagging(suggestedTags: Set[Tag], reason: Option[String] = None)(implicit ec: ExecutionContext): Future[Set[HandTagging]] = {
     mongoRepository.getUserByProfilename(AUTOTAGGER_PROFILE_NAME).map { maybyAutotagUser =>
       maybyAutotagUser.map { autotagUser =>
-        suggestedTags.map(t => HandTagging(tag = t, user = autotagUser))
+        suggestedTags.map(t => HandTagging(tag = t, user = autotagUser, reason = reason))
       }.getOrElse {
         log.warn("Could not find auto tagger user: " + AUTOTAGGER_PROFILE_NAME + "; not autotagging.")
         Set.empty
