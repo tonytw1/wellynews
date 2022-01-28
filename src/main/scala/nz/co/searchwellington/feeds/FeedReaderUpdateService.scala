@@ -37,9 +37,11 @@ import scala.concurrent.{ExecutionContext, Future}
         log.info("Got autotaggings: " + asCommaList(autoTaggings))
         log.info("Got feed category auto taggings: " + asCommaList(feedCategoryAutoTaggings))
 
-        val allTaggings = autoTaggings ++ feedCategoryAutoTaggings
+        val allTaggings: Set[HandTagging] = autoTaggings ++ feedCategoryAutoTaggings
 
-        val withAutoTaggings = notHeld.withTaggings(allTaggings.map(t => Tagging(tag_id = t.tag._id, user_id = t.user._id)).toSeq)
+        val withAutoTaggings = notHeld.withTaggings(allTaggings.map(t =>
+          Tagging(tag_id = t.tag._id, user_id = t.user._id, reason = t.reason)).toSeq)
+
         log.info("With autotaggings: " + withAutoTaggings)
 
         contentUpdateService.create(withAutoTaggings).map { created =>
