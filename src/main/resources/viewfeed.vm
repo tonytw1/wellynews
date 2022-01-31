@@ -13,7 +13,7 @@
 		<h2><a href="${siteInformation.url}/feeds">Feeds</a> / $heading</h2>
 
 		#set($page_content = $feed) 
-		#parse("includes/page_content_tags.vm")
+		#parse("includes/page_content_hand_tags.vm")
 		
 		<ul>
             #foreach($action in $feed.actions)
