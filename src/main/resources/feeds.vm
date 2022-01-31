@@ -16,8 +16,9 @@
     </ul>
 #end
 
-<p>$siteInformation.sitename aggregates links from these $siteInformation.areaname related feeds.
-Recently accepted newsitems are <a href="$urlBuilder.getAcceptedUrl()">shown here</a>.</p>
+<p>$siteInformation.sitename aggregates links from these $siteInformation.areaname related feeds.</p>
+
+<p><a href="$urlBuilder.getAcceptedUrl()">Recently accepted newsitems</a> can be viewed.</p>
 
 <p><a href="rssfeeds">RSS feeds</a> produced by $siteInformation.sitename are summarised <a href="rssfeeds">here</a>.</p>
 
