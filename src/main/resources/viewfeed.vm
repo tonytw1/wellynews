@@ -25,27 +25,27 @@
             #end
 		</ul>
 
+        #if($feed.isScreenScraped())
+            #if($feed.publisherName)
+                <p>This feed is produced by screen scraping a page from the <a href="/$feed.publisherUrlWords">$feed.publisherName</a> website.</p>
+            #else
+                <p>This feed is provided by screen scraping a third party website.</p>
+            #end
+        #else
+            #if($feed.publisherName)
+                <p>This feed is published by <a href="/$feed.publisherUrlWords">$feed.publisherName</a>.</p>
+            #else
+                <p>This feed is provided by a third party.</p>
+            #end
+        #end
+
         <p>
             Added on $dateFormatter.dayMonthYear($feed.date).
 		    #if ($feed.lastRead)
-		        This feed was last read $dateFormatter.timeSince($feed.lastRead).
+		        Last read $dateFormatter.timeSince($feed.lastRead).
     		#end
 		</p>
 
-		#if($feed.isScreenScraped())
-			#if($feed.publisherName)
-				<p>This feed is produced by screen scraping a page from the <a href="/$feed.publisherUrlWords">$feed.publisherName</a> website.</p>
-			#else		
-				<p>This feed is provided by screen scraping a third party website.</p>
-			#end		
-		#else
-			#if($feed.publisherName)
-				<p>This feed is published by <a href="/$feed.publisherUrlWords">$feed.publisherName</a>.</p>
-			#else
-				<p>This feed is provided by a third party.</p>
-			#end
-		#end
-		
 		<p>To subscribe to this feed, enter the following location into your feed reader.</p>
 		<ul>
 			<li>#parse("includes/rss_icon.vm") <code>$rss_url</code></li>
