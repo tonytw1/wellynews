@@ -7,6 +7,7 @@ import nz.co.searchwellington.model.frontend.FrontendResource
 import nz.co.searchwellington.model.mappers.FrontendResourceMapper
 import nz.co.searchwellington.repositories.elasticsearch._
 import nz.co.searchwellington.repositories.mongo.MongoRepository
+import nz.co.searchwellington.urls.UrlParser
 import org.apache.commons.logging.LogFactory
 import org.joda.time.{DateTime, Interval}
 import org.springframework.beans.factory.annotation.Autowired
@@ -330,6 +331,19 @@ import scala.concurrent.{ExecutionContext, Future}
 
   def getDiscoveredFeeds(maxNumber: Int)(implicit ec: ExecutionContext): Future[Seq[DiscoveredFeed]] = {
     mongoRepository.getDiscoveredFeeds(maxNumber)
+  }
+
+  def getDiscoveredFeedsForPublisher(publisher: Website, maxNumber: Int)(implicit ec: ExecutionContext): Future[Seq[DiscoveredFeed]] = {
+    val urlParser = new UrlParser()
+    val publisherHostname = urlParser.extractHostnameFrom(publisher.page)
+    mongoRepository.getDiscoveredFeeds(Integer.MAX_VALUE).map { allDiscoverdFeeds =>
+      allDiscoverdFeeds.filter{ discoveredFeed =>
+        discoveredFeed.occurrences.exists{ occurence =>
+          // TODO suggests we should index occurence hostnames?
+          publisherHostname.equals(urlParser.extractHostnameFrom(occurence.referencedFrom))
+        }
+      }
+    }
   }
 
   def getTagNamesStartingWith(q: String)(implicit ec: ExecutionContext): Future[Seq[String]] = tagDAO.getTagNamesStartingWith(q)

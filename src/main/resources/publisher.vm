@@ -71,6 +71,9 @@
             </ul>
         </div>
     #end
+
+    #parse("includes/discovered_feeds.vm")
+
     <div class="box">
         #parse("includes/latest_newsitems.vm")
     </div>

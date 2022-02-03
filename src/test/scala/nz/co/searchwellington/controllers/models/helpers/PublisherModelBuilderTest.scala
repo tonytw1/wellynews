@@ -5,7 +5,7 @@ import nz.co.searchwellington.controllers.RssUrlBuilder
 import nz.co.searchwellington.controllers.models.GeotaggedNewsitemExtractor
 import nz.co.searchwellington.model.frontend.{FrontendFeed, FrontendNewsitem, FrontendResource, FrontendWebsite}
 import nz.co.searchwellington.model.mappers.FrontendResourceMapper
-import nz.co.searchwellington.model.{ArchiveLink, Geocode, PublisherArchiveLink, SiteInformation, Website}
+import nz.co.searchwellington.model._
 import nz.co.searchwellington.repositories.ContentRetrievalService
 import nz.co.searchwellington.tagging.RelatedTagsService
 import nz.co.searchwellington.urls.UrlBuilder
@@ -53,7 +53,7 @@ class PublisherModelBuilderTest extends ReasonableWaits with ContentFields {
     assertEquals(publisherNewsitems.asJava, mv.getModel.get(MAIN_CONTENT))
     assertEquals(publisherFeeds.asJava, mv.getModel.get("feeds"))
     assertEquals("A publisher newsitems", mv.getModel.get("main_heading"))
-    assertEquals("/a-publisher/rss", mv.getModel.get("rss_url"));
+    assertEquals("/a-publisher/rss", mv.getModel.get("rss_url"))
   }
 
   @Test
@@ -94,16 +94,36 @@ class PublisherModelBuilderTest extends ReasonableWaits with ContentFields {
     when(contentRetrievalService.getPublisherWatchlist(publisher, None)).thenReturn(Future.successful(Seq.empty))
     when(contentRetrievalService.getLatestNewsitems(maxItems = 5, loggedInUser = None)).thenReturn(Future.successful(Seq.empty))
     when(relatedTagsService.getRelatedTagsForPublisher(publisher, None)).thenReturn(Future.successful(Seq.empty))
+    when(contentRetrievalService.getDiscoveredFeedsForPublisher(publisher, 30)).thenReturn(Future.successful(Seq.empty))
 
     val withExtras = Await.result(modelBuilder.populateExtraModelContent(request, mv, None), TenSeconds)
 
     val publisherArchiveLinksOnExtras = withExtras.getModel.get("publisher_archive_links").asInstanceOf[java.util.List[PublisherArchiveLink]]
     assertEquals(1, publisherArchiveLinksOnExtras.size())
-
     val firstPublisherLink = publisherArchiveLinksOnExtras.get(0)
     assertEquals(frontendPublisher, firstPublisherLink.publisher)
     assertEquals(monthOfJuly, firstPublisherLink.interval)
     assertEquals(2, firstPublisherLink.count)
+  }
+
+  @Test
+  def extraContentShouldIncludeDiscoveredFeedsForPublisher(): Unit = {
+    val request = new MockHttpServletRequest
+    request.setAttribute("publisher", publisher)
+    val mv = new ModelAndView().addObject("publisher", frontendPublisher)
+
+    when(contentRetrievalService.getPublisherArchiveMonths(publisher, None)).thenReturn(Future.successful(Seq.empty))
+    when(contentRetrievalService.getPublisherWatchlist(publisher, None)).thenReturn(Future.successful(Seq.empty))
+    when(contentRetrievalService.getLatestNewsitems(maxItems = 5, loggedInUser = None)).thenReturn(Future.successful(Seq.empty))
+    when(relatedTagsService.getRelatedTagsForPublisher(publisher, None)).thenReturn(Future.successful(Seq.empty))
+    val discoveredFeeds = Seq{
+      DiscoveredFeed(url = "http://localhost/test", occurrences = Seq.empty, firstSeen = DateTime.now.toDate)
+    }
+    when(contentRetrievalService.getDiscoveredFeedsForPublisher(publisher, 30)).thenReturn(Future.successful(discoveredFeeds))
+
+    val withExtras = Await.result(modelBuilder.populateExtraModelContent(request, mv, None), TenSeconds)
+
+    assertEquals(withExtras.getModel.get("discovered_feeds"), discoveredFeeds.asJava)
   }
 
 }

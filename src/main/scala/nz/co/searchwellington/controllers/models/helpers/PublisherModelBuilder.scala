@@ -87,11 +87,13 @@ import scala.jdk.CollectionConverters._
     val eventualPublisherWatchlist = contentRetrievalService.getPublisherWatchlist(publisher, loggedInUser)
     val eventualPublisherArchiveLinks = contentRetrievalService.getPublisherArchiveMonths(publisher, loggedInUser)
     val eventualRelatedTagsForPublisher = relatedTagsService.getRelatedTagsForPublisher(publisher, loggedInUser)
+    val eventualDiscoveredFeeds = contentRetrievalService.getDiscoveredFeedsForPublisher(publisher, MAX_NEWSITEMS)
 
     for {
       publisherWatchlist <- eventualPublisherWatchlist
       archiveLinks <- eventualPublisherArchiveLinks
       relatedTagsForPublisher <- eventualRelatedTagsForPublisher
+      discoveredFeeds <- eventualDiscoveredFeeds
       withSecondaryContent = {
         val publisherArchiveLinks = archiveLinks.map { a =>
           PublisherArchiveLink(publisher = frontendPublisher, interval = a.interval, count = a.count)
@@ -102,6 +104,9 @@ import scala.jdk.CollectionConverters._
         }
         if (publisherArchiveLinks.nonEmpty) {
           mv.addObject("publisher_archive_links", publisherArchiveLinks.asJava)
+        }
+        if (discoveredFeeds.nonEmpty) {
+          mv.addObject("discovered_feeds", discoveredFeeds.asJava)
         }
         mv
       }
