@@ -2,27 +2,18 @@ package nz.co.searchwellington.linkchecking
 
 import org.apache.commons.logging.LogFactory
 
-import java.net.{MalformedURLException, URL}
+import java.net.{MalformedURLException, URI, URL}
 
 trait UrlWrangling {
 
-  private val log = LogFactory.getLog(classOf[FeedAutodiscoveryProcesser])
+  @Deprecated
+  def isFullQualified(url: String): Boolean = url.startsWith("http://") || url.startsWith("https://")
 
-  def isFullQualified(discoveredUrl: String): Boolean = discoveredUrl.startsWith("http://") || discoveredUrl.startsWith("https://")
+  def isFullQualifiedUrl(uri: URI): Boolean = {
+    uri.getScheme != null && uri.getAuthority != null;
+  }
 
   def expandUrlRelativeFrom(url: String, pageUrl: URL): String = {
-    try {
-      val sitePrefix = pageUrl.getProtocol + "://" + pageUrl.getHost
-      val fullyQualifiedUrl = sitePrefix + url
-      fullyQualifiedUrl
-
-    } catch {
-      case e: MalformedURLException =>
-        log.error("Invalid url", e)
-        url
-      case e: Throwable =>
-        log.error("Invalid url", e)
-        url
-    }
+    pageUrl.toURI.resolve(new URI(url)).toString
   }
 }
