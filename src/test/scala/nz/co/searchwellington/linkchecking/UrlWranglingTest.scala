@@ -9,11 +9,11 @@ class UrlWranglingTest extends UrlWrangling {
 
   @Test
   def canDetermineIfUrlStringIsFullyQualified(): Unit = {
-    assertTrue(isFullQualified("http://localhost"))
-    assertTrue(isFullQualified("https://localhost"))
-    assertTrue(isFullQualified("http://localhost/test"))
-    assertTrue(isFullQualified("http://localhost/test?foo=bar"))
-    assertFalse(isFullQualified("/foo"))
+    assertTrue(isFullQualifiedUrl(new URI("http://localhost")))
+    assertTrue(isFullQualifiedUrl(new URI("https://localhost")))
+    assertTrue(isFullQualifiedUrl(new URI("http://localhost/test")))
+    assertTrue(isFullQualifiedUrl(new URI("http://localhost/test?foo=bar")))
+    assertFalse(isFullQualifiedUrl(new URI("/foo")))
   }
 
   @Test
@@ -24,8 +24,8 @@ class UrlWranglingTest extends UrlWrangling {
 
   @Test
   def canExpandRelativeUrlsFromFullQualifiedBaseUrl(): Unit = {
-    assertEquals("https://localhost/foo", expandUrlRelativeFrom("/foo", new URL("https://localhost/test")))
-    assertEquals("https://localhost/foo", expandUrlRelativeFrom("https://localhost/foo", new URL("https://localhost/test")))
+    assertEquals("https://localhost/foo", expandUrlRelativeFrom(new URI("/foo"), new URL("https://localhost/test")).toString)
+    assertEquals("https://localhost/foo", expandUrlRelativeFrom(new URI("https://localhost/foo"), new URL("https://localhost/test")).toString)
   }
 
 }

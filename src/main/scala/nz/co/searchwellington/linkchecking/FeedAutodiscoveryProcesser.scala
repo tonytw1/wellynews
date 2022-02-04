@@ -1,6 +1,5 @@
 package nz.co.searchwellington.linkchecking
 
-import java.net.{MalformedURLException, URL}
 import nz.co.searchwellington.ReasonableWaits
 import nz.co.searchwellington.commentfeeds.CommentFeedDetectorService
 import nz.co.searchwellington.htmlparsing.RssLinkExtractor
@@ -11,6 +10,7 @@ import org.joda.time.DateTime
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
 
+import java.net.{URI, URL}
 import scala.concurrent.{ExecutionContext, Future}
 
 @Component class FeedAutodiscoveryProcesser @Autowired()(mongoRepository: MongoRepository,
@@ -24,12 +24,14 @@ import scala.concurrent.{ExecutionContext, Future}
     if (!checkResource.`type`.equals("F")) {
       val pageUrl = new URL(checkResource.page) // TODO catch
 
-      def expandRelativeUrls(url: String): String = {
-        if (!isFullQualified(url)) {
-          log.info("url is not fully qualified; will try to expand: " + url) // TODO Really what's an example?
-          expandUrlRelativeFrom(url, pageUrl)
+      def expandRelativeUrls(url: String): URL = {
+        val uri = new URI(url)
+        if (!isFullQualifiedUrl(uri)) {
+          // TODO Is this really happening; what's an example?
+          log.info("url is not fully qualified; will try to expand: " + url)
+          expandUrlRelativeFrom(uri, pageUrl).toURL
         } else {
-          url
+          uri.toURL
         }
       }
 
@@ -40,14 +42,22 @@ import scala.concurrent.{ExecutionContext, Future}
         extractedRssLinkUrls.map { discoveredUrl =>
           log.info("Processing discovered url: " + discoveredUrl)
 
-          if (commentFeedDetector.isCommentFeedUrl(discoveredUrl)) {
+          if (commentFeedDetector.isCommentFeedUrl(discoveredUrl.toString)) {
             log.info("Discovered url is a comment feed; ignoring: " + discoveredUrl)
             Future.successful(None)
 
           } else {
-            mongoRepository.getFeedByUrl(discoveredUrl).map { maybeExistingFeed =>
-              if (maybeExistingFeed.isEmpty) {
-                Some(discoveredUrl)
+            val httpAndHttpsVersions = Seq("http", "https").map { protocol =>
+              new URL(protocol, discoveredUrl.getHost, discoveredUrl.getPort,
+                discoveredUrl.getFile)
+            }
+            Future.sequence {
+              httpAndHttpsVersions.map { url =>
+                mongoRepository.getFeedByUrl(url.toString)
+              }
+            }.map { existingFeeds =>
+              if (existingFeeds.flatten.isEmpty) {
+                Some(discoveredUrl.toString)
               } else {
                 None
               }
