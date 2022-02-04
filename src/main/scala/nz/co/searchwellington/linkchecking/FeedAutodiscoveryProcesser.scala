@@ -16,7 +16,7 @@ import scala.concurrent.{ExecutionContext, Future}
 @Component class FeedAutodiscoveryProcesser @Autowired()(mongoRepository: MongoRepository,
                                                          rssLinkExtractor: RssLinkExtractor,
                                                          commentFeedDetector: CommentFeedDetectorService)
-  extends LinkCheckerProcessor with ReasonableWaits {
+  extends LinkCheckerProcessor with ReasonableWaits with UrlWrangling {
 
   private val log = LogFactory.getLog(classOf[FeedAutodiscoveryProcesser])
 
@@ -24,31 +24,20 @@ import scala.concurrent.{ExecutionContext, Future}
     if (!checkResource.`type`.equals("F")) {
       val pageUrl = new URL(checkResource.page) // TODO catch
 
-      def expandUrl(url: String): String = {
+      def expandRelativeUrls(url: String): String = {
         if (!isFullQualified(url)) {
           log.info("url is not fully qualified; will try to expand: " + url) // TODO Really what's an example?
-          try {
-            val sitePrefix = pageUrl.getProtocol + "://" + pageUrl.getHost
-            val fullyQualifiedUrl = sitePrefix + url
-            log.info("url expanded to: " + fullyQualifiedUrl)
-            fullyQualifiedUrl
-
-          } catch {
-            case e: MalformedURLException =>
-              log.error("Invalid url", e)
-              url
-            case e: Throwable =>
-              log.error("Invalid url", e)
-              url
-          }
-
+          expandUrlRelativeFrom(url, pageUrl)
         } else {
           url
         }
       }
 
+      val html: String = pageContent.get  // TODO naked get
+      val extractedRssLinkUrls = rssLinkExtractor.extractFeedLinks(html).map(expandRelativeUrls)
+
       val newlyDiscovered: Future[Seq[String]] = Future.sequence {
-        rssLinkExtractor.extractFeedLinks(pageContent.get).map(expandUrl).map { discoveredUrl =>  // TODO naked get
+        extractedRssLinkUrls.map { discoveredUrl =>
           log.info("Processing discovered url: " + discoveredUrl)
 
           if (commentFeedDetector.isCommentFeedUrl(discoveredUrl)) {
@@ -78,8 +67,6 @@ import scala.concurrent.{ExecutionContext, Future}
       Future.successful(false)
     }
   }
-
-  private def isFullQualified(discoveredUrl: String): Boolean = discoveredUrl.startsWith("http://") || discoveredUrl.startsWith("https://")
 
   private def recordDiscoveredFeedUrl(checkResource: Resource, discoveredFeedUrl: String, seen: DateTime)(implicit ec: ExecutionContext): Future[Boolean] = {
     val occurrence = DiscoveredFeedOccurrence(referencedFrom = checkResource.page, seen = seen.toDate)
