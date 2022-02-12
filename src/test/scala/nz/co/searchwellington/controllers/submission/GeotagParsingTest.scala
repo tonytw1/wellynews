@@ -26,6 +26,6 @@ class GeotagParsingTest extends GeotagParsing {
 
     val result = parseGeotag("Somewhere", "456/RELATION")
 
-    assertEquals(Some(Geocode(address = Some("Somewhere"), Some(51.0), Some(-0.3), osmId = Some(OsmId(456L, "R")))), result)
+    assertEquals(Some(Geocode(address = Some("Somewhere"), Some(51.0), Some(-0.3), osmId = Some(OsmId(456L, "RELATION")))), result)
   }
 }

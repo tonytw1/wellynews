@@ -16,7 +16,7 @@ trait GeotagParsing {
           val resolvedLatLong = rp.getLatLong
           Geocode(
             address = Some(address),
-            osmId = Some(OsmId(osm.getId, osm.getType.name().take(1))),
+            osmId = Some(OsmId(osm.getId, osm.getType.name())),
             latitude = Some(resolvedLatLong.getLatitude),
             longitude = Some(resolvedLatLong.getLongitude)
           )
