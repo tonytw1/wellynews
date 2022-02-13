@@ -37,6 +37,8 @@ class WhakaokoClient @Autowired()(@Value("${whakaoko.url}") whakaokoUrl: String,
   private implicit val fir: Reads[FeedItem] = Json.reads[FeedItem]
   private implicit val sr: Reads[Subscription] = Json.reads[Subscription]
 
+  private val pageSize = 30
+
   def createFeedSubscription(feedUrl: String)(implicit ec: ExecutionContext): Future[Option[Subscription]] = {
     val createFeedSubscriptionUrl = whakaokoUrl + "/subscriptions"
     log.debug("Posting new feed to: " + createFeedSubscriptionUrl)
@@ -93,7 +95,7 @@ class WhakaokoClient @Autowired()(@Value("${whakaoko.url}") whakaokoUrl: String,
     log.info("Fetching channel subscriptions from: " + channelSubscriptionsUrl)
     val start = DateTime.now()
 
-    withWhakaokoAuth(wsClient.url(channelSubscriptionsUrl)).
+    withWhakaokoAuth(wsClient.url(channelSubscriptionsUrl).withQueryStringParameters("pageSize" -> pageSize.toString)).
       withRequestTimeout(TenSeconds).
       get.map { r =>
         log.info("Channel subscriptions returned after: " + new Duration(start, DateTime.now).getMillis)
@@ -108,7 +110,7 @@ class WhakaokoClient @Autowired()(@Value("${whakaoko.url}") whakaokoUrl: String,
 
   // Given a subscription id, return the first page of feed items and a total items count
   def getSubscriptionFeedItems(subscriptionId: String)(implicit ec: ExecutionContext): Future[(Seq[FeedItem], Long)] = {
-    withWhakaokoAuth(wsClient.url(subscriptionUrl(subscriptionId) + "/items")).
+    withWhakaokoAuth(wsClient.url(subscriptionUrl(subscriptionId) + "/items").withQueryStringParameters("pageSize" -> pageSize.toString)).
       withRequestTimeout(TenSeconds).
       get.map { r =>
         r.status match {
