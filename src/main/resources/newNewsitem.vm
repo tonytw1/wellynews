@@ -52,10 +52,10 @@
 
                 #springBind("formObject.description")
                 <label for="${status.expression}">Description:</label>
-                <input name="${status.expression}" class="title" value="$!{status.value}" />
+                <textarea name="${status.expression}" rows="6" cols="40">$!{status.value}</textarea>
                 <br />
                 #foreach($error in $status.errorMessages)
-                    <div class="alert">$error</div>
+                   <div class="alert">$error</div>
                 #end
 
 				<input type="submit" value="Submit" />
