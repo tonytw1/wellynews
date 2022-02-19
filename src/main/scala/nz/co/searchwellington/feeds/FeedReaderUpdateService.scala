@@ -35,7 +35,7 @@ import scala.concurrent.{ExecutionContext, Future}
       feedCategoryAutoTaggings <- eventualFeedCategoryAutoTaggings
       withAutoTaggings <- {
         log.info("Got autotaggings: " + asCommaList(autoTaggings))
-        log.info("Got feed category auto taggings: " + asCommaList(feedCategoryAutoTaggings))
+        log.info("Got feed category auto taggings: " + asCommaList(feedCategoryAutoTaggings) + " from newsitem categories: " + feedItemCategories)
 
         val allTaggings: Set[HandTagging] = autoTaggings ++ feedCategoryAutoTaggings
 
