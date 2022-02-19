@@ -41,7 +41,7 @@ import scala.jdk.CollectionConverters._
           for {
             frontendResource <- eventualFrontendResource
             geotagVotes <- eventualGeotagVotes
-            taggingVotes: Seq[TaggingVote] <- eventualTaggingVotes
+            taggingVotes <- eventualTaggingVotes
 
           } yield {
             val mv = new ModelAndView
@@ -63,16 +63,6 @@ import scala.jdk.CollectionConverters._
               mv.addObject("geocoded", List(frontendResource).asJava)
             }
 
-            //for {
-            // maybeResource <- mongoRepository.getResourceById(resource.getId)
-            //} yield {
-            // maybeResource.map { resource => // TODO abit strange that we have to load this database object just to pass it as an argument to someone else
-            //mv.addObject("votes", taggingReturnsOfficerService.compileTaggingVotes(resource).asJava)
-            //mv.addObject("geotag_votes", taggingReturnsOfficerService.getGeotagVotesForResource(resource).asJava)
-            //mv.addObject("tag_select", tagWidgetFactory.createMultipleTagSelect(tagVoteDAO.getHandpickedTagsForThisResourceByUser(loggedInUser, resource)))
-            //   mv
-            // }
-            // }
             Some(mv)
           }
 
