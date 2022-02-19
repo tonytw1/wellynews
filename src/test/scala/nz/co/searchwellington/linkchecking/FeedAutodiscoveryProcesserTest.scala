@@ -1,7 +1,5 @@
 package nz.co.searchwellington.linkchecking
 
-import java.util.UUID
-
 import nz.co.searchwellington.ReasonableWaits
 import nz.co.searchwellington.commentfeeds.CommentFeedDetectorService
 import nz.co.searchwellington.htmlparsing.RssLinkExtractor
@@ -15,12 +13,15 @@ import org.mockito.Mockito.{mock, never, verify, when}
 import org.mockito.{ArgumentCaptor, Matchers}
 import reactivemongo.api.commands.WriteResult
 
+import java.util.UUID
 import scala.concurrent.{Await, ExecutionContext, Future}
 
 class FeedAutodiscoveryProcesserTest extends ReasonableWaits {
 
   private val UNSEEN_FEED_URL = "http://something/new"
+  private val UNSEEN_FEED_URL_HTTPS = "https://something/new"
   private val EXISTING_FEED_URL = "http://something/old"
+  private val EXISTING_FEED_URL_HTTPS = "https://something/old"
   private val RELATIVE_FEED_URL = "/feed.xml"
 
   private val mongoRepository = mock(classOf[MongoRepository])
@@ -44,7 +45,10 @@ class FeedAutodiscoveryProcesserTest extends ReasonableWaits {
 
     when(commentFeedDetector.isCommentFeedUrl(UNSEEN_FEED_URL)).thenReturn(false)
     when(mongoRepository.getDiscoveredFeedByUrl(UNSEEN_FEED_URL)).thenReturn(Future.successful(None))
+
     when(mongoRepository.getFeedByUrl(UNSEEN_FEED_URL)).thenReturn(Future.successful(None))
+    when(mongoRepository.getFeedByUrl(UNSEEN_FEED_URL_HTTPS)).thenReturn(Future.successful(None))
+
     when(mongoRepository.saveDiscoveredFeed(Matchers.any(classOf[DiscoveredFeed]))(Matchers.eq(ec))).thenReturn(Future.successful(successfulWrite))
 
     val saved = ArgumentCaptor.forClass(classOf[DiscoveredFeed])
@@ -65,6 +69,7 @@ class FeedAutodiscoveryProcesserTest extends ReasonableWaits {
 
     when(commentFeedDetector.isCommentFeedUrl("https://localhost/feed.xml")).thenReturn(false)
     when(mongoRepository.getDiscoveredFeedByUrl("https://localhost/feed.xml")).thenReturn(Future.successful(None))
+    when(mongoRepository.getFeedByUrl("http://localhost/feed.xml")).thenReturn(Future.successful(None))
     when(mongoRepository.getFeedByUrl("https://localhost/feed.xml")).thenReturn(Future.successful(None))
     when(mongoRepository.saveDiscoveredFeed(Matchers.any(classOf[DiscoveredFeed]))(Matchers.eq(ec))).thenReturn(Future.successful(successfulWrite))
 
@@ -85,6 +90,7 @@ class FeedAutodiscoveryProcesserTest extends ReasonableWaits {
     when(commentFeedDetector.isCommentFeedUrl(EXISTING_FEED_URL)).thenReturn(false)
     when(mongoRepository.getDiscoveredFeedByUrl(EXISTING_FEED_URL)).thenReturn(Future.successful(None))
     when(mongoRepository.getFeedByUrl(EXISTING_FEED_URL)).thenReturn(Future.successful(Some(mock(classOf[Feed]))))
+    when(mongoRepository.getFeedByUrl(EXISTING_FEED_URL_HTTPS)).thenReturn(Future.successful(None))
 
     Await.result(feedAutodiscoveryProcesser.process(resource, Some(pageContent), DateTime.now), TenSeconds)
 
