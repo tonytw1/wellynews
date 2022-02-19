@@ -1,12 +1,13 @@
 package nz.co.searchwellington.controllers
 
 import nz.co.searchwellington.ReasonableWaits
+import nz.co.searchwellington.controllers.submission.EndUserInputs
 import nz.co.searchwellington.forms.EditFeed
 import nz.co.searchwellington.model.{Feed, UrlWordsGenerator, User}
 import nz.co.searchwellington.modification.ContentUpdateService
 import nz.co.searchwellington.repositories.mongo.MongoRepository
 import nz.co.searchwellington.repositories.{HandTaggingService, TagDAO}
-import nz.co.searchwellington.urls.UrlBuilder
+import nz.co.searchwellington.urls.{UrlBuilder, UrlCleaner}
 import nz.co.searchwellington.views.Errors
 import org.apache.commons.logging.LogFactory
 import org.springframework.beans.factory.annotation.Autowired
@@ -28,7 +29,9 @@ class EditFeedController @Autowired()(contentUpdateService: ContentUpdateService
                                       urlBuilder: UrlBuilder,
                                       val loggedInUserFilter: LoggedInUserFilter,
                                       tagDAO: TagDAO,
-                                      handTaggingService: HandTaggingService) extends ReasonableWaits with AcceptancePolicyOptions with Errors with RequiringLoggedInUser {
+                                      handTaggingService: HandTaggingService,
+                                      val urlCleaner: UrlCleaner) extends ReasonableWaits with AcceptancePolicyOptions
+  with Errors with RequiringLoggedInUser with EndUserInputs {
 
   private val log = LogFactory.getLog(classOf[EditFeedController])
 
@@ -39,7 +42,7 @@ class EditFeedController @Autowired()(contentUpdateService: ContentUpdateService
         val publisher = f.publisher.flatMap(pid => Await.result(mongoRepository.getResourceByObjectId(pid), TenSeconds))
 
         val editFeed = new EditFeed()
-        editFeed.setTitle(f.title.getOrElse(""))
+        editFeed.setTitle(processTitle(f.title.getOrElse("")))
         editFeed.setUrl(f.page)
         editFeed.setPublisher(publisher.flatMap(_.title).getOrElse(""))
         editFeed.setAcceptancePolicy(f.acceptance)

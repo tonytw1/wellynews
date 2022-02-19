@@ -1,20 +1,20 @@
 package nz.co.searchwellington.controllers
 
 import nz.co.searchwellington.ReasonableWaits
-import nz.co.searchwellington.controllers.submission.GeotagParsing
+import nz.co.searchwellington.controllers.submission.{EndUserInputs, GeotagParsing}
 import nz.co.searchwellington.forms.EditWatchlist
 import nz.co.searchwellington.geocoding.osm.GeoCodeService
 import nz.co.searchwellington.model._
 import nz.co.searchwellington.modification.ContentUpdateService
 import nz.co.searchwellington.repositories.mongo.MongoRepository
 import nz.co.searchwellington.repositories.{HandTaggingService, TagDAO}
-import nz.co.searchwellington.urls.UrlBuilder
+import nz.co.searchwellington.urls.{UrlBuilder, UrlCleaner}
 import nz.co.searchwellington.views.Errors
 import org.apache.commons.logging.LogFactory
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Controller
 import org.springframework.validation.BindingResult
-import org.springframework.web.bind.annotation.{GetMapping, ModelAttribute, PathVariable, PostMapping, RequestMapping, RequestMethod}
+import org.springframework.web.bind.annotation.{GetMapping, ModelAttribute, PathVariable, PostMapping}
 import org.springframework.web.servlet.ModelAndView
 import org.springframework.web.servlet.view.RedirectView
 
@@ -30,8 +30,10 @@ class EditWatchlistController @Autowired()(contentUpdateService: ContentUpdateSe
                                            val loggedInUserFilter: LoggedInUserFilter,
                                            tagDAO: TagDAO,
                                            val geocodeService: GeoCodeService,
-                                           handTaggingService: HandTaggingService
-                                        ) extends ReasonableWaits with AcceptancePolicyOptions with Errors with GeotagParsing with RequiringLoggedInUser {
+                                           handTaggingService: HandTaggingService,
+                                           val urlCleaner: UrlCleaner
+                                        ) extends ReasonableWaits with AcceptancePolicyOptions with Errors with GeotagParsing
+  with RequiringLoggedInUser with EndUserInputs {
 
   private val log = LogFactory.getLog(classOf[EditWatchlistController])
 
@@ -69,7 +71,7 @@ class EditWatchlistController @Autowired()(contentUpdateService: ContentUpdateSe
     val publisher = Await.result(eventualPublisher, TenSeconds).flatMap(p => p.title).getOrElse("")
 
     val editWatchlist = new EditWatchlist()
-    editWatchlist.setTitle(w.title.getOrElse(""))
+    editWatchlist.setTitle(processTitle(w.title.getOrElse("")))
     editWatchlist.setUrl(w.page)
     editWatchlist.setPublisher(publisher)
     editWatchlist.setDescription(w.description.getOrElse(""))

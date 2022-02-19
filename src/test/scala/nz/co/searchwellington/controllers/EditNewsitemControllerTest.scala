@@ -6,6 +6,7 @@ import nz.co.searchwellington.model.{Newsitem, User, Website}
 import nz.co.searchwellington.modification.ContentUpdateService
 import nz.co.searchwellington.repositories.mongo.MongoRepository
 import nz.co.searchwellington.repositories.{FrontendContentUpdater, HandTaggingService, TagDAO}
+import nz.co.searchwellington.urls.UrlCleaner
 import org.joda.time.DateTime
 import org.junit.Assert.assertEquals
 import org.junit.Test
@@ -24,10 +25,12 @@ class EditNewsitemControllerTest {
   private val tagDAO = mock(classOf[TagDAO])
   private val geoCodeService = mock(classOf[GeoCodeService])
   private val handTaggingService = new HandTaggingService(mock(classOf[FrontendContentUpdater]), mongoRepository)
+  private val urlCleaner = mock(classOf[UrlCleaner])
 
   private implicit val ec: ExecutionContext = scala.concurrent.ExecutionContext.Implicits.global
 
-  private val controller = new EditNewsitemController(contentUpdateService, mongoRepository, loggedInUserFilter, tagDAO, geoCodeService, handTaggingService)
+  private val controller = new EditNewsitemController(contentUpdateService, mongoRepository, loggedInUserFilter, tagDAO,
+    geoCodeService, handTaggingService, urlCleaner)
 
   @Test
   def shouldUpdateExistingNewsitem(): Unit = {

@@ -74,7 +74,7 @@ class NewFeedController @Autowired()(contentUpdateService: ContentUpdateService,
           Await.result(mongoRepository.getWebsiteByName(publisherName), TenSeconds)
         }
 
-        val f = Feed(title = Some(newFeed.getTitle),
+        val f = Feed(title = Some(processTitle(newFeed.getTitle)),
           page = cleanUrl(newFeed.getUrl),
           publisher = publisher.map(_._id),
           acceptance = newFeed.getAcceptancePolicy,

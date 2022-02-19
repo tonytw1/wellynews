@@ -44,7 +44,7 @@ class NewWebsiteController @Autowired()(contentUpdateService: ContentUpdateServi
 
     } else {
       log.info("Got valid new website submission: " + newWebsite)
-      val w = Website(title = Some(newWebsite.getTitle),
+      val w = Website(title = Some(processTitle(newWebsite.getTitle)),
         page = cleanUrl(newWebsite.getUrl),
         date = Some(DateTime.now.toDate),
       )

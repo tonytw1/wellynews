@@ -1,7 +1,7 @@
 package nz.co.searchwellington.controllers
 
 import nz.co.searchwellington.ReasonableWaits
-import nz.co.searchwellington.controllers.submission.GeotagParsing
+import nz.co.searchwellington.controllers.submission.{EndUserInputs, GeotagParsing}
 import nz.co.searchwellington.forms.EditWebsite
 import nz.co.searchwellington.geocoding.osm.GeoCodeService
 import nz.co.searchwellington.model._
@@ -9,7 +9,7 @@ import nz.co.searchwellington.modification.ContentUpdateService
 import nz.co.searchwellington.repositories.elasticsearch.ElasticSearchIndexRebuildService
 import nz.co.searchwellington.repositories.mongo.MongoRepository
 import nz.co.searchwellington.repositories.{HandTaggingService, TagDAO}
-import nz.co.searchwellington.urls.UrlBuilder
+import nz.co.searchwellington.urls.{UrlBuilder, UrlCleaner}
 import nz.co.searchwellington.views.Errors
 import org.apache.commons.logging.LogFactory
 import org.springframework.beans.factory.annotation.Autowired
@@ -32,8 +32,10 @@ class EditWebsiteController @Autowired()(contentUpdateService: ContentUpdateServ
                                          tagDAO: TagDAO,
                                          val geocodeService: GeoCodeService,
                                          handTaggingService: HandTaggingService,
-                                         elasticSearchIndexRebuildService: ElasticSearchIndexRebuildService
-                                        ) extends ReasonableWaits with AcceptancePolicyOptions with Errors with GeotagParsing with RequiringLoggedInUser {
+                                         elasticSearchIndexRebuildService: ElasticSearchIndexRebuildService,
+                                         val urlCleaner: UrlCleaner
+                                        ) extends ReasonableWaits with AcceptancePolicyOptions with Errors with GeotagParsing
+  with RequiringLoggedInUser with EndUserInputs {
 
   private val log = LogFactory.getLog(classOf[EditWebsiteController])
 
@@ -84,7 +86,7 @@ class EditWebsiteController @Autowired()(contentUpdateService: ContentUpdateServ
           }
 
           val updated = w.copy(
-            title = Some(editWebsite.getTitle),
+            title = Some(processTitle(editWebsite.getTitle)),
             page = editWebsite.getUrl,
             description = Some(editWebsite.getDescription),
             geocode = geocode,

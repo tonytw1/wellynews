@@ -1,13 +1,14 @@
 package nz.co.searchwellington.controllers
 
 import nz.co.searchwellington.ReasonableWaits
-import nz.co.searchwellington.controllers.submission.GeotagParsing
+import nz.co.searchwellington.controllers.submission.{EndUserInputs, GeotagParsing}
 import nz.co.searchwellington.forms.EditNewsitem
 import nz.co.searchwellington.geocoding.osm.GeoCodeService
 import nz.co.searchwellington.model._
 import nz.co.searchwellington.modification.ContentUpdateService
 import nz.co.searchwellington.repositories.mongo.MongoRepository
 import nz.co.searchwellington.repositories.{HandTaggingService, TagDAO}
+import nz.co.searchwellington.urls.UrlCleaner
 import nz.co.searchwellington.views.Errors
 import org.apache.commons.logging.LogFactory
 import org.joda.time.format.ISODateTimeFormat
@@ -29,8 +30,10 @@ class EditNewsitemController @Autowired()(contentUpdateService: ContentUpdateSer
                                           val loggedInUserFilter: LoggedInUserFilter,
                                           tagDAO: TagDAO,
                                           val geocodeService: GeoCodeService,
-                                          handTaggingService: HandTaggingService)
-  extends ReasonableWaits with AcceptancePolicyOptions with Errors with GeotagParsing with RequiringLoggedInUser {
+                                          handTaggingService: HandTaggingService,
+                                          val urlCleaner: UrlCleaner)
+  extends ReasonableWaits with AcceptancePolicyOptions with Errors with GeotagParsing with RequiringLoggedInUser
+  with EndUserInputs {
 
   private val log = LogFactory.getLog(classOf[EditNewsitemController])
 
@@ -81,7 +84,7 @@ class EditNewsitemController @Autowired()(contentUpdateService: ContentUpdateSer
           }
 
           val updated = handTaggingService.setUsersTagging(loggedInUser, submittedTags.map(_._id), newsitem.copy(
-            title = Some(formObject.getTitle),
+            title = Some(processTitle(formObject.getTitle)),
             page = formObject.getUrl,
             publisher = publisher.map(_._id),
             description = Some(formObject.getDescription),
