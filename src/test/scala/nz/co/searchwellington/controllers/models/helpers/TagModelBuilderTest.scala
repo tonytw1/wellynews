@@ -143,6 +143,7 @@ class TagModelBuilderTest extends ReasonableWaits with ContentFields {
     when(contentRetrievalService.getTagWatchlist(tag, None)).thenReturn(Future.successful(Seq.empty))
     when(contentRetrievalService.getTaggedFeeds(tag, None)).thenReturn(Future.successful(Seq.empty))
     when(contentRetrievalService.getLatestNewsitems(5, loggedInUser = None)).thenReturn(Future.successful(Seq.empty))
+    when(contentRetrievalService.getTagArchiveMonths(tag, loggedInUser)).thenReturn(Future.successful(Seq.empty))
 
     val withExtras = Await.result(modelBuilder.populateExtraModelContent(request, mv, None), TenSeconds)
 
