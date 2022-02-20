@@ -71,6 +71,16 @@ $(function() {
                 'R': 'RELATION'};
 
 		$("#geocode").autocomplete({
+		    search: function( event, ui ) {
+    		    $("#osm").val("");
+		    },
+		    change: function( event, ui ) {
+		        var osm = $("#osm").val();
+		        var selected = osm != "";
+		        if (!selected) {
+		            $("#geocode").val("");
+		        }
+		    },
 			source: function( request, response ) {
 				$.ajax({
 					url: "https://nominatim-ac.eelpieconsulting.co.uk/search",
