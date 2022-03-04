@@ -5,7 +5,9 @@ import org.hibernate.validator.constraints.NotBlank;
 public class NewTag {
 
     @NotBlank
-    private String displayName, description;
+    private String displayName;
+
+    private String description;
 
     public String getDisplayName() {
         return displayName;
