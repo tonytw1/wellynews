@@ -34,9 +34,11 @@ import scala.concurrent.{ExecutionContext, Future}
       autoTaggings <- eventualAutoTaggings
       feedCategoryAutoTaggings <- eventualFeedCategoryAutoTaggings
       withAutoTaggings <- {
-        log.info("Got autotaggings: " + asCommaList(autoTaggings))
-        log.info("Got feed category auto taggings: " + asCommaList(feedCategoryAutoTaggings) + " from newsitem categories: " + feedItemCategories)
-
+        log.info("Got autotaggings: " + asCommaListOfTagIds(autoTaggings))
+        if (feedCategoryAutoTaggings.nonEmpty) {
+          log.info("Got feed info category auto taggings: " + asCommaListOfTagIds(feedCategoryAutoTaggings) + " from feed newsitem categories: "
+            + feedItemCategories.map(_.value).mkString(","))
+        }
         val allTaggings: Set[HandTagging] = autoTaggings ++ feedCategoryAutoTaggings
 
         val withAutoTaggings = notHeld.withTaggings(allTaggings.map(t =>
@@ -57,6 +59,6 @@ import scala.concurrent.{ExecutionContext, Future}
     withAutoTaggings
   }
 
-   private def asCommaList(tags: Set[HandTagging]): String = tags.map(_.tag.id).mkString(",")
+   private def asCommaListOfTagIds(tags: Set[HandTagging]): String = tags.map(_.tag.id).mkString(",")
 
 }
