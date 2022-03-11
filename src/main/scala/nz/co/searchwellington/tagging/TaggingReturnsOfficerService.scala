@@ -18,7 +18,7 @@ import scala.concurrent.{ExecutionContext, Future}
 
   def getTaggingsVotesForResource(resource: Tagged)(implicit ec: ExecutionContext): Future[Seq[TaggingVote]] = {
     val eventualAncestorTagVotes = {
-      handTaggingDAO.getHandTaggingsForResource(resource).map { handTaggings =>
+      handTaggingDAO.getHandTaggingsForResource(resource).map { handTaggings => // TODO duplicate call?
         val handTags = handTaggings.map(_.tag).distinct
         handTags.map { rt =>
           parentsOf(rt).map(parents => parents.map(fat => GeneratedTaggingVote(fat, s"Ancestor of tag ${rt.name}")))

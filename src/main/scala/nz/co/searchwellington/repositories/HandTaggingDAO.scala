@@ -18,7 +18,7 @@ import scala.concurrent.{ExecutionContext, Future}
       resource.resource_tags.map { tagging =>
         mongoRepository.getTagByObjectId(tagging.tag_id).flatMap { tag =>
           mongoRepository.getUserByObjectId(tagging.user_id).map { user =>
-            HandTagging(user = user.get, tag = tag.get) // TODO Naked gets
+            HandTagging(user = user.get, tag = tag.get, reason = tagging.reason) // TODO Naked gets
           }
         }
       }
