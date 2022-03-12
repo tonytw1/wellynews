@@ -2,7 +2,7 @@ package nz.co.searchwellington.tagging
 
 import nz.co.searchwellington.ReasonableWaits
 import nz.co.searchwellington.model._
-import nz.co.searchwellington.model.taggingvotes.{GeneratedTaggingVote, GeotaggingVote, TaggingVote}
+import nz.co.searchwellington.model.taggingvotes.{GeneratedTaggingVote, GeotaggingVote, HandTagging, TaggingVote}
 import nz.co.searchwellington.repositories.HandTaggingDAO
 import nz.co.searchwellington.repositories.mongo.MongoRepository
 import org.springframework.beans.factory.annotation.Autowired
@@ -17,13 +17,11 @@ import scala.concurrent.{ExecutionContext, Future}
   extends ReasonableWaits with TagAncestors {
 
   def getTaggingsVotesForResource(resource: Tagged)(implicit ec: ExecutionContext): Future[Seq[TaggingVote]] = {
-    val eventualAncestorTagVotes = {
-      handTaggingDAO.getHandTaggingsForResource(resource).map { handTaggings => // TODO duplicate call?
+    def eventualAncestorTagVotes(handTaggings: Seq[HandTagging]): Future[Seq[GeneratedTaggingVote]] = {
         val handTags = handTaggings.map(_.tag).distinct
-        handTags.map { rt =>
+        Future.sequence(handTags.map { rt =>
           parentsOf(rt).map(parents => parents.map(fat => GeneratedTaggingVote(fat, s"Ancestor of tag ${rt.name}")))
-        }
-      }.flatMap(Future.sequence(_)).map(_.flatten)
+        }).map(_.flatten)
     }
 
     val eventualPublisherVotes = resource match {
@@ -50,7 +48,7 @@ import scala.concurrent.{ExecutionContext, Future}
       handTaggings <- handTaggingDAO.getHandTaggingsForResource(resource)
       publisherVotes <- eventualPublisherVotes
       newsitemSpecificVotes <- eventualNewsitemSpecificVotes
-      ancestorTagVotes <- eventualAncestorTagVotes  // TODO test coverage for ancestor tag votes
+      ancestorTagVotes <- eventualAncestorTagVotes(handTaggings)  // TODO test coverage for ancestor tag votes
     } yield {
       handTaggings ++ ancestorTagVotes ++ publisherVotes ++ newsitemSpecificVotes
     }
