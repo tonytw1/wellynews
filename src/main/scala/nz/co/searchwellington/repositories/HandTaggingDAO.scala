@@ -14,15 +14,25 @@ import scala.concurrent.{ExecutionContext, Future}
 @Component class HandTaggingDAO @Autowired()(mongoRepository: MongoRepository) extends ReasonableWaits {
 
   def getHandTaggingsForResource(resource: Tagged)(implicit ec: ExecutionContext): Future[Seq[HandTagging]] = {
-    Future.sequence {
-      resource.resource_tags.map { tagging =>
-        mongoRepository.getTagByObjectId(tagging.tag_id).flatMap { tag =>
-          mongoRepository.getUserByObjectId(tagging.user_id).map { user =>
-            HandTagging(user = user.get, tag = tag.get, reason = tagging.reason) // TODO Naked gets
-          }
+    def resolveTagAndUser(tagging: Tagging): Future[Option[HandTagging]] = {
+      val eventualMaybeTag = mongoRepository.getTagByObjectId(tagging.tag_id)
+      val eventualMaybeUser = mongoRepository.getUserByObjectId(tagging.user_id)
+      for {
+        maybeTag <- eventualMaybeTag
+        maybeUser <- eventualMaybeUser
+      } yield {
+        for {
+          tag <- maybeTag
+          user <- maybeUser
+        } yield {
+          HandTagging(user = user, tag = tag, reason = tagging.reason)
         }
       }
     }
+
+    Future.sequence {
+      resource.resource_tags.map(resolveTagAndUser)
+    }.map(_.flatten)
   }
 
   def getHandTaggingsForResourceId(id: BSONObjectID)(implicit ec: ExecutionContext): Future[Seq[HandTagging]] = {
