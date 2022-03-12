@@ -20,13 +20,11 @@ import scala.concurrent.{ExecutionContext, Future}
       for {
         maybeTag <- eventualMaybeTag
         maybeUser <- eventualMaybeUser
+      } yield for {
+        tag <- maybeTag
+        user <- maybeUser
       } yield {
-        for {
-          tag <- maybeTag
-          user <- maybeUser
-        } yield {
-          HandTagging(user = user, tag = tag, reason = tagging.reason)
-        }
+        HandTagging(user = user, tag = tag, reason = tagging.reason)
       }
     }
 
