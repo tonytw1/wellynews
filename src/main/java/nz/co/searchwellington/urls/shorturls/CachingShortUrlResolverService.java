@@ -3,13 +3,10 @@ package nz.co.searchwellington.urls.shorturls;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-
 import uk.co.eelpieconsulting.common.caching.MemcachedCache;
 import uk.co.eelpieconsulting.common.shorturls.ShortUrlResolver;
 import uk.co.eelpieconsulting.common.shorturls.resolvers.*;
 
-import java.net.MalformedURLException;
-import java.net.URI;
 import java.net.URL;
 
 @Component
@@ -29,20 +26,29 @@ public class CachingShortUrlResolverService {
         this.cache = cache;
     }
 
-    public String resolveUrl(String url) throws MalformedURLException {
+    public String resolveUrl(String url) throws Exception {
         if (url != null && !url.isEmpty()) {
-            final String cachedResult = (String) cache.get(generateKey(url));
-            if (cachedResult != null) {
-                log.debug("Found result for url '" + url + "' in cache: " + cachedResult);
-                return cachedResult;
-            }
+            try {
+                URL parsed = new URL(url);
 
-            log.debug("Delegating to live url resolver");
-            final URL result = shortUrlResolverService.resolveUrl(new java.net.URL(url));
-            if (result != null) {
-                putUrlIntoCache(url, result.toExternalForm());
+
+                final String cachedResult = (String) cache.get(generateKey(parsed.toExternalForm()));
+                if (cachedResult != null) {
+                    log.debug("Found result for url '" + parsed.toExternalForm() + "' in cache: " + cachedResult);
+                    return cachedResult;
+                }
+
+                log.debug("Delegating to live url resolver");
+                final URL result = shortUrlResolverService.resolveUrl(parsed);
+                if (result != null) {
+                    putUrlIntoCache(url, result.toExternalForm());
+                }
+                return result.toExternalForm();
+
+            } catch (Exception e) {
+                log.error("Failed to resolve short url for '" + url + "': ", e);
+                throw e;
             }
-            return result.toExternalForm();
 
         } else {
             log.warn("Called with empty url");

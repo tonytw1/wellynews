@@ -31,7 +31,7 @@ import scala.concurrent.{ExecutionContext, Future}
         log.debug(s"Processing feed: ${feed.title.getOrElse(feed.page)} using acceptance policy $acceptancePolicy. Last read: " + feed.last_read.getOrElse(""))
         whakaokoFeedReader.fetchFeedItems(feed).flatMap { feedItemsFetch =>
           feedItemsFetch.fold({ l =>
-            log.warn("Could new get feed items for feed + '" + feed.title + "':" + l)
+            log.warn("Could not fetch feed items for feed + '" + feed.title + "':" + l)
             Future.successful(0)
 
           }, { feedNewsitems =>

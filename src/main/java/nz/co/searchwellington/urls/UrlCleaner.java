@@ -20,7 +20,7 @@ public class UrlCleaner {
         this.shortUrlResolver = shortUrlResolver;
     }
 
-    public String cleanSubmittedItemUrl(String url) throws MalformedURLException {
+    public String cleanSubmittedItemUrl(String url) throws Exception {
         if (!url.isEmpty()) {
             // Trim and add prefix is missing from user submitted input
             url = UrlFilters.trimWhiteSpace(url);
