@@ -73,12 +73,14 @@ $(function() {
 		$("#geocode").autocomplete({
 		    search: function( event, ui ) {
     		    $("#osm").val("");
+                $("#geocodeStatus").text("");
 		    },
 		    change: function( event, ui ) {
 		        var osm = $("#osm").val();
 		        var selected = osm != "";
 		        if (!selected) {
 		            $("#geocode").val("");
+		            $("#geocodeStatus").text("");
 		        }
 		    },
 			source: function( request, response ) {
@@ -106,6 +108,7 @@ $(function() {
 			select: function( event, ui ) {
 				itemType = itemTypes[ui.item.osmType];
 				$("#osm").val( ui.item ? ui.item.osmId + "/" + itemType : "");
+                $("#geocodeStatus").text("*");
 			}
 		});
 	}
