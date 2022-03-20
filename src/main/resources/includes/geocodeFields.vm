@@ -1,5 +1,0 @@
-<label for="geocode">Geocode: </label>
-<input id="geocode" name="geocode" #if($geocode) value="$!geocode.displayName" #end size="50" />
-<span id="geocodeStatus"></span>
-<input id="selectedGeocode" name="selectedGeocode" value="$!geocode.osmPlaceId">
-<br />
