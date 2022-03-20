@@ -1,6 +1,7 @@
 #springBind("formObject.geocode")
 <label for="${status.expression}">Geocode:</label>
 <input id="geocode" name="${status.expression}" class="title" value="$!{status.value}" />
+<span id="geocodeStatus"></span>
 <br />
 
 #springBind("formObject.osm")

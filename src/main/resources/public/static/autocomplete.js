@@ -108,7 +108,7 @@ $(function() {
 			select: function( event, ui ) {
 				itemType = itemTypes[ui.item.osmType];
 				$("#osm").val( ui.item ? ui.item.osmId + "/" + itemType : "");
-                $("#geocodeStatus").text("*");
+                $("#geocodeStatus").text("✅");
 			}
 		});
 	}
