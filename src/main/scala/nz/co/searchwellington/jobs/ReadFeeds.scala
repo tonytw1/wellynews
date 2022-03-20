@@ -31,7 +31,7 @@ import scala.concurrent.{Await, ExecutionContext, ExecutionContextExecutor, Futu
       getFeedReaderUser.map { maybyFeedUser =>
         maybyFeedUser.map { feedReaderUser =>
           val start = DateTime.now()
-          log.info(s"Reading ${feeds.size} feeds as user $feedReaderUser.name")
+          log.info(s"Reading ${feeds.size} feeds as user ${feedReaderUser.name}")
           val accepted = feeds.map { feed =>
             try {
               Await.result(feedReader.processFeed(feed, feedReaderUser), TenSeconds)

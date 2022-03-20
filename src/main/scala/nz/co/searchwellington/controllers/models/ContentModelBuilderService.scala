@@ -21,7 +21,7 @@ class ContentModelBuilderService(viewFactory: ViewFactory,
 
   def populateContentModel(request: HttpServletRequest, loggedInUser: Option[User] = None): Future[Option[ModelAndView]] = {
     modelBuilders.find(mb => mb.isValid(request)).map { mb =>
-      log.info("Using " + mb.getClass.getName + " to serve path: " + RequestPath.getPathFrom(request))
+      log.info("Using " + mb.getClass.getSimpleName + " to serve path: " + RequestPath.getPathFrom(request))
       mb.populateContentModel(request, loggedInUser).flatMap { eventualMaybeModelAndView =>
         eventualMaybeModelAndView.map { mv =>
           mv.addObject("loggedInUser", loggedInUser.orNull)
