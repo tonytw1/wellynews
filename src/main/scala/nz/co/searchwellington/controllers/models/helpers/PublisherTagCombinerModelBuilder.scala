@@ -31,7 +31,6 @@ import scala.jdk.CollectionConverters._
   }
 
   def populateContentModel(request: HttpServletRequest, loggedInUser: Option[User]): Future[Option[ModelAndView]] = {
-    log.info("Building publisher tag combiner page model")
     val tag = request.getAttribute("tag").asInstanceOf[Tag]
     val publisher = request.getAttribute("publisher").asInstanceOf[Website]
     val eventualFrontendPublisher = frontendResourceMapper.createFrontendResourceFrom(publisher)
