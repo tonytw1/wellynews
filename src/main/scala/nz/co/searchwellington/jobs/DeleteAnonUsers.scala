@@ -27,19 +27,22 @@ import scala.concurrent.ExecutionContext.Implicits.global
       users.filter(nonAdmins).take(1000)
     }
     eventualUsersToExamine.map { users =>
-      users.map { user =>
+      var deleted = 0
+      users.foreach { user =>
         for {
           tagged <- mongoRepository.getResourceIdsByTaggingUser(user)
           owned <- mongoRepository.getResourcesIdsOwnedBy(user)
         } yield {
           val total = owned.size + tagged.size
-          log.info(s"User ${user.profilename.getOrElse(user._id)} owns ${owned.size} and has tagged ${tagged.size} for $total submissions.")
+          log.debug(s"User ${user.profilename.getOrElse(user._id)} owns ${owned.size} and has tagged ${tagged.size} for $total submissions.")
           if (total == 0) {
             log.info(s"User ${user.profilename.getOrElse(user._id)} has $total submissions and can be deleted")
             mongoRepository.removeUser(user)
+            deleted = deleted + 1
           }
         }
       }
+      log.info("Deleted " + deleted + " users from " + users.size)
     }
   }
 
