@@ -31,6 +31,9 @@ public class CachingShortUrlResolverService {
         if (url != null && !url.isEmpty()) {
             try {
                 URL parsed = new URL(url);
+                if (!shortUrlResolverService.isValid(parsed)) {
+                    return parsed.toExternalForm();
+                }
 
                 final String cachedResult = (String) cache.get(generateKey(parsed.toExternalForm()));
                 if (cachedResult != null) {
@@ -38,7 +41,6 @@ public class CachingShortUrlResolverService {
                     return cachedResult;
                 }
 
-                // TODO shouldn't cache urls we know are not short
                 log.debug("Delegating to live url resolver");
                 final URL result = shortUrlResolverService.resolveUrl(parsed);
                 if (result != null) {
