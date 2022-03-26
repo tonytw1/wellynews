@@ -43,7 +43,7 @@ import scala.concurrent.{Await, ExecutionContext, ExecutionContextExecutor, Futu
           }.sum
 
           val duration = new Duration(start, DateTime.now)
-          log.info(s"Accepted $accepted newsitems from ${feeds.size} in ${duration.getStandardSeconds} seconds")
+          log.info(s"Accepted $accepted newsitems from ${feeds.size} feeds in ${duration.getStandardSeconds} seconds")
           true
 
         }.getOrElse {

@@ -41,7 +41,7 @@ import scala.concurrent.{ExecutionContext, Future}
             val eventuallyAcceptedNewsitems = processFeedItems(feed, readingUser, acceptancePolicy, feedNewsitems._1)
             eventuallyAcceptedNewsitems.flatMap { acceptedNewsitems =>
               if (acceptedNewsitems.nonEmpty) {
-                log.info("Accepted " + acceptedNewsitems.size + " newsitems from " + feed.title)
+                log.info("Accepted " + acceptedNewsitems.size + " newsitems from " + feed.title.getOrElse(feed.page))
               }
 
               contentUpdateService.update(feed.copy(
