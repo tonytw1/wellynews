@@ -1,5 +1,6 @@
 package nz.co.searchwellington.urls.shorturls;
 
+import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -31,13 +32,13 @@ public class CachingShortUrlResolverService {
             try {
                 URL parsed = new URL(url);
 
-
                 final String cachedResult = (String) cache.get(generateKey(parsed.toExternalForm()));
                 if (cachedResult != null) {
                     log.debug("Found result for url '" + parsed.toExternalForm() + "' in cache: " + cachedResult);
                     return cachedResult;
                 }
 
+                // TODO shouldn't cache urls we know are not short
                 log.debug("Delegating to live url resolver");
                 final URL result = shortUrlResolverService.resolveUrl(parsed);
                 if (result != null) {
@@ -61,8 +62,8 @@ public class CachingShortUrlResolverService {
         cache.put(generateKey(url), ONE_DAY, result);
     }
 
-    private String generateKey(String id) {
-        return KEY_PREFIX + id;
+    private String generateKey(String url) {
+        return KEY_PREFIX + DigestUtils.sha256Hex(url);
     }
 
 }
