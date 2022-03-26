@@ -45,8 +45,11 @@ public class CachingShortUrlResolverService {
                 final URL result = shortUrlResolverService.resolveUrl(parsed);
                 if (result != null) {
                     putUrlIntoCache(url, result.toExternalForm());
+                    return result.toExternalForm();
                 }
-                return result.toExternalForm();
+
+                log.warn("Short url resolver return null for: " + parsed.toExternalForm());
+                return parsed.toExternalForm();
 
             } catch (Exception e) {
                 log.error("Failed to resolve short url for '" + url + "': ", e);
