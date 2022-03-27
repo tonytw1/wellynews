@@ -1,7 +1,9 @@
 package nz.co.searchwellington.controllers
 
+import nz.co.searchwellington.ReasonableWaits
 import nz.co.searchwellington.controllers.models.ContentModelBuilderServiceFactory
 import org.apache.commons.logging.LogFactory
+import org.joda.time.{DateTime, Duration}
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.core.annotation.Order
 import org.springframework.stereotype.Controller
@@ -10,11 +12,10 @@ import org.springframework.web.servlet.ModelAndView
 
 import javax.servlet.http.{HttpServletRequest, HttpServletResponse}
 import scala.concurrent.Await
-import scala.concurrent.duration.{Duration, SECONDS}
 
 @Order(5)
 @Controller
-class ContentController @Autowired()(contentModelBuilderServiceFactory: ContentModelBuilderServiceFactory, urlStack: UrlStack, loggedInUserFilter: LoggedInUserFilter) {
+class ContentController @Autowired()(contentModelBuilderServiceFactory: ContentModelBuilderServiceFactory, urlStack: UrlStack, loggedInUserFilter: LoggedInUserFilter) extends ReasonableWaits {
 
   private val log = LogFactory.getLog(classOf[ContentController])
 
@@ -28,10 +29,8 @@ class ContentController @Autowired()(contentModelBuilderServiceFactory: ContentM
     "/{\\w+}/{year:\\d+}-{month:\\w+}"
   ))
   def normal(request: HttpServletRequest, response: HttpServletResponse): ModelAndView = {
-    val TenSeconds = Duration(10, SECONDS)
-
+    val start = new DateTime()
     val eventualMaybeView = contentModelBuilderService.populateContentModel(request, loggedInUserFilter.getLoggedInUser)
-
     try {
       Await.result(eventualMaybeView, TenSeconds).fold {
         log.warn("Model was null; returning 404")
@@ -42,6 +41,7 @@ class ContentController @Autowired()(contentModelBuilderServiceFactory: ContentM
         if (isHtmlView(mv)) {
           urlStack.setUrlStack(request)
         }
+        log.info("Served " + request.getPathInfo + " in " + new Duration(start, new DateTime()).getMillis + "ms")
         mv
       }
     } catch {
