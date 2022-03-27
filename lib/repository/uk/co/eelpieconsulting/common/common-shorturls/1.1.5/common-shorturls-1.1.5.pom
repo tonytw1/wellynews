@@ -5,7 +5,7 @@
     <artifactId>common-shorturls</artifactId>
     <packaging>jar</packaging>
     <name>Common short URLs</name>
-    <version>1.1.4</version>
+    <version>1.1.5</version>
     <description>Resolves nested short URLs</description>
 
     <build>
@@ -47,7 +47,7 @@
         <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
-            <version>4.13.1</version>
+            <version>4.13.2</version>
             <scope>test</scope>
         </dependency>
     </dependencies>
