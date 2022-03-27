@@ -6,6 +6,7 @@ import nz.co.searchwellington.filters.RequestPath
 import nz.co.searchwellington.model.User
 import nz.co.searchwellington.repositories.ContentRetrievalService
 import org.apache.commons.logging.LogFactory
+import org.joda.time.{DateTime, Duration}
 import org.springframework.web.servlet.ModelAndView
 import uk.co.eelpieconsulting.common.views.ViewFactory
 
@@ -22,11 +23,13 @@ class ContentModelBuilderService(viewFactory: ViewFactory,
   def populateContentModel(request: HttpServletRequest, loggedInUser: Option[User] = None): Future[Option[ModelAndView]] = {
     modelBuilders.find(mb => mb.isValid(request)).map { mb =>
       log.info("Using " + mb.getClass.getSimpleName + " to serve path: " + RequestPath.getPathFrom(request))
-      mb.populateContentModel(request, loggedInUser).flatMap { eventualMaybeModelAndView =>
+      val start = new DateTime()
+      val eventualMaybeView = mb.populateContentModel(request, loggedInUser)
+      eventualMaybeView.flatMap { eventualMaybeModelAndView =>
         eventualMaybeModelAndView.map { mv =>
-          mv.addObject("loggedInUser", loggedInUser.orNull)
-
           val path = RequestPath.getPathFrom(request)
+          log.info("Created mv for " + path + " in " + new Duration(start, new DateTime()).getMillis + "ms")
+          mv.addObject("loggedInUser", loggedInUser.orNull)
           if (path.endsWith("/rss")) {
             Future.successful(Some(rssViewOf(mv)))
 
