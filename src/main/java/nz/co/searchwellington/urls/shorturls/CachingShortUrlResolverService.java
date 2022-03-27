@@ -48,7 +48,7 @@ public class CachingShortUrlResolverService {
                     return result.toExternalForm();
                 }
 
-                log.warn("Short url resolver return null for: " + parsed.toExternalForm());
+                log.warn("Short url resolver returned null for: " + parsed.toExternalForm());
                 return parsed.toExternalForm();
 
             } catch (Exception e) {
