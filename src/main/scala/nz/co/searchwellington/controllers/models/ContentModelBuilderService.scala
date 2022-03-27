@@ -28,7 +28,7 @@ class ContentModelBuilderService(viewFactory: ViewFactory,
       eventualMaybeView.flatMap { eventualMaybeModelAndView =>
         eventualMaybeModelAndView.map { mv =>
           val path = RequestPath.getPathFrom(request)
-          log.info("Created mv for " + path + " in " + new Duration(start, new DateTime()).getMillis + "ms")
+          log.info("Created mv for " + path + " after " + new Duration(start, new DateTime()).getMillis + "ms using " + mb.getClass.getSimpleName)
           mv.addObject("loggedInUser", loggedInUser.orNull)
           if (path.endsWith("/rss")) {
             Future.successful(Some(rssViewOf(mv)))
@@ -37,11 +37,15 @@ class ContentModelBuilderService(viewFactory: ViewFactory,
             Future.successful(Some(jsonViewOf(mv)))
 
           } else {
-            mb.populateExtraModelContent(request, mv, loggedInUser).flatMap { mv =>
+            val eventualSomeView = mb.populateExtraModelContent(request, mv, loggedInUser).flatMap { mv =>
               mv.setViewName(mb.getViewName(mv, loggedInUser))
               withCommonLocal(mv).map { mv =>
                 Some(mv)
               }
+            }
+            eventualSomeView.map { withExtras =>
+              log.info("Completed mv with extras for " + path + " after " + new Duration(start, new DateTime()).getMillis + "ms using " + mb.getClass.getSimpleName)
+              withExtras
             }
           }
 
