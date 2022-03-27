@@ -2,6 +2,7 @@ package nz.co.searchwellington.controllers
 
 import nz.co.searchwellington.ReasonableWaits
 import nz.co.searchwellington.controllers.models.ContentModelBuilderServiceFactory
+import nz.co.searchwellington.filters.RequestPath
 import org.apache.commons.logging.LogFactory
 import org.joda.time.{DateTime, Duration}
 import org.springframework.beans.factory.annotation.Autowired
@@ -41,7 +42,7 @@ class ContentController @Autowired()(contentModelBuilderServiceFactory: ContentM
         if (isHtmlView(mv)) {
           urlStack.setUrlStack(request)
         }
-        log.info("Served " + request.getPathInfo + " in " + new Duration(start, new DateTime()).getMillis + "ms")
+        log.info("Served " + RequestPath.getPathFrom(request) + " in " + new Duration(start, new DateTime()).getMillis + "ms")
         mv
       }
     } catch {
