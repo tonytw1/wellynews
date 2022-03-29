@@ -11,6 +11,7 @@ import nz.co.searchwellington.tagging.RelatedTagsService
 import nz.co.searchwellington.urls.UrlBuilder
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
+import org.springframework.ui.ModelMap
 import org.springframework.web.servlet.ModelAndView
 
 import javax.servlet.http.HttpServletRequest
@@ -80,40 +81,39 @@ import scala.jdk.CollectionConverters._
     populatePublisherPageModelAndView(publisher, page)
   }
 
-  def populateExtraModelContent(request: HttpServletRequest, mv: ModelAndView, loggedInUser: Option[User]): Future[ModelAndView] = {
+  def populateExtraModelContent(request: HttpServletRequest, loggedInUser: Option[User]): Future[ModelMap] = {
     val publisher = request.getAttribute("publisher").asInstanceOf[Website]
-    val frontendPublisher = mv.getModel.get("publisher").asInstanceOf[FrontendResource]
 
     val eventualPublisherWatchlist = contentRetrievalService.getPublisherWatchlist(publisher, loggedInUser)
     val eventualPublisherArchiveLinks = contentRetrievalService.getPublisherArchiveMonths(publisher, loggedInUser)
     val eventualRelatedTagsForPublisher = relatedTagsService.getRelatedTagsForPublisher(publisher, loggedInUser)
     val eventualDiscoveredFeeds = contentRetrievalService.getDiscoveredFeedsForPublisher(publisher, MAX_NEWSITEMS)
+    val eventualFrontendPublisher = frontendResourceMapper.createFrontendResourceFrom(publisher, loggedInUser) // TODO duplicated with main content
 
     for {
       publisherWatchlist <- eventualPublisherWatchlist
       archiveLinks <- eventualPublisherArchiveLinks
       relatedTagsForPublisher <- eventualRelatedTagsForPublisher
       discoveredFeeds <- eventualDiscoveredFeeds
-      withSecondaryContent = {
-        val publisherArchiveLinks = archiveLinks.map { a =>
-          PublisherArchiveLink(publisher = frontendPublisher, interval = a.interval, count = a.count)
-        }
-        mv.addObject("watchlist", publisherWatchlist.asJava)
-        if (relatedTagsForPublisher.nonEmpty) {
-          mv.addObject("related_tags", relatedTagsForPublisher.asJava)
-        }
-        if (publisherArchiveLinks.nonEmpty) {
-          mv.addObject("publisher_archive_links", publisherArchiveLinks.asJava)
-        }
-        if (discoveredFeeds.nonEmpty) {
-          mv.addObject("discovered_feeds", discoveredFeeds.asJava)
-        }
-        mv
-      }
-      withLatestNewsitems <- withLatestNewsitems(withSecondaryContent, loggedInUser)
+      frontendPublisher <- eventualFrontendPublisher
+      latestNewsitems <- latestNewsitems(loggedInUser)
 
     } yield {
-      withLatestNewsitems
+      val mv = new ModelMap()
+      val publisherArchiveLinks = archiveLinks.map { a =>
+        PublisherArchiveLink(publisher = frontendPublisher, interval = a.interval, count = a.count)
+      }
+      mv.addAttribute("watchlist", publisherWatchlist.asJava)
+      if (relatedTagsForPublisher.nonEmpty) {
+        mv.addAttribute("related_tags", relatedTagsForPublisher.asJava)
+      }
+      if (publisherArchiveLinks.nonEmpty) {
+        mv.addAttribute("publisher_archive_links", publisherArchiveLinks.asJava)
+      }
+      if (discoveredFeeds.nonEmpty) {
+        mv.addAttribute("discovered_feeds", discoveredFeeds.asJava)
+      }
+      mv.addAllAttributes(latestNewsitems)
     }
   }
 

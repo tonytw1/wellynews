@@ -16,33 +16,36 @@ import scala.jdk.CollectionConverters._
 
 @Order(3)
 @Controller
-class ProfileController @Autowired()(mongoRepository: MongoRepository, loggedInUserFilter: LoggedInUserFilter, urlBuilder: UrlBuilder,
+class ProfileController @Autowired()(mongoRepository: MongoRepository, loggedInUserFilter: LoggedInUserFilter,
                                      val contentRetrievalService: ContentRetrievalService)
   extends ReasonableWaits with CommonModelObjectsService {
 
   @GetMapping(Array("/profiles"))
   def profiles: ModelAndView = {
     val loggedInUser = loggedInUserFilter.getLoggedInUser
-
     Await.result(for {
       users <- mongoRepository.getAllUsers
-      mv = {
+      commonLocal <- commonLocal
+      latestNewsitems <- latestNewsitems(loggedInUser)
+    } yield {
+      val mv = {
         new ModelAndView("profiles").
           addObject("heading", "Profiles").
           addObject("profiles", users.asJava)
       }
-      w <- withCommonLocal(mv)
-      n <- withLatestNewsitems(w, loggedInUser)
-    } yield {
-      n
+      mv.addAllObjects(commonLocal).addAllObjects(latestNewsitems)
     }, TenSeconds)
   }
 
   @GetMapping(Array("/profile/edit")) def edit(): ModelAndView = {
     val loggedInUser = loggedInUserFilter.getLoggedInUser
-    Await.result(withCommonLocal(new ModelAndView("editProfile").
-      addObject("heading", "Editing your profile").
-      addObject("user", loggedInUser)), TenSeconds)
+    Await.result(for {
+      commonLocal <- commonLocal
+    } yield {
+      new ModelAndView("editProfile").
+        addObject("heading", "Editing your profile").
+        addObject("user", loggedInUser).addAllObjects(commonLocal)
+    }, TenSeconds)
   }
 
   /*

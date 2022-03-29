@@ -10,6 +10,7 @@ import nz.co.searchwellington.urls.UrlBuilder
 import org.apache.commons.logging.LogFactory
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
+import org.springframework.ui.ModelMap
 import org.springframework.web.servlet.ModelAndView
 
 import javax.servlet.http.HttpServletRequest
@@ -55,19 +56,18 @@ import scala.jdk.CollectionConverters._
     }
   }
 
-  def populateExtraModelContent(request: HttpServletRequest, mv: ModelAndView, loggedInUser: Option[User]): Future[ModelAndView] = {
+  def populateExtraModelContent(request: HttpServletRequest, loggedInUser: Option[User]): Future[ModelMap] = {
     val publisher = request.getAttribute("publisher").asInstanceOf[Website]
-
-    val eventualWithExtras = for {
+    for {
       relatedTags <- relatedTagsService.getRelatedTagsForPublisher(publisher, loggedInUser)
+      latestNewsitems <- latestNewsitems(loggedInUser)
     } yield {
+      val mv = new ModelMap().addAllAttributes(latestNewsitems)
       if (relatedTags.nonEmpty) {
-        mv.addObject("related_tags", relatedTags.asJava)
+        mv.addAttribute("related_tags", relatedTags.asJava)
       }
       mv
     }
-
-    eventualWithExtras.flatMap(withLatestNewsitems(_, loggedInUser))
   }
 
   def getViewName(mv: ModelAndView, loggedInUser: Option[User]): String = "publisherTagCombiner"

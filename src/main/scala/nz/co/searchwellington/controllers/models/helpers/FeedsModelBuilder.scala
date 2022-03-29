@@ -9,6 +9,7 @@ import nz.co.searchwellington.urls.UrlBuilder
 import org.apache.commons.logging.LogFactory
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
+import org.springframework.ui.ModelMap
 import org.springframework.web.servlet.ModelAndView
 
 import javax.servlet.http.HttpServletRequest
@@ -45,7 +46,9 @@ import scala.jdk.CollectionConverters._
     }
   }
 
-  def populateExtraModelContent(request: HttpServletRequest, mv: ModelAndView, loggedInUser: Option[User]): Future[ModelAndView] = {
+  def populateExtraModelContent(request: HttpServletRequest, loggedInUser: Option[User]): Future[ModelMap] = {
+    val mv = new ModelMap()
+
     val eventualSuggestedFeedNewsitems = {
       if (loggedInUser.exists(_.isAdmin)) {
         suggestedFeeditemsService.getSuggestionFeednewsitems(6, loggedInUser)
@@ -68,11 +71,11 @@ import scala.jdk.CollectionConverters._
       currentFeeds <- eventualCurrentFeeds
 
     } yield {
-      mv.addObject("suggestions", suggestedFeednewsitems.asJava)
-      mv.addObject("discovered_feeds", discoveredFeedOccurrences.asJava)
+      mv.addAttribute("suggestions", suggestedFeednewsitems.asJava)
+      mv.addAttribute("discovered_feeds", discoveredFeedOccurrences.asJava)
       // TODO make conditional
-      mv.addObject("discovered_feeds_moreurl", urlBuilder.getDiscoveredFeeds)
-      commonAttributesModelBuilder.withSecondaryFeeds(mv, currentFeeds)
+      mv.addAttribute("discovered_feeds_moreurl", urlBuilder.getDiscoveredFeeds)
+      mv.addAllAttributes(commonAttributesModelBuilder.secondaryFeeds(currentFeeds))
     }
   }
 

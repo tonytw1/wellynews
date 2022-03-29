@@ -11,6 +11,7 @@ import nz.co.searchwellington.urls.UrlBuilder
 import org.joda.time.{DateTime, Interval, YearMonth}
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
+import org.springframework.ui.ModelMap
 import org.springframework.web.servlet.ModelAndView
 
 import javax.servlet.http.HttpServletRequest
@@ -58,17 +59,17 @@ import scala.jdk.CollectionConverters._
     }
   }
 
-  def populateExtraModelContent(request: HttpServletRequest, mv: ModelAndView, loggedInUser: Option[User]): Future[ModelAndView] = {
-    def populateUserOwnedResources(mv: ModelAndView, l: Option[User]): Future[ModelAndView] = {
+  def populateExtraModelContent(request: HttpServletRequest, loggedInUser: Option[User]): Future[ModelMap] = {
+    def populateUserOwnedResources(mv: ModelMap, l: Option[User]): Future[ModelMap] = {
       l.map { loggedInUser =>
         val eventualOwned = contentRetrievalService.getOwnedBy(loggedInUser, Some(loggedInUser), MAX_OWNED_TO_SHOW_IN_RHS)
         for {
           owned <- eventualOwned
         } yield {
           if (owned._2 > 0) {
-            mv.addObject("owned", owned._1.asJava)
+            mv.addAttribute("owned", owned._1.asJava)
             if (owned._2 > MAX_OWNED_TO_SHOW_IN_RHS) {
-              mv.addObject("owned_moreurl", urlBuilder.getProfileUrlFromProfileName(loggedInUser.getProfilename))
+              mv.addAttribute("owned_moreurl", urlBuilder.getProfileUrlFromProfileName(loggedInUser.getProfilename))
             }
           }
           mv
@@ -90,6 +91,7 @@ import scala.jdk.CollectionConverters._
       geocodedNewsitems <- eventualGeocodedNewsitems
 
     } yield {
+      val mv = new ModelMap()
       populateSecondaryJustin(mv, websites._1)
       populateGeocoded(mv, geocodedNewsitems._1)
       archiveLinksService.populateArchiveLinks(mv, archiveMonths, archiveStatistics)
@@ -99,17 +101,17 @@ import scala.jdk.CollectionConverters._
     }
   }
 
-  private def populateGeocoded(mv: ModelAndView, geocoded: Seq[FrontendResource]): Unit = {
+  private def populateGeocoded(mv: ModelMap, geocoded: Seq[FrontendResource]): Unit = {
     if (geocoded.nonEmpty) {
-      mv.addObject("geocoded", geocoded.asJava)
+      mv.addAttribute("geocoded", geocoded.asJava)
     }
   }
 
-  private def populateSecondaryJustin(mv: ModelAndView, websites: Seq[FrontendResource]): Unit = {
-    mv.addObject("secondary_heading", "Just In")
-    mv.addObject("secondary_description", "New additions.")
-    mv.addObject("secondary_content", websites.asJava)
-    mv.addObject("secondary_content_moreurl", "justin")
+  private def populateSecondaryJustin(mv: ModelMap, websites: Seq[FrontendResource]): Unit = {
+    mv.addAttribute("secondary_heading", "Just In")
+    mv.addAttribute("secondary_description", "New additions.")
+    mv.addAttribute("secondary_content", websites.asJava)
+    mv.addAttribute("secondary_content_moreurl", "justin")
   }
 
 }

@@ -53,10 +53,7 @@ import scala.concurrent.ExecutionContext.Implicits.global
       } else {
         log.warn("Not deleting resource: " + editResource)
       }
-
-      val mv = new ModelAndView()
-      mv.setView(new RedirectView(urlStack.getExitUrlFromStack(request)))
-      Await.result(withCommonLocal(mv), TenSeconds)
+      new ModelAndView(new RedirectView(urlStack.getExitUrlFromStack(request)))
     }
 
     requiringAdminUser(delete)

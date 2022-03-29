@@ -3,7 +3,7 @@ package nz.co.searchwellington.controllers
 import nz.co.searchwellington.ReasonableWaits
 import nz.co.searchwellington.model.User
 import nz.co.searchwellington.repositories.ContentRetrievalService
-import org.springframework.web.servlet.ModelAndView
+import org.springframework.ui.ModelMap
 
 import scala.concurrent.{ExecutionContext, Future}
 import scala.jdk.CollectionConverters._
@@ -12,27 +12,24 @@ trait CommonModelObjectsService extends ReasonableWaits {
 
   def contentRetrievalService: ContentRetrievalService
 
-  def withCommonLocal(mv: ModelAndView)(implicit ec: ExecutionContext): Future[ModelAndView] = {
-    populateCommonLocal(mv)
-  }
-
-  def withLatestNewsitems(mv: ModelAndView, loggedInUser: Option[User])(implicit ec: ExecutionContext): Future[ModelAndView] = {
-    for {
-      latestNewsitems <- contentRetrievalService.getLatestNewsitems(5, loggedInUser = loggedInUser)
-    } yield {
-      mv.addObject("latest_newsitems", latestNewsitems.asJava)
-    }
-  }
-
-  private def populateCommonLocal(mv: ModelAndView)(implicit ec: ExecutionContext): Future[ModelAndView] = {
+  def commonLocal()(implicit ec: ExecutionContext): Future[ModelMap] = {
+    val mv = new ModelMap()
     val eventualTopLevelTags = contentRetrievalService.getTopLevelTags
     val eventualFeaturedTags = contentRetrievalService.getFeaturedTags
     for {
       topLevelTags <- eventualTopLevelTags
       featuredTags <- eventualFeaturedTags
     } yield {
-      mv.addObject("top_level_tags",topLevelTags.asJava)
-      mv.addObject("featuredTags", featuredTags.asJava)
+      mv.addAttribute("top_level_tags",topLevelTags.asJava)
+      mv.addAttribute("featuredTags", featuredTags.asJava)
+    }
+  }
+
+  def latestNewsitems(loggedInUser: Option[User])(implicit ec: ExecutionContext): Future[ModelMap] = {
+    for {
+      latestNewsitems <- contentRetrievalService.getLatestNewsitems(5, loggedInUser = loggedInUser)
+    } yield {
+      new ModelMap().addAttribute("latest_newsitems", latestNewsitems.asJava)
     }
   }
 

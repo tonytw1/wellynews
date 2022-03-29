@@ -109,7 +109,7 @@ class FeedModelBuilderTest extends ReasonableWaits with ContentFields {
 
     val mv = Await.result(modelBuilder.populateContentModel(request), TenSeconds).get
 
-    modelBuilder.populateExtraModelContent(request, mv, None)
+    modelBuilder.populateExtraModelContent(request, None)
 
     assertEquals(Seq(anotherFrontendNewsitemWithActions).asJava, mv.getModel.get("geocoded"))
     assertEquals("Expected whakaoko subscription to be shown", whakaokoSubscription, mv.getModel.get("subscription"))

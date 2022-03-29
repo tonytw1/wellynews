@@ -5,17 +5,18 @@ import nz.co.searchwellington.controllers.models.ContentModelBuilderService
 import nz.co.searchwellington.model.User
 import nz.co.searchwellington.repositories.ContentRetrievalService
 import org.junit.Assert.assertEquals
-import org.junit.{Before, Test}
+import org.junit.Test
 import org.mockito.Matchers.anyString
 import org.mockito.Mockito.{mock, when}
 import org.springframework.mock.web.MockHttpServletRequest
+import org.springframework.ui.ModelMap
 import org.springframework.web.servlet.ModelAndView
 import uk.co.eelpieconsulting.common.views.ViewFactory
 import uk.co.eelpieconsulting.common.views.json.JsonView
 import uk.co.eelpieconsulting.common.views.rss.RssView
 
-import scala.concurrent.{Await, Future}
 import scala.concurrent.ExecutionContext.Implicits.global
+import scala.concurrent.{Await, Future}
 
 class ContentModelBuilderServiceTest extends ReasonableWaits {
 
@@ -28,58 +29,68 @@ class ContentModelBuilderServiceTest extends ReasonableWaits {
     request
   }
 
-  private val validModelAndView = new ModelAndView("")
+  private val validModelAndView = new ModelAndView("").addObject("something", "abc")
+  private val validExtras = new ModelMap().addAttribute("somethingextra", "xyz")
 
   private val invalidModelBuilder = mock(classOf[ModelBuilder])
   private val validModelBuilder =  mock(classOf[ModelBuilder])
+
+  private val contentModelBuilderService = new ContentModelBuilderService(viewFactory,
+    contentRetrievalService,
+    Seq(invalidModelBuilder, validModelBuilder)
+  )
 
   @Test
   def shouldDelegateModelBuildingToTheFirstBuildWhoSaysTheyAreValid(): Unit = {
     when(invalidModelBuilder.isValid(request)).thenReturn(false)
     when(validModelBuilder.isValid(request)).thenReturn(true)
     when(validModelBuilder.populateContentModel(request, None)).thenReturn(Future.successful(Some(validModelAndView)))
-    when(validModelBuilder.populateExtraModelContent(request, validModelAndView, None)).thenReturn(Future.successful(validModelAndView))
+    when(validModelBuilder.populateExtraModelContent(request, None)).thenReturn(Future.successful(validExtras))
 
     when(contentRetrievalService.getTopLevelTags).thenReturn(Future.successful(Seq.empty))
     when(contentRetrievalService.getFeaturedTags).thenReturn(Future.successful(Seq.empty))
-
-    val contentModelBuilderService = new ContentModelBuilderService(viewFactory,
-      contentRetrievalService,
-      Seq(invalidModelBuilder, validModelBuilder)
-    )
 
     val result = Await.result(contentModelBuilderService.populateContentModel(request), TenSeconds)
 
     assertEquals(Some(validModelAndView), result)
   }
 
-
   @Test
-  def shouldSetLoggedInUser(): Unit = {
-    val loggedInUser = User(name = Some("A user"))
-
-    when(invalidModelBuilder.isValid(request)).thenReturn(false)
+  def shouldMergeExtrasOntoTheModelAndViewForHtmlPages(): Unit = {
     when(validModelBuilder.isValid(request)).thenReturn(true)
-    when(validModelBuilder.populateContentModel(request, Some(loggedInUser))).thenReturn(Future.successful(Some(validModelAndView)))
-    when(validModelBuilder.populateExtraModelContent(request, validModelAndView, Some(loggedInUser))).thenReturn(Future.successful(validModelAndView))
+    when(validModelBuilder.populateContentModel(request, None)).thenReturn(Future.successful(Some(validModelAndView)))
+    when(validModelBuilder.populateExtraModelContent(request, None)).thenReturn(Future.successful(validExtras))
 
     when(contentRetrievalService.getTopLevelTags).thenReturn(Future.successful(Seq.empty))
     when(contentRetrievalService.getFeaturedTags).thenReturn(Future.successful(Seq.empty))
 
-    val contentModelBuilderService = new ContentModelBuilderService(viewFactory,
-      contentRetrievalService,
-      Seq(invalidModelBuilder, validModelBuilder)
-    )
+    val result = Await.result(contentModelBuilderService.populateContentModel(request), TenSeconds)
 
-    val result = Await.result(contentModelBuilderService.populateContentModel(request, Some(loggedInUser)), TenSeconds)
-
-    assertEquals(loggedInUser, result.get.getModel().get("loggedInUser"))
+    val model = result.get.getModel
+    assertEquals("abc", model.get("something"))
+    assertEquals("xyz", model.get("somethingextra"))
   }
 
   @Test
-  def shouldReturnNullIfNoModelBuilderWasFoundForRequest(): Unit = {
+  def shouldSetLoggedInUser(): Unit = {
+    val loggedInUser = User(name = Some("A user"))
     when(invalidModelBuilder.isValid(request)).thenReturn(false)
-    val contentModelBuilderService = new ContentModelBuilderService(viewFactory, contentRetrievalService, Seq(invalidModelBuilder))
+    when(validModelBuilder.isValid(request)).thenReturn(true)
+    when(validModelBuilder.populateContentModel(request, Some(loggedInUser))).thenReturn(Future.successful(Some(validModelAndView)))
+    when(validModelBuilder.populateExtraModelContent(request, Some(loggedInUser))).thenReturn(Future.successful(validExtras))
+
+    when(contentRetrievalService.getTopLevelTags).thenReturn(Future.successful(Seq.empty))
+    when(contentRetrievalService.getFeaturedTags).thenReturn(Future.successful(Seq.empty))
+
+    val result = Await.result(contentModelBuilderService.populateContentModel(request, Some(loggedInUser)), TenSeconds)
+
+    assertEquals(loggedInUser, result.get.getModel.get("loggedInUser"))
+  }
+
+  @Test
+  def shouldReturnNullIfNoValidModelBuilderWasFoundForRequest(): Unit = {
+    when(validModelBuilder.isValid(request)).thenReturn(false)
+    when(invalidModelBuilder.isValid(request)).thenReturn(false)
 
     val result = Await.result(contentModelBuilderService.populateContentModel(request), TenSeconds)
 
@@ -92,12 +103,6 @@ class ContentModelBuilderServiceTest extends ReasonableWaits {
     when(validModelBuilder.isValid(request)).thenReturn(true)
     when(validModelBuilder.populateContentModel(request, None)).thenReturn(Future.successful(Some(validModelAndView)))
 
-    val contentModelBuilderService = new ContentModelBuilderService(
-      viewFactory,
-      contentRetrievalService,
-      Seq(invalidModelBuilder, validModelBuilder)
-    )
-
     val rssView = mock(classOf[RssView])
     when(viewFactory.getRssView(anyString, anyString, anyString)).thenReturn(rssView)
     request.setRequestURI("/something/rss")
@@ -109,12 +114,6 @@ class ContentModelBuilderServiceTest extends ReasonableWaits {
     when(invalidModelBuilder.isValid(request)).thenReturn(false)
     when(validModelBuilder.isValid(request)).thenReturn(true)
     when(validModelBuilder.populateContentModel(request, None)).thenReturn(Future.successful(Some(validModelAndView)))
-
-    val contentModelBuilderService = new ContentModelBuilderService(
-      viewFactory,
-      contentRetrievalService,
-      Seq(invalidModelBuilder, validModelBuilder)
-    )
 
     val jsonView = mock(classOf[JsonView])
     when(viewFactory.getJsonView).thenReturn(jsonView)

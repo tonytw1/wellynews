@@ -44,7 +44,7 @@ import scala.concurrent.ExecutionContext.Implicits.global
     mv.addObject("tag", tag)
     tagModifcationService.deleteTag(tag)
     urlStack.setUrlStack(request, "")
-    Await.result(withCommonLocal(mv), TenSeconds)
+    mv
   }
 
 }

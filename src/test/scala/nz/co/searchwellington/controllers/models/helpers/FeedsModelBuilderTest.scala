@@ -11,7 +11,6 @@ import org.junit.Assert.{assertEquals, assertTrue}
 import org.junit.{Before, Test}
 import org.mockito.Mockito.{mock, when}
 import org.springframework.mock.web.MockHttpServletRequest
-import org.springframework.web.servlet.ModelAndView
 
 import java.util.UUID
 import scala.concurrent.ExecutionContext.Implicits.global
@@ -66,13 +65,12 @@ class FeedsModelBuilderTest extends ReasonableWaits with ContentFields {
     )
     when(contentRetrievalService.getDiscoveredFeeds(10)).thenReturn(Future.successful(discoveredFeeditems))
     when(contentRetrievalService.getAllFeedsOrderedByLatestItemDate(loggedInUser)).thenReturn(Future.successful(Seq.empty))
-    val mv = new ModelAndView()
 
-    Await.result(modelBuilder.populateExtraModelContent(request, mv, Some(adminUser)), TenSeconds)
+    val extras = Await.result(modelBuilder.populateExtraModelContent(request, Some(adminUser)), TenSeconds)
 
-    assertEquals(suggestedFeeditems.asJava, mv.getModel.get("suggestions"))
-    assertEquals(currentFeeds.asJava, mv.getModel.get("righthand_content"))
-    assertEquals(discoveredFeeditems.asJava, mv.getModel.get("discovered_feeds"))
+    assertEquals(suggestedFeeditems.asJava, extras.get("suggestions"))
+    assertEquals(currentFeeds.asJava, extras.get("righthand_content"))
+    assertEquals(discoveredFeeditems.asJava, extras.get("discovered_feeds"))
   }
 
 }

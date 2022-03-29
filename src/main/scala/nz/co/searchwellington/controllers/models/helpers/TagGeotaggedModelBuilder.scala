@@ -9,6 +9,7 @@ import nz.co.searchwellington.urls.UrlBuilder
 import org.apache.commons.logging.LogFactory
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
+import org.springframework.ui.ModelMap
 import org.springframework.web.servlet.ModelAndView
 
 import javax.servlet.http.HttpServletRequest
@@ -55,12 +56,8 @@ import scala.jdk.CollectionConverters._
     populateTagCommentPageModelAndView(tag)
   }
 
-  def populateExtraModelContent(request: HttpServletRequest, mv: ModelAndView, loggedInUser: Option[User]): Future[ModelAndView] = {
-    for {
-      mv <- withLatestNewsitems(mv, loggedInUser)
-    } yield {
-      mv
-    }
+  def populateExtraModelContent(request: HttpServletRequest, loggedInUser: Option[User]): Future[ModelMap] = {
+    latestNewsitems(loggedInUser)
   }
 
   def getViewName(mv: ModelAndView, loggedInUser: Option[User]): String = "tagGeotagged"

@@ -3,17 +3,13 @@ package nz.co.searchwellington.controllers.models.helpers
 import nz.co.searchwellington.ReasonableWaits
 import nz.co.searchwellington.controllers.RssUrlBuilder
 import nz.co.searchwellington.feeds.suggesteditems.SuggestedFeeditemsService
-import nz.co.searchwellington.feeds.whakaoko.WhakaokoService
 import nz.co.searchwellington.filters.RequestPath
 import nz.co.searchwellington.model.User
-import nz.co.searchwellington.model.mappers.FrontendResourceMapper
 import nz.co.searchwellington.repositories.ContentRetrievalService
-import nz.co.searchwellington.repositories.mongo.MongoRepository
-import nz.co.searchwellington.signin.SigninController
 import nz.co.searchwellington.urls.UrlBuilder
-import org.apache.commons.logging.LogFactory
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
+import org.springframework.ui.ModelMap
 import org.springframework.web.servlet.ModelAndView
 
 import javax.servlet.http.HttpServletRequest
@@ -25,14 +21,11 @@ import scala.jdk.CollectionConverters._
                                                       rssUrlBuilder: RssUrlBuilder,
                                                       urlBuilder: UrlBuilder,
                                                       val contentRetrievalService: ContentRetrievalService,
-                                                      whakaokoService: WhakaokoService,
-                                                      mongoRepository: MongoRepository,
-                                                      frontendResourceMapper: FrontendResourceMapper,
-                                                      commonAttributesModelBuilder: CommonAttributesModelBuilder) extends ModelBuilder
+                                                      commonAttributesModelBuilder: CommonAttributesModelBuilder,
+                                                      inboxFeedsService: InboxFeedsService) extends ModelBuilder
   with ReasonableWaits {
 
   private val MAX_SUGGESTIONS = 50
-  private val log = LogFactory.getLog(classOf[SigninController])
 
   def isValid(request: HttpServletRequest): Boolean = {
     RequestPath.getPathFrom(request).matches("^/feeds/inbox(/(rss|json))?$")
@@ -52,13 +45,13 @@ import scala.jdk.CollectionConverters._
     }
   }
 
-  def populateExtraModelContent(request: HttpServletRequest, mv: ModelAndView, loggedInUser: Option[User]): Future[ModelAndView] = {
+  def populateExtraModelContent(request: HttpServletRequest, loggedInUser: Option[User]): Future[ModelMap] = {
     for {
-      inboxFeeds <- new InboxFeedsService(mongoRepository, whakaokoService, frontendResourceMapper).getInboxFeeds()
+      inboxFeeds <- inboxFeedsService.getInboxFeeds()
     } yield {
-      mv.addObject("righthand_heading", "Suggest only feeds")
-      mv.addObject("righthand_description", "Newsitems from these feeds are not automatically accepted.")
-      mv.addObject("righthand_content", inboxFeeds.asJava)
+      new ModelMap().addAttribute("righthand_heading", "Suggest only feeds")
+        .addAttribute("righthand_description", "Newsitems from these feeds are not automatically accepted.")
+        .addAttribute("righthand_content", inboxFeeds.asJava)
     }
   }
 

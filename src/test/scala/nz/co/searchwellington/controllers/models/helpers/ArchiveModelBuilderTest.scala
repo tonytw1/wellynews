@@ -11,7 +11,6 @@ import org.junit.Assert.{assertEquals, assertTrue}
 import org.junit.{Before, Test}
 import org.mockito.Mockito.{mock, when}
 import org.springframework.mock.web.MockHttpServletRequest
-import org.springframework.web.servlet.ModelAndView
 import uk.co.eelpieconsulting.common.dates.DateFormatter
 
 import scala.concurrent.{Await, Future}
@@ -67,9 +66,9 @@ class ArchiveModelBuilderTest extends ReasonableWaits with ContentFields {
     when(contentRetrievalService.getPublishersForInterval(monthOfJuly, None)).thenReturn(Future.successful(Seq.empty))
     when(contentRetrievalService.getLatestNewsitems(maxItems = 5, loggedInUser = None)).thenReturn(Future.successful(Seq.empty))
 
-    val mv = new ModelAndView()
-    val withExtras = Await.result(modelBuilder.populateExtraModelContent(request, mv, None), TenSeconds)
-    assertEquals(archiveLinks.asJava, withExtras.getModel.get("archive_links"))
+    val extras = Await.result(modelBuilder.populateExtraModelContent(request, None), TenSeconds)
+
+    assertEquals(archiveLinks.asJava, extras.get("archive_links"))
   }
 
   @Test
@@ -89,11 +88,10 @@ class ArchiveModelBuilderTest extends ReasonableWaits with ContentFields {
     when(contentRetrievalService.getPublishersForInterval(monthOfJuly, None)).thenReturn(Future.successful(Seq.empty))
     when(contentRetrievalService.getLatestNewsitems(maxItems = 5, loggedInUser = None)).thenReturn(Future.successful(Seq.empty))
 
-    val mv = new ModelAndView()
-    val withExtras = Await.result(modelBuilder.populateExtraModelContent(request, mv, None), TenSeconds)
+    val extras = Await.result(modelBuilder.populateExtraModelContent(request, None), TenSeconds)
 
-    assertEquals(ArchiveLink(monthOfJune, 1), withExtras.getModel.get("previous_month"))
-    assertEquals(ArchiveLink(monthOfAugust, 4), withExtras.getModel.get("next_month"))
+    assertEquals(ArchiveLink(monthOfJune, 1), extras.get("previous_month"))
+    assertEquals(ArchiveLink(monthOfAugust, 4), extras.get("next_month"))
   }
 
 }

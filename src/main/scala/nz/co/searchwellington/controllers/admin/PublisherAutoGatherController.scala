@@ -43,8 +43,7 @@ import scala.concurrent.ExecutionContext.Implicits.global
         }
         mv.addObject("resources_to_tag", resourcesToAutoTag)
       }
-
-      Await.result(withCommonLocal(mv), TenSeconds)
+      mv
     }
 
     requiringAdminUser(prompt)
@@ -75,7 +74,7 @@ import scala.concurrent.ExecutionContext.Implicits.global
         mv.addObject("resources_to_tag", autotaggedNewsitems)
       }
 
-      Await.result(withCommonLocal(mv), TenSeconds)
+      mv
     }
 
     requiringAdminUser(apply)

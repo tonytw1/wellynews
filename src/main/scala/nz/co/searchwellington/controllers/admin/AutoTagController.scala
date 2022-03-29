@@ -40,14 +40,14 @@ import scala.jdk.CollectionConverters._
         null: ModelAndView
 
       } { tag =>
-        Await.result((for {
+        Await.result(for {
           suggestions <- getPossibleAutotagResources(loggedInUser, tag, Some(loggedInUser)) // TODO double pass
         } yield {
           new ModelAndView("autoTagPrompt").
             addObject("heading", "Autotagging").
             addObject("tag", tag).
             addObject("resources_to_tag", suggestions.asJava)
-        }).flatMap(withCommonLocal), TenSeconds)
+        }, TenSeconds)
       }
     }
 
@@ -92,7 +92,7 @@ import scala.jdk.CollectionConverters._
           addObject("tag", tag).
           addObject("resources_to_tag", frontendResults.asJava)
 
-        Await.result(withCommonLocal(mv), TenSeconds)
+        mv
 
       }.getOrElse{
         response.setStatus(HttpServletResponse.SC_NOT_FOUND)  // TODO deduplicate 404 response

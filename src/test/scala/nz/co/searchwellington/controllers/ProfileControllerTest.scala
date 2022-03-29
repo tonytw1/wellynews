@@ -4,7 +4,6 @@ import nz.co.searchwellington.ReasonableWaits
 import nz.co.searchwellington.model.User
 import nz.co.searchwellington.repositories.ContentRetrievalService
 import nz.co.searchwellington.repositories.mongo.MongoRepository
-import nz.co.searchwellington.urls.UrlBuilder
 import org.junit.Assert.{assertEquals, assertFalse, assertTrue}
 import org.junit.Test
 import org.mockito.Mockito.{mock, when}
@@ -20,7 +19,6 @@ class ProfileControllerTest extends ReasonableWaits {
 
   private val mongoRepository = mock(classOf[MongoRepository])
   private val loggedInUserFilter = mock(classOf[LoggedInUserFilter])
-  private val urlBuilder = mock(classOf[UrlBuilder])
   private val contentRetrievalService = mock(classOf[ContentRetrievalService])
   private val existingUser: User = mock(classOf[User])
 
@@ -28,7 +26,7 @@ class ProfileControllerTest extends ReasonableWaits {
   private val anotherUser = mock(classOf[User])
   private val allActiveUsers = Seq(aUser, anotherUser)
 
-  private val controller = new ProfileController(mongoRepository, loggedInUserFilter, urlBuilder, contentRetrievalService)
+  private val controller = new ProfileController(mongoRepository, loggedInUserFilter, contentRetrievalService)
 
   @Test
   def allActiveProfilesShouldBeShownOnProfilesIndex(): Unit = {

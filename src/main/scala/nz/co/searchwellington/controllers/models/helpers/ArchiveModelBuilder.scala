@@ -9,6 +9,7 @@ import nz.co.searchwellington.repositories.ContentRetrievalService
 import org.joda.time.Interval
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
+import org.springframework.ui.ModelMap
 import org.springframework.web.servlet.ModelAndView
 import uk.co.eelpieconsulting.common.dates.DateFormatter
 
@@ -44,8 +45,8 @@ import scala.jdk.CollectionConverters._
     }
   }
 
-  def populateExtraModelContent(request: HttpServletRequest, mv: ModelAndView, loggedInUser: Option[User]): Future[ModelAndView] = {
-    withLatestNewsitems(mv, loggedInUser).flatMap { mv =>
+  def populateExtraModelContent(request: HttpServletRequest, loggedInUser: Option[User]): Future[ModelMap] = {
+    latestNewsitems(loggedInUser).flatMap { mv =>
       getArchiveMonthFromPath(RequestPath.getPathFrom(request)).map { month =>
         val eventualArchiveLinks = contentRetrievalService.getArchiveMonths(loggedInUser)
         val eventualArchiveCounts = contentRetrievalService.getArchiveCounts(loggedInUser)
@@ -62,7 +63,7 @@ import scala.jdk.CollectionConverters._
           val publisherArchiveLinks = monthPublishers.map { i =>
             PublisherArchiveLink(i._1, month, i._2)
           }
-          mv.addObject("publisher_archive_links", publisherArchiveLinks.asJava)
+          mv.addAttribute("publisher_archive_links", publisherArchiveLinks.asJava)
         }
 
       }.getOrElse {
@@ -73,18 +74,18 @@ import scala.jdk.CollectionConverters._
 
   def getViewName(mv: ModelAndView, loggedInUser: Option[User]): String = "archivePage"
 
-  private def populateNextAndPreviousLinks(mv: ModelAndView, currentMonth: Interval, archiveLinks: Seq[ArchiveLink]): Unit = {
+  private def populateNextAndPreviousLinks(mv: ModelMap, currentMonth: Interval, archiveLinks: Seq[ArchiveLink]): Unit = {
     val previousMonth = currentMonth.withStart(currentMonth.getStart.minusMonths(1)).withEnd(currentMonth.getStart)
     val nextMonth = currentMonth.withStart(currentMonth.getStart.plusMonths(1)).withEnd(currentMonth.getStart.plusMonths(2))
     archiveLinks.find { link =>
       link.interval == previousMonth
     }.map { l =>
-      mv.addObject("previous_month", l)
+      mv.addAttribute("previous_month", l)
     }
     archiveLinks.find { link =>
       link.interval == nextMonth
     }.map { l =>
-      mv.addObject("next_month", l)
+      mv.addAttribute("next_month", l)
     }
   }
 

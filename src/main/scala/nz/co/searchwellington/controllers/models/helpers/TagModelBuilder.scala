@@ -8,6 +8,7 @@ import nz.co.searchwellington.tagging.RelatedTagsService
 import nz.co.searchwellington.urls.UrlBuilder
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
+import org.springframework.ui.ModelMap
 import org.springframework.web.servlet.ModelAndView
 
 import java.util
@@ -92,7 +93,7 @@ import scala.jdk.CollectionConverters._
     populateTagPageModelAndView(tagFromRequest(request), getPage(request))
   }
 
-  def populateExtraModelContent(request: HttpServletRequest, mv: ModelAndView, loggedInUser: Option[User]): Future[ModelAndView] = {
+  def populateExtraModelContent(request: HttpServletRequest, loggedInUser: Option[User]): Future[ModelMap] = {
     val tag = tagFromRequest(request)
 
     val eventualGeotaggedNewsitems = contentRetrievalService.getGeotaggedNewsitemsForTag(tag, MAX_NUMBER_OF_GEOTAGGED_TO_SHOW, loggedInUser = loggedInUser)
@@ -110,30 +111,30 @@ import scala.jdk.CollectionConverters._
       tagWatchList <- eventualTagWatchlist
       tagFeeds <- eventualTagFeeds
       archiveLinks <- contentRetrievalService.getTagArchiveMonths(tag, loggedInUser)
-      withSecondaryContent = {
-        mv.addObject(WEBSITES, taggedWebsites.asJava)
+      latestNewsitems <- latestNewsitems(loggedInUser)
 
-        if (relatedTagLinks.nonEmpty) {
-          mv.addObject("related_tags", relatedTagLinks.asJava)
-        }
-        if (relatedPublishersForTag.nonEmpty) {
-          mv.addObject("related_publishers", relatedPublishersForTag.asJava)
-        }
-        if (geotaggedNewsitems.nonEmpty) {
-          mv.addObject("geocoded", geotaggedNewsitems.asJava)
-        }
-        if (archiveLinks.nonEmpty) {
-          val tagArchiveLinks = archiveLinks.map { a =>
-            TagArchiveLink(tag = tag, interval = a.interval, count = a.count)
-          }
-          mv.addObject("tag_archive_links", tagArchiveLinks.asJava)
-        }
-        mv.addObject(TAG_WATCHLIST, tagWatchList.asJava)
-        mv.addObject(TAG_FEEDS, tagFeeds.asJava)
-        mv
-      }
-      mv <- withLatestNewsitems(withSecondaryContent, loggedInUser)
     } yield {
+      val mv = new ModelMap()
+      mv.addAttribute(WEBSITES, taggedWebsites.asJava)
+
+      if (relatedTagLinks.nonEmpty) {
+        mv.addAttribute("related_tags", relatedTagLinks.asJava)
+      }
+      if (relatedPublishersForTag.nonEmpty) {
+        mv.addAttribute("related_publishers", relatedPublishersForTag.asJava)
+      }
+      if (geotaggedNewsitems.nonEmpty) {
+        mv.addAttribute("geocoded", geotaggedNewsitems.asJava)
+      }
+      if (archiveLinks.nonEmpty) {
+        val tagArchiveLinks = archiveLinks.map { a =>
+          TagArchiveLink(tag = tag, interval = a.interval, count = a.count)
+        }
+        mv.addAttribute("tag_archive_links", tagArchiveLinks.asJava)
+      }
+      mv.addAttribute(TAG_WATCHLIST, tagWatchList.asJava)
+      mv.addAttribute(TAG_FEEDS, tagFeeds.asJava)
+      mv.addAttribute(latestNewsitems)
       mv
     }
   }

@@ -3,9 +3,9 @@ package nz.co.searchwellington.controllers.models.helpers
 import nz.co.searchwellington.ReasonableWaits
 import nz.co.searchwellington.controllers.RssUrlBuilder
 import nz.co.searchwellington.controllers.models.GeotaggedNewsitemExtractor
+import nz.co.searchwellington.model._
 import nz.co.searchwellington.model.frontend.{FrontendFeed, FrontendNewsitem, FrontendResource, FrontendWebsite}
 import nz.co.searchwellington.model.mappers.FrontendResourceMapper
-import nz.co.searchwellington.model._
 import nz.co.searchwellington.repositories.ContentRetrievalService
 import nz.co.searchwellington.tagging.RelatedTagsService
 import nz.co.searchwellington.urls.UrlBuilder
@@ -14,7 +14,6 @@ import org.junit.Assert.assertEquals
 import org.junit.Test
 import org.mockito.Mockito.{mock, when}
 import org.springframework.mock.web.MockHttpServletRequest
-import org.springframework.web.servlet.ModelAndView
 
 import java.util.UUID
 import scala.concurrent.ExecutionContext.Implicits.global
@@ -84,7 +83,6 @@ class PublisherModelBuilderTest extends ReasonableWaits with ContentFields {
   def extraContentIncludesPublisherArchiveLinks(): Unit = {
     val request = new MockHttpServletRequest
     request.setAttribute("publisher", publisher)
-    val mv = new ModelAndView().addObject("publisher", frontendPublisher)
 
     val july = new DateTime(2020, 7, 1, 0, 0)
     val monthOfJuly = new Interval(july, july.plusMonths(1))
@@ -95,10 +93,11 @@ class PublisherModelBuilderTest extends ReasonableWaits with ContentFields {
     when(contentRetrievalService.getLatestNewsitems(maxItems = 5, loggedInUser = None)).thenReturn(Future.successful(Seq.empty))
     when(relatedTagsService.getRelatedTagsForPublisher(publisher, None)).thenReturn(Future.successful(Seq.empty))
     when(contentRetrievalService.getDiscoveredFeedsForPublisher(publisher, 30)).thenReturn(Future.successful(Seq.empty))
+    when(frontendResourceMapper.createFrontendResourceFrom(publisher, None)).thenReturn(Future.successful(frontendPublisher))
 
-    val withExtras = Await.result(modelBuilder.populateExtraModelContent(request, mv, None), TenSeconds)
+    val extras = Await.result(modelBuilder.populateExtraModelContent(request, None), TenSeconds)
 
-    val publisherArchiveLinksOnExtras = withExtras.getModel.get("publisher_archive_links").asInstanceOf[java.util.List[PublisherArchiveLink]]
+    val publisherArchiveLinksOnExtras = extras.get("publisher_archive_links").asInstanceOf[java.util.List[PublisherArchiveLink]]
     assertEquals(1, publisherArchiveLinksOnExtras.size())
     val firstPublisherLink = publisherArchiveLinksOnExtras.get(0)
     assertEquals(frontendPublisher, firstPublisherLink.publisher)
@@ -110,20 +109,20 @@ class PublisherModelBuilderTest extends ReasonableWaits with ContentFields {
   def extraContentShouldIncludeDiscoveredFeedsForPublisher(): Unit = {
     val request = new MockHttpServletRequest
     request.setAttribute("publisher", publisher)
-    val mv = new ModelAndView().addObject("publisher", frontendPublisher)
 
     when(contentRetrievalService.getPublisherArchiveMonths(publisher, None)).thenReturn(Future.successful(Seq.empty))
     when(contentRetrievalService.getPublisherWatchlist(publisher, None)).thenReturn(Future.successful(Seq.empty))
     when(contentRetrievalService.getLatestNewsitems(maxItems = 5, loggedInUser = None)).thenReturn(Future.successful(Seq.empty))
     when(relatedTagsService.getRelatedTagsForPublisher(publisher, None)).thenReturn(Future.successful(Seq.empty))
+    when(frontendResourceMapper.createFrontendResourceFrom(publisher, None)).thenReturn(Future.successful(frontendPublisher))
     val discoveredFeeds = Seq{
       DiscoveredFeed(url = "http://localhost/test", occurrences = Seq.empty, firstSeen = DateTime.now.toDate)
     }
     when(contentRetrievalService.getDiscoveredFeedsForPublisher(publisher, 30)).thenReturn(Future.successful(discoveredFeeds))
 
-    val withExtras = Await.result(modelBuilder.populateExtraModelContent(request, mv, None), TenSeconds)
+    val extras = Await.result(modelBuilder.populateExtraModelContent(request, None), TenSeconds)
 
-    assertEquals(withExtras.getModel.get("discovered_feeds"), discoveredFeeds.asJava)
+    assertEquals(discoveredFeeds.asJava, extras.get("discovered_feeds"))
   }
 
 }

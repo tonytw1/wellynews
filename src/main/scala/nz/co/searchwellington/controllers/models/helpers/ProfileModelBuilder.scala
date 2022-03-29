@@ -1,7 +1,6 @@
 package nz.co.searchwellington.controllers.models.helpers
 
 import nz.co.searchwellington.ReasonableWaits
-import nz.co.searchwellington.controllers.models.ContentModelBuilderService
 import nz.co.searchwellington.filters.RequestPath
 import nz.co.searchwellington.model.User
 import nz.co.searchwellington.repositories.ContentRetrievalService
@@ -9,6 +8,7 @@ import nz.co.searchwellington.repositories.mongo.MongoRepository
 import org.apache.commons.logging.LogFactory
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
+import org.springframework.ui.ModelMap
 import org.springframework.web.servlet.ModelAndView
 
 import java.util.regex.Pattern
@@ -52,17 +52,15 @@ import scala.jdk.CollectionConverters._
         for {
           submissions <- contentRetrievalService.getOwnedBy(user, loggedInUser, MAX_NEWSITEMS)
           tagged <- contentRetrievalService.getTaggedBy(user, loggedInUser)
-          mv = {
-            new ModelAndView().
-              addObject("heading", "User profile").
-              addObject("profileuser", user).
-              addObject(MAIN_CONTENT, submissions._1.asJava).
-              addObject("tagged", tagged.asJava)
-          }
-          withNewsitems <- withLatestNewsitems(mv, loggedInUser)
-
+          latestNewsitems <- latestNewsitems(loggedInUser)
         } yield {
-          Some(withNewsitems)
+          val mv = new ModelAndView().
+            addObject("heading", "User profile").
+            addObject("profileuser", user).
+            addObject(MAIN_CONTENT, submissions._1.asJava).
+            addObject("tagged", tagged.asJava).
+            addAllObjects(latestNewsitems)
+          Some(mv)
         }
 
       }.getOrElse {
@@ -71,8 +69,8 @@ import scala.jdk.CollectionConverters._
     }
   }
 
-  def populateExtraModelContent(request: HttpServletRequest, mv: ModelAndView, loggedInUser: Option[User]): Future[ModelAndView] = {
-    Future.successful(mv)
+  def populateExtraModelContent(request: HttpServletRequest, loggedInUser: Option[User]): Future[ModelMap] = {
+    Future.successful(new ModelMap())
   }
 
   def getViewName(mv: ModelAndView, loggedInUser: Option[User]): String = {

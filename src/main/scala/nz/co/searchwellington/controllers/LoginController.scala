@@ -8,7 +8,7 @@ import org.springframework.web.servlet.ModelAndView
 import org.springframework.web.servlet.view.RedirectView
 
 import javax.servlet.http.HttpServletRequest
-import scala.concurrent.Await
+import scala.concurrent.{Await, Future}
 import scala.concurrent.ExecutionContext.Implicits.global
 
 @Controller class LoginController @Autowired()(urlStack: UrlStack,
@@ -18,10 +18,11 @@ import scala.concurrent.ExecutionContext.Implicits.global
   @RequestMapping(Array("/signin")) def signin(request: HttpServletRequest): ModelAndView = {
     val loggedInUser = loggedInUserFilter.getLoggedInUser
     if (loggedInUser.isEmpty) {
-      Await.result(withCommonLocal {
-        new ModelAndView("signin").addObject("heading", "Sign in")
-      }.flatMap { mv =>
-        withLatestNewsitems(mv, loggedInUser)
+      Await.result(for {
+        commonLocal <- commonLocal
+        latestNewsitems <- latestNewsitems(loggedInUser)
+      } yield {
+        new ModelAndView("signin").addObject("heading", "Sign in").addAllObjects(commonLocal).addObject(latestNewsitems)
       }, TenSeconds)
     } else {
       redirectToUrlStack(request)

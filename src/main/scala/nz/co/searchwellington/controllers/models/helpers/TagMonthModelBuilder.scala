@@ -7,6 +7,7 @@ import nz.co.searchwellington.repositories.ContentRetrievalService
 import org.joda.time.Interval
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
+import org.springframework.ui.ModelMap
 import org.springframework.web.servlet.ModelAndView
 import uk.co.eelpieconsulting.common.dates.DateFormatter
 
@@ -57,7 +58,7 @@ import scala.jdk.CollectionConverters._
     }
   }
 
-  override def populateExtraModelContent(request: HttpServletRequest, mv: ModelAndView, loggedInUser: Option[User]): Future[ModelAndView] = {
+  override def populateExtraModelContent(request: HttpServletRequest, loggedInUser: Option[User]): Future[ModelMap] = {
     val tag = request.getAttribute("tag").asInstanceOf[Tag]
     for {
       archiveLinks <- contentRetrievalService.getTagArchiveMonths(tag, loggedInUser)
@@ -65,9 +66,8 @@ import scala.jdk.CollectionConverters._
       val tagArchiveLinks = archiveLinks.map { a =>
         TagArchiveLink(tag = tag, interval = a.interval, count = a.count)
       }
-      mv.addObject("tag_archive_links", tagArchiveLinks.asJava)
+      new ModelMap().addAttribute("tag_archive_links", tagArchiveLinks.asJava)
     }
-    Future.successful(mv)
   }
 
   override def getViewName(mv: ModelAndView, loggedInUser: Option[User]): String = "tagMonth"

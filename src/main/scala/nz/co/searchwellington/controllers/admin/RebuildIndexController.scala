@@ -27,7 +27,6 @@ import scala.concurrent.ExecutionContext.Implicits.global
 
   @RequestMapping(value = Array("/admin/rebuild-index"), method = Array(RequestMethod.GET))
   def prompt(request: HttpServletRequest, response: HttpServletResponse): ModelAndView = {
-    def rebuild(loggedInUser: User): ModelAndView = {
       val eventualResult = mongoRepository.getAllResourceIds().flatMap { resourceIds =>
         elasticSearchIndexRebuildService.reindexResources(resourceIds)
       }.map { i =>
@@ -40,9 +39,7 @@ import scala.concurrent.ExecutionContext.Implicits.global
       }
 
       new ModelAndView(new RedirectView(adminUrlBuilder.adminPage()))
-    }
 
-    requiringAdminUser(rebuild)
   }
 
 }

@@ -121,9 +121,9 @@ class TagModelBuilderTest extends ReasonableWaits with ContentFields {
 
     when(contentRetrievalService.getTagArchiveMonths(tag, loggedInUser = None)).thenReturn(Future.successful(tagArchiveMonths))
 
-    val withExtras = Await.result(modelBuilder.populateExtraModelContent(request, mv, None), TenSeconds)
+    val extras = Await.result(modelBuilder.populateExtraModelContent(request, None), TenSeconds)
 
-    val archiveLinksOnModel = withExtras.getModel.get("tag_archive_links").asInstanceOf[java.util.List[TagArchiveLink]]
+    val archiveLinksOnModel = extras.get("tag_archive_links").asInstanceOf[java.util.List[TagArchiveLink]]
     assertNotNull(archiveLinksOnModel)
     assertEquals(2, archiveLinksOnModel.size())
     assertEquals(12L, archiveLinksOnModel.get(0).count)
@@ -145,9 +145,9 @@ class TagModelBuilderTest extends ReasonableWaits with ContentFields {
     when(contentRetrievalService.getLatestNewsitems(5, loggedInUser = None)).thenReturn(Future.successful(Seq.empty))
     when(contentRetrievalService.getTagArchiveMonths(tag, loggedInUser)).thenReturn(Future.successful(Seq.empty))
 
-    val withExtras = Await.result(modelBuilder.populateExtraModelContent(request, mv, None), TenSeconds)
+    val extras = Await.result(modelBuilder.populateExtraModelContent(request, None), TenSeconds)
 
-    assertEquals(geotagged.asJava, withExtras.getModel.get("geocoded"))
+    assertEquals(geotagged.asJava, extras.get("geocoded"))
   }
 
 }

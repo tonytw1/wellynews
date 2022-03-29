@@ -35,10 +35,12 @@ import scala.jdk.CollectionConverters._
       addObject("user_agent", siteInformation.getUserAgent)
 
     val eventualModelAndView = for {
-      withCommon <- withCommonLocal(mv)
-      withCommonAndLatestNewsitems <- withLatestNewsitems(withCommon, loggedInUser)
+      commonLocal <- commonLocal
+      latestNewsitems <- latestNewsitems(loggedInUser)
+
     } yield {
-      withCommonAndLatestNewsitems
+      mv.addAllObjects(commonLocal)
+      mv.addAllObjects(latestNewsitems)
     }
 
     Await.result(eventualModelAndView, TenSeconds)
@@ -49,22 +51,30 @@ import scala.jdk.CollectionConverters._
     urlStack.setUrlStack(request)
     val loggedInUser = loggedInUserFilter.getLoggedInUser
 
-    Await.result((for {
+    Await.result(for {
       links <- contentRetrievalService.getArchiveMonths(loggedInUser)
+      commonLocal <- commonLocal
+      latestNewsitems <- latestNewsitems(loggedInUser)
     } yield {
       new ModelAndView("archiveIndex").
         addObject("heading", "Archive").
         addObject("loggedInUser", loggedInUser.orNull).
-        addObject("archiveLinks", links.asJava)
-    }).flatMap(withCommonLocal).flatMap(mv => withLatestNewsitems(mv, loggedInUser)), TenSeconds)
+        addObject("archiveLinks", links.asJava).addAllObjects(commonLocal).addAllObjects(latestNewsitems)
+    }, TenSeconds)
   }
 
   @GetMapping(Array("/api"))
   def api(request: HttpServletRequest): ModelAndView = {
     urlStack.setUrlStack(request)
-    Await.result(withCommonLocal(new ModelAndView("api").
-      addObject("loggedInUser", loggedInUserFilter.getLoggedInUser.orNull).
-      addObject("heading", "The Wellynews API")), TenSeconds)
+    val loggedInUser = loggedInUserFilter.getLoggedInUser.orNull
+
+    Await.result(for {
+      commonLocal <- commonLocal
+    } yield {
+      new ModelAndView("api").
+        addObject("loggedInUser", loggedInUser).
+        addObject("heading", "The Wellynews API").addAllObjects(commonLocal)
+    }, TenSeconds)
   }
 
   @GetMapping(Array("/rssfeeds"))
@@ -74,17 +84,19 @@ import scala.jdk.CollectionConverters._
 
     val eventualModelAndView = for {
       exampleFeedableTags <- contentRetrievalService.getFeaturedTags
-      modelAndView <- withCommonLocal {
+      commonLocal <- commonLocal
+      latestNewsitems <- latestNewsitems(loggedInUser)
+
+    } yield {
         val mv = new ModelAndView("rssfeeds").
           addObject("heading", "RSS feeds").
           addObject("loggedInUser", loggedInUser.orNull).
-          addObject("feedable_tags", exampleFeedableTags.asJava)
+          addObject("feedable_tags", exampleFeedableTags.asJava).
+          addAllObjects(commonLocal).
+          addAllObjects(latestNewsitems)
+
         commonAttributesModelBuilder.setRss(mv, rssUrlBuilder.getBaseRssTitle, rssUrlBuilder.getBaseRssUrl)
         mv
-      }
-      mv <- withLatestNewsitems(modelAndView, loggedInUser)
-    } yield {
-      mv
     }
 
     Await.result(eventualModelAndView, TenSeconds)
@@ -101,15 +113,17 @@ import scala.jdk.CollectionConverters._
     val eventualModelAndView = for {
       discoveredFeeds <- eventualDiscoveredFeeds
       feeds <- eventualFeeds
+      commonLocal <- commonLocal
     } yield {
-      val mv = new ModelAndView("discoveredFeeds").
+      new ModelAndView("discoveredFeeds").
         addObject("heading", "Discovered Feeds").
         addObject("loggedInUser", loggedInUser.orNull).
-        addObject("discovered_feeds", discoveredFeeds.asJava)
-      commonAttributesModelBuilder.withSecondaryFeeds(mv, feeds)
+        addObject("discovered_feeds", discoveredFeeds.asJava).
+        addAllObjects(commonLocal).
+        addAllObjects(commonAttributesModelBuilder.secondaryFeeds(feeds))
     }
 
-    Await.result(eventualModelAndView.flatMap(withCommonLocal), TenSeconds)
+    Await.result(eventualModelAndView, TenSeconds)
   }
 
 }

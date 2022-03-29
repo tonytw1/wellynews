@@ -8,6 +8,7 @@ import nz.co.searchwellington.tagging.RelatedTagsService
 import nz.co.searchwellington.urls.UrlBuilder
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
+import org.springframework.ui.ModelMap
 import org.springframework.web.servlet.ModelAndView
 
 import java.util
@@ -68,9 +69,9 @@ import scala.jdk.CollectionConverters._
     populateTagCombinerModelAndView(tags, page)
   }
 
-  def populateExtraModelContent(request: HttpServletRequest, mv: ModelAndView, loggedInUser: Option[User]): Future[ModelAndView] = {
+  def populateExtraModelContent(request: HttpServletRequest, loggedInUser: Option[User]): Future[ModelMap] = {
     val tags = request.getAttribute("tags").asInstanceOf[Seq[Tag]]
-    val eventualWithExtras = if (tags.nonEmpty) {
+    if (tags.nonEmpty) {
       val tag = tags.head
       val eventualTaggedWebsites = contentRetrievalService.getTaggedWebsites(tag, MAX_WEBSITES, loggedInUser = loggedInUser)
       val eventualLatestWebsites = contentRetrievalService.getLatestWebsites(5, loggedInUser = loggedInUser)
@@ -79,17 +80,15 @@ import scala.jdk.CollectionConverters._
         taggedWebsites <- eventualTaggedWebsites
         latestWebsites <- eventualLatestWebsites
         relatedTags <- eventualRelatedTags
+        latestNewsitems <- latestNewsitems(loggedInUser)
       } yield {
-        mv.addObject("related_tags", relatedTags.asJava)
-        mv.addObject("websites", taggedWebsites.asJava)
-        mv.addObject("latest_news", latestWebsites._1.asJava)
-        mv
+        new ModelMap().addAttribute("related_tags", relatedTags.asJava).
+          addAttribute("websites", taggedWebsites.asJava).
+          addAttribute("latest_news", latestWebsites._1.asJava).addAllAttributes(latestNewsitems)
       }
     } else {
-      Future.successful(mv)
+      latestNewsitems(loggedInUser)
     }
-
-    eventualWithExtras.flatMap(withLatestNewsitems(_, loggedInUser))
   }
 
   def getViewName(mv: ModelAndView, loggedInUser: Option[User]): String = {

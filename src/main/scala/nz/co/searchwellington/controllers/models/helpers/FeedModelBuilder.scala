@@ -11,6 +11,7 @@ import nz.co.searchwellington.repositories.ContentRetrievalService
 import org.apache.commons.logging.LogFactory
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
+import org.springframework.ui.ModelMap
 import org.springframework.web.servlet.ModelAndView
 
 import javax.servlet.http.HttpServletRequest
@@ -118,9 +119,12 @@ import scala.jdk.CollectionConverters._
     }
   }
 
-  def populateExtraModelContent(request: HttpServletRequest, mv: ModelAndView, loggedInUser: Option[User]): Future[ModelAndView] = {
-    contentRetrievalService.getAllFeedsOrderedByLatestItemDate(loggedInUser).map { feeds =>
-      commonAttributesModelBuilder.withSecondaryFeeds(mv, feeds)
+  def populateExtraModelContent(request: HttpServletRequest, loggedInUser: Option[User]): Future[ModelMap] = {
+    for {
+      feedsOrderedByLatestItemDate <- contentRetrievalService.getAllFeedsOrderedByLatestItemDate(loggedInUser)
+    } yield {
+      new ModelMap().
+        addAllAttributes(commonAttributesModelBuilder.secondaryFeeds(feedsOrderedByLatestItemDate))
     }
   }
 
