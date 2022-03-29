@@ -134,7 +134,7 @@ import scala.jdk.CollectionConverters._
       }
       mv.addAttribute(TAG_WATCHLIST, tagWatchList.asJava)
       mv.addAttribute(TAG_FEEDS, tagFeeds.asJava)
-      mv.addAttribute(latestNewsitems)
+      mv.addAllAttributes(latestNewsitems)
       mv
     }
   }
