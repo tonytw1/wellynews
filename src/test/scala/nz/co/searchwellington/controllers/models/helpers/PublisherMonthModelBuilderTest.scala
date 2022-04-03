@@ -2,12 +2,12 @@ package nz.co.searchwellington.controllers.models.helpers
 
 import nz.co.searchwellington.ReasonableWaits
 import nz.co.searchwellington.controllers.RssUrlBuilder
-import nz.co.searchwellington.model.{SiteInformation, Website}
+import nz.co.searchwellington.model.{ArchiveLink, SiteInformation, Website}
 import nz.co.searchwellington.model.frontend.{FrontendResource, FrontendWebsite}
 import nz.co.searchwellington.model.mappers.FrontendResourceMapper
 import nz.co.searchwellington.repositories.ContentRetrievalService
 import org.joda.time.{DateTime, DateTimeZone, Interval}
-import org.junit.Assert.{assertEquals, assertFalse, assertTrue}
+import org.junit.Assert.{assertEquals, assertFalse, assertNotNull, assertTrue}
 import org.junit.Test
 import org.mockito.Mockito.{mock, when}
 import org.springframework.mock.web.MockHttpServletRequest
@@ -85,6 +85,25 @@ class PublisherMonthModelBuilderTest extends ReasonableWaits with ContentFields 
     assertEquals(monthNewsitems.asJava, mv.getModel.get(MAIN_CONTENT))
     assertEquals("A publisher - July 2020", mv.getModel.get("heading"))
     assertEquals(frontendPubisher, mv.getModel.get("publisher"))
+  }
+
+  @Test
+  def extrasShouldIncludePublisherArchiveLinks(): Unit = {
+    val request = new MockHttpServletRequest
+    request.setAttribute("publisher", publisher)
+    request.setRequestURI("/a-publisher/2020-jul")
+    val frontendPublisher = FrontendWebsite(id = "123")
+
+    val july = new DateTime(2020, 7, 1, 0, 0)
+    val monthOfJuly = new Interval(july, july.plusMonths(1))
+    val archiveLinks = Seq(ArchiveLink(count = 2, interval = monthOfJuly))
+
+    when(frontendResourceMapper.createFrontendResourceFrom(publisher, None)).thenReturn(Future.successful(frontendPublisher))
+    when(contentRetrievalService.getPublisherArchiveMonths(publisher, None)).thenReturn(Future.successful(archiveLinks))
+
+    val extras = Await.result(modelBuilder.populateExtraModelContent(request, None), TenSeconds)
+
+    assertNotNull(extras.get("publisher_archive_links"))
   }
 
 }

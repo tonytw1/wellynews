@@ -2,7 +2,6 @@ package nz.co.searchwellington.controllers.models.helpers
 
 import nz.co.searchwellington.controllers.RssUrlBuilder
 import nz.co.searchwellington.filters.RequestPath
-import nz.co.searchwellington.model.frontend.FrontendResource
 import nz.co.searchwellington.model.mappers.FrontendResourceMapper
 import nz.co.searchwellington.model.{PublisherArchiveLink, User, Website}
 import nz.co.searchwellington.repositories.ContentRetrievalService
@@ -54,20 +53,20 @@ import scala.jdk.CollectionConverters._
   }
 
   override def populateExtraModelContent(request: HttpServletRequest, loggedInUser: Option[User]): Future[ModelMap] = {
-    val mv = new ModelMap()
-    /* TODO references main content result
     val publisher = request.getAttribute("publisher").asInstanceOf[Website]
-    val frontendPublisher = mv.getModel.get("publisher").asInstanceOf[FrontendResource]
+    val eventualPublisherArchiveMonths = contentRetrievalService.getPublisherArchiveMonths(publisher, loggedInUser)
+    val eventualFrontendPublisher = frontendResourceMapper.createFrontendResourceFrom(publisher, loggedInUser)
+
     for {
-      archiveLinks <- contentRetrievalService.getPublisherArchiveMonths(publisher, loggedInUser)
+      frontendPublisher <- eventualFrontendPublisher
+      archiveLinks <- eventualPublisherArchiveMonths
     } yield {
       val publisherArchiveLinks = archiveLinks.map { a =>
+        // TODO Are we sure we really need a frontend publisher in this context?
         PublisherArchiveLink(publisher = frontendPublisher, interval = a.interval, count = a.count)
       }
-      mv.addObject("publisher_archive_links", publisherArchiveLinks.asJava)
+      new ModelMap().addAttribute("publisher_archive_links", publisherArchiveLinks.asJava)
     }
-    */
-    Future.successful(mv)
   }
 
   override def getViewName(mv: ModelAndView, loggedInUser: Option[User]): String = "publisherMonth"
