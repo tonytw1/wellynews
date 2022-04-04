@@ -57,9 +57,8 @@ import scala.jdk.CollectionConverters._
           archiveStatistics <- eventualArchiveCounts
           monthPublishers <- eventualMonthPublishers
         } yield {
-          populateNextAndPreviousLinks(mv, month, archiveLinks)
-          archiveLinksService.populateArchiveLinks(mv, archiveLinks, archiveStatistics)
-
+          mv.addAllAttributes(populateNextAndPreviousLinks(month, archiveLinks))
+          mv.addAllAttributes(archiveLinksService.populateArchiveLinks(archiveLinks, archiveStatistics))
           val publisherArchiveLinks = monthPublishers.map { i =>
             PublisherArchiveLink(i._1, month, i._2)
           }
@@ -74,9 +73,14 @@ import scala.jdk.CollectionConverters._
 
   def getViewName(mv: ModelAndView, loggedInUser: Option[User]): String = "archivePage"
 
-  private def populateNextAndPreviousLinks(mv: ModelMap, currentMonth: Interval, archiveLinks: Seq[ArchiveLink]): Unit = {
+  private def populateNextAndPreviousLinks(currentMonth: Interval, archiveLinks: Seq[ArchiveLink]): ModelMap = {
+    // Given the ordered list of all available archive link months and the current month,
+    // populate the previous and next links (if available)
     val previousMonth = currentMonth.withStart(currentMonth.getStart.minusMonths(1)).withEnd(currentMonth.getStart)
     val nextMonth = currentMonth.withStart(currentMonth.getStart.plusMonths(1)).withEnd(currentMonth.getStart.plusMonths(2))
+
+    // TODO probably does not work if there are gaps in the sequence.
+    val mv = new ModelMap()
     archiveLinks.find { link =>
       link.interval == previousMonth
     }.map { l =>
@@ -87,6 +91,7 @@ import scala.jdk.CollectionConverters._
     }.map { l =>
       mv.addAttribute("next_month", l)
     }
+    mv
   }
 
   private def getArchiveMonthFromPath(path: String): Option[Interval] = {

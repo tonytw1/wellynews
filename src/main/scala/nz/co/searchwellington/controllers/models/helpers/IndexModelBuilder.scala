@@ -85,34 +85,34 @@ import scala.jdk.CollectionConverters._
     val eventualGeocodedNewsitems = contentRetrievalService.getGeocodedNewsitems(0, MAX_NUMBER_OF_GEOTAGGED_TO_SHOW, loggedInUser)
     val eventualUserOwnedResources = populateUserOwnedResources(loggedInUser)
 
-
     for {
       websites <- eventualWebsites
       archiveMonths <- eventualArchiveMonths
       archiveStatistics <- eventualArchiveStatistics
       geocodedNewsitems <- eventualGeocodedNewsitems
       userOwnedResources <- eventualUserOwnedResources
-
     } yield {
-      val mv = new ModelMap()
-      populateSecondaryJustin(mv, websites._1)
-      populateGeocoded(mv, geocodedNewsitems._1)
-      archiveLinksService.populateArchiveLinks(mv, archiveMonths, archiveStatistics)
-      mv.addAllAttributes(userOwnedResources)
+      new ModelMap()
+        .addAllAttributes(secondaryJustin(websites._1))
+        .addAllAttributes(populateGeocoded(geocodedNewsitems._1))
+        .addAllAttributes(archiveLinksService.populateArchiveLinks(archiveMonths, archiveStatistics))
+        .addAllAttributes(userOwnedResources)
     }
   }
 
-  private def populateGeocoded(mv: ModelMap, geocoded: Seq[FrontendResource]): Unit = {
+  private def populateGeocoded(geocoded: Seq[FrontendResource]): ModelMap = {
     if (geocoded.nonEmpty) {
-      mv.addAttribute("geocoded", geocoded.asJava)
+      new ModelMap().addAttribute("geocoded", geocoded.asJava)
+    } else {
+      new ModelMap()
     }
   }
 
-  private def populateSecondaryJustin(mv: ModelMap, websites: Seq[FrontendResource]): Unit = {
-    mv.addAttribute("secondary_heading", "Just In")
-    mv.addAttribute("secondary_description", "New additions.")
-    mv.addAttribute("secondary_content", websites.asJava)
-    mv.addAttribute("secondary_content_moreurl", "justin")
+  private def secondaryJustin(websites: Seq[FrontendResource]): ModelMap = {
+    new ModelMap().addAttribute("secondary_heading", "Just In")
+      .addAttribute("secondary_description", "New additions.")
+      .addAttribute("secondary_content", websites.asJava)
+      .addAttribute("secondary_content_moreurl", "justin")
   }
 
 }
