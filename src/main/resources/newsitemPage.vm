@@ -53,7 +53,9 @@
 	<ul>
         #foreach ($tagging in $tagging_votes)
             <li>$tagging.tag.name - $tagging.explanation</li>
-            <li>#parse("includes/geotag_icon.vm") $vote.geocode.displayName - $vote.explanation</li>
+        #end
+        #foreach ($geotagging in $geotag_votes)
+            <li>#parse("includes/geotag_icon.vm") $geotagging.geocode.displayName - $geotagging.explanation</li>
         #end
 	</ul>
 
