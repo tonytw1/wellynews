@@ -81,7 +81,7 @@ import scala.jdk.CollectionConverters._
 
     val eventualWebsites = contentRetrievalService.getLatestWebsites(4, loggedInUser = loggedInUser)
     val eventualArchiveMonths = contentRetrievalService.getArchiveMonths(loggedInUser)
-    val eventualArchiveStatistics = contentRetrievalService.getArchiveCounts(loggedInUser)
+    val eventualArchiveStatistics = contentRetrievalService.getArchiveTypeCounts(loggedInUser)
     val eventualGeocodedNewsitems = contentRetrievalService.getGeocodedNewsitems(0, MAX_NUMBER_OF_GEOTAGGED_TO_SHOW, loggedInUser)
 
     (for {

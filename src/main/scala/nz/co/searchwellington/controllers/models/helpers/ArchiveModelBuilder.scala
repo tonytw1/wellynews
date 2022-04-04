@@ -49,7 +49,7 @@ import scala.jdk.CollectionConverters._
     latestNewsitems(loggedInUser).flatMap { mv =>
       getArchiveMonthFromPath(RequestPath.getPathFrom(request)).map { month =>
         val eventualArchiveLinks = contentRetrievalService.getArchiveMonths(loggedInUser)
-        val eventualArchiveCounts = contentRetrievalService.getArchiveCounts(loggedInUser)
+        val eventualArchiveCounts = contentRetrievalService.getArchiveTypeCounts(loggedInUser)
         val eventualMonthPublishers = contentRetrievalService.getPublishersForInterval(month, loggedInUser)
 
         for {

@@ -199,7 +199,7 @@ class ElasticSearchIndexer @Autowired()(val showBrokenDecisionService: ShowBroke
     }
   }
 
-  def getArchiveCounts(loggedInUser: Option[User])(implicit ec: ExecutionContext): Future[Map[String, Long]] = {
+  def getTypeCounts(loggedInUser: Option[User])(implicit ec: ExecutionContext): Future[Map[String, Long]] = {
     val everyThing = matchAllQuery
     val aggs = Seq(termsAgg("type", "type"))
     val request = search(Index) query withModeration(everyThing, loggedInUser) limit 0 aggregations aggs
