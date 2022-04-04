@@ -60,11 +60,11 @@ import scala.jdk.CollectionConverters._
   }
 
   def populateExtraModelContent(request: HttpServletRequest, loggedInUser: Option[User]): Future[ModelMap] = {
-    def populateUserOwnedResources(mv: ModelMap, l: Option[User]): Future[ModelMap] = {
-      l.map { loggedInUser =>
-        val eventualOwned = contentRetrievalService.getOwnedBy(loggedInUser, Some(loggedInUser), MAX_OWNED_TO_SHOW_IN_RHS)
+    def populateUserOwnedResources(loggedInUser: Option[User]): Future[ModelMap] = {
+      val mv = new ModelMap()
+      loggedInUser.map { loggedInUser =>
         for {
-          owned <- eventualOwned
+          owned <- contentRetrievalService.getOwnedBy(loggedInUser, Some(loggedInUser), MAX_OWNED_TO_SHOW_IN_RHS)
         } yield {
           if (owned._2 > 0) {
             mv.addAttribute("owned", owned._1.asJava)
@@ -83,21 +83,22 @@ import scala.jdk.CollectionConverters._
     val eventualArchiveMonths = contentRetrievalService.getArchiveMonths(loggedInUser)
     val eventualArchiveStatistics = contentRetrievalService.getArchiveTypeCounts(loggedInUser)
     val eventualGeocodedNewsitems = contentRetrievalService.getGeocodedNewsitems(0, MAX_NUMBER_OF_GEOTAGGED_TO_SHOW, loggedInUser)
+    val eventualUserOwnedResources = populateUserOwnedResources(loggedInUser)
 
-    (for {
+
+    for {
       websites <- eventualWebsites
       archiveMonths <- eventualArchiveMonths
       archiveStatistics <- eventualArchiveStatistics
       geocodedNewsitems <- eventualGeocodedNewsitems
+      userOwnedResources <- eventualUserOwnedResources
 
     } yield {
       val mv = new ModelMap()
       populateSecondaryJustin(mv, websites._1)
       populateGeocoded(mv, geocodedNewsitems._1)
       archiveLinksService.populateArchiveLinks(mv, archiveMonths, archiveStatistics)
-      mv
-    }).flatMap { mv =>
-      populateUserOwnedResources(mv, loggedInUser)  // TODO weird wiring
+      mv.addAllAttributes(userOwnedResources)
     }
   }
 
