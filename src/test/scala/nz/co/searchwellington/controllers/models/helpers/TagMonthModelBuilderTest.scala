@@ -30,6 +30,14 @@ class TagMonthModelBuilderTest extends ReasonableWaits with ContentFields {
   }
 
   @Test
+  def validForJsonSuffix(): Unit = {
+    val request = new MockHttpServletRequest()
+    request.setAttribute("tags", Seq(tag))
+    request.setRequestURI("/" + tag.name + "/2022-apr/json")
+    assertTrue(modelBuilder.isValid(request))
+  }
+
+  @Test
   def notValidForTagRequestWithInvalidMonthSuffix(): Unit = {
     val request = new MockHttpServletRequest()
     request.setAttribute("tags", Seq(tag))

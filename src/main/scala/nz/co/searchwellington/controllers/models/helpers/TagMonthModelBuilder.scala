@@ -73,9 +73,11 @@ import scala.jdk.CollectionConverters._
   override def getViewName(mv: ModelAndView, loggedInUser: Option[User]): String = "tagMonth"
 
   private def parseMonth(tag: Tag, path: String): Option[Interval] = {
-    if (path.startsWith("/" + tag.name)) {
-        val last = path.split("/").last
-      parseYearMonth(last)
+    val tagPrefix = "/" + tag.name + "/"
+    if (path.startsWith(tagPrefix)) {
+      val remaining = path.replaceFirst(tagPrefix, "")
+      val yearMonth = remaining.split("/").headOption
+      yearMonth.flatMap(parseYearMonth)
     } else {
       None
       }
