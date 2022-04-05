@@ -18,7 +18,7 @@ import scala.jdk.CollectionConverters._
 
 @Component class TagMonthModelBuilder @Autowired()(val contentRetrievalService: ContentRetrievalService,
                                                    dateFormatter: DateFormatter, rssUrlBuilder: RssUrlBuilder)
-  extends ModelBuilder with ArchiveMonth {
+  extends ModelBuilder with ArchiveMonth with ArchiveMonths {
 
   private val TAGS = "tags"
 
@@ -59,15 +59,25 @@ import scala.jdk.CollectionConverters._
   }
 
   override def populateExtraModelContent(request: HttpServletRequest, loggedInUser: Option[User]): Future[ModelMap] = {
-    val tag = request.getAttribute("tag").asInstanceOf[Tag]
-    for {
-      archiveLinks <- contentRetrievalService.getTagArchiveMonths(tag, loggedInUser)
-    } yield {
-      val tagArchiveLinks = archiveLinks.map { a =>
-        TagArchiveLink(tag = tag, interval = a.interval, count = a.count)
+    val tags = request.getAttribute(TAGS).asInstanceOf[Seq[Tag]]
+    val mv = new ModelMap()
+    tags.headOption.map { tag =>
+      for {
+        archiveLinks <- contentRetrievalService.getTagArchiveMonths(tag, loggedInUser)
+      } yield {
+        val tagArchiveLinks = archiveLinks.map { a =>
+          TagArchiveLink(tag = tag, interval = a.interval, count = a.count)
+        }
+
+        mv.addAttribute("tag_archive_links", tagArchiveLinks.asJava)
+        parseMonth(tag, RequestPath.getPathFrom(request)).foreach { month =>
+          mv.addAllAttributes(populateNextAndPreviousLinks(month, archiveLinks))
+        }
+        mv
       }
-      new ModelMap().addAttribute("tag_archive_links", tagArchiveLinks.asJava)
-    }
+    }.getOrElse(
+      Future.successful(mv)
+    )
   }
 
   override def getViewName(mv: ModelAndView, loggedInUser: Option[User]): String = "tagMonth"
