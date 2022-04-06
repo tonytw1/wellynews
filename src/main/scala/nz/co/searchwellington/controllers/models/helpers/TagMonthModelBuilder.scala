@@ -70,7 +70,7 @@ import scala.jdk.CollectionConverters._
         }
         mv.addAttribute("tag_archive_links", tagArchiveLinks.asJava)
         parseMonth(tag, RequestPath.getPathFrom(request)).foreach { month =>
-          mv.addAllAttributes(populateNextAndPreviousTagLinks(month, tagArchiveLinks))
+          mv.addAllAttributes(populateNextAndPreviousLinks(month, tagArchiveLinks))
         }
         mv
       }
