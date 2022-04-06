@@ -106,4 +106,26 @@ class PublisherMonthModelBuilderTest extends ReasonableWaits with ContentFields 
     assertNotNull(extras.get("publisher_archive_links"))
   }
 
+  @Test
+  def extrasIncludesNextAndPreviousMonths(): Unit = {
+    val request = new MockHttpServletRequest
+    request.setAttribute("publisher", publisher)
+    request.setRequestURI("/a-publisher/2020-jul")
+    val frontendPublisher = FrontendWebsite(id = "123")
+
+    val january = new DateTime(2021, 1, 1, 0,0, 0, 0)
+    val start = new DateTime(january, DateTimeZone.UTC)
+    val a = ArchiveLink(count = 12L, interval = new Interval(start, start.plusMonths(1)))
+    val b = ArchiveLink(count = 24L, interval = new Interval(start.plusMonths(1), start.plusMonths(2)))
+    val c = ArchiveLink(count = 24L, interval = new Interval(start.plusMonths(3), start.plusMonths(3)))
+    val archiveLinks = Seq(a, b, c)
+
+    when(frontendResourceMapper.createFrontendResourceFrom(publisher, None)).thenReturn(Future.successful(frontendPublisher))
+    when(contentRetrievalService.getPublisherArchiveMonths(publisher, None)).thenReturn(Future.successful(archiveLinks))
+
+    val extras = Await.result(modelBuilder.populateExtraModelContent(request, None), TenSeconds)
+
+    assertNotNull(extras.get("next_month"))
+  }
+
 }

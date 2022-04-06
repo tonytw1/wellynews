@@ -60,8 +60,8 @@ class TagMonthModelBuilderTest extends ReasonableWaits with ContentFields {
     val a = ArchiveLink(count = 12L, interval = new Interval(start, start.plusMonths(1)))
     val b = ArchiveLink(count = 24L, interval = new Interval(start.plusMonths(1), start.plusMonths(2)))
     val c = ArchiveLink(count = 24L, interval = new Interval(start.plusMonths(3), start.plusMonths(3)))
-    val tagArchiveMonths = Seq(a, b, c)
-    when(contentRetrievalService.getTagArchiveMonths(tag, loggedInUser = None)).thenReturn(Future.successful(tagArchiveMonths))
+    val archiveLinks = Seq(a, b, c)
+    when(contentRetrievalService.getTagArchiveMonths(tag, loggedInUser = None)).thenReturn(Future.successful(archiveLinks))
 
     val extras = Await.result(modelBuilder.populateExtraModelContent(request, None), TenSeconds)
 

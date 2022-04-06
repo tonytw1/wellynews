@@ -20,7 +20,7 @@ import scala.jdk.CollectionConverters._
 @Component class PublisherMonthModelBuilder @Autowired()(val contentRetrievalService: ContentRetrievalService,
                                                          frontendResourceMapper: FrontendResourceMapper,
                                                          dateFormatter: DateFormatter, rssUrlBuilder: RssUrlBuilder)
-  extends ModelBuilder with ArchiveMonth {
+  extends ModelBuilder with ArchiveMonth with ArchiveMonths {
 
   override def isValid(request: HttpServletRequest): Boolean = {
     Option(request.getAttribute("publisher").asInstanceOf[Website]).flatMap { publisher =>
@@ -53,20 +53,25 @@ import scala.jdk.CollectionConverters._
   }
 
   override def populateExtraModelContent(request: HttpServletRequest, loggedInUser: Option[User]): Future[ModelMap] = {
-    val publisher = request.getAttribute("publisher").asInstanceOf[Website]
-    val eventualPublisherArchiveMonths = contentRetrievalService.getPublisherArchiveMonths(publisher, loggedInUser)
-    val eventualFrontendPublisher = frontendResourceMapper.createFrontendResourceFrom(publisher, loggedInUser)
+    Option(request.getAttribute("publisher").asInstanceOf[Website]).flatMap { publisher =>
+      parseMonth(publisher, RequestPath.getPathFrom(request)).map { month =>
+        val eventualPublisherArchiveMonths = contentRetrievalService.getPublisherArchiveMonths(publisher, loggedInUser)
+        val eventualFrontendPublisher = frontendResourceMapper.createFrontendResourceFrom(publisher, loggedInUser)
 
-    for {
-      frontendPublisher <- eventualFrontendPublisher
-      archiveLinks <- eventualPublisherArchiveMonths
-    } yield {
-      val publisherArchiveLinks = archiveLinks.map { a =>
-        // TODO Are we sure we really need a frontend publisher in this context?
-        PublisherArchiveLink(publisher = frontendPublisher, interval = a.interval, count = a.count)
+        for {
+          frontendPublisher <- eventualFrontendPublisher
+          archiveLinks <- eventualPublisherArchiveMonths
+        } yield {
+          val publisherArchiveLinks = archiveLinks.map { a =>
+            // TODO Are we sure we really need a frontend publisher in this context?
+            PublisherArchiveLink(publisher = frontendPublisher, interval = a.interval, count = a.count)
+          }
+          new ModelMap().addAttribute("publisher_archive_links", publisherArchiveLinks.asJava).addAllAttributes(
+            populateNextAndPreviousLinks(month, archiveLinks))
+
+        }
       }
-      new ModelMap().addAttribute("publisher_archive_links", publisherArchiveLinks.asJava)
-    }
+    }.getOrElse(Future.successful(new ModelMap()))
   }
 
   override def getViewName(mv: ModelAndView, loggedInUser: Option[User]): String = "publisherMonth"
