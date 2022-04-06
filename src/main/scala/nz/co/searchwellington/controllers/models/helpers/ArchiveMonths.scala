@@ -9,10 +9,9 @@ trait ArchiveMonths {
   def populateNextAndPreviousLinks(currentMonth: Interval, archiveLinks: Seq[ArchiveLink]): ModelMap = {
     // Given the ordered list of all available archive link months and the current month,
     // populate the previous and next links (if available)
-    val previous = archiveLinks.filter(_.interval.isBefore(currentMonth)).lastOption
-    val next = archiveLinks.find(_.interval.isAfter(currentMonth))
     val mv = new ModelMap()
-    previous.foreach(p =>
+    val next = archiveLinks.find(_.interval.isAfter(currentMonth))
+    archiveLinks.filter(_.interval.isBefore(currentMonth)).lastOption.foreach(p =>
       mv.addAttribute("previous_month", p)
     )
     next.foreach(n =>
@@ -25,10 +24,9 @@ trait ArchiveMonths {
   def populateNextAndPreviousTagLinks(currentMonth: Interval, archiveLinks: Seq[TagArchiveLink]): ModelMap = {
     // Given the ordered list of all available archive link months and the current month,
     // populate the previous and next links (if available)
-    val previous = archiveLinks.filter(_.interval.isBefore(currentMonth)).lastOption
-    val next = archiveLinks.find(_.interval.isAfter(currentMonth))
     val mv = new ModelMap()
-    previous.foreach(p =>
+    val next = archiveLinks.find(_.interval.isAfter(currentMonth))
+    archiveLinks.filter(_.interval.isBefore(currentMonth)).lastOption.foreach(p =>
       mv.addAttribute("previous_month", p)
     )
     next.foreach(n =>

@@ -17,7 +17,7 @@ class ArchiveMonthsTest extends ArchiveMonths {
 
     val monthOfJune = new Interval(june, june.plusMonths(1))
     val monthOfJuly = new Interval(july, july.plusMonths(1))
-    val monthOfAugust = new Interval(july, august.plusMonths(1))
+    val monthOfAugust = new Interval(august, august.plusMonths(1))
     val monthOfNovember = new Interval(november, november.plusMonths(1))
     val monthOfDecember = new Interval(december, december.plusMonths(1))
 
@@ -31,7 +31,7 @@ class ArchiveMonthsTest extends ArchiveMonths {
 
     val mv = populateNextAndPreviousLinks(monthOfAugust, archiveLinks)
 
-    assertEquals(ArchiveLink(monthOfJuly, 1L), mv.get("previous_month"))
+    assertEquals(ArchiveLink(monthOfJuly, 2L), mv.get("previous_month"))
     assertEquals(ArchiveLink(monthOfNovember, 1L), mv.get("next_month"))
   }
 
