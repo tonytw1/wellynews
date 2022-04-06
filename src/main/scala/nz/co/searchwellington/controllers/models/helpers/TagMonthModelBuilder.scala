@@ -68,10 +68,9 @@ import scala.jdk.CollectionConverters._
         val tagArchiveLinks = archiveLinks.map { a =>
           TagArchiveLink(tag = tag, interval = a.interval, count = a.count)
         }
-
         mv.addAttribute("tag_archive_links", tagArchiveLinks.asJava)
         parseMonth(tag, RequestPath.getPathFrom(request)).foreach { month =>
-          mv.addAllAttributes(populateNextAndPreviousLinks(month, archiveLinks))
+          mv.addAllAttributes(populateNextAndPreviousTagLinks(month, tagArchiveLinks))
         }
         mv
       }
