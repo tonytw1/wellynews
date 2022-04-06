@@ -67,7 +67,7 @@ import scala.jdk.CollectionConverters._
             PublisherArchiveLink(publisher = frontendPublisher, interval = a.interval, count = a.count)
           }
           new ModelMap().addAttribute("publisher_archive_links", publisherArchiveLinks.asJava).addAllAttributes(
-            populateNextAndPreviousLinks(month, archiveLinks))
+            populateNextAndPreviousLinks(month, publisherArchiveLinks))
 
         }
       }

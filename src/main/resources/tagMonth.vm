@@ -22,11 +22,11 @@
         <p>$tag.description</p>
     #end
 
-    #if($previous_month)
-        <li><a href="$urlBuilder.getTagArchiveLinkUrl($previous_month)">$dateFormatter.fullMonthYear($previous_month.month)</a></li>
-    #end
     #if($next_month)
         <li><a href="$urlBuilder.getTagArchiveLinkUrl($next_month)">$dateFormatter.fullMonthYear($next_month.month)</a></li>
+    #end
+    #if($previous_month)
+        <li><a href="$urlBuilder.getTagArchiveLinkUrl($previous_month)">$dateFormatter.fullMonthYear($previous_month.month)</a></li>
     #end
 
     <div class="main_content">
