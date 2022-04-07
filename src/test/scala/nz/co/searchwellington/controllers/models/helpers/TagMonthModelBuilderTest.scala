@@ -4,7 +4,6 @@ import nz.co.searchwellington.ReasonableWaits
 import nz.co.searchwellington.controllers.RssUrlBuilder
 import nz.co.searchwellington.model._
 import nz.co.searchwellington.repositories.ContentRetrievalService
-import org.joda.time.{DateTime, DateTimeZone, Interval}
 import org.junit.Assert.{assertFalse, assertNotNull, assertTrue}
 import org.junit.Test
 import org.mockito.Mockito.{mock, when}
@@ -14,7 +13,7 @@ import uk.co.eelpieconsulting.common.dates.DateFormatter
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.{Await, Future}
 
-class TagMonthModelBuilderTest extends ReasonableWaits with ContentFields {
+class TagMonthModelBuilderTest extends ReasonableWaits with ContentFields with TestArchiveLinks {
 
   private val siteInformation = new SiteInformation("", "", "", "", "")
   private val contentRetrievalService = mock(classOf[ContentRetrievalService])
@@ -55,13 +54,7 @@ class TagMonthModelBuilderTest extends ReasonableWaits with ContentFields {
     request.setAttribute("tags", Seq(tag))
     request.setRequestURI("/" + tag.name + "/2021-feb")
 
-    val january = new DateTime(2021, 1, 1, 0,0, 0, 0)
-    val start = new DateTime(january, DateTimeZone.UTC)
-    val a = ArchiveLink(count = 12L, interval = new Interval(start, start.plusMonths(1)))
-    val b = ArchiveLink(count = 24L, interval = new Interval(start.plusMonths(1), start.plusMonths(2)))
-    val c = ArchiveLink(count = 24L, interval = new Interval(start.plusMonths(3), start.plusMonths(3)))
-    val archiveLinks = Seq(a, b, c)
-    when(contentRetrievalService.getTagArchiveMonths(tag, loggedInUser = None)).thenReturn(Future.successful(archiveLinks))
+    when(contentRetrievalService.getTagArchiveMonths(tag, loggedInUser = None)).thenReturn(Future.successful(someArchiveMonths))
 
     val extras = Await.result(modelBuilder.populateExtraModelContent(request, None), TenSeconds)
 

@@ -18,7 +18,7 @@ import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.{Await, Future}
 import scala.jdk.CollectionConverters._
 
-class PublisherMonthModelBuilderTest extends ReasonableWaits with ContentFields {
+class PublisherMonthModelBuilderTest extends ReasonableWaits with ContentFields with TestArchiveLinks {
 
   private val contentRetrievalService = mock(classOf[ContentRetrievalService])
   private val frontendResourceMapper = mock(classOf[FrontendResourceMapper])
@@ -113,15 +113,8 @@ class PublisherMonthModelBuilderTest extends ReasonableWaits with ContentFields 
     request.setRequestURI("/a-publisher/2020-jul")
     val frontendPublisher = FrontendWebsite(id = "123")
 
-    val january = new DateTime(2021, 1, 1, 0,0, 0, 0)
-    val start = new DateTime(january, DateTimeZone.UTC)
-    val a = ArchiveLink(count = 12L, interval = new Interval(start, start.plusMonths(1)))
-    val b = ArchiveLink(count = 24L, interval = new Interval(start.plusMonths(1), start.plusMonths(2)))
-    val c = ArchiveLink(count = 24L, interval = new Interval(start.plusMonths(3), start.plusMonths(3)))
-    val archiveLinks = Seq(a, b, c)
-
     when(frontendResourceMapper.createFrontendResourceFrom(publisher, None)).thenReturn(Future.successful(frontendPublisher))
-    when(contentRetrievalService.getPublisherArchiveMonths(publisher, None)).thenReturn(Future.successful(archiveLinks))
+    when(contentRetrievalService.getPublisherArchiveMonths(publisher, None)).thenReturn(Future.successful(someArchiveMonths))
 
     val extras = Await.result(modelBuilder.populateExtraModelContent(request, None), TenSeconds)
 
