@@ -142,8 +142,15 @@ class UrlBuilder @Autowired()(siteInformation: SiteInformation, urlWordsGenerato
     "/archive"
   }
 
-  def getArchiveLinkUrl(link: ArchiveLink): String = {
-    "/archive/" + renderYearMonth(link.interval)
+  def getArchiveLinkUrl(link: IntervalLink): String = {
+    link match {
+      case p: PublisherArchiveLink =>
+        getPublisherArchiveLinkUrl(p)
+      case t: TagArchiveLink =>
+        getTagArchiveLinkUrl(t)
+      case _ =>
+        "/archive/" + renderYearMonth(link.interval)
+    }
   }
 
   def getIntervalUrl(interval: Interval): String = {

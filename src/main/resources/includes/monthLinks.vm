@@ -1,0 +1,9 @@
+#if($next_month || $previous_month)
+    #if($next_month)
+            <li><a href="$urlBuilder.getArchiveLinkUrl($next_month)">$dateFormatter.fullMonthYear($next_month.month)</a></li>
+    #end
+    |
+    #if($previous_month)
+        <li><a href="$urlBuilder.getArchiveLinkUrl($previous_month)">$dateFormatter.fullMonthYear($previous_month.month)</a></li>
+    #end
+#end

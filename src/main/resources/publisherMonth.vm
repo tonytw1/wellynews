@@ -23,12 +23,7 @@
     #end
     #parse("includes/page_content_tags.vm")
 
-    #if($next_month)
-        <li><a href="$urlBuilder.getPublisherArchiveLinkUrl($next_month)">$dateFormatter.fullMonthYear($next_month.month)</a></li>
-    #end
-    #if($previous_month)
-        <li><a href="$urlBuilder.getPublisherArchiveLinkUrl($previous_month)">$dateFormatter.fullMonthYear($previous_month.month)</a></li>
-    #end
+    #parse("includes/monthLinks.vm")
 
     <div class="main_content">
         #parse("includes/main_content.vm")
