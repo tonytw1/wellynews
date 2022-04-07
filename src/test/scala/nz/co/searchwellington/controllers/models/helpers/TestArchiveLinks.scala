@@ -8,11 +8,9 @@ trait TestArchiveLinks {
   def someArchiveMonths: Seq[ArchiveLink] = {
     val january = new DateTime(2021, 1, 1, 0, 0, 0, 0)
     val start = new DateTime(january, DateTimeZone.UTC)
-    val a = ArchiveLink(count = 12L, interval = new Interval(start, start.plusMonths(1)))
-    val b = ArchiveLink(count = 24L, interval = new Interval(start.plusMonths(1), start.plusMonths(2)))
-    val c = ArchiveLink(count = 24L, interval = new Interval(start.plusMonths(3), start.plusMonths(3)))
-    val archiveLinks = Seq(a, b, c)
-    archiveLinks
+    Range.inclusive(0, 2).map { i =>
+      ArchiveLink(count = i + 1 * 12L, interval = new Interval(start.plusMonths(i), start.plusMonths(i + 1)))
+    }
   }
 
 }
