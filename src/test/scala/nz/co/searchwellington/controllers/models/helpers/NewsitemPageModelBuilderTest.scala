@@ -70,7 +70,7 @@ class NewsitemPageModelBuilderTest extends ReasonableWaits {
     val place = Geocode(address = Some("Somewhere"))
     val frontendNewsitem = FrontendNewsitem(id = newsitem.id, place = Some(place))
 
-    val handTagging = HandTagging(tag = Tag(id = "123"), user = User())
+    val handTagging = HandTagging(tag = Tag(id = "123"), taggingUser = User())
     val geotagVotesForNewsitem = Seq(GeotaggingVote(geocode = place, weight = 1, explanation = "Some tagging"))
     val taggingVotesForNewsitem = Seq(handTagging)
 

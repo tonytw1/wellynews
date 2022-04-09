@@ -55,7 +55,7 @@ class FrontendResourceMapperTest extends ReasonableWaits {
     val tagging = Tagging(tag_id = tag._id, user_id = owner._id)
     val website = Website(id = "123", resource_tags = Seq(tagging))
 
-    when(taggingReturnsOfficerService.getTaggingsVotesForResource(website)).thenReturn(Future.successful(Seq(HandTagging(user = owner, tag = tag))))
+    when(taggingReturnsOfficerService.getTaggingsVotesForResource(website)).thenReturn(Future.successful(Seq(HandTagging(taggingUser = owner, tag = tag))))
     when(indexTagsService.getIndexGeocodeForResource(website)).thenReturn(Future.successful(None))
 
     val frontendWebsite = Await.result(frontendResourceMapper.createFrontendResourceFrom(website), TenSeconds)

@@ -45,7 +45,7 @@ import scala.concurrent.{ExecutionContext, Future}
   private def toHandTagging(suggestedTags: Set[Tag], reason: Option[String] = None)(implicit ec: ExecutionContext): Future[Set[HandTagging]] = {
     mongoRepository.getUserByProfilename(AUTOTAGGER_PROFILE_NAME).map { maybyAutotagUser =>
       maybyAutotagUser.map { autotagUser =>
-        suggestedTags.map(t => HandTagging(tag = t, user = autotagUser, reason = reason))
+        suggestedTags.map(t => HandTagging(tag = t, taggingUser = autotagUser, reason = reason))
       }.getOrElse {
         log.warn("Could not find auto tagger user: " + AUTOTAGGER_PROFILE_NAME + "; not autotagging.")
         Set.empty

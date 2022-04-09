@@ -37,8 +37,8 @@ class FeedReaderUpdateServiceTest extends ReasonableWaits {
 
     val acceptedNewsitem = Newsitem()
     val autoTaggings = Set(
-      HandTagging(tag = atag, user = autoTagUser),
-      HandTagging(tag = anotherTag, user = autoTagUser)
+      HandTagging(tag = atag, taggingUser = autoTagUser),
+      HandTagging(tag = anotherTag, taggingUser = autoTagUser)
     )
 
     when(feedItemAcceptor.acceptFeedItem(feedReaderUser, (newsitem, feed))).thenReturn(acceptedNewsitem)

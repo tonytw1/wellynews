@@ -24,7 +24,7 @@ import scala.concurrent.{ExecutionContext, Future}
         tag <- maybeTag
         user <- maybeUser
       } yield {
-        HandTagging(user = user, tag = tag, reason = tagging.reason)
+        HandTagging(taggingUser = user, tag = tag, reason = tagging.reason)
       }
     }
 
