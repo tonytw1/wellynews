@@ -42,7 +42,7 @@ import scala.concurrent.{ExecutionContext, Future}
         val allTaggings: Set[HandTagging] = autoTaggings ++ feedCategoryAutoTaggings
 
         val withAutoTaggings = notHeld.withTaggings(allTaggings.map(t =>
-          Tagging(tag_id = t.tag._id, user_id = t.user._id, reason = t.reason)).toSeq)
+          Tagging(tag_id = t.tag._id, user_id = t.taggingUser._id, reason = t.reason)).toSeq)
 
         log.info("With autotaggings: " + withAutoTaggings)
 

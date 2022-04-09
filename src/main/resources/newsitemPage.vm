@@ -53,7 +53,11 @@
 	<ul>
         #foreach ($tagging in $tagging_votes)
             <li>
-                <a href="$urlBuilder.getTagUrl($tagging.tag)">$tagging.tag.name</a> - $tagging.explanation
+                <a href="$urlBuilder.getTagUrl($tagging.tag)">$tagging.tag.name</a> -
+                $tagging.explanation
+                #if(tagging.user)
+                    by $user.displayName
+                #end
             </li>
         #end
 	</ul>
