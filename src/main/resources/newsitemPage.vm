@@ -56,7 +56,7 @@
                 <a href="$urlBuilder.getTagUrl($tagging.tag)">$tagging.tag.name</a> -
                 $tagging.explanation
                 #if($tagging.user)
-                    by $tagging.user.displayName
+                    by <a href="$urlBuilder.getProfileUrl($tagging.user)">$tagging.user.displayName</a>
                 #end
             </li>
         #end
