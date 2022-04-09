@@ -55,8 +55,8 @@
             <li>
                 <a href="$urlBuilder.getTagUrl($tagging.tag)">$tagging.tag.name</a> -
                 $tagging.explanation
-                #if(tagging.user)
-                    by $user.displayName
+                #if($tagging.user)
+                    by $tagging.user.displayName
                 #end
             </li>
         #end
