@@ -1,6 +1,7 @@
 package nz.co.searchwellington.controllers
 
 import com.google.common.base.Strings
+import nz.co.searchwellington.model.frontend.FrontendWebsite
 import nz.co.searchwellington.model.{SiteInformation, Tag, Website}
 import nz.co.searchwellington.urls.UrlParameterEncoder
 import org.springframework.beans.factory.annotation.Autowired
@@ -19,6 +20,9 @@ import uk.co.eelpieconsulting.common.geo.model.{LatLong, OsmId, Place}
 
   def getRssUrlForPublisher(publisher: Website): String = {
     siteInformation.getUrl + "/" + publisher.url_words.getOrElse("") + "/rss"
+  }
+  def getRssUrlForPublisher(publisher: FrontendWebsite): String = {
+    siteInformation.getUrl + "/" + publisher.urlWords + "/rss"
   }
 
   def getRssUrlForTag(tag: Tag): String = {
