@@ -23,15 +23,19 @@
 #foreach ($tag in $feedable_tags)
 	#if ($tag.isHidden()) 
 	#else 
-		<li>#rssIcon($rssUrlBuilder.getRssUrlForTag($tag) '') $tag.displayName - <code>$rssUrlBuilder.getRssUrlForTag($tag)</code></li>
+		<li>#rssIcon($rssUrlBuilder.getRssUrlForTag($tag)) $tag.displayName - <code>$rssUrlBuilder.getRssUrlForTag($tag)</code></li>
 	#end
 #end
 </ul>
 
 <p>Feeds are available for specific publishers. For example:</p>
 
-<p>$feedable_publishers</p>
+<ul>
+#foreach ($publisher in $feedable_publishers)
+    <li>#rssIcon($rssUrlBuilder.getRssUrlForPublisher($publisher)) $publisher.name - <code>$rssUrlBuilder.getRssUrlForPublisher($publisher)</code></li>
+#end
 
+</ul>
 <p>A complete list of all other available feeds is available in the <a href="api">API instructions</a>.</p>
 
 </div>
