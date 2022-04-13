@@ -28,6 +28,10 @@
 #end
 </ul>
 
+<p>Feeds are available for specific publishers. For example:</p>
+
+<p>$feedable_publishers</p>
+
 <p>A complete list of all other available feeds is available in the <a href="api">API instructions</a>.</p>
 
 </div>

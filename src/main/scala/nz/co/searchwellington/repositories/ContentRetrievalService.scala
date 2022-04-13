@@ -181,24 +181,35 @@ import scala.concurrent.{ExecutionContext, Future}
       elasticSearchIndexer.getPublisherAggregationFor(newsitemsForInterval, loggedInUser)
     }
 
-    def toFrontendResourceWithCount(t: (String, Long)): Future[Option[(FrontendResource, Long)]] = {
-      BSONObjectID.parse(t._1).map { bid =>
-        mongoRepository.getResourceByObjectId(bid).flatMap { maybeResource =>
-          maybeResource.map { resource: Resource =>
-            val eventualResource = frontendResourceMapper.createFrontendResourceFrom(resource)
-            eventualResource.map { frontendResource =>
-              Some((frontendResource, t._2))
-            }
-          }.getOrElse(Future.successful(None))
-        }
-      }.getOrElse {
-        Future.successful(None)
-      }
-    }
-
     getPublisherIdsAndCountsForInterval(interval, loggedInUser).flatMap { stringLongPairs =>
       val eventualMaybeTuples: Seq[Future[Option[(FrontendResource, Long)]]] = stringLongPairs.map(toFrontendResourceWithCount)
       Future.sequence(eventualMaybeTuples).map(_.flatten)
+    }
+  }
+
+  def getFeaturedPublishers(loggedInUser: Option[User])(implicit ec: ExecutionContext): Future[Seq[FrontendResource]] = {
+    val newsitems = ResourceQuery(`type` = Some(Set("N")))
+    elasticSearchIndexer.getPublisherAggregationFor(newsitems, loggedInUser).flatMap { a =>
+      Future.sequence(a.map(toFrontendResourceWithCount)).map { b: Seq[Option[(FrontendResource, Long)]] =>
+        b.flatten
+      }.map { a =>
+        a.map(_._1)
+      }
+    }
+  }
+
+  private def toFrontendResourceWithCount(t: (String, Long))(implicit ec: ExecutionContext): Future[Option[(FrontendResource, Long)]] = {
+    BSONObjectID.parse(t._1).map { bid =>
+      mongoRepository.getResourceByObjectId(bid).flatMap { maybeResource =>
+        maybeResource.map { resource: Resource =>
+          val eventualResource = frontendResourceMapper.createFrontendResourceFrom(resource)
+          eventualResource.map { frontendResource =>
+            Some((frontendResource, t._2))
+          }
+        }.getOrElse(Future.successful(None))
+      }
+    }.getOrElse {
+      Future.successful(None)
     }
   }
 

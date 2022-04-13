@@ -84,6 +84,7 @@ import scala.jdk.CollectionConverters._
 
     val eventualModelAndView = for {
       exampleFeedableTags <- contentRetrievalService.getFeaturedTags
+      exampleFeedablePublishers <- contentRetrievalService.getFeaturedPublishers(loggedInUser)
       commonLocal <- commonLocal
       latestNewsitems <- latestNewsitems(loggedInUser)
 
@@ -91,6 +92,7 @@ import scala.jdk.CollectionConverters._
         val mv = new ModelAndView("rssfeeds").
           addObject("heading", "RSS feeds").
           addObject("loggedInUser", loggedInUser.orNull).
+          addObject("feedable_publishers", exampleFeedablePublishers.asJava).
           addObject("feedable_tags", exampleFeedableTags.asJava).
           addAllObjects(commonLocal).
           addAllObjects(latestNewsitems)
