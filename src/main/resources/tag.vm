@@ -77,14 +77,14 @@
 		#parse("includes/tag_related_feed.vm")
 					
 		#parse("includes/geocoded.vm")
-		
+
+        #parse("includes/tag_archive_links.vm")
+
 		<div class="box">
 			#parse("includes/latest_newsitems.vm")
 			<br clear="all"/>
 		</div>
 
-        #parse("includes/tag_archive_links.vm")
-			
 		#parse("includes/tagless.vm")	
 	</div>
 
