@@ -188,8 +188,10 @@ import scala.concurrent.{ExecutionContext, Future}
   }
 
   def getFeaturedPublishers(loggedInUser: Option[User])(implicit ec: ExecutionContext): Future[Seq[FrontendResource]] = {
-    val newsitems = ResourceQuery(`type` = Some(Set("N")))
-    elasticSearchIndexer.getPublisherAggregationFor(newsitems, loggedInUser).flatMap { a =>
+    val now = DateTime.now
+    val lastMonth = new Interval(DateTime.now.minusMonths(1), now)
+    val newsitems = ResourceQuery(`type` = Some(Set("N")), interval = Some(lastMonth))
+    elasticSearchIndexer.getPublisherAggregationFor(newsitems, loggedInUser, Some(10)).flatMap { a =>
       Future.sequence(a.map(toFrontendResourceWithCount)).map { b: Seq[Option[(FrontendResource, Long)]] =>
         b.flatten
       }.map { a =>

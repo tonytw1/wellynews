@@ -187,12 +187,12 @@ class ElasticSearchIndexer @Autowired()(val showBrokenDecisionService: ShowBroke
     executeResourceQuery(query, order, loggedInUser)
   }
 
-  def getPublisherAggregationFor(query: ResourceQuery, loggedInUser: Option[User])(implicit ec: ExecutionContext): Future[Seq[(String, Long)]] = {
-    getAggregationFor(query, Publisher, loggedInUser)
+  def getPublisherAggregationFor(query: ResourceQuery, loggedInUser: Option[User], size: Option[Int] = None)(implicit ec: ExecutionContext): Future[Seq[(String, Long)]] = {
+    getAggregationFor(query, Publisher, loggedInUser, size)
   }
 
-  def getAggregationFor(query: ResourceQuery, aggName: String, loggedInUser: Option[User])(implicit ec: ExecutionContext): Future[Seq[(String, Long)]] = {
-    val aggs = Seq(termsAgg(aggName, aggName) size Integer.MAX_VALUE)
+  def getAggregationFor(query: ResourceQuery, aggName: String, loggedInUser: Option[User], size: Option[Int] = None)(implicit ec: ExecutionContext): Future[Seq[(String, Long)]] = {
+    val aggs = Seq(termsAgg(aggName, aggName) size size.getOrElse(Integer.MAX_VALUE))
     val request = (search(Index) query composeQueryFor(query, loggedInUser)) limit 0 aggregations aggs
     client.execute(request).map { r =>
       r.result.aggregations.terms(aggName).buckets.map(b => (b.key, b.docCount))
