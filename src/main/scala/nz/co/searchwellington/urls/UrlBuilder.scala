@@ -84,7 +84,7 @@ class UrlBuilder @Autowired()(siteInformation: SiteInformation, urlWordsGenerato
       case w: FrontendWebsite =>
         "/" + w.urlWords
       case _ =>
-        "" // TODO Watchlist items have no local page
+        null
     }
   }
 
