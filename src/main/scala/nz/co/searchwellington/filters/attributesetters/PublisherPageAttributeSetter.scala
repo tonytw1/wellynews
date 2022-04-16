@@ -1,8 +1,5 @@
 package nz.co.searchwellington.filters.attributesetters
 
-import java.util.regex.Pattern
-
-import javax.servlet.http.HttpServletRequest
 import nz.co.searchwellington.ReasonableWaits
 import nz.co.searchwellington.filters.RequestPath
 import nz.co.searchwellington.repositories.mongo.MongoRepository
@@ -10,6 +7,8 @@ import org.apache.commons.logging.LogFactory
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
 
+import java.util.regex.Pattern
+import javax.servlet.http.HttpServletRequest
 import scala.concurrent.Await
 import scala.concurrent.ExecutionContext.Implicits.global
 
