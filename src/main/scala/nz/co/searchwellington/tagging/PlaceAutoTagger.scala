@@ -22,7 +22,7 @@ import scala.concurrent.{ExecutionContext, Future}
     }
 
     def checkForMatchingTag(resource: Resource, tag: Tag): Boolean = {
-      val headlineMatchesTag = resource.title.exists(t => t.toLowerCase.contains(tag.getDisplayName.toLowerCase))
+      val headlineMatchesTag = resource.title.toLowerCase.contains(tag.getDisplayName.toLowerCase)
       val bodyMatchesTag = resource.description.exists(d => d.toLowerCase.contains(tag.getDisplayName.toLowerCase))
       headlineMatchesTag || bodyMatchesTag
     }

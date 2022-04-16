@@ -22,7 +22,7 @@ class FeedItemAcceptanceDeciderTest extends ReasonableWaits {
 
   @Test
   def feeditemsWithNoProblemsShouldGenerateNoObjections(): Unit = {
-    val newsitem = Newsitem(id = UUID.randomUUID().toString, title = Some("A feeditem"), page = "http://localhost/foo", date = Some(DateTime.now.toDate))
+    val newsitem = Newsitem(id = UUID.randomUUID().toString, title = "A feeditem", page = "http://localhost/foo", date = Some(DateTime.now.toDate))
 
     when(suppressionDAO.isSupressed(newsitem.page)).thenReturn(Future.successful(false))
     when(mongoRepository.getResourceByUrl(newsitem.page)).thenReturn(Future.successful(None))
@@ -34,7 +34,7 @@ class FeedItemAcceptanceDeciderTest extends ReasonableWaits {
 
   @Test
   def shouldRejectFeeditemsWhichHaveAlreadyBeenAccepted(): Unit = {
-    val newsitem = Newsitem(id = UUID.randomUUID().toString, title = Some("A feeditem"), page = "http://localhost/foo")
+    val newsitem = Newsitem(id = UUID.randomUUID().toString, title = "A feeditem", page = "http://localhost/foo")
 
     when(suppressionDAO.isSupressed(newsitem.page)).thenReturn(Future.successful(false))
     when(mongoRepository.getResourceByUrl(newsitem.page)).thenReturn(Future.successful(Some(Newsitem())))
@@ -47,7 +47,7 @@ class FeedItemAcceptanceDeciderTest extends ReasonableWaits {
 
   @Test
   def shouldRejectFeeditemsWithSuppressedUrls(): Unit = {
-    val newsitem = Newsitem(id = UUID.randomUUID().toString, title = Some("A feeditem"), page = "http://localhost/foo")
+    val newsitem = Newsitem(id = UUID.randomUUID().toString, title = "A feeditem", page = "http://localhost/foo")
 
     when(suppressionDAO.isSupressed(newsitem.page)).thenReturn(Future.successful(true))
     when(mongoRepository.getResourceByUrl(newsitem.page)).thenReturn(Future.successful(None))

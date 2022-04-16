@@ -87,7 +87,7 @@ import scala.concurrent.{ExecutionContext, Future}
           FrontendNewsitem(
             id = n.id,
             `type` = n.`type`,
-            name = n.title.getOrElse(""),
+            name = n.title,
             url = n.page,
             date = n.date.orNull,
             description = n.description.orNull,
@@ -97,7 +97,7 @@ import scala.concurrent.{ExecutionContext, Future}
             accepted = n.accepted.orNull,
             image = null, // TODO
             urlWords = n.url_words.orNull,
-            publisherName = publisher.flatMap(_.title),
+            publisherName = publisher.map(_.title),
             publisherUrlWords = publisher.flatMap(_.url_words),
             httpStatus = n.http_status,
             lastScanned = n.last_scanned,
@@ -124,7 +124,7 @@ import scala.concurrent.{ExecutionContext, Future}
           FrontendFeed(
             id = f.id,
             `type` = f.`type`,
-            name = f.title.getOrElse(""),
+            name = f.title,
             url = f.page,
             urlWords = f.url_words.orNull,
             date = f.date.orNull,
@@ -133,7 +133,7 @@ import scala.concurrent.{ExecutionContext, Future}
             latestItemDate = f.getLatestItemDate,
             lastRead = f.last_read,
             acceptancePolicy = f.acceptance,
-            publisherName = publisher.flatMap(_.title),
+            publisherName = publisher.map(_.title),
             publisherUrlWords = publisher.flatMap(_.url_words),
             httpStatus = f.http_status,
             lastScanned = f.last_scanned,
@@ -161,10 +161,10 @@ import scala.concurrent.{ExecutionContext, Future}
           FrontendWatchlist(
             id = l.id,
             `type` = l.`type`,
-            name = l.title.getOrElse(""),
+            name = l.title,
             url = l.page,
             date = l.date.orNull,
-            publisherName = publisher.flatMap(_.title),
+            publisherName = publisher.map(_.title),
             publisherUrlWords = publisher.flatMap(_.url_words),
             description = l.description.orNull,
             place = place,
@@ -188,7 +188,7 @@ import scala.concurrent.{ExecutionContext, Future}
 
           FrontendWebsite(
             id = w.id,
-            name = w.title.orNull,
+            name = w.title,
             url = w.page,
             urlWords = w.url_words.orNull,
             description = w.description.getOrElse(""),

@@ -50,7 +50,7 @@ import uk.co.eelpieconsulting.common.geo.model.{LatLong, OsmId, Place}
   }
 
   def getRssTitleForPublisher(publisher: Website): String = {
-    publisher.title.getOrElse("") + " RSS Feed"
+    publisher.title + " RSS Feed"
   }
 
   def getRssTitleForJustin: String = {
@@ -74,7 +74,7 @@ import uk.co.eelpieconsulting.common.geo.model.{LatLong, OsmId, Place}
   }
 
   def getRssTitleForPublisherCombiner(publisher: Website, tag: Tag): String = {
-    siteInformation.getSitename + " - " + publisher.title.getOrElse("") + " + " + tag.getDisplayName
+    siteInformation.getSitename + " - " + publisher.title + " + " + tag.getDisplayName
   }
 
   def getRssUrlForPublisherTagCombiner(publisher: Website, tag: Tag): String = {

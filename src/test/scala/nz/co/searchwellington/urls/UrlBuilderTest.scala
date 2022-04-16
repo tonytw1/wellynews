@@ -22,7 +22,7 @@ class UrlBuilderTest {
 
   @Test
   def shouldBuildPublisherKeywordSearchUrl(): Unit = {
-    val publisher = Website(title = Some("Wellington City Council"), url_words = Some("wellington-city-council"))
+    val publisher = Website(title = "Wellington City Council", url_words = Some("wellington-city-council"))
     val url = urlBuilder.getPublisherSearchUrl(publisher, "something")
     assertEquals("/search?q=something&publisher=wellington-city-council", url)
   }
@@ -36,7 +36,7 @@ class UrlBuilderTest {
 
   @Test
   def shouldCreatePublisherAndTagCombinerLinkBasedOnPublisherUrlWordsAndTagName(): Unit = {
-    val publisher = Website(title = Some("Wellington City Council"), url_words = Some("wellington-city-council"))
+    val publisher = Website(title = "Wellington City Council", url_words = Some("wellington-city-council"))
 
     val result = urlBuilder.getPublisherCombinerUrl(publisher, tag)
 

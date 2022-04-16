@@ -38,7 +38,7 @@ class PublisherGuessingServiceTest {
 
   @Test
   def shouldMatchIfOnlyOnePossiblePublisher(): Unit = {
-    val wellingtonista = Website(title = Some("The Wellingtonista"), page = "http://www.wellingtonista.com")
+    val wellingtonista = Website(title = "The Wellingtonista", page = "http://www.wellingtonista.com")
     val possiblePublishers = Seq(wellingtonista)
     when(contentRetrievalService.getWebsitesByHostname("www.wellingtonista.com", Some(adminUser))).thenReturn(Future.successful(possiblePublishers))
 

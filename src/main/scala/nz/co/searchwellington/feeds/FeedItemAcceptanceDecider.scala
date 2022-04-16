@@ -24,7 +24,7 @@ import scala.concurrent.{ExecutionContext, Future}
 
     val titleCannotBeBlank = (newsitem: Newsitem) => {
       Future.successful {
-        if (newsitem.title.getOrElse("").trim.isEmpty) {
+        if (newsitem.title.trim.isEmpty) {
           Some("Item has no title")
         } else {
           None

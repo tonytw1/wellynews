@@ -7,7 +7,7 @@ import reactivemongo.api.bson.BSONObjectID
 case class Website(override val _id: BSONObjectID = BSONObjectID.generate,
                    override val id: String = UUID.randomUUID().toString,
                    override val `type`: String = "W",
-                   override var title: Option[String] = None,
+                   override var title: String = "",
                    override var description: Option[String] = None,
                    override val page: String = "",
                    override var http_status: Int = 0,
@@ -22,7 +22,7 @@ case class Website(override val _id: BSONObjectID = BSONObjectID.generate,
                    override var owner: Option[BSONObjectID] = None,
                    override val resource_tags: Seq[Tagging] = Seq()) extends Resource {
 
-  def getTitle: String = title.getOrElse(id)
+  def getTitle: String = title
 
   override def withTaggings(taggings: Seq[Tagging]): Website = this.copy(resource_tags = taggings)
 

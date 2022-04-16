@@ -18,7 +18,7 @@ class FeedItemAcceptorTest {
 
   @Test
   def shouldSetAcceptedTimeWhenAccepting(): Unit = {
-    val newsitem = Newsitem(id = "", title = Some("A headline"), description = None)
+    val newsitem = Newsitem(id = "", title = "A headline", description = None)
     val before = DateTime.now
 
     val acceptedNewsitem = feedItemAcceptor.acceptFeedItem(feedReadingUser, (newsitem, feed))
@@ -28,7 +28,7 @@ class FeedItemAcceptorTest {
   }
 
   def shouldCleanUrlWhenAccepting(): Unit = {
-    val newsitem = Newsitem(id = "", title = Some("A headline"), page ="https://localhost/blah?PHPSESSION=123", description = None)
+    val newsitem = Newsitem(id = "", title = "A headline", page ="https://localhost/blah?PHPSESSION=123", description = None)
     when(urlCleaner.cleanSubmittedItemUrl("https://localhost/blah?PHPSESSION=123")).thenReturn("https://localhost/blah")
 
     val acceptedNewsitem = feedItemAcceptor.acceptFeedItem(feedReadingUser, (newsitem, feed))
@@ -38,7 +38,7 @@ class FeedItemAcceptorTest {
 
   @Test
   def shouldSetAcceptedByUserAndOwnerWhenAccepting(): Unit = {
-    val newsitem = Newsitem(id = "", title = Some("A headline"), description = None)
+    val newsitem = Newsitem(id = "", title = "A headline", description = None)
 
     val acceptedNewsitem = feedItemAcceptor.acceptFeedItem(feedReadingUser, (newsitem, feed))
 
@@ -50,7 +50,7 @@ class FeedItemAcceptorTest {
   def shouldOverrideTheFeedItemDateIfFeedAcceptancePolicyIsToIgnoreFeedItemsDates(): Unit = {
     // Some feeds contains items with dates that refer to an event date in the future rather than news item publication date.
     // These items can clog up the head of the main feed so we should set their dates to the acceptance time rather than the state date.
-    val newsitemWithFutureDate = Newsitem(id = "", title = Some("HEADLINE"), description = None, date = Some(DateTime.now.plusMonths(1).toDate))
+    val newsitemWithFutureDate = Newsitem(id = "", title = "HEADLINE", description = None, date = Some(DateTime.now.plusMonths(1).toDate))
     val feedWithIgnoreDatesAcceptancePolicy = Feed(publisher = Some(BSONObjectID.generate), acceptance = FeedAcceptancePolicy.ACCEPT_IGNORING_DATE)
 
     val accepted = feedItemAcceptor.acceptFeedItem(feedReadingUser, (newsitemWithFutureDate, feedWithIgnoreDatesAcceptancePolicy))
@@ -60,7 +60,7 @@ class FeedItemAcceptorTest {
 
   @Test
   def acceptedFeedItemsWithNoDatesShouldDefaultToToday(): Unit = {
-    val feedItemWithNoDate = Newsitem(id = "", title = Some("HEADLINE"), description = None, date = None)
+    val feedItemWithNoDate = Newsitem(id = "", title = "HEADLINE", description = None, date = None)
 
     val accepted = feedItemAcceptor.acceptFeedItem(feedReadingUser, (feedItemWithNoDate, feed))
 

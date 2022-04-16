@@ -50,8 +50,8 @@ import scala.jdk.CollectionConverters._
         frontendWebsite <- eventualFrontendWebsite
 
       } yield {
-        val mv = new ModelAndView().addObject("heading", publisher.title.getOrElse("")).
-          addObject("description", publisher.title.getOrElse("") + " newsitems").
+        val mv = new ModelAndView().addObject("heading", publisher.title).
+          addObject("description", publisher.title + " newsitems").
           addObject("publisher", frontendWebsite).
           addObject("location", frontendWebsite.getPlace).
           addObject("link", urlBuilder.fullyQualified(urlBuilder.getPublisherUrl(publisher)))

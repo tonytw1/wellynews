@@ -23,7 +23,7 @@ class PublisherMonthModelBuilderTest extends ReasonableWaits with ContentFields 
   private val contentRetrievalService = mock(classOf[ContentRetrievalService])
   private val frontendResourceMapper = mock(classOf[FrontendResourceMapper])
 
-  private val publisher = Website(title = Some("A publisher"), url_words = Some("a-publisher"))
+  private val publisher = Website(title = "A publisher", url_words = Some("a-publisher"))
 
   private val newsitem = mock(classOf[FrontendResource])
   private val anotherNewsitem = mock(classOf[FrontendResource])

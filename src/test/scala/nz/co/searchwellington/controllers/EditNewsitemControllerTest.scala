@@ -41,7 +41,7 @@ class EditNewsitemControllerTest {
     when(mongoRepository.getResourceById(existingNewsitem.id)).thenReturn(Future.successful(Some(existingNewsitem)))
     when(tagDAO.loadTagsById(Seq.empty)).thenReturn(Future.successful(Seq.empty))
 
-    val anotherPublisher = Website(title = Some("Another publisher"))
+    val anotherPublisher = Website(title = "Another publisher")
     when(mongoRepository.getWebsiteByName("Another publisher")).thenReturn(Future.successful(Some(anotherPublisher)))
 
     val editFormSubmission = new EditNewsitem()
@@ -56,7 +56,7 @@ class EditNewsitemControllerTest {
     val updatedNewsitem = ArgumentCaptor.forClass(classOf[Newsitem])
     verify(contentUpdateService).update(updatedNewsitem.capture)(Matchers.eq(ec))
 
-    assertEquals(Some("New title"), updatedNewsitem.getValue.title)
+    assertEquals("New title", updatedNewsitem.getValue.title)
     assertEquals(Some(new DateTime(2020, 6, 17, 0, 0, 0).toDate), updatedNewsitem.getValue.date)
     assertEquals(Some(anotherPublisher._id), updatedNewsitem.getValue.getPublisher)
   }

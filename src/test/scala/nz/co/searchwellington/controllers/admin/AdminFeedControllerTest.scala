@@ -19,7 +19,7 @@ import scala.concurrent.ExecutionContext.Implicits.global
 class AdminFeedControllerTest {
   private val FEED_ID = UUID.randomUUID().toString
   private val adminUser = User(id ="273", admin = true)
-  private val feed = Feed(id = FEED_ID, title = Some("A feed"))
+  private val feed = Feed(id = FEED_ID, title = "A feed")
 
   private val requestFilter = mock(classOf[AdminRequestFilter])
   private val urlWordsGenerator = new UrlWordsGenerator(new DateFormatter(DateTimeZone.UTC))

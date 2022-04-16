@@ -23,7 +23,7 @@ class TagHintAutoTaggerTest extends ReasonableWaits {
     val tag = Tag(hints = Seq("fox", "animal"))
     val anotherTag = Tag(hints = Seq("cat"))
     when(tagDAO.getAllTags).thenReturn(Future.successful(Seq(tag, anotherTag)))
-    val resource = Newsitem(id = UUID.randomUUID().toString, title = Some("The quick brown fox jumped over the lazy dog"))
+    val resource = Newsitem(id = UUID.randomUUID().toString, title = "The quick brown fox jumped over the lazy dog")
 
     val suggestions = Await.result(tagHintAutoTagger.suggestTags(resource), TenSeconds)
 

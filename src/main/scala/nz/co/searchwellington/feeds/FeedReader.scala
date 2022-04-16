@@ -28,7 +28,7 @@ import scala.concurrent.{ExecutionContext, Future}
   def processFeed(feed: Feed, readingUser: User, acceptancePolicy: FeedAcceptancePolicy)(implicit ec: ExecutionContext): Future[Int] = {
     if (acceptancePolicy.shouldReadFeed) {
       try {
-        log.debug(s"Processing feed: ${feed.title.getOrElse(feed.page)} using acceptance policy $acceptancePolicy. Last read: " + feed.last_read.getOrElse(""))
+        log.debug(s"Processing feed: ${feed.title} using acceptance policy $acceptancePolicy. Last read: " + feed.last_read.getOrElse(""))
         whakaokoFeedReader.fetchFeedItems(feed).flatMap { feedItemsFetch =>
           feedItemsFetch.fold({ l =>
             log.warn("Could not fetch feed items for feed + '" + feed.title + "':" + l)
@@ -41,7 +41,7 @@ import scala.concurrent.{ExecutionContext, Future}
             val eventuallyAcceptedNewsitems = processFeedItems(feed, readingUser, acceptancePolicy, feedNewsitems._1)
             eventuallyAcceptedNewsitems.flatMap { acceptedNewsitems =>
               if (acceptedNewsitems.nonEmpty) {
-                log.info("Accepted " + acceptedNewsitems.size + " newsitems from " + feed.title.getOrElse(feed.page))
+                log.info("Accepted " + acceptedNewsitems.size + " newsitems from " + feed.title)
               }
 
               contentUpdateService.update(feed.copy(

@@ -85,7 +85,7 @@ class SearchModelBuilderTest extends ReasonableWaits with ContentFields {
 
   @Test
   def canSearchForSpecificPublishersNewsitems(): Unit = {
-    val publisher = Website(id = "123", title = Some("A publisher with lots of newsitems"))
+    val publisher = Website(id = "123", title = "A publisher with lots of newsitems")
 
     val request = new MockHttpServletRequest
     request.setParameter("q", "sausages")

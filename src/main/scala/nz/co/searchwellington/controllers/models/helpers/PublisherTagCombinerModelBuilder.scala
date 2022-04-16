@@ -42,7 +42,7 @@ import scala.jdk.CollectionConverters._
       val mv = new ModelAndView().
         addObject("publisher", frontendPublisher).
         addObject("tag", tag).
-        addObject("heading", publisher.title.getOrElse("") + " and " + tag.getDisplayName).
+        addObject("heading", publisher.title + " and " + tag.getDisplayName).
         addObject("description", "Items tagged with " + publisher.getTitle + " and " + tag.getDisplayName + ".").
         addObject("link", urlBuilder.fullyQualified(urlBuilder.getPublisherCombinerUrl(publisher, tag))).
         addObject("rss_url", rssUrlBuilder.getRssUrlForPublisherTagCombiner(publisher, tag)).

@@ -26,7 +26,7 @@ class PublisherTagCombinerModelBuilderTest extends ReasonableWaits with ContentF
   private val commonAttributesModelBuilder = mock(classOf[CommonAttributesModelBuilder])
   private val frontendResourceMapper = mock(classOf[FrontendResourceMapper])
 
-  private val apublisher = Website(title = Some("A publisher"), url_words = Some("a-publisher"))
+  private val apublisher = Website(title = "A publisher", url_words = Some("a-publisher"))
   private val atag = Tag(name = "atag", display_name = "A tag")
 
   private val modelBuilder = new PublisherTagCombinerModelBuilder(contentRetrievalService, rssUrlBuilder, urlBuilder,

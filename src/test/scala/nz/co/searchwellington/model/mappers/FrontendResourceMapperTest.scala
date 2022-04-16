@@ -32,7 +32,7 @@ class FrontendResourceMapperTest extends ReasonableWaits {
   @Test
   def shouldMapNewsitemsToFrontendNewsitems(): Unit = {
     val owner = User(BSONObjectID.generate(), name = Some(UUID.randomUUID().toString), profilename = Some(UUID.randomUUID().toString))
-    val newsitem = Newsitem(id = "123", http_status = 200, title = Some("Something happened today"),
+    val newsitem = Newsitem(id = "123", http_status = 200, title = "Something happened today",
       date = Some(new DateTime(2020, 10, 7, 12, 0, 0, 0).toDate),
       owner = Some(owner._id))
 

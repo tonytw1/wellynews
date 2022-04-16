@@ -22,7 +22,7 @@ class FeeditemToNewsitemServiceTest {
 
     val newsitem = service.makeNewsitemFromFeedItem(newsitemWithLoudCapsHeadline, feed)
 
-    assertEquals(Some("Headline"), newsitem.title)
+    assertEquals("Headline", newsitem.title)
   }
 
   @Test

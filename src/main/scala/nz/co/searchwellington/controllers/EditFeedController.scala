@@ -42,9 +42,9 @@ class EditFeedController @Autowired()(contentUpdateService: ContentUpdateService
         val publisher = f.publisher.flatMap(pid => Await.result(mongoRepository.getResourceByObjectId(pid), TenSeconds))
 
         val editFeed = new EditFeed()
-        editFeed.setTitle(processTitle(f.title.getOrElse("")))
+        editFeed.setTitle(processTitle(f.title))
         editFeed.setUrl(f.page)
-        editFeed.setPublisher(publisher.flatMap(_.title).getOrElse(""))
+        editFeed.setPublisher(publisher.map(_.title).getOrElse(""))
         editFeed.setAcceptancePolicy(f.acceptance)
 
         val usersTags = f.resource_tags.filter(_.user_id == loggedInUser._id)
@@ -84,7 +84,7 @@ class EditFeedController @Autowired()(contentUpdateService: ContentUpdateService
           log.info("Resolved publisher: " + publisher)
 
           val uf = f.copy(
-            title = Some(formObject.getTitle),
+            title = formObject.getTitle,
             page = formObject.getUrl,
             publisher = publisher.map(_._id),
             acceptance = formObject.getAcceptancePolicy,

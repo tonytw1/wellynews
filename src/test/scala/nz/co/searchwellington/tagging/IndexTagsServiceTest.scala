@@ -26,10 +26,10 @@ class IndexTagsServiceTest extends ReasonableWaits {
 
   private val taggingUser = User(name = Some("auser"))
 
-  private val victoriaUniversity = Website(title = Some("Victoria University"))
-  private val cricketWellington = Website(title = Some("Cricket Wellington"))
+  private val victoriaUniversity = Website(title = "Victoria University")
+  private val cricketWellington = Website(title = "Cricket Wellington")
 
-  private val aroValleyNewsitem = Newsitem(title = Some("Test newsitem"),
+  private val aroValleyNewsitem = Newsitem(title = "Test newsitem",
     description = Some(".. Student flats in the Aro Valley... Test"),
     publisher = Some(victoriaUniversity._id)
   )
@@ -63,7 +63,7 @@ class IndexTagsServiceTest extends ReasonableWaits {
 
   @Test
   def indexTagsShouldIncludeAncestorsOfPublishersIndexTags(): Unit = {
-    val cricketWellingtonNewsitem = Newsitem(title = Some("Cricket"),
+    val cricketWellingtonNewsitem = Newsitem(title ="Cricket",
       description = Some("Cricket thing"),
       publisher = Some(cricketWellington._id)
     )
@@ -79,10 +79,10 @@ class IndexTagsServiceTest extends ReasonableWaits {
 
   @Test
   def shouldIncludeFeedsTagsInNewsitemIndexTags(): Unit = {
-    val publicInputFeed = Feed(title = Some("Wellington City Council - Public Input"))
+    val publicInputFeed = Feed(title = "Wellington City Council - Public Input")
 
     val publicInputNewsitem = Newsitem(
-      title = Some("Proposal to Discharge Encumbrance - 79 Dixon Street, Te Aro"),
+      title = "Proposal to Discharge Encumbrance - 79 Dixon Street, Te Aro",
       feed = Some(publicInputFeed._id)
     )
 
@@ -95,9 +95,9 @@ class IndexTagsServiceTest extends ReasonableWaits {
 
   @Test
   def shouldIncludeAncestorsOfFeedTagsInNewsitemsIndexTags(): Unit = {
-    val cricketWellingtonNewsFeed = Feed(title = Some("Cricket Wellington news"))
+    val cricketWellingtonNewsFeed = Feed(title = "Cricket Wellington news")
 
-    val cricketWellingtonNewsitem = Newsitem(title = Some("Cricket"),
+    val cricketWellingtonNewsitem = Newsitem(title = "Cricket",
       description = Some("Cricket thing"),
       feed = Some(cricketWellingtonNewsFeed._id)
     )

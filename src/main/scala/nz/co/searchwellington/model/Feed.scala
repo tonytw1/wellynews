@@ -7,7 +7,7 @@ import reactivemongo.api.bson.BSONObjectID
 case class Feed(override val _id: BSONObjectID = BSONObjectID.generate,
                 override val id: String = UUID.randomUUID().toString,
                 override val `type`: String = "F",
-                override var title: Option[String] = None,
+                override var title: String = "",
                 override var description: Option[String] = None,
                 override val page: String = "",
                 override var http_status: Int = 0,

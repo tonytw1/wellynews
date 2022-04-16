@@ -7,7 +7,7 @@ import reactivemongo.api.bson.BSONObjectID
 case class Newsitem(override val _id: BSONObjectID = BSONObjectID.generate,
                     override val id: String = UUID.randomUUID().toString,
                     override val `type`: String = "N",
-                    override var title: Option[String] = None,
+                    override var title: String = "",
                     override val page: String = "",
                     override var http_status: Int = 0,
                     override var date: Option[Date] = None,

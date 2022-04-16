@@ -84,7 +84,7 @@ class EditNewsitemController @Autowired()(contentUpdateService: ContentUpdateSer
           }
 
           val updated = handTaggingService.setUsersTagging(loggedInUser, submittedTags.map(_._id), newsitem.copy(
-            title = Some(processTitle(formObject.getTitle)),
+            title = processTitle(formObject.getTitle),
             page = formObject.getUrl,
             publisher = publisher.map(_._id),
             description = Some(formObject.getDescription),
@@ -129,12 +129,12 @@ class EditNewsitemController @Autowired()(contentUpdateService: ContentUpdateSer
       }
 
     }.getOrElse(Future.successful(None))
-    val publisher = Await.result(eventualPublisher, TenSeconds).flatMap(p => p.title).getOrElse("")
+    val publisherName= Await.result(eventualPublisher, TenSeconds).map(p => p.title).getOrElse("")
 
     val formObject = new EditNewsitem()
-    formObject.setTitle(n.title.getOrElse(""))
+    formObject.setTitle(n.title)
     formObject.setUrl(n.page)
-    formObject.setPublisher(publisher)
+    formObject.setPublisher(publisherName)
     formObject.setDescription(n.description.getOrElse(""))
 
     n.geocode.foreach { g =>

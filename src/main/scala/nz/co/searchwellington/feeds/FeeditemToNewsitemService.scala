@@ -14,7 +14,7 @@ class FeeditemToNewsitemService @Autowired()(placeToGeocodeMapper: PlaceToGeocod
 
   def makeNewsitemFromFeedItem(feedItem: FeedItem, feed: Feed): Newsitem = {
     val newsitem = Newsitem(
-      title = feedItem.title.map(processTitle),
+      title = feedItem.title.map(processTitle).getOrElse(feedItem.url),
       page = cleanUrl(feedItem.url),
       description = Some(composeDescription(feedItem)),
       date = feedItem.date.map(_.toDate),

@@ -8,9 +8,9 @@ class MapPinDeduplicatorTest {
   private val here = Geocode(Some("here"), Some(1.1), Some(1.1))
   private val there = Geocode(Some("there"), Some(2.2), Some(2.2))
   private val alsoHere = Geocode(Some("here"), Some(1.1), Some(1.1))
-  private val firstNewsitem = Newsitem(title = Some("First"), geocode = Some(here))
-  private val secondNewsitem = Newsitem(title = Some("Second"), geocode = Some(there))
-  private val thirdNewsitem = Newsitem(title = Some("Third"), geocode = Some(alsoHere))
+  private val firstNewsitem = Newsitem(title = "First", geocode = Some(here))
+  private val secondNewsitem = Newsitem(title = "Second", geocode = Some(there))
+  private val thirdNewsitem = Newsitem(title = "Third", geocode = Some(alsoHere))
   private val geocoded = Seq(firstNewsitem, secondNewsitem, thirdNewsitem)
 
   private val cleaner = new MapPinDeduplicator()

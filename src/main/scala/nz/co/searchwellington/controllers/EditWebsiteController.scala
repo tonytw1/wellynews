@@ -44,7 +44,7 @@ class EditWebsiteController @Autowired()(contentUpdateService: ContentUpdateServ
     def showForm(loggedInUser: User): ModelAndView = {
       getWebsiteById(id).map { w =>
         val editWebsite = new EditWebsite()
-        editWebsite.setTitle(w.title.getOrElse(""))
+        editWebsite.setTitle(w.title)
         editWebsite.setUrl(w.page)
         editWebsite.setDescription(w.description.getOrElse(""))
 
@@ -86,7 +86,7 @@ class EditWebsiteController @Autowired()(contentUpdateService: ContentUpdateServ
           }
 
           val updated = w.copy(
-            title = Some(processTitle(editWebsite.getTitle)),
+            title = processTitle(editWebsite.getTitle),
             page = editWebsite.getUrl,
             description = Some(editWebsite.getDescription),
             geocode = geocode,

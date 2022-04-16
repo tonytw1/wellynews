@@ -21,7 +21,7 @@ class PublisherGuessController @Autowired()(publisherGuessingService: PublisherG
       publisherGuessingService.guessPublisherBasedOnUrl(url, loggedInUserFilter.getLoggedInUser)
     }
 
-    val guesses = Seq(maybePublisher).flatten.map(_.title.getOrElse("")).filter(_.nonEmpty)
+    val guesses = Seq(maybePublisher).flatten.map(_.title).filter(_.nonEmpty)
 
     new ModelAndView(viewFactory.getJsonView).addObject("data", guesses.asJava)
   }

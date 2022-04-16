@@ -68,12 +68,12 @@ class EditWatchlistController @Autowired()(contentUpdateService: ContentUpdateSe
       }
 
     }.getOrElse(Future.successful(None))
-    val publisher = Await.result(eventualPublisher, TenSeconds).flatMap(p => p.title).getOrElse("")
+    val publisherName= Await.result(eventualPublisher, TenSeconds).map(p => p.title).getOrElse("")
 
     val editWatchlist = new EditWatchlist()
-    editWatchlist.setTitle(processTitle(w.title.getOrElse("")))
+    editWatchlist.setTitle(processTitle(w.title))
     editWatchlist.setUrl(w.page)
-    editWatchlist.setPublisher(publisher)
+    editWatchlist.setPublisher(publisherName)
     editWatchlist.setDescription(w.description.getOrElse(""))
     editWatchlist
   }
@@ -99,7 +99,7 @@ class EditWatchlistController @Autowired()(contentUpdateService: ContentUpdateSe
           }
 
           val updated = w.copy(
-            title = Some(editWatchlist.getTitle),
+            title = editWatchlist.getTitle,
             page = editWatchlist.getUrl,
             publisher = publisher.map(_._id),
             description = Some(editWatchlist.getDescription),

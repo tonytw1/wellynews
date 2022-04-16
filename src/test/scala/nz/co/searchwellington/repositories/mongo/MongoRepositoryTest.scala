@@ -23,18 +23,18 @@ class MongoRepositoryTest extends ReasonableWaits {
   private val mongoRepository = MongoRepositoryTest.mongoRepository
 
   @Test
-  def canPersistResources() = {
-    val newsitem = Newsitem(title = Some(testName))
+  def canPersistResources(): Unit = {
+    val newsitem = Newsitem(title = testName)
 
     Await.result(mongoRepository.saveResource(newsitem), TenSeconds)
 
     val reloaded = Await.result(mongoRepository.getResourceByObjectId(newsitem._id), TenSeconds)
     assertTrue(reloaded.nonEmpty)
-    assertEquals(newsitem.title.get, reloaded.get.title.get)
+    assertEquals(newsitem.title, reloaded.get.title)
   }
 
   @Test
-  def canPersistTags = {
+  def canPersistTags(): Unit = {
     val tag = Tag(name = "Test " + UUID.randomUUID().toString)
 
     Await.result(mongoRepository.saveTag(tag), TenSeconds)
@@ -45,7 +45,7 @@ class MongoRepositoryTest extends ReasonableWaits {
   }
 
   @Test
-  def canPersistUsers = {
+  def canPersistUsers(): Unit = {
     val user = User(name = Some("Test " + UUID.randomUUID().toString), twitterid = Some(123))
 
     Await.result(mongoRepository.saveUser(user), TenSeconds)
@@ -56,7 +56,7 @@ class MongoRepositoryTest extends ReasonableWaits {
   }
 
   @Test
-  def canListAllFeeds {
+  def canListAllFeeds(): Unit = {
     val feed = Feed()
     Await.result(mongoRepository.saveResource(feed), TenSeconds)
     val anotherFeed = Feed()
@@ -69,7 +69,7 @@ class MongoRepositoryTest extends ReasonableWaits {
   }
 
   @Test
-  def canListAllTags {
+  def canListAllTags(): Unit = {
     val tag = Tag(name = "Test " + UUID.randomUUID().toString)
     Await.result(mongoRepository.saveTag(tag), TenSeconds)
     val anotherTag = Tag(name = "Test " + UUID.randomUUID().toString)
@@ -82,7 +82,7 @@ class MongoRepositoryTest extends ReasonableWaits {
   }
 
   @Test
-  def canPersistTagParent = {
+  def canPersistTagParent(): Unit = {
     val parentTag = Tag(name = "Test parent " + UUID.randomUUID().toString)
     Await.result(mongoRepository.saveTag(parentTag), TenSeconds)
     val tagWithParent = Tag(name = "Test " + UUID.randomUUID().toString, parent = Some(parentTag._id))
@@ -95,7 +95,7 @@ class MongoRepositoryTest extends ReasonableWaits {
   }
 
   @Test
-  def canPersistTagGeocode = {
+  def canPersistTagGeocode(): Unit = {
     val osmId = OsmId(id = 123L, `type` = "N")
     val geocode = Geocode(osmId = Some(osmId))
     val tagWithGeocode = Tag(name = "Test " + UUID.randomUUID().toString, geocode = Some(geocode))
@@ -107,7 +107,7 @@ class MongoRepositoryTest extends ReasonableWaits {
   }
 
   @Test
-  def canPersistResourceGeocode = {
+  def canPersistResourceGeocode(): Unit = {
     val osmId = OsmId(id = 123L, `type` = "N")
     val resourceWithGeocode = Website(geocode = Some(Geocode(osmId = Some(osmId))))
     Await.result(mongoRepository.saveResource(resourceWithGeocode), TenSeconds)
@@ -118,7 +118,7 @@ class MongoRepositoryTest extends ReasonableWaits {
   }
 
   @Test
-  def canPersistTaggingsForResource = {
+  def canPersistTaggingsForResource(): Unit = {
     val tag = Tag()
     Await.result(mongoRepository.saveTag(tag), TenSeconds)
     val taggingUser = User()
@@ -133,7 +133,7 @@ class MongoRepositoryTest extends ReasonableWaits {
   }
 
   @Test
-  def canFindResourcesByTag = {
+  def canFindResourcesByTag(): Unit = {
     val taggingUser = User()
     Await.result(mongoRepository.saveUser(taggingUser), TenSeconds)
 
@@ -162,7 +162,7 @@ class MongoRepositoryTest extends ReasonableWaits {
   }
 
   @Test
-  def canFindResourcesByTaggingUser = {
+  def canFindResourcesByTaggingUser(): Unit = {
     val taggingUser = User()
     Await.result(mongoRepository.saveUser(taggingUser), TenSeconds)
     val anotherTaggingUser = User()
@@ -184,23 +184,24 @@ class MongoRepositoryTest extends ReasonableWaits {
   }
 
   @Test
-  def canUpdateResources = {
+  def canUpdateResources(): Unit = {
     val title = testName
-    val newsitem = Newsitem(title = Some(title))
+    val newsitem = Newsitem(title = title)
     Await.result(mongoRepository.saveResource(newsitem), TenSeconds)
 
     val updatedTitle = title + " updated"
-    val updated = newsitem.copy(title = Some(updatedTitle), http_status = 200)
+    val updated = newsitem.copy(title = updatedTitle, http_status = 200)
     Await.result(mongoRepository.saveResource(updated), TenSeconds)
 
     val reloaded = Await.result(mongoRepository.getResourceByObjectId(newsitem._id), TenSeconds).get
-    assertEquals(updatedTitle, reloaded.title.get)
+
+    assertEquals(updatedTitle, reloaded.title)
     assertEquals(200, reloaded.http_status)
   }
 
   @Test
-  def canPersistNewsitemPublisher = {
-    val publisher = Website(title = Some(testName))
+  def canPersistNewsitemPublisher(): Unit = {
+    val publisher = Website(title = testName)
     Await.result(mongoRepository.saveResource(publisher), TenSeconds)
     val newsitemWithPublisher = Newsitem(publisher = Some(publisher._id))
     Await.result(mongoRepository.saveResource(newsitemWithPublisher), TenSeconds)
@@ -212,7 +213,7 @@ class MongoRepositoryTest extends ReasonableWaits {
   }
 
   @Test
-  def feedAcceptancePolicyCanBePersistedAsAEnum = {
+  def feedAcceptancePolicyCanBePersistedAsAEnum(): Unit = {
     val feed = Feed(acceptance = FeedAcceptancePolicy.ACCEPT_EVEN_WITHOUT_DATES)
     Await.result(mongoRepository.saveResource(feed), TenSeconds)
 
@@ -222,12 +223,12 @@ class MongoRepositoryTest extends ReasonableWaits {
   }
 
   @Test
-  def canReadListOfResourceIds = {
-    val publisher = Website(title = Some(testName))
+  def canReadListOfResourceIds(): Unit = {
+    val publisher = Website(title = testName)
     Await.result(mongoRepository.saveResource(publisher), TenSeconds)
-    val newsitem = Newsitem(title = Some(testName))
+    val newsitem = Newsitem(title = testName)
     Await.result(mongoRepository.saveResource(newsitem), TenSeconds)
-    val feed = Newsitem(title = Some(testName))
+    val feed = Newsitem(title = testName)
     Await.result(mongoRepository.saveResource(feed), TenSeconds)
 
     val resourceIds = Await.result(mongoRepository.getAllResourceIds(), TenSeconds)
@@ -239,7 +240,7 @@ class MongoRepositoryTest extends ReasonableWaits {
   }
 
   @Test
-  def canFindUsersByLinkedTwitterId = {
+  def canFindUsersByLinkedTwitterId(): Unit = {
     val twitterId = Random.nextInt(Int.MaxValue)
     val user = User(twitterid = Some(twitterId))
     Await.result(mongoRepository.saveUser(user), TenSeconds)

@@ -18,7 +18,7 @@ class PlaceAutoTaggerTest extends ReasonableWaits {
   private val aroValleyTag = Tag(id = UUID.randomUUID().toString, name = "arovalley", display_name = "Aro Valley", parent = Some(placesTag._id))
   private val islandBayTag = Tag(id = UUID.randomUUID().toString, name = "islandbay", display_name = "Island Bay", parent = Some(placesTag._id))
 
-  private val aroValleyNewsitem = Newsitem(title = Some("Test newsitem"), description = Some(".. Student flats in the Aro Valley... Test"))
+  private val aroValleyNewsitem = Newsitem(title = "Test newsitem", description = Some(".. Student flats in the Aro Valley... Test"))
 
   private val mongoRepository = mock(classOf[MongoRepository])
 

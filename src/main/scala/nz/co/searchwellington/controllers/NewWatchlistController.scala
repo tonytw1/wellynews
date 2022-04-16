@@ -49,7 +49,7 @@ class NewWatchlistController @Autowired()(contentUpdateService: ContentUpdateSer
         Await.result(mongoRepository.getWebsiteByName(publisherName), TenSeconds)
       }
 
-      val w = Watchlist(title = Some(processTitle(newWatchlist.getTitle)),
+      val w = Watchlist(title = processTitle(newWatchlist.getTitle),
         page = cleanUrl(newWatchlist.getUrl),
         date = Some(DateTime.now.toDate),
         publisher = maybePublisher.map(_._id)

@@ -109,7 +109,7 @@ import scala.jdk.CollectionConverters._
           addObject("feed", frontendFeed).
           addObject("subscription", maybeMaybeSubscription.orNull)
 
-        commonAttributesModelBuilder.setRss(mv, feed.title.getOrElse(""), feed.page)
+        commonAttributesModelBuilder.setRss(mv, feed.title, feed.page)
         populateFeedItems(mv, feedItems) // TODO inline
         Some(mv)
       }

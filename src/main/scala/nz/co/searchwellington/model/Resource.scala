@@ -8,7 +8,7 @@ trait Resource extends Tagged {
   val _id: BSONObjectID
   val id: String
   val `type`: String
-  var title: Option[String]
+  var title: String
   var description: Option[String]
   val page: String
   var http_status: Int

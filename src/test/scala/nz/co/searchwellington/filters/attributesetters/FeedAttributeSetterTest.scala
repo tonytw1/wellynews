@@ -13,7 +13,7 @@ import scala.concurrent.Future
 
 class FeedAttributeSetterTest {
   private val mongoRepository = mock(classOf[MongoRepository])
-  private val feed = Feed(id = UUID.randomUUID().toString, title = Some("Wellington City Council news"))
+  private val feed = Feed(id = UUID.randomUUID().toString, title = "Wellington City Council news")
   private val request= new MockHttpServletRequest
 
   private val feedAttributeSetter = new FeedAttributeSetter(mongoRepository)

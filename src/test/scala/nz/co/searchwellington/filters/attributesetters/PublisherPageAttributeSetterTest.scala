@@ -13,7 +13,7 @@ import scala.concurrent.Future
 
 class PublisherPageAttributeSetterTest {
   private val mongoRepository: MongoRepository = mock(classOf[MongoRepository])
-  private val publisher = Website(id = UUID.randomUUID().toString, title = Some("Wellington City Council"))
+  private val publisher = Website(id = UUID.randomUUID().toString, title = "Wellington City Council")
   private val request = new MockHttpServletRequest
 
   private val pageAttributeSetter = new PublisherPageAttributeSetter(mongoRepository)

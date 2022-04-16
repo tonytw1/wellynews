@@ -22,9 +22,9 @@ class TaggingReturnsOfficerServiceTest extends ReasonableWaits {
 
   private val taggingUser = User(name = Some("auser"))
 
-  private val victoriaUniversity = Website(title = Some("Victoria University"))
+  private val victoriaUniversity = Website(title = "Victoria University")
 
-  private val aroValleyNewsitem = Newsitem(title = Some("Test newsitem"),
+  private val aroValleyNewsitem = Newsitem(title = "Test newsitem",
     description = Some(".. Student flats in the Aro Valley... Test"),
     publisher = Some(victoriaUniversity._id)
   )

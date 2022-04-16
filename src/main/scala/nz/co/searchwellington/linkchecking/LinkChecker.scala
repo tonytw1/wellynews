@@ -48,7 +48,7 @@ import scala.util.Try
 
     val y: Future[Boolean] = eventualMaybeResourceWithUrl.flatMap { maybeResourceWithUrl =>
       val a = maybeResourceWithUrl.map { resource =>
-        log.info("Checking: " + resource.title.getOrElse(resource.page) + " (" + resource.page + ")")
+        log.info("Checking: " + resource.title + " (" + resource.page + ")")
 
         val j = checkResource(resource)
 

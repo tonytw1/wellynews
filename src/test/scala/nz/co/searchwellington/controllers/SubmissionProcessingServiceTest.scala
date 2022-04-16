@@ -24,7 +24,7 @@ class SubmissionProcessingServiceTest {
   @Mock val mongoRepository: MongoRepository = null
   @Mock val tagVoteDAO: HandTaggingDAO = null
   @Mock val resource: Newsitem = null
-  val feed = Feed(id = UUID.randomUUID().toString, title = Some(FEED_NAME))
+  val feed = Feed(id = UUID.randomUUID().toString, title = FEED_NAME)
   @Mock val loggedInUser: User = null
   @Mock val osmIdParser: OsmIdParser = null
   @Mock val placeToGeocodeMapper: PlaceToGeocodeMapper = null

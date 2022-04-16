@@ -9,7 +9,7 @@ class TitleTrimmer {
   private val possibleSeparators = Set("-", "|")
 
   def trimTitle(title: String, publisher: Option[Website]): String = {
-    val publisherName = publisher.flatMap(_.title)
+    val publisherName = publisher.map(_.title)
     val trimmedTitle = publisherName.flatMap{ pn =>
       val possiblePublisherNameSuffixes = possibleSeparators.map { _ + " " + pn}
       val suffixToRemove = possiblePublisherNameSuffixes.find(s => title.endsWith(s))

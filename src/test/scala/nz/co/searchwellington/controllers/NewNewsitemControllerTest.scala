@@ -39,7 +39,7 @@ class NewNewsitemControllerTest {
     newNewsitemSubmission.setPublisher("A publisher")
     newNewsitemSubmission.setDescription("Something interesting")
 
-    val publisher = Website(_id = BSONObjectID.generate(), title = Some("A publisher"))
+    val publisher = Website(_id = BSONObjectID.generate(), title = "A publisher")
     when(mongoRepository.getWebsiteByName("A publisher")).thenReturn(Future.successful(Some(publisher)))
     when(urlCleaner.cleanSubmittedItemUrl("https://localhost/a-newsitem")).thenReturn("https://localhost/a-newsitem")
     when(contentUpdateService.create(Matchers.any(classOf[Resource]))(Matchers.any())).thenReturn(Future.successful(null))
@@ -52,7 +52,7 @@ class NewNewsitemControllerTest {
     controller.submit(newNewsitemSubmission, bindingResultWithNoErrors, request)
 
     verify(contentUpdateService).create(createdNewsitem.capture)(Matchers.eq(ec))
-    assertEquals(Some("A newsitem"), createdNewsitem.getValue.title)
+    assertEquals("A newsitem", createdNewsitem.getValue.title)
     assertEquals("https://localhost/a-newsitem", createdNewsitem.getValue.page)
     assertEquals(Some(new DateTime(2020, 1, 22, 0, 0).toDate), createdNewsitem.getValue.date)
     assertEquals(publisher._id, createdNewsitem.getValue.publisher.get)

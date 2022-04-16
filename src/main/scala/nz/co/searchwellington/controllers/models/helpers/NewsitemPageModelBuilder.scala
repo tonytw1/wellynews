@@ -47,7 +47,7 @@ import scala.jdk.CollectionConverters._
           } yield {
             val mv = new ModelAndView
             mv.addObject("item", frontendResource)
-            mv.addObject("heading", resource.title.orNull)
+            mv.addObject("heading", resource.title)
 
             val handTagging = taggingVotes.flatMap { vote =>
               vote match {

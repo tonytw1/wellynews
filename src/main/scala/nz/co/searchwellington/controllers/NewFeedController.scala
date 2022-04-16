@@ -50,8 +50,8 @@ class NewFeedController @Autowired()(contentUpdateService: ContentUpdateService,
       new NewFeed()
     } { p =>
       val withPublisherPrepopulated = new NewFeed()
-      withPublisherPrepopulated.setTitle(p.title.map(t => t + " feed").getOrElse(""))
-      withPublisherPrepopulated.setPublisher(p.title.getOrElse(""))
+      withPublisherPrepopulated.setTitle(p.title + " feed")
+      withPublisherPrepopulated.setPublisher(p.title)
       withPublisherPrepopulated
     }
 
@@ -74,7 +74,7 @@ class NewFeedController @Autowired()(contentUpdateService: ContentUpdateService,
           Await.result(mongoRepository.getWebsiteByName(publisherName), TenSeconds)
         }
 
-        val f = Feed(title = Some(processTitle(newFeed.getTitle)),
+        val f = Feed(title = processTitle(newFeed.getTitle),
           page = cleanUrl(newFeed.getUrl),
           publisher = publisher.map(_._id),
           acceptance = newFeed.getAcceptancePolicy,

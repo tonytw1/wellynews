@@ -9,7 +9,7 @@ import uk.co.eelpieconsulting.common.dates.DateFormatter
   def makeUrlWordsFor(resource: Resource, publisher: Option[Website] = None): Option[String] = {
     resource match {
       case n: Newsitem => makeUrlWordsForNewsitem(n, publisher)
-      case r: Resource => r.title.map(makeUrlWordsFromName)
+      case r: Resource => Some(makeUrlWordsFromName(r.title))
     }
   }
 
@@ -21,14 +21,12 @@ import uk.co.eelpieconsulting.common.dates.DateFormatter
     val uri = new StringBuilder
 
     publisher.map { p =>
-      p.title.map { pn =>
-        uri.append("/" + makeUrlWordsFromName(pn))
-      }
+      uri.append("/" + makeUrlWordsFromName(p.title))
     }
 
     newsitem.date.map { d =>
       uri.append("/" + dateFormatter.yearMonthDayUrlStub(d))
-      uri.append("/" + makeUrlWordsFromName(newsitem.title.getOrElse("")))
+      uri.append("/" + makeUrlWordsFromName(newsitem.title))
       uri.toString()
     }
   }
