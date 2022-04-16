@@ -26,16 +26,17 @@ import scala.concurrent.ExecutionContext.Implicits.global
       if (publisherUrlWords.trim.nonEmpty) {
         log.debug("'" + publisherUrlWords + "' matches content")
         log.debug("Looking for publisher '" + publisherUrlWords + "'")
-        Await.result(mongoRepository.getWebsiteByUrlwords(publisherUrlWords), TenSeconds).map { publisher =>
+        val maybeWebsite = Await.result(mongoRepository.getWebsiteByUrlwords(publisherUrlWords), TenSeconds)
+
+        maybeWebsite.exists { publisher =>
           request.setAttribute("publisher", publisher)
           request.setAttribute("resource", publisher)
           true
-        }.getOrElse {
-          false
         }
       } else {
         false
       }
+
     } else {
       false
     }
