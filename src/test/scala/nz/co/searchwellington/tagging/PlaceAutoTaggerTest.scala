@@ -25,7 +25,7 @@ class PlaceAutoTaggerTest extends ReasonableWaits {
   private val placeAutoTagger = new PlaceAutoTagger(mongoRepository)
 
   @Before
-  def setUp {
+  def setUp(): Unit = {
     when(mongoRepository.getTagByUrlWords("places")).thenReturn(Future.successful(Some(placesTag)))
     when(mongoRepository.getTagsByParent(placesTag._id)).thenReturn(Future.successful(List(aroValleyTag, islandBayTag)))
     when(mongoRepository.getTagsByParent(aroValleyTag._id)).thenReturn(Future.successful(List.empty))
@@ -33,14 +33,14 @@ class PlaceAutoTaggerTest extends ReasonableWaits {
   }
 
   @Test
-  def testShouldTagNewsitemsWithPlaceTags {
+  def testShouldTagNewsitemsWithPlaceTags(): Unit = {
     val suggestedTags = Await.result(placeAutoTagger.suggestTags(aroValleyNewsitem), TenSeconds)
 
     assertTrue(suggestedTags.contains(aroValleyTag))
   }
 
   @Test
-  def testPlaceAutoTaggingShouldBeCaseInsensitive {
+  def testPlaceAutoTaggingShouldBeCaseInsensitive(): Unit = {
     val suggestedTags =  Await.result(placeAutoTagger.suggestTags(aroValleyNewsitem), TenSeconds)
 
     assertTrue(suggestedTags.contains(aroValleyTag))
