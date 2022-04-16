@@ -8,7 +8,7 @@ import org.junit.Test;
 public class UrlFiltersTest {
 	
 	@Test
-	public void canDetectHttpPrefixes() throws Exception {
+	public void canDetectHttpPrefixes() {
 		assertTrue(UrlFilters.hasHttpPrefix("http://blah"));
 		assertFalse(UrlFilters.hasHttpPrefix("blah"));		
 		assertTrue(UrlFilters.hasHttpPrefix("https://blah"));

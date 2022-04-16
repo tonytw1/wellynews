@@ -13,12 +13,12 @@ public class EyeOfTheFishCommentFeedDetectorTest {
     CommentFeedDetector detector = new EyeOfTheFishCommentFeedDetector();
         
     @Test
-    public void testShouldIgnoreSiteFeed() throws Exception {       
+    public void testShouldIgnoreSiteFeed() {
     	assertFalse(detector.isValid(SITE_FEED));
     }
     
     @Test
-    public void testShouldDetectCommentFeedUrl() throws Exception {
+    public void testShouldDetectCommentFeedUrl() {
         assertTrue(detector.isValid(COMMENT_FEED));
     }
     

@@ -10,12 +10,12 @@ public class BlogspotCommentFeedDetectorTest extends TestCase {
     CommentFeedDetector detector = new BlogspotCommentFeedDetector();
     
     
-    public void testShouldDetectBlogspotCommentFeedUrl() throws Exception {
+    public void testShouldDetectBlogspotCommentFeedUrl() {
         assertTrue(detector.isValid(BLOGSPOT_COMMENT_URL));
     }
     
     
-    public void testShouldIgnoreBlogspotAtomFeed() throws Exception {       
+    public void testShouldIgnoreBlogspotAtomFeed() {
         assertFalse(detector.isValid(BLOGSPOT_ATOM_URL));
     }
 

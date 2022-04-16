@@ -9,7 +9,7 @@ public class TextureCommentFeedDetectorTest extends TestCase {
     CommentFeedDetector detector = new TextureCommentFeedDetector();
     
     
-    public void testShouldDetectBlogspotCommentFeedUrl() throws Exception {
+    public void testShouldDetectBlogspotCommentFeedUrl() {
         assertTrue(detector.isValid(TEXTURE_COMMENT_URL));
     }
       
