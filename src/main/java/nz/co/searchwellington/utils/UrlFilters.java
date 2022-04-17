@@ -3,37 +3,37 @@ package nz.co.searchwellington.utils;
 import com.google.common.base.Strings;
 import org.apache.http.NameValuePair;
 import org.apache.http.client.utils.URIBuilder;
+import org.apache.log4j.Logger;
 import uk.co.eelpieconsulting.common.html.HtmlCleaner;
 
+import java.net.MalformedURLException;
+import java.net.URI;
 import java.net.URISyntaxException;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Pattern;
 
 public class UrlFilters {
-    
+
+    private static final Logger log = Logger.getLogger(UrlFilters.class);
+
     private static final String HTTP_PREFIX = "http://";
-    
-	private static HtmlCleaner htmlCleaner = new HtmlCleaner();
+    private static final String PHPSESSID = "PHPSESSID";
+
+    private static final HtmlCleaner htmlCleaner = new HtmlCleaner();
     
     public static String stripPhpSession(String url) {
-        final String parameterName = "PHPSESSID";
         try {
-            URIBuilder uriBuilder = new URIBuilder(url);
-            List<NameValuePair> filteredParams = new ArrayList<>();
-            for (NameValuePair param: uriBuilder.getQueryParams()) {
-                if (param.getName().equals(parameterName)) {
-                    continue;
-                }
-                filteredParams.add(param);
-            }
-            return uriBuilder.setParameters(filteredParams).build().toString();
+            URI u = new URL(url).toURI();
+            return removeQueryParameterFrom(u, PHPSESSID).toString();
 
-        } catch (URISyntaxException e) {
+        } catch (URISyntaxException | MalformedURLException e) {
+            log.warn("Invalid URL given; returning unaltered: " + url);
             return url;
         }
     }
-    
+
     public static String trimWhiteSpace(String title) {
         return title.trim();
     }
@@ -68,5 +68,17 @@ public class UrlFilters {
 		Pattern p = Pattern.compile("[&|?]utm_.*(.*)$");
         return p.matcher(url).replaceAll("");
 	}
-	
+
+    private static URI removeQueryParameterFrom(URI uri, String parameterName) throws URISyntaxException {
+        URIBuilder uriBuilder = new URIBuilder(uri);
+        List<NameValuePair> filteredParams = new ArrayList<>();
+        for (NameValuePair param: uriBuilder.getQueryParams()) {
+            if (param.getName().equals(parameterName)) {
+                continue;
+            }
+            filteredParams.add(param);
+        }
+        return uriBuilder.setParameters(filteredParams).build();
+    }
+
 }
