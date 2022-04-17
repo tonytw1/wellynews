@@ -61,8 +61,8 @@ public class LocationParameterFilter implements RequestAttributeFilter {
 		}
 				
 		if (!Strings.isNullOrEmpty(request.getParameter("latitude")) && !Strings.isNullOrEmpty(request.getParameter("longitude"))) {
-			final LatLong latLong = new LatLong(Double.parseDouble((String) request.getParameter(LATITUDE)), 
-					Double.parseDouble((String) request.getParameter(LONGITUDE)));
+			final LatLong latLong = new LatLong(Double.parseDouble(request.getParameter(LATITUDE)),
+					Double.parseDouble(request.getParameter(LONGITUDE)));
 			final String latLongLabel = latLong.getLatitude() + ", " + latLong.getLongitude(); 
 			// TODO - is you wanted to, you could resolve for a name, but don't alter the user supplied lat/long values.
 			// TODO lat, long isn't really an address - this should be something like a display method on latLong or the view which gives a sensible output when address is null.
