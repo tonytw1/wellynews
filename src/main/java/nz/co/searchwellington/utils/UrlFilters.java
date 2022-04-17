@@ -6,10 +6,8 @@ import org.apache.http.client.utils.URIBuilder;
 import org.apache.log4j.Logger;
 import uk.co.eelpieconsulting.common.html.HtmlCleaner;
 
-import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Pattern;
@@ -20,6 +18,7 @@ public class UrlFilters {
 
     private static final String HTTP_PREFIX = "http://";
     private static final String PHPSESSID = "PHPSESSID";
+    private static final Pattern UTM_PARAMETERS = Pattern.compile("^utm_.*$");
 
     private static final HtmlCleaner htmlCleaner = new HtmlCleaner();
     
@@ -57,16 +56,20 @@ public class UrlFilters {
 		return htmlCleaner.stripHtml(content);        
     }
     
-	public static String stripFeedburnerParams(String url) {
-		Pattern p = Pattern.compile("[&|?]utm_.*(.*)$");
-        return p.matcher(url).replaceAll("");
+	public static URI stripUTMParams(URI uri) throws URISyntaxException {
+        return removeQueryParametersFrom(uri, UTM_PARAMETERS);
 	}
 
     private static URI removeQueryParameterFrom(URI uri, String parameterName) throws URISyntaxException {
+        Pattern p = Pattern.compile("^" + parameterName + "$");
+        return removeQueryParametersFrom(uri, p);
+    }
+
+    private static URI removeQueryParametersFrom(URI uri, Pattern p) throws URISyntaxException {
         URIBuilder uriBuilder = new URIBuilder(uri);
         List<NameValuePair> filteredParams = new ArrayList<>();
         for (NameValuePair param: uriBuilder.getQueryParams()) {
-            if (param.getName().equals(parameterName)) {
+            if (p.matcher(param.getName()).matches()) {
                 continue;
             }
             filteredParams.add(param);

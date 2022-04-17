@@ -25,4 +25,11 @@ public class UrlFiltersTest {
                 UrlFilters.stripPhpSession(new URI("https://www.wcn.net.nz/news/art.php?artid=6&PHPSESSID=1a8c3aaa31bddf8dcff8db6566879e37")).toURL().toExternalForm());
     }
 
+    @Test
+    public void canStripUTMParameters() throws URISyntaxException, MalformedURLException {
+        assertEquals("https://www.example.com/page",
+                UrlFilters.stripUTMParams(new URI("https://www.example.com/page?utm_content=buffercf3b2&utm_medium=social&utm_source=snapchat.com&utm_campaign=buffer")).toURL().toExternalForm());
+    }
+
+
 }

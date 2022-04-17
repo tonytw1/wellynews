@@ -35,9 +35,8 @@ public class UrlCleaner {
                 url = shortUrlResolver.resolveUrl(url);
 
                 // Strip obvious pre request artifacts from the url to help with duplicate detection
-                url = UrlFilters.stripFeedburnerParams(url);
-
                 URI uri = new URL(url).toURI(); // TODO nudge this step up
+                uri = UrlFilters.stripUTMParams(uri);
                 uri = UrlFilters.stripPhpSession(uri);
 
                 log.debug("Cleaned url is: " + uri.toURL().toExternalForm());
