@@ -11,7 +11,7 @@ public class UrlParser {
     public String extractHostnameFrom(String fullURL) {
         try {
             final URL url = new URL(fullURL);
-            return new String(url.getHost());
+            return url.getHost();
             
         } catch (MalformedURLException e) {
         	return null;
