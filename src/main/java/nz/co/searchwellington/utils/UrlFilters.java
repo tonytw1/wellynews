@@ -13,7 +13,7 @@ public class UrlFilters {
 	private static HtmlCleaner htmlCleaner = new HtmlCleaner();
     
     public static String stripPhpSession(String url) {	// TODO wants to move to external feed lister service
-        final String PHP_SESSION_REGEX = "[&\\?]PHPSESSID=[0-9|a-f]{32}";
+        final String PHP_SESSION_REGEX = "[&?]PHPSESSID=[0-9|a-f]{32}";
         Pattern pattern = Pattern.compile(PHP_SESSION_REGEX);
         String result = pattern.matcher(url).replaceAll("");
 
