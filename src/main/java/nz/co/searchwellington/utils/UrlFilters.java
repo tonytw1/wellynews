@@ -23,15 +23,8 @@ public class UrlFilters {
 
     private static final HtmlCleaner htmlCleaner = new HtmlCleaner();
     
-    public static String stripPhpSession(String url) {
-        try {
-            URI u = new URL(url).toURI();
-            return removeQueryParameterFrom(u, PHPSESSID).toString();
-
-        } catch (URISyntaxException | MalformedURLException e) {
-            log.warn("Invalid URL given; returning unaltered: " + url);
-            return url;
-        }
+    public static URI stripPhpSession(URI uri) throws URISyntaxException {
+        return removeQueryParameterFrom(uri, PHPSESSID);
     }
 
     public static String trimWhiteSpace(String title) {

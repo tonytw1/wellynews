@@ -6,6 +6,11 @@ import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import java.net.MalformedURLException;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.net.URL;
+
 @Component
 public class UrlCleaner {
 
@@ -20,19 +25,28 @@ public class UrlCleaner {
 
     public String cleanSubmittedItemUrl(String url) throws Exception {
         if (!url.isEmpty()) {
-            // Trim and add prefix is missing from user submitted input
-            url = UrlFilters.trimWhiteSpace(url);
-            url = UrlFilters.addHttpPrefixIfMissing(url);
+            try {
 
-            // Expand short urls
-            url = shortUrlResolver.resolveUrl(url);
+                // Trim and add prefix is missing from user submitted input
+                url = UrlFilters.trimWhiteSpace(url);
+                url = UrlFilters.addHttpPrefixIfMissing(url);
 
-            // Strip obvious pre request artifacts from the url to help with duplicate detection
-            url = UrlFilters.stripFeedburnerParams(url);
-            url = UrlFilters.stripPhpSession(url);
+                // Expand short urls
+                url = shortUrlResolver.resolveUrl(url);
 
-            log.debug("Cleaned url is: " + url);
-            return url;
+                // Strip obvious pre request artifacts from the url to help with duplicate detection
+                url = UrlFilters.stripFeedburnerParams(url);
+
+                URI uri = new URL(url).toURI(); // TODO nudge this step up
+                uri = UrlFilters.stripPhpSession(uri);
+
+                log.debug("Cleaned url is: " + uri.toURL().toExternalForm());
+                return uri.toURL().toExternalForm();
+
+            } catch (URISyntaxException | MalformedURLException e) {
+                log.warn("Invalid URL given; returning unaltered: " + url);
+                return url;
+            }
 
         } else {
             log.warn("Called with an empty url");
