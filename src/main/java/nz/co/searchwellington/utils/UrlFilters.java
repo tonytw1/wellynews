@@ -1,9 +1,13 @@
 package nz.co.searchwellington.utils;
 
 import com.google.common.base.Strings;
-import org.apache.log4j.Logger;
+import org.apache.http.NameValuePair;
+import org.apache.http.client.utils.URIBuilder;
 import uk.co.eelpieconsulting.common.html.HtmlCleaner;
 
+import java.net.URISyntaxException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.regex.Pattern;
 
 public class UrlFilters {
@@ -12,16 +16,22 @@ public class UrlFilters {
     
 	private static HtmlCleaner htmlCleaner = new HtmlCleaner();
     
-    public static String stripPhpSession(String url) {	// TODO wants to move to external feed lister service
-        final String PHP_SESSION_REGEX = "[&?]PHPSESSID=[0-9|a-f]{32}";
-        Pattern pattern = Pattern.compile(PHP_SESSION_REGEX);
-        String result = pattern.matcher(url).replaceAll("");
+    public static String stripPhpSession(String url) {
+        final String parameterName = "PHPSESSID";
+        try {
+            URIBuilder uriBuilder = new URIBuilder(url);
+            List<NameValuePair> filteredParams = new ArrayList<>();
+            for (NameValuePair param: uriBuilder.getQueryParams()) {
+                if (param.getName().equals(parameterName)) {
+                    continue;
+                }
+                filteredParams.add(param);
+            }
+            return uriBuilder.setParameters(filteredParams).build().toString();
 
-        if (!result.equals(url)) {
-            Logger.getLogger(UrlFilters.class).debug("stripPhpSession trimmed " + url + " to: " + result);
+        } catch (URISyntaxException e) {
+            return url;
         }
-
-        return result;
     }
     
     public static String trimWhiteSpace(String title) {
