@@ -16,7 +16,7 @@ public class UrlCleaner {
 
     Logger log = Logger.getLogger(UrlCleaner.class);
 
-    private CachingShortUrlResolverService shortUrlResolver;
+    private final CachingShortUrlResolverService shortUrlResolver;
 
     @Autowired
     public UrlCleaner(CachingShortUrlResolverService shortUrlResolver) {
@@ -26,16 +26,16 @@ public class UrlCleaner {
     public String cleanSubmittedItemUrl(String url) throws Exception {
         if (!url.isEmpty()) {
             try {
-
                 // Trim and add prefix is missing from user submitted input
                 url = UrlFilters.trimWhiteSpace(url);
+
                 url = UrlFilters.addHttpPrefixIfMissing(url);
 
                 // Expand short urls
-                url = shortUrlResolver.resolveUrl(url);
+                URI uri = new URL(url).toURI(); // TODO nudge this step up
+                uri = shortUrlResolver.resolveUrl(uri);
 
                 // Strip obvious pre request artifacts from the url to help with duplicate detection
-                URI uri = new URL(url).toURI(); // TODO nudge this step up
                 uri = UrlFilters.stripUTMParams(uri);
                 uri = UrlFilters.stripPhpSession(uri);
 

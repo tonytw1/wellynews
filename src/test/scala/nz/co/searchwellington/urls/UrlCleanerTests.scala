@@ -5,13 +5,15 @@ import org.junit.Assert.assertEquals
 import org.junit.{Before, Test}
 import org.mockito.Mockito.{mock, verify, when}
 
+import java.net.URI
+
 class UrlCleanerTests {
 
-  private val SECURE_URL = "https://www.secure/rss"
+  private val SECURE_URL = new URI("https://www.secure/rss")
   private val URL_FROM_USERLAND = " www.capitalshakers.co.nz/news/genesis-energy-shakers-vs-otago-rebels-easter-sunday/?PHPSESSID=eb1ca7999e13201d6dbf02a02fffacdd  "
-  private val BASIC_CLEANED_URL = "http://www.capitalshakers.co.nz/news/genesis-energy-shakers-vs-otago-rebels-easter-sunday/?PHPSESSID=eb1ca7999e13201d6dbf02a02fffacdd"
+  private val BASIC_CLEANED_URL = new URI("http://www.capitalshakers.co.nz/news/genesis-energy-shakers-vs-otago-rebels-easter-sunday/?PHPSESSID=eb1ca7999e13201d6dbf02a02fffacdd")
   private val EXPECTED_CLEAN_URL = "http://www.capitalshakers.co.nz/news/genesis-energy-shakers-vs-otago-rebels-easter-sunday/"
-  private val SHORT_URL = "http://short.url/12234"
+  private val SHORT_URL = new URI("http://short.url/12234")
   private val UNCLEANED_SHORT_URL = " http://short.url/12234  "
   
   private val shortUrlResolverService = mock(classOf[CachingShortUrlResolverService])
@@ -29,7 +31,7 @@ class UrlCleanerTests {
 
   @Test
   def shouldConsultRedirectingUrlResolvers(): Unit = {
-    val cleanedUrl = cleaner.cleanSubmittedItemUrl(SHORT_URL)
+    val cleanedUrl = cleaner.cleanSubmittedItemUrl(SHORT_URL.toURL.toExternalForm)
     verify(shortUrlResolverService).resolveUrl(SHORT_URL)
     assertEquals(EXPECTED_CLEAN_URL, cleanedUrl)
   }
@@ -42,15 +44,15 @@ class UrlCleanerTests {
   }
 
   @Test
-  def testShouldPreappenedHttpPrefixIfMissing(): Unit = {
+  def testShouldPrependHttpPrefixIfMissing(): Unit = {
     val cleanedUrl = cleaner.cleanSubmittedItemUrl(UNCLEANED_SHORT_URL)
     assertEquals(EXPECTED_CLEAN_URL, cleanedUrl)
   }
 
   @Test
   def testShouldAllowHttpsPrefix(): Unit = {
-    val cleanedUrl = cleaner.cleanSubmittedItemUrl(SECURE_URL)
-    assertEquals(SECURE_URL, cleanedUrl)
+    val cleanedUrl = cleaner.cleanSubmittedItemUrl(SECURE_URL.toURL.toExternalForm)
+    assertEquals(SECURE_URL.toURL.toExternalForm, cleanedUrl)
   }
 
 }

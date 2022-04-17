@@ -3,7 +3,6 @@ package nz.co.searchwellington.utils;
 import com.google.common.base.Strings;
 import org.apache.http.NameValuePair;
 import org.apache.http.client.utils.URIBuilder;
-import org.apache.log4j.Logger;
 import uk.co.eelpieconsulting.common.html.HtmlCleaner;
 
 import java.net.URI;
@@ -13,8 +12,6 @@ import java.util.List;
 import java.util.regex.Pattern;
 
 public class UrlFilters {
-
-    private static final Logger log = Logger.getLogger(UrlFilters.class);
 
     private static final String HTTP_PREFIX = "http://";
     private static final String PHPSESSID = "PHPSESSID";
