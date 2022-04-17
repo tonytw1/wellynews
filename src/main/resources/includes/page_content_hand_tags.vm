@@ -1,8 +1,10 @@
 #if ($page_content.handTags && $page_content.handTags.size() > 0)
-	<li class="tagged" rel="noindex">Tagged as:</li>
-	#foreach ($tag in $page_content.handTags)
-		#if (!$tag.hidden)
-			<li class="tagged"><a href="$urlBuilder.getTagUrl($tag)">$tag.name</a></li>
-		#end
-	#end
+    <ul>
+        <li class="tagged" rel="noindex">Tagged as:</li>
+        #foreach ($tag in $page_content.handTags)
+            #if (!$tag.hidden)
+                <li class="tagged"><a href="$urlBuilder.getTagUrl($tag)">$tag.name</a></li>
+            #end
+        #end
+    </ul>
 #end

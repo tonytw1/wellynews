@@ -1,8 +1,10 @@
 #if ($page_content.tags && $page_content.tags.size() > 0)
-	<li class="tagged" rel="noindex">Tagged as:</li>
-	#foreach ($tag in $page_content.tags)
-		#if (!$tag.hidden)
-			<li class="tagged"><a href="$urlBuilder.getTagUrl($tag)">$tag.name</a></li>
-		#end
-	#end
+	<ul>
+        <li class="tagged" rel="noindex">Tagged as:</li>
+        #foreach ($tag in $page_content.tags)
+            #if (!$tag.hidden)
+                <li class="tagged"><a href="$urlBuilder.getTagUrl($tag)">$tag.name</a></li>
+            #end
+        #end
+	</ul>
 #end
