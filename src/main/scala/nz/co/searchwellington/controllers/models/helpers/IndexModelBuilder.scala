@@ -8,7 +8,6 @@ import nz.co.searchwellington.model.frontend.FrontendResource
 import nz.co.searchwellington.model.helpers.ArchiveLinksService
 import nz.co.searchwellington.repositories.ContentRetrievalService
 import nz.co.searchwellington.urls.UrlBuilder
-import org.joda.time.{DateTime, Interval, YearMonth}
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
 import org.springframework.ui.ModelMap
@@ -22,7 +21,7 @@ import scala.jdk.CollectionConverters._
 @Component class IndexModelBuilder @Autowired()(val contentRetrievalService: ContentRetrievalService, rssUrlBuilder: RssUrlBuilder,
                                                 val urlBuilder: UrlBuilder, archiveLinksService: ArchiveLinksService,
                                                 commonAttributesModelBuilder: CommonAttributesModelBuilder) extends ModelBuilder
-  with CommonSizes with Pagination with ReasonableWaits {
+  with CommonSizes with Pagination with ReasonableWaits with ArchiveMonths {
 
   private val MAX_OWNED_TO_SHOW_IN_RHS = 4
 
@@ -36,11 +35,6 @@ import scala.jdk.CollectionConverters._
   def getViewName(mv: ModelAndView, loggedInUser: Option[User]): String = "index"
 
   def populateContentModel(request: HttpServletRequest, loggedInUser: Option[User]): Future[Option[ModelAndView]] = {
-
-    def monthOfLastItem(newsitems: Seq[FrontendResource]): Option[Interval] = newsitems.lastOption.map { i =>
-      new YearMonth(new DateTime(i.date)).toInterval()
-    }
-
     for {
       latestNewsitems <- contentRetrievalService.getLatestNewsitems(MAX_NEWSITEMS, getPage(request), loggedInUser = loggedInUser)
     } yield {

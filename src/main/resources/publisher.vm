@@ -47,6 +47,7 @@
                 #parse("includes/page_links.vm")
             #end
         </div>
+        <p>$more</p>
 	#end
 
 	<div class="tag_secondary_content">

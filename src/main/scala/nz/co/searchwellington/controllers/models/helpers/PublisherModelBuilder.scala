@@ -26,7 +26,7 @@ import scala.jdk.CollectionConverters._
                                                     geotaggedNewsitemExtractor: GeotaggedNewsitemExtractor,
                                                     commonAttributesModelBuilder: CommonAttributesModelBuilder,
                                                     frontendResourceMapper: FrontendResourceMapper) extends ModelBuilder
-  with CommonSizes with Pagination with ReasonableWaits {
+  with CommonSizes with Pagination with ReasonableWaits with ArchiveMonths {
 
   def isValid(request: HttpServletRequest): Boolean = {
     val tag = request.getAttribute("tag").asInstanceOf[Tag]
@@ -65,6 +65,13 @@ import scala.jdk.CollectionConverters._
             urlBuilder.getPublisherPageUrl(publisher, page)
           }
           populatePagination(mv, startIndex, totalPublisherNewsitems, MAX_NEWSITEMS, paginationLinks)
+
+          if (publisherNewsitems._2 > MAX_NEWSITEMS) {
+            val monthToLinkToForMore = monthOfLastItem(publisherNewsitems._1)
+            monthToLinkToForMore.foreach { i =>
+              mv.addObject("more", i)
+            }
+          }
 
           commonAttributesModelBuilder.setRss(mv, rssUrlBuilder.getRssTitleForPublisher(publisher), rssUrlBuilder.getRssUrlForPublisher(publisher))
 

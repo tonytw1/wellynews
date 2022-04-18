@@ -1,7 +1,8 @@
 package nz.co.searchwellington.controllers.models.helpers
 
 import nz.co.searchwellington.model.IntervalLink
-import org.joda.time.Interval
+import nz.co.searchwellington.model.frontend.FrontendResource
+import org.joda.time.{DateTime, Interval, YearMonth}
 import org.springframework.ui.ModelMap
 
 trait ArchiveMonths {
@@ -22,6 +23,10 @@ trait ArchiveMonths {
       mv.addAttribute("next_month", n)
     )
     mv
+  }
+
+  def monthOfLastItem(newsitems: Seq[FrontendResource]): Option[Interval] = newsitems.lastOption.map { i =>
+    new YearMonth(new DateTime(i.date)).toInterval()
   }
 
 }

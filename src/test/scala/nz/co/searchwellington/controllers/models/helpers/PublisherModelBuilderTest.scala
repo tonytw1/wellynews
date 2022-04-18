@@ -10,7 +10,7 @@ import nz.co.searchwellington.repositories.ContentRetrievalService
 import nz.co.searchwellington.tagging.RelatedTagsService
 import nz.co.searchwellington.urls.UrlBuilder
 import org.joda.time.{DateTime, Interval}
-import org.junit.Assert.assertEquals
+import org.junit.Assert.{assertEquals, assertNotNull}
 import org.junit.Test
 import org.mockito.Mockito.{mock, when}
 import org.springframework.mock.web.MockHttpServletRequest
@@ -53,6 +53,26 @@ class PublisherModelBuilderTest extends ReasonableWaits with ContentFields {
     assertEquals(publisherFeeds.asJava, mv.getModel.get("feeds"))
     assertEquals("A publisher newsitems", mv.getModel.get("main_heading"))
     assertEquals("/a-publisher/rss", mv.getModel.get("rss_url"))
+  }
+
+  @Test
+  def monthPaginationShouldBePopulatedFromDateOfFirstOverFetchedMainContentItem(): Unit = {
+    val request = new MockHttpServletRequest
+    request.setAttribute("publisher", publisher)
+    val publisherFeeds = Seq(FrontendFeed(id = "789"))
+
+    val maxedOutPublisherNewsitems = Range(1, 20).map { i =>
+      val d = new DateTime(2022, 1, 30, 0, 0, 0)
+      FrontendNewsitem(id = i.toString, date = d.minusDays(i).toDate)
+    }
+
+    when(frontendResourceMapper.createFrontendResourceFrom(publisher)).thenReturn(Future.successful(frontendPublisher))
+    when(contentRetrievalService.getPublisherNewsitems(publisher, 30, 0, None)).thenReturn(Future.successful((maxedOutPublisherNewsitems, 32L)))
+    when(contentRetrievalService.getPublisherFeeds(publisher, None)).thenReturn(Future.successful(publisherFeeds))
+
+    val mv = Await.result(modelBuilder.populateContentModel(request), TenSeconds).get
+
+    assertNotNull(mv.getModel.get("more"))
   }
 
   @Test
