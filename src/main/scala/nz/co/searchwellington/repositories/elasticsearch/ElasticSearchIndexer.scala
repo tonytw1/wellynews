@@ -147,8 +147,8 @@ class ElasticSearchIndexer @Autowired()(val showBrokenDecisionService: ShowBroke
 
         val fields = Seq(
           Some(Type -> r._1.`type`),
-          r._1.title.map(t => Title -> t),
-          r._1.title.map(t => TitleSort -> t),
+          Some(Title -> r._1.title),
+          Some(TitleSort -> r._1.title),
           Some(HttpStatus -> r._1.http_status.toString),
           r._1.description.map(d => Description -> d),
           r._1.date.map(d => Date -> new DateTime(d)),
