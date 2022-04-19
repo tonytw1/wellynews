@@ -16,6 +16,9 @@
 				More...</a>
 			</li>
 		#end
+		#if($more)
+            <p>$more</p>
+		#end
 	</ul>
 </div>
 
