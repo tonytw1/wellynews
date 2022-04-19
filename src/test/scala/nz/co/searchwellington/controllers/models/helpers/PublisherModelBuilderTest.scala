@@ -73,6 +73,9 @@ class PublisherModelBuilderTest extends ReasonableWaits with ContentFields {
     val mv = Await.result(modelBuilder.populateContentModel(request), TenSeconds).get
 
     assertNotNull(mv.getModel.get("more"))
+    val moreLink = mv.getModel.get("more").asInstanceOf[PublisherArchiveLink]
+    assertEquals(frontendPublisher, moreLink.getPublisher)
+    assertEquals(new DateTime(2022, 1, 1, 0, 0, 0).toDate, moreLink.getMonth)
   }
 
   @Test
