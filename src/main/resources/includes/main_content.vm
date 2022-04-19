@@ -17,7 +17,7 @@
 			</li>
 		#end
 		#if($more)
-            <p>$more</p>
+    		<li><a href="$urlBuilder.getPublisherArchiveLinkUrl($more)">More</a></li>
 		#end
 	</ul>
 </div>
