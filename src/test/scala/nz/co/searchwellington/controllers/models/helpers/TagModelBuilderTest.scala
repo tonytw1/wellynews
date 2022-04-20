@@ -2,7 +2,7 @@ package nz.co.searchwellington.controllers.models.helpers
 
 import nz.co.searchwellington.ReasonableWaits
 import nz.co.searchwellington.controllers.RssUrlBuilder
-import nz.co.searchwellington.model.frontend.{FrontendNewsitem, FrontendResource}
+import nz.co.searchwellington.model.frontend.{FrontendFeed, FrontendNewsitem, FrontendResource}
 import nz.co.searchwellington.model._
 import nz.co.searchwellington.repositories.{ContentRetrievalService, TagDAO}
 import nz.co.searchwellington.tagging.RelatedTagsService
@@ -99,6 +99,28 @@ class TagModelBuilderTest extends ReasonableWaits with ContentFields {
     val mv = Await.result(modelBuilder.populateContentModel(request), TenSeconds).get
 
     assertEquals(parentTag, mv.getModel.get("parent"))
+  }
+
+  @Test
+  def monthPaginationShouldBePopulatedFromDateOfFirstOverFetchedMainContentItem(): Unit = {
+    val request = new MockHttpServletRequest
+    request.setAttribute("tags", Seq(tag))
+    val publisherFeeds = Seq(FrontendFeed(id = "789"))
+
+    val maxedOutTagNewsitems = Range(1, 20).map { i =>
+      val d = new DateTime(2022, 1, 30, 0, 0, 0)
+      FrontendNewsitem(id = i.toString, date = d.minusDays(i).toDate)
+    }
+
+    when(contentRetrievalService.getTaggedNewsitems(tag, 0, 30, loggedInUser)).
+      thenReturn(Future.successful((maxedOutTagNewsitems, 400L)))
+
+    val mv = Await.result(modelBuilder.populateContentModel(request), TenSeconds).get
+
+    assertNotNull(mv.getModel.get("more"))
+    val moreLink = mv.getModel.get("more").asInstanceOf[TagArchiveLink]
+    assertEquals(tag, moreLink.getTag)
+    assertEquals(new DateTime(2022, 1, 1, 0, 0, 0).toDate, moreLink.getMonth)
   }
 
   @Test
