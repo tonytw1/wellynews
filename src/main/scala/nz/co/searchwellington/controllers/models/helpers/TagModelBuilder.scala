@@ -2,7 +2,7 @@ package nz.co.searchwellington.controllers.models.helpers
 
 import nz.co.searchwellington.ReasonableWaits
 import nz.co.searchwellington.controllers.{CommonModelObjectsService, RssUrlBuilder}
-import nz.co.searchwellington.model.{Resource, Tag, TagArchiveLink, User}
+import nz.co.searchwellington.model.{PublisherArchiveLink, Resource, Tag, TagArchiveLink, User}
 import nz.co.searchwellington.repositories.{ContentRetrievalService, TagDAO}
 import nz.co.searchwellington.tagging.RelatedTagsService
 import nz.co.searchwellington.urls.UrlBuilder
@@ -21,7 +21,7 @@ import scala.jdk.CollectionConverters._
                                               relatedTagsService: RelatedTagsService,
                                               val contentRetrievalService: ContentRetrievalService,
                                               commonAttributesModelBuilder: CommonAttributesModelBuilder, tagDAO: TagDAO) extends ModelBuilder
-  with CommonSizes with Pagination with ReasonableWaits with CommonModelObjectsService {
+  with CommonSizes with Pagination with ReasonableWaits with CommonModelObjectsService with ArchiveMonths {
 
   private val PAGE = "page"
   private val TAG = "tag"
@@ -79,6 +79,14 @@ import scala.jdk.CollectionConverters._
           populatePagination(mv, startIndex, totalNewsitems, MAX_NEWSITEMS, paginationLinks)
           if (taggedNewsitems.nonEmpty) {
             commonAttributesModelBuilder.setRss(mv, rssUrlBuilder.getRssTitleForTag(tag), rssUrlBuilder.getRssUrlForTag(tag))
+          }
+
+          if (totalNewsitems > MAX_NEWSITEMS) {
+            val monthToLinkToForMore = monthOfLastItem(taggedNewsitems)
+            monthToLinkToForMore.foreach { i =>
+              val moreLink = TagArchiveLink(tag = tag, interval = i, count = 0L) // TODO count is optional
+              mv.addObject("more", moreLink)
+            }
           }
 
           if (children.nonEmpty) {
