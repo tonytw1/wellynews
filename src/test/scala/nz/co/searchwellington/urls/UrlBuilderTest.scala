@@ -85,7 +85,7 @@ class UrlBuilderTest {
     val feb = new DateTime(2020, 2, 12, 0, 0, 0)
     val monthOfFeb = new Interval(feb, feb.plusMonths(1))
 
-    val link = urlBuilder.getArchiveLinkUrl(new ArchiveLink(monthOfFeb, 1))
+    val link = urlBuilder.getArchiveLinkUrl(new ArchiveLink(monthOfFeb, Some(1)))
 
     assertEquals("/archive/2020-feb", link)
   }
@@ -97,7 +97,7 @@ class UrlBuilderTest {
     val feb = new DateTime(2020, 2, 12, 0, 0, 0)
     val monthOfFeb = new Interval(feb, feb.plusMonths(1))
 
-    val link = urlBuilder.getPublisherArchiveLinkUrl(PublisherArchiveLink(publisher, monthOfFeb, 3))
+    val link = urlBuilder.getPublisherArchiveLinkUrl(PublisherArchiveLink(publisher, monthOfFeb, Some(3)))
 
     assertEquals("/a-publisher/2020-feb", link)
   }

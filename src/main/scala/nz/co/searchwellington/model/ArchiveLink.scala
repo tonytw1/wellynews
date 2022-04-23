@@ -6,10 +6,9 @@ import org.joda.time.Interval
 
 trait IntervalLink {
   def interval: Interval
-  def count: Long
-  def getCount: Long = count
+  def count: Option[Long]
+  def getCount: String = count.map(_.toString).orNull
   def getMonth: Date = interval.getStart.toDate
 }
 
-case class ArchiveLink(interval: Interval, count: Long) extends IntervalLink
-
+case class ArchiveLink(interval: Interval, count: Option[Long]) extends IntervalLink

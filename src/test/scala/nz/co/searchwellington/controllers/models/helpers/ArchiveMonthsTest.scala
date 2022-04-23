@@ -22,17 +22,17 @@ class ArchiveMonthsTest extends ArchiveMonths {
     val monthOfDecember = new Interval(december, december.plusMonths(1))
 
     val archiveLinks = Seq(
-      ArchiveLink(monthOfDecember, 3L),
-      ArchiveLink(monthOfNovember, 1L),
-      ArchiveLink(monthOfJuly, 2L),
-      ArchiveLink(monthOfAugust, 1L),
-      ArchiveLink(monthOfJune, 1L),
+      ArchiveLink(monthOfDecember, Some(3L)),
+      ArchiveLink(monthOfNovember, Some(1L)),
+      ArchiveLink(monthOfJuly, Some(2L)),
+      ArchiveLink(monthOfAugust, Some(1L)),
+      ArchiveLink(monthOfJune, Some(1L)),
     )
 
     val mv = populateNextAndPreviousLinks(monthOfAugust, archiveLinks)
 
-    assertEquals(ArchiveLink(monthOfJuly, 2L), mv.get("previous_month"))
-    assertEquals(ArchiveLink(monthOfNovember, 1L), mv.get("next_month"))
+    assertEquals(ArchiveLink(monthOfJuly, Some(2L)), mv.get("previous_month"))
+    assertEquals(ArchiveLink(monthOfNovember, Some(1L)), mv.get("next_month"))
   }
 
 }

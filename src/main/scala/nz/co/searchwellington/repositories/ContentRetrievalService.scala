@@ -401,7 +401,7 @@ import scala.concurrent.{ExecutionContext, Future}
 
   private def archiveLinksFromIntervals(intervals: Seq[(Interval, Long)])(implicit ec: ExecutionContext): Seq[ArchiveLink] = {
     intervals.map { i =>
-      ArchiveLink(i._1, i._2)
+      ArchiveLink(i._1, Some(i._2))
     }
   }
 

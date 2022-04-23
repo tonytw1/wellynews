@@ -137,8 +137,8 @@ class TagModelBuilderTest extends ReasonableWaits with ContentFields {
 
     val january = new DateTime(2021, 1, 1, 0,0, 0, 0)
     val start = new DateTime(january, DateTimeZone.UTC)
-    val a = ArchiveLink(count = 12L, interval = new Interval(start, start.plusMonths(1)))
-    val b = ArchiveLink(count = 24L, interval = new Interval(start.plusMonths(1), start.plusMonths(2)))
+    val a = ArchiveLink(count = Some(12L), interval = new Interval(start, start.plusMonths(1)))
+    val b = ArchiveLink(count = Some(24L), interval = new Interval(start.plusMonths(1), start.plusMonths(2)))
     val tagArchiveMonths = Seq(a, b)
 
     when(contentRetrievalService.getTagArchiveMonths(tag, loggedInUser = None)).thenReturn(Future.successful(tagArchiveMonths))
@@ -148,7 +148,7 @@ class TagModelBuilderTest extends ReasonableWaits with ContentFields {
     val archiveLinksOnModel = extras.get("tag_archive_links").asInstanceOf[java.util.List[TagArchiveLink]]
     assertNotNull(archiveLinksOnModel)
     assertEquals(2, archiveLinksOnModel.size())
-    assertEquals(12L, archiveLinksOnModel.get(0).count)
+    assertEquals(Some(12L), archiveLinksOnModel.get(0).count)
     assertEquals(tag, archiveLinksOnModel.get(0).tag)
   }
 

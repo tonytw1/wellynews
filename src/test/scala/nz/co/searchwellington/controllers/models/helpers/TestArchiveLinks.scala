@@ -9,7 +9,7 @@ trait TestArchiveLinks {
     val january = new DateTime(2021, 1, 1, 0, 0, 0, 0)
     val start = new DateTime(january, DateTimeZone.UTC)
     Range.inclusive(0, 2).map { i =>
-      ArchiveLink(count = i + 1 * 12L, interval = new Interval(start.plusMonths(i), start.plusMonths(i + 1)))
+      ArchiveLink(interval = new Interval(start.plusMonths(i), start.plusMonths(i + 1)), count = Some(i + 1 * 12L))
     }
   }
 

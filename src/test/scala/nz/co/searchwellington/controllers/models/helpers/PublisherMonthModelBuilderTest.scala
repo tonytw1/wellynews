@@ -96,7 +96,7 @@ class PublisherMonthModelBuilderTest extends ReasonableWaits with ContentFields 
 
     val july = new DateTime(2020, 7, 1, 0, 0)
     val monthOfJuly = new Interval(july, july.plusMonths(1))
-    val archiveLinks = Seq(ArchiveLink(count = 2, interval = monthOfJuly))
+    val archiveLinks = Seq(ArchiveLink(count = Some(2), interval = monthOfJuly))
 
     when(frontendResourceMapper.createFrontendResourceFrom(publisher, None)).thenReturn(Future.successful(frontendPublisher))
     when(contentRetrievalService.getPublisherArchiveMonths(publisher, None)).thenReturn(Future.successful(archiveLinks))

@@ -57,7 +57,7 @@ class ArchiveModelBuilderTest extends ReasonableWaits with ContentFields with Te
     val july = new DateTime(2020, 7, 1, 0, 0, DateTimeZone.UTC)
     val monthOfJuly = new Interval(july, july.plusMonths(1))
 
-    val archiveLinks = Seq(ArchiveLink(monthOfJuly, 3))
+    val archiveLinks = Seq(ArchiveLink(monthOfJuly, Some(3)))
 
     when(contentRetrievalService.getArchiveMonths(None)).thenReturn(Future.successful(archiveLinks))
     when(contentRetrievalService.getArchiveTypeCounts(None)).thenReturn(Future.successful(Map[String, Long]()))
