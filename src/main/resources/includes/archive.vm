@@ -14,7 +14,7 @@
             #else
                 <a href="$urlBuilder.getArchiveLinkUrl($link)">$dateFormatter.fullMonthYear($link.month)</a>
             #end
-            #if($link.count)
+            #if($link.count > 0)
                 #if ($first == 1)
                     (#showPluralWord($link.count "newsitem"))
                     #set ($first = 0)

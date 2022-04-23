@@ -2,15 +2,13 @@
 	$itemCount #showPluralWord($itemCount $itemType)
 #end
 
-
-
 #macro( showPluralWord $itemCount $itemType )
-	#if ($itemCount > 1) 
-		${itemType}s#else
-		${itemType}#end
+	#if ($itemCount == 1)
+        ${itemType}
+	#else
+	    ${itemType}s
+	#end
 #end
-
-
 
 #macro( stripThePrefix $title) 
 	$title.replaceFirst("The ", "")
