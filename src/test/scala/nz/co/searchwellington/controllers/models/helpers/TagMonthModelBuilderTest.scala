@@ -4,6 +4,7 @@ import nz.co.searchwellington.ReasonableWaits
 import nz.co.searchwellington.controllers.RssUrlBuilder
 import nz.co.searchwellington.model._
 import nz.co.searchwellington.repositories.ContentRetrievalService
+import org.joda.time.{DateTime, Interval}
 import org.junit.Assert.{assertFalse, assertNotNull, assertTrue}
 import org.junit.Test
 import org.mockito.Mockito.{mock, when}
@@ -60,6 +61,23 @@ class TagMonthModelBuilderTest extends ReasonableWaits with ContentFields with T
 
     assertNotNull(extras.get("previous_month"))
     assertNotNull(extras.get("next_month"))
+  }
+
+  @Test
+  def extrasShouldIncludeTagArchiveLinks(): Unit = {
+    val request = new MockHttpServletRequest()
+    request.setAttribute("tags", Seq(tag))
+    request.setRequestURI("/" + tag.name + "/2021-feb")
+
+    val july = new DateTime(2020, 7, 1, 0, 0)
+    val monthOfJuly = new Interval(july, july.plusMonths(1))
+    val archiveLinks = Seq(ArchiveLink(count = Some(2), interval = monthOfJuly))
+
+    when(contentRetrievalService.getTagArchiveMonths(tag, None)).thenReturn(Future.successful(archiveLinks))
+
+    val extras = Await.result(modelBuilder.populateExtraModelContent(request, None), TenSeconds)
+
+    assertNotNull(extras.get("archive_links"))
   }
 
 }

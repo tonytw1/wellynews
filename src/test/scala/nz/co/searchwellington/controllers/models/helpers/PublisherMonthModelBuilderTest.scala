@@ -103,7 +103,7 @@ class PublisherMonthModelBuilderTest extends ReasonableWaits with ContentFields 
 
     val extras = Await.result(modelBuilder.populateExtraModelContent(request, None), TenSeconds)
 
-    assertNotNull(extras.get("publisher_archive_links"))
+    assertNotNull(extras.get("archive_links"))
   }
 
   @Test

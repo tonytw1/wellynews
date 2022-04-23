@@ -63,7 +63,7 @@
     #if($archive_links)
         <div class="box">
             <h2>Archive</h2>
-            <p>$publisher.name has published newsitems during these months.<p>
+            <p>$publisher.name has published newsitems during:<p>
             <ul>
                 #parse('includes/archiveLinkList.vm')
             </ul>

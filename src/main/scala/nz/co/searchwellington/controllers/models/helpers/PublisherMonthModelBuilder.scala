@@ -66,7 +66,7 @@ import scala.jdk.CollectionConverters._
             // TODO Are we sure we really need a frontend publisher in this context?
             PublisherArchiveLink(publisher = frontendPublisher, interval = a.interval, count = a.count)
           }
-          new ModelMap().addAttribute("publisher_archive_links", publisherArchiveLinks.asJava).addAllAttributes(
+          new ModelMap().addAttribute("archive_links", publisherArchiveLinks.asJava).addAllAttributes(
             populateNextAndPreviousLinks(month, publisherArchiveLinks))
 
         }
