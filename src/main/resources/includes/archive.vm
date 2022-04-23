@@ -6,24 +6,7 @@
 #end
 
 <ul>
-    #set ($first = 1)
-    #foreach($link in $archive_links)
-        <li class="archive_link">
-            #if ($archive_month && $link == $archive_month)
-                <b>$dateFormatter.fullMonthYear($link.month)</b>
-            #else
-                <a href="$urlBuilder.getArchiveLinkUrl($link)">$dateFormatter.fullMonthYear($link.month)</a>
-            #end
-            #if($link.count > 0)
-                #if ($first == 1)
-                    ($link.count #showPluralWord($link.count "newsitem"))
-                    #set ($first = 0)
-                #else
-                    ($link.count)
-                #end
-            #end
-        </li>
-    #end
+    #parse('includes/archiveLinkList.vm')
     <li class="more"><a href="$siteInformation.url/archive">More...</a></li>
 </ul>
 #end

@@ -116,7 +116,7 @@ import scala.jdk.CollectionConverters._
         mv.addAttribute("related_tags", relatedTagsForPublisher.asJava)
       }
       if (publisherArchiveLinks.nonEmpty) {
-        mv.addAttribute("publisher_archive_links", publisherArchiveLinks.asJava)
+        mv.addAttribute("archive_links", publisherArchiveLinks.asJava)
       }
       if (discoveredFeeds.nonEmpty) {
         mv.addAttribute("discovered_feeds", discoveredFeeds.asJava)

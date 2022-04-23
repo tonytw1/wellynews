@@ -60,14 +60,12 @@
 </div>
 
 <div class="right">
-    #if($publisher_archive_links)
+    #if($archive_links)
         <div class="box">
             <h2>Archive</h2>
             <p>$publisher.name has published newsitems during these months.<p>
             <ul>
-                #foreach ($link in $publisher_archive_links)
-                    <li><a href="$urlBuilder.getPublisherArchiveLinkUrl($link)">$dateFormatter.fullMonthYear($link.month)</a> ($link.count)</li>
-                #end
+                #parse('includes/archiveLinkList.vm')
             </ul>
         </div>
     #end

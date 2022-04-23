@@ -120,7 +120,7 @@ class PublisherModelBuilderTest extends ReasonableWaits with ContentFields {
 
     val extras = Await.result(modelBuilder.populateExtraModelContent(request, None), TenSeconds)
 
-    val publisherArchiveLinksOnExtras = extras.get("publisher_archive_links").asInstanceOf[java.util.List[PublisherArchiveLink]]
+    val publisherArchiveLinksOnExtras = extras.get("archive_links").asInstanceOf[java.util.List[PublisherArchiveLink]]
     assertEquals(1, publisherArchiveLinksOnExtras.size())
     val firstPublisherLink = publisherArchiveLinksOnExtras.get(0)
     assertEquals(frontendPublisher, firstPublisherLink.publisher)

@@ -145,7 +145,7 @@ class TagModelBuilderTest extends ReasonableWaits with ContentFields {
 
     val extras = Await.result(modelBuilder.populateExtraModelContent(request, None), TenSeconds)
 
-    val archiveLinksOnModel = extras.get("tag_archive_links").asInstanceOf[java.util.List[TagArchiveLink]]
+    val archiveLinksOnModel = extras.get("archive_links").asInstanceOf[java.util.List[TagArchiveLink]]
     assertNotNull(archiveLinksOnModel)
     assertEquals(2, archiveLinksOnModel.size())
     assertEquals(Some(12L), archiveLinksOnModel.get(0).count)
