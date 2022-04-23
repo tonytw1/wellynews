@@ -7,7 +7,7 @@ import org.joda.time.Interval
 trait IntervalLink {
   def interval: Interval
   def count: Option[Long]
-  def getCount: String = count.map(_.toString).orNull
+  def getCount: String = count.map(_.toString).orNull // TODO ant to return a nullable long here
   def getMonth: Date = interval.getStart.toDate
 }
 

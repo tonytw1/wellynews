@@ -16,7 +16,7 @@
             #end
             #if($link.count)
                 #if ($first == 1)
-                    #showPluralWord($link.count "newsitem"))
+                    (#showPluralWord($link.count "newsitem"))
                     #set ($first = 0)
                 #else
                     ($link.count)
