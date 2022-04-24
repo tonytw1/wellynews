@@ -1,7 +1,7 @@
 #if($archive_links)
     <div class="box">
         <h2>Archive</h2>
-        <p>Newsitems tagged with $tag.displayName have been published during these months.<p>
+        <p>Newsitems tagged with $tag.displayName have been published during:<p>
         <ul>
            #parse('includes/archiveLinkList.vm')
         </ul>
