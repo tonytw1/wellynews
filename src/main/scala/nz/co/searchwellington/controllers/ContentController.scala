@@ -10,6 +10,8 @@ import org.springframework.core.annotation.Order
 import org.springframework.stereotype.Controller
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.servlet.ModelAndView
+import org.springframework.http.HttpStatus
+import org.springframework.web.server.ResponseStatusException
 
 import javax.servlet.http.{HttpServletRequest, HttpServletResponse}
 import scala.concurrent.Await
@@ -35,8 +37,7 @@ class ContentController @Autowired()(contentModelBuilderServiceFactory: ContentM
     try {
       Await.result(eventualMaybeView, TenSeconds).fold {
         log.warn("Model was null; returning 404")
-        response.setStatus(HttpServletResponse.SC_NOT_FOUND)
-        null: ModelAndView
+        throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Not found")
 
       } { mv =>
         if (isHtmlView(mv)) {
