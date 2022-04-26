@@ -20,23 +20,6 @@ class ProfileController @Autowired()(mongoRepository: MongoRepository, loggedInU
                                      val contentRetrievalService: ContentRetrievalService)
   extends ReasonableWaits with CommonModelObjectsService {
 
-  @GetMapping(Array("/profiles"))
-  def profiles: ModelAndView = {
-    val loggedInUser = loggedInUserFilter.getLoggedInUser
-    Await.result(for {
-      users <- mongoRepository.getAllUsers
-      commonLocal <- commonLocal
-      latestNewsitems <- latestNewsitems(loggedInUser)
-    } yield {
-      val mv = {
-        new ModelAndView("profiles").
-          addObject("heading", "Profiles").
-          addObject("profiles", users.asJava)
-      }
-      mv.addAllObjects(commonLocal).addAllObjects(latestNewsitems)
-    }, TenSeconds)
-  }
-
   @GetMapping(Array("/profile/edit")) def edit(): ModelAndView = {
     val loggedInUser = loggedInUserFilter.getLoggedInUser
     Await.result(for {

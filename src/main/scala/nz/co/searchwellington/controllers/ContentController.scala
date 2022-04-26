@@ -26,7 +26,7 @@ class ContentController @Autowired()(contentModelBuilderServiceFactory: ContentM
 
   // Ant-style path patterns
   @GetMapping(path = Array("/", "/*", "/search", "/archive/*", "/profiles/**", "/*/geotagged", "/feed/*",
-    "/feed/*/json", "/feeds/inbox", "/publishers", "/publishers/json", "/tags", "/tags/json", "/*/json", "/*/rss",
+    "/feed/*/json", "/feeds/inbox", "/profiles", "/publishers", "/publishers/json", "/tags", "/tags/json", "/*/json", "/*/rss",
     "/*/geotagged/rss", "/*/geotagged/json",
     "/newsitem/*",
     "/{\\w+}/{year:\\d+}-{month:\\w+}"

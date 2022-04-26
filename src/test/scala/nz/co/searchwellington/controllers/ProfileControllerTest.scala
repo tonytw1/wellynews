@@ -28,6 +28,7 @@ class ProfileControllerTest extends ReasonableWaits {
 
   private val controller = new ProfileController(mongoRepository, loggedInUserFilter, contentRetrievalService)
 
+  /*
   @Test
   def allActiveProfilesShouldBeShownOnProfilesIndex(): Unit = {
     when(mongoRepository.getAllUsers).thenReturn(Future.successful(allActiveUsers))
@@ -40,6 +41,7 @@ class ProfileControllerTest extends ReasonableWaits {
 
     assertEquals(allActiveUsers.asJava, mv.getModel.get("profiles"))
   }
+  */
 
   @Test
   def lettersAndNumbersIsValidNewProfileName(): Unit = {

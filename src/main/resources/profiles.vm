@@ -12,7 +12,7 @@
 
 <ul>
 #set($letter = "")
-    #foreach ($profile in $profiles)
+    #foreach ($profile in $main_content)
         #if ($profile.profilename)
             #set($current = $profile.profilename.substring(0, 1).toUpperCase())
             #if ($current != $letter)
