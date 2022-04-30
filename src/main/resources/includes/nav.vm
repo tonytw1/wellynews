@@ -4,7 +4,7 @@
 		<li><a href="${urlBuilder.homeUri}#submit">Submit</a></li>
 		<li><a href="$siteInformation.url/feeds">Feeds</a></li>
 		<li><a href="$siteInformation.url/tags">Tags</a></li>
-		<li><a href="$siteInformation.url/publishers">Publishers</a></li>
+		<li><a href="$urlBuilder.publishersUrl">Publishers</a></li>
 		<li><a href="$siteInformation.url/watchlist">Watchlist</a></li>
 		<li><a href="$siteInformation.url/about">About</a></li>
 		<li><a href="$siteInformation.url/api">API</a></li>

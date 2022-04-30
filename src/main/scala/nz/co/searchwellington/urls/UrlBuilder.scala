@@ -23,6 +23,10 @@ class UrlBuilder @Autowired()(siteInformation: SiteInformation, urlWordsGenerato
     siteInformation.getStaticRoot + filename
   }
 
+  def getPublishersUrl(): String = {
+    getHomeUri + "publishers"
+  }
+
   def getPublishersAutoCompleteUrl: String = {
     "/ajax/publishers"
   }

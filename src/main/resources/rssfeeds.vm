@@ -28,7 +28,7 @@
 #end
 </ul>
 
-<p>Feeds are available for specific publishers. For example:</p>
+<p>Feeds are available for specific <a href="$urlBuilder.publishersUrl">publishers</a>. For example:</p>
 
 <ul>
 #foreach ($publisher in $feedable_publishers)
