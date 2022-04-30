@@ -49,16 +49,18 @@ import scala.jdk.CollectionConverters._
             mv.addObject("item", frontendResource)
             mv.addObject("heading", resource.title)
 
-            val handTagging = taggingVotes.flatMap { vote =>
+            val handTaggingVotes = taggingVotes.filter { vote =>
               vote match {
-                case h: HandTagging => Some(h)
-                case _ => None
+                case h: HandTagging => true
+                case _ => false
               }
             }
 
-            mv.addObject("hand_taggings", handTagging.asJava)
+            val otherTaggingVotes = taggingVotes.filterNot(handTaggingVotes.contains(_))
+
+            mv.addObject("hand_tagging_votes", handTaggingVotes.asJava)
+            mv.addObject("other_tagging_votes", otherTaggingVotes.asJava)
             mv.addObject("geotag_votes", geotagVotes.asJava)
-            mv.addObject("tagging_votes", taggingVotes.asJava)
 
             if (frontendResource.getPlace != null) {
               mv.addObject("geocoded", List(frontendResource).asJava)

@@ -33,34 +33,32 @@
 
 	<h2>Tagging</h2>
 
-	<h3>Hand taggings</h3>
+	<h3>Tagging votes</h3>
+	<p>These votes contributed to this item's tagging:<p>
 
-	#if($hand_taggings.size() > 0)
-    	<p>These tags have been manually added to this item:</p>
+	#if($hand_tagging_votes.size() > 0)
         <ul>
-            #foreach ($tagging in $hand_taggings)
+            #foreach ($tagging in $hand_tagging_votes)
                 <li>
                     <a href="$urlBuilder.getTagUrl($tagging.tag)">$tagging.tag.name</a> - $tagging.explanation
                 </li>
            #end
-    	</ul>
-    #else
-        <p>This item has not been manually tagged.<p>
+        </ul>
+    #end
+    #if($other_tagging_votes.size() > 0)
+        <ul>
+            #foreach ($tagging in $other_tagging_votes)
+                <li>
+                    <a href="$urlBuilder.getTagUrl($tagging.tag)">$tagging.tag.name</a> -
+                    $tagging.explanation
+                    #if($tagging.user)
+                        by <a href="$urlBuilder.getProfileUrl($tagging.user)">$tagging.user.displayName</a>
+                    #end
+                </li>
+            #end
+        </ul>
     #end
 
-	<h3>Tagging votes</h3>
-	<p>These votes contributed to this item's tagging:<p>
-	<ul>
-        #foreach ($tagging in $tagging_votes)
-            <li>
-                <a href="$urlBuilder.getTagUrl($tagging.tag)">$tagging.tag.name</a> -
-                $tagging.explanation
-                #if($tagging.user)
-                    by <a href="$urlBuilder.getProfileUrl($tagging.user)">$tagging.user.displayName</a>
-                #end
-            </li>
-        #end
-	</ul>
     <ul>
         #foreach ($geotagging in $geotag_votes)
             <li>#parse("includes/geotag_icon.vm") $geotagging.geocode.displayName - $geotagging.explanation</li>
