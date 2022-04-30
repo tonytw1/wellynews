@@ -31,8 +31,6 @@
 		</li>
 	</ul>
 
-	<h2>Tagging</h2>
-
 	<h3>Tagging votes</h3>
 	<p>These votes contributed to this item's tagging:<p>
 
@@ -40,9 +38,13 @@
         <ul>
             #foreach ($tagging in $hand_tagging_votes)
                 <li>
-                    <a href="$urlBuilder.getTagUrl($tagging.tag)">$tagging.tag.name</a> - $tagging.explanation
+                    <a href="$urlBuilder.getTagUrl($tagging.tag)">$tagging.tag.name</a> -
+                    $tagging.explanation
+                    #if($tagging.user)
+                        by <a href="$urlBuilder.getProfileUrl($tagging.user)">$tagging.user.displayName</a>
+                    #end
                 </li>
-           #end
+            #end
         </ul>
     #end
     #if($other_tagging_votes.size() > 0)
