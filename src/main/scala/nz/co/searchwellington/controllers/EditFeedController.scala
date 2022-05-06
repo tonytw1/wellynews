@@ -31,7 +31,7 @@ class EditFeedController @Autowired()(contentUpdateService: ContentUpdateService
                                       tagDAO: TagDAO,
                                       handTaggingService: HandTaggingService,
                                       val urlCleaner: UrlCleaner) extends ReasonableWaits with AcceptancePolicyOptions
-  with Errors with RequiringLoggedInUser with EndUserInputs {
+  with Errors with RequiringLoggedInUser with EndUserInputs with HeldSubmissions {
 
   private val log = LogFactory.getLog(classOf[EditFeedController])
 
@@ -116,11 +116,6 @@ class EditFeedController @Autowired()(contentUpdateService: ContentUpdateService
         case _ => None
       }
     }
-  }
-
-  // TODO duplication
-  private def submissionShouldBeHeld(loggerInUser: User): Boolean = {
-    !loggerInUser.isAdmin
   }
 
   private def renderEditForm(f: Feed, formObject: EditFeed): ModelAndView = {

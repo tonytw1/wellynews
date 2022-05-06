@@ -33,7 +33,7 @@ class EditNewsitemController @Autowired()(contentUpdateService: ContentUpdateSer
                                           handTaggingService: HandTaggingService,
                                           val urlCleaner: UrlCleaner)
   extends ReasonableWaits with AcceptancePolicyOptions with Errors with GeotagParsing with RequiringLoggedInUser
-  with EndUserInputs {
+  with EndUserInputs with HeldSubmissions {
 
   private val log = LogFactory.getLog(classOf[EditNewsitemController])
 
@@ -111,10 +111,6 @@ class EditNewsitemController @Autowired()(contentUpdateService: ContentUpdateSer
         case _ => None
       }
     }
-  }
-
-  private def submissionShouldBeHeld(owner: User): Boolean = {
-    !owner.isAdmin
   }
 
   private def mapToForm(n: Newsitem, loggedInUser: User): EditNewsitem = {

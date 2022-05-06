@@ -35,7 +35,7 @@ class EditWebsiteController @Autowired()(contentUpdateService: ContentUpdateServ
                                          elasticSearchIndexRebuildService: ElasticSearchIndexRebuildService,
                                          val urlCleaner: UrlCleaner
                                         ) extends ReasonableWaits with AcceptancePolicyOptions with Errors with GeotagParsing
-  with RequiringLoggedInUser with EndUserInputs {
+  with RequiringLoggedInUser with EndUserInputs with HeldSubmissions {
 
   private val log = LogFactory.getLog(classOf[EditWebsiteController])
 
@@ -124,10 +124,6 @@ class EditWebsiteController @Autowired()(contentUpdateService: ContentUpdateServ
         case _ => None
       }
     }
-  }
-
-  private def submissionShouldBeHeld(owner: User): Boolean = {
-    !owner.isAdmin
   }
 
   private def renderEditForm(w: Website, editWebsite: EditWebsite): ModelAndView = {

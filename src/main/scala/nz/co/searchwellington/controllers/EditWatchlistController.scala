@@ -33,7 +33,7 @@ class EditWatchlistController @Autowired()(contentUpdateService: ContentUpdateSe
                                            handTaggingService: HandTaggingService,
                                            val urlCleaner: UrlCleaner
                                         ) extends ReasonableWaits with AcceptancePolicyOptions with Errors with GeotagParsing
-  with RequiringLoggedInUser with EndUserInputs {
+  with RequiringLoggedInUser with EndUserInputs with HeldSubmissions {
 
   private val log = LogFactory.getLog(classOf[EditWatchlistController])
 
@@ -128,10 +128,6 @@ class EditWatchlistController @Autowired()(contentUpdateService: ContentUpdateSe
         case _ => None
       }
     }
-  }
-
-  private def submissionShouldBeHeld(owner: User): Boolean = {
-    !owner.isAdmin
   }
 
   private def renderEditForm(w: Watchlist, editWatchlist: EditWatchlist): ModelAndView = {
