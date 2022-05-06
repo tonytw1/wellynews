@@ -95,7 +95,7 @@ import scala.jdk.CollectionConverters._
     val eventualPublisherWatchlist = contentRetrievalService.getPublisherWatchlist(publisher, loggedInUser)
     val eventualPublisherArchiveLinks = contentRetrievalService.getPublisherArchiveMonths(publisher, loggedInUser)
     val eventualRelatedTagsForPublisher = relatedTagsService.getRelatedTagsForPublisher(publisher, loggedInUser)
-    val eventualDiscoveredFeeds = contentRetrievalService.getDiscoveredFeedsForPublisher(publisher, MAX_NEWSITEMS)
+    val eventualDiscoveredFeeds = contentRetrievalService.getDiscoveredFeedsForPublisher(publisher)
     val eventualFrontendPublisher = frontendResourceMapper.createFrontendResourceFrom(publisher, loggedInUser) // TODO duplicated with main content
 
     for {

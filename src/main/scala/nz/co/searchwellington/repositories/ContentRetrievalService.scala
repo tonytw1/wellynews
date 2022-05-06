@@ -346,17 +346,10 @@ import scala.concurrent.{ExecutionContext, Future}
     mongoRepository.getDiscoveredFeeds(maxNumber)
   }
 
-  def getDiscoveredFeedsForPublisher(publisher: Website, maxNumber: Int)(implicit ec: ExecutionContext): Future[Seq[DiscoveredFeed]] = {
+  def getDiscoveredFeedsForPublisher(publisher: Website)(implicit ec: ExecutionContext): Future[Seq[DiscoveredFeed]] = {
     val urlParser = new UrlParser()
     val publisherHostname = urlParser.extractHostnameFrom(publisher.page)
-    mongoRepository.getDiscoveredFeeds(Integer.MAX_VALUE).map { allDiscoverdFeeds =>
-      allDiscoverdFeeds.filter{ discoveredFeed =>
-        discoveredFeed.occurrences.exists{ occurence =>
-          // TODO suggests we should index occurence hostnames?
-          publisherHostname.equals(urlParser.extractHostnameFrom(occurence.referencedFrom))
-        }
-      }
-    }
+    mongoRepository.getDiscoveredFeedsForHostname(publisherHostname, Integer.MAX_VALUE)
   }
 
   def getTagNamesStartingWith(q: String)(implicit ec: ExecutionContext): Future[Seq[String]] = tagDAO.getTagNamesStartingWith(q)

@@ -380,6 +380,12 @@ class MongoRepository @Autowired()(@Value("${mongo.uri}") mongoUri: String) exte
     discoveredFeedCollection.find(selector, noProjection).one[DiscoveredFeed]
   }
 
+  def getDiscoveredFeedsForHostname(hostname: String, maxNumber: Int)(implicit ec: ExecutionContext): Future[Seq[DiscoveredFeed]] = {
+    val selector = BSONDocument("hostname" -> hostname)
+    discoveredFeedCollection.find(selector, noProjection).cursor[DiscoveredFeed]().
+      collect[List](maxDocs = maxNumber, err = Cursor.FailOnError[List[DiscoveredFeed]]())
+  }
+
   def saveDiscoveredFeed(discoveredFeed: DiscoveredFeed)(implicit ec: ExecutionContext): Future[WriteResult] = {
     val byId = BSONDocument("_id" -> discoveredFeed._id)
     discoveredFeedCollection.update.one(byId, discoveredFeed, upsert = true)

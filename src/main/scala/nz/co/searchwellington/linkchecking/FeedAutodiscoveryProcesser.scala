@@ -92,7 +92,7 @@ import scala.concurrent.{ExecutionContext, Future}
         }
         existing.copy(occurrences = occurrences)
       }.getOrElse{
-        val hostname = urlParser.extractHostnameFrom(discoveredFeedUrl)
+        val hostname = urlParser.extractHostnameFrom(checkResource.page) // TODO this really wants to be a publisher
         DiscoveredFeed(url = discoveredFeedUrl, hostname = hostname, occurrences = Seq(occurrence), firstSeen = occurrence.seen)
       }
     }

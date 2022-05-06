@@ -115,7 +115,7 @@ class PublisherModelBuilderTest extends ReasonableWaits with ContentFields {
     when(contentRetrievalService.getPublisherWatchlist(publisher, None)).thenReturn(Future.successful(Seq.empty))
     when(contentRetrievalService.getLatestNewsitems(maxItems = 5, loggedInUser = None)).thenReturn(Future.successful(Seq.empty))
     when(relatedTagsService.getRelatedTagsForPublisher(publisher, None)).thenReturn(Future.successful(Seq.empty))
-    when(contentRetrievalService.getDiscoveredFeedsForPublisher(publisher, 30)).thenReturn(Future.successful(Seq.empty))
+    when(contentRetrievalService.getDiscoveredFeedsForPublisher(publisher)).thenReturn(Future.successful(Seq.empty))
     when(frontendResourceMapper.createFrontendResourceFrom(publisher, None)).thenReturn(Future.successful(frontendPublisher))
 
     val extras = Await.result(modelBuilder.populateExtraModelContent(request, None), TenSeconds)
@@ -141,7 +141,7 @@ class PublisherModelBuilderTest extends ReasonableWaits with ContentFields {
     val discoveredFeeds = Seq{
       DiscoveredFeed(url = "http://localhost/test", hostname = "localhost", occurrences = Seq.empty, firstSeen = DateTime.now.toDate)
     }
-    when(contentRetrievalService.getDiscoveredFeedsForPublisher(publisher, 30)).thenReturn(Future.successful(discoveredFeeds))
+    when(contentRetrievalService.getDiscoveredFeedsForPublisher(publisher)).thenReturn(Future.successful(discoveredFeeds))
 
     val extras = Await.result(modelBuilder.populateExtraModelContent(request, None), TenSeconds)
 
