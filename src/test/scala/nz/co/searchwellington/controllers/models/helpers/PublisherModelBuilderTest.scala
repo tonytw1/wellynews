@@ -139,7 +139,7 @@ class PublisherModelBuilderTest extends ReasonableWaits with ContentFields {
     when(relatedTagsService.getRelatedTagsForPublisher(publisher, None)).thenReturn(Future.successful(Seq.empty))
     when(frontendResourceMapper.createFrontendResourceFrom(publisher, None)).thenReturn(Future.successful(frontendPublisher))
     val discoveredFeeds = Seq{
-      DiscoveredFeed(url = "http://localhost/test", occurrences = Seq.empty, firstSeen = DateTime.now.toDate)
+      DiscoveredFeed(url = "http://localhost/test", hostname = "localhost", occurrences = Seq.empty, firstSeen = DateTime.now.toDate)
     }
     when(contentRetrievalService.getDiscoveredFeedsForPublisher(publisher, 30)).thenReturn(Future.successful(discoveredFeeds))
 

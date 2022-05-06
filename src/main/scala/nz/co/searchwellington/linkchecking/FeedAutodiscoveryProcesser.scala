@@ -5,6 +5,7 @@ import nz.co.searchwellington.commentfeeds.CommentFeedDetectorService
 import nz.co.searchwellington.htmlparsing.RssLinkExtractor
 import nz.co.searchwellington.model.{DiscoveredFeed, DiscoveredFeedOccurrence, Resource}
 import nz.co.searchwellington.repositories.mongo.MongoRepository
+import nz.co.searchwellington.urls.UrlParser
 import org.apache.commons.logging.LogFactory
 import org.joda.time.DateTime
 import org.springframework.beans.factory.annotation.Autowired
@@ -15,7 +16,8 @@ import scala.concurrent.{ExecutionContext, Future}
 
 @Component class FeedAutodiscoveryProcesser @Autowired()(mongoRepository: MongoRepository,
                                                          rssLinkExtractor: RssLinkExtractor,
-                                                         commentFeedDetector: CommentFeedDetectorService)
+                                                         commentFeedDetector: CommentFeedDetectorService,
+                                                         urlParser: UrlParser)
   extends LinkCheckerProcessor with ReasonableWaits with UrlWrangling {
 
   private val log = LogFactory.getLog(classOf[FeedAutodiscoveryProcesser])
@@ -90,7 +92,8 @@ import scala.concurrent.{ExecutionContext, Future}
         }
         existing.copy(occurrences = occurrences)
       }.getOrElse{
-        DiscoveredFeed(url = discoveredFeedUrl, occurrences = Seq(occurrence), firstSeen = occurrence.seen)
+        val hostname = urlParser.extractHostnameFrom(discoveredFeedUrl)
+        DiscoveredFeed(url = discoveredFeedUrl, hostname = hostname, occurrences = Seq(occurrence), firstSeen = occurrence.seen)
       }
     }
 

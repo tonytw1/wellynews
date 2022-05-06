@@ -59,6 +59,7 @@ class FeedsModelBuilderTest extends ReasonableWaits with ContentFields {
     val discoveredFeeditems = Seq(
       DiscoveredFeed(
         url = "http://something",
+        hostname = "something",
         occurrences = Seq(DiscoveredFeedOccurrence(referencedFrom = "http://somewhere", seen = DateTime.now.toDate)),
         firstSeen = DateTime.now.toDate
       )

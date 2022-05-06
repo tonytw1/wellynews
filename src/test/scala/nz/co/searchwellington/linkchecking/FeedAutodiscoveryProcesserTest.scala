@@ -5,6 +5,7 @@ import nz.co.searchwellington.commentfeeds.CommentFeedDetectorService
 import nz.co.searchwellington.htmlparsing.RssLinkExtractor
 import nz.co.searchwellington.model.{DiscoveredFeed, Feed, Newsitem}
 import nz.co.searchwellington.repositories.mongo.MongoRepository
+import nz.co.searchwellington.urls.UrlParser
 import org.joda.time.DateTime
 import org.junit.Assert.assertEquals
 import org.junit.Test
@@ -27,11 +28,12 @@ class FeedAutodiscoveryProcesserTest extends ReasonableWaits {
   private val mongoRepository = mock(classOf[MongoRepository])
   private val rssLinkExtractor = mock(classOf[RssLinkExtractor])
   private val commentFeedDetector = mock(classOf[CommentFeedDetectorService])
+  private val urlParser = new UrlParser()
 
   private val resource = Newsitem(id = UUID.randomUUID().toString, page = "https://localhost/test")
   private val pageContent = "Meh"
 
-  private val feedAutodiscoveryProcesser = new FeedAutodiscoveryProcesser(mongoRepository, rssLinkExtractor, commentFeedDetector)
+  private val feedAutodiscoveryProcesser = new FeedAutodiscoveryProcesser(mongoRepository, rssLinkExtractor, commentFeedDetector, urlParser)
 
   private val successfulWrite: WriteResult = mock(classOf[WriteResult])
   when(successfulWrite.writeErrors).thenReturn(Seq.empty)
