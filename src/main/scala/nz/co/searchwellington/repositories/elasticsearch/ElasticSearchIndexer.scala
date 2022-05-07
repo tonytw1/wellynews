@@ -295,7 +295,7 @@ class ElasticSearchIndexer @Autowired()(val showBrokenDecisionService: ShowBroke
     val request = search(Index) query composeQueryFor(query, loggedInUser) limit 0 aggregations aggs
 
     client.execute(request).map { r =>
-      val dateAgg = r.result.aggregations.dateHistogram("date")
+      val dateAgg = r.result.aggregations.dateHistogram("accepted")
       val acceptedDays = dateAgg.buckets.map { b =>
         val day = b.date
         (day, b.docCount)
