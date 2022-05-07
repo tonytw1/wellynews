@@ -26,7 +26,22 @@
 <div class="right">
 
 <div class="box">
-    $acceptedDates
+    <h2>Accepted counts</h2>
+    <p>How many newsitems were accepted on each day.</p>
+    <ul>
+        #set ($first = 1)
+        #foreach($acceptedDay in $acceptedDays)
+             <li class="archive_link">
+                $acceptedDay.day
+                #if ($first == 1)
+                    ($acceptedDay.count accepted)
+                    #set ($first = 0)
+                #else
+                    ($acceptedDay.count)
+                #end
+            </li>
+        #end
+    </ul>
 </div>
 
 <div class="box">

@@ -3,9 +3,11 @@ package nz.co.searchwellington.controllers.models.helpers
 import nz.co.searchwellington.ReasonableWaits
 import nz.co.searchwellington.controllers.RssUrlBuilder
 import nz.co.searchwellington.filters.RequestPath
-import nz.co.searchwellington.model.User
+import nz.co.searchwellington.model.{AcceptedDay, User}
 import nz.co.searchwellington.repositories.ContentRetrievalService
 import nz.co.searchwellington.urls.UrlBuilder
+import org.joda.time.LocalDate
+import org.joda.time.format.ISODateTimeFormat
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
 import org.springframework.ui.ModelMap
@@ -50,12 +52,13 @@ import scala.jdk.CollectionConverters._
   def populateExtraModelContent(request: HttpServletRequest, loggedInUser: Option[User]): Future[ModelMap] = {
     for {
       latestNewsitems <- latestNewsitems(loggedInUser)
-      acceptedDates <- contentRetrievalService.getAcceptedDates(loggedInUser)
+      acceptedDatesAggregation <- contentRetrievalService.getAcceptedDates(loggedInUser)
     } yield {
-      val mv = new ModelMap()
-      mv.addAllAttributes(latestNewsitems)
-      mv.addAttribute("acceptedDates", acceptedDates)
-      mv
+      val acceptedDays = acceptedDatesAggregation.take(14).map { acceptedDay =>
+        val time = ISODateTimeFormat.dateTimeParser().parseDateTime(acceptedDay._1)
+        AcceptedDay(new LocalDate(time), acceptedDay._2)
+      }
+      new ModelMap().addAllAttributes(latestNewsitems).addAttribute("acceptedDays", acceptedDays.asJava)
     }
   }
 

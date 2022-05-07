@@ -1,8 +1,7 @@
 package nz.co.searchwellington.model
 
 import java.util.Date
-
-import org.joda.time.Interval
+import org.joda.time.{Interval, LocalDate}
 
 trait IntervalLink {
   def interval: Interval
@@ -12,3 +11,8 @@ trait IntervalLink {
 }
 
 case class ArchiveLink(interval: Interval, count: Option[Long]) extends IntervalLink
+
+case class AcceptedDay(day: LocalDate, count: Long) {
+  def getDay: LocalDate = day
+  def getCount: Long = count
+}
