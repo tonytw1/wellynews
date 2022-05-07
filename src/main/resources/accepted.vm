@@ -26,10 +26,12 @@
 <div class="right">
 
 <div class="box">
-#parse("includes/latest_newsitems.vm")
+    $acceptedDates
+</div>
 
-<br clear="all"/>
-
+<div class="box">
+    #parse("includes/latest_newsitems.vm")
+    <br clear="all"/>
 </div>
 
 </div>

@@ -290,6 +290,20 @@ class ElasticSearchIndexer @Autowired()(val showBrokenDecisionService: ShowBroke
     withModeration(must(conditions), loggedInUser)
   }
 
+  def createdAcceptedDateAggregationFor(query: ResourceQuery, loggedInUser: Option[User])(implicit ec: ExecutionContext): Future[Seq[(String, Long)]] = {
+    val aggs = Seq(dateHistogramAgg("accepted", "accepted").calendarInterval(DateHistogramInterval.Day))
+    val request = search(Index) query composeQueryFor(query, loggedInUser) limit 0 aggregations aggs
+
+    client.execute(request).map { r =>
+      val dateAgg = r.result.aggregations.dateHistogram("date")
+      val acceptedDays = dateAgg.buckets.map { b =>
+        val day = b.date
+        (day, b.docCount)
+      }
+      acceptedDays.filter(_._2 > 0).reverse
+    }
+  }
+
   def createdMonthAggregationFor(query: ResourceQuery, loggedInUser: Option[User])(implicit ec: ExecutionContext): Future[Seq[(Interval, Long)]] = {
     val aggs = Seq(dateHistogramAgg("date", "date").calendarInterval(DateHistogramInterval.Month))
     val request = search(Index) query composeQueryFor(query, loggedInUser) limit 0 aggregations aggs

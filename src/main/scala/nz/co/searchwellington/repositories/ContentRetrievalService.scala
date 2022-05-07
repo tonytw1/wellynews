@@ -254,6 +254,10 @@ import scala.concurrent.{ExecutionContext, Future}
     toFrontendResourcesWithTotalCount(elasticSearchIndexer.getResources(websitesByKeyword, loggedInUser = loggedInUser), loggedInUser)
   }
 
+  def getAcceptedDates(loggedInUser: Option[User])(implicit ec: ExecutionContext): Future[Seq[(String, Long)]] = {
+      elasticSearchIndexer.createdAcceptedDateAggregationFor(allNewsitems, loggedInUser)
+  }
+
   def getArchiveMonths(loggedInUser: Option[User])(implicit ec: ExecutionContext): Future[Seq[ArchiveLink]] = {
     def getArchiveMonths(loggedInUser: Option[User]): Future[Seq[(Interval, Long)]] = {
       elasticSearchIndexer.createdMonthAggregationFor(allNewsitems, loggedInUser)

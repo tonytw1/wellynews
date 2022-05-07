@@ -48,7 +48,15 @@ import scala.jdk.CollectionConverters._
   }
 
   def populateExtraModelContent(request: HttpServletRequest, loggedInUser: Option[User]): Future[ModelMap] = {
-    latestNewsitems(loggedInUser)
+    for {
+      latestNewsitems <- latestNewsitems(loggedInUser)
+      acceptedDates <- contentRetrievalService.getAcceptedDates(loggedInUser)
+    } yield {
+      val mv = new ModelMap()
+      mv.addAllAttributes(latestNewsitems)
+      mv.addAttribute("acceptedDates", acceptedDates)
+      mv
+    }
   }
 
   def getViewName(mv: ModelAndView, loggedInUser: Option[User]): String = "accepted"
