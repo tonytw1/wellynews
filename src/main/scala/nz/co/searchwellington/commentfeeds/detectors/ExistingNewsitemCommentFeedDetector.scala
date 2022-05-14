@@ -24,6 +24,7 @@ class ExistingNewsitemCommentFeedDetector @Autowired()(mongoRepository: MongoRep
     feedSuffixes.exists { suffix =>
       if (url.endsWith(suffix)) {
         val newsitemUrl = url.dropRight(suffix.length)
+        log.info("Checking for existing newsitem with url: " + newsitemUrl)
         val maybeResource = Await.result(mongoRepository.getResourceByUrl(newsitemUrl), TenSeconds)
         maybeResource.exists { resource =>
           resource match {
