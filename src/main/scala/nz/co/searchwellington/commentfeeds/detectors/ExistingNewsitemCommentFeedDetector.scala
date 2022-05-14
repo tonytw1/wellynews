@@ -7,6 +7,7 @@ import org.apache.commons.logging.LogFactory
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
 
+import java.net.URL
 import scala.concurrent.Await
 import scala.concurrent.ExecutionContext.Implicits.global
 
@@ -18,12 +19,13 @@ class ExistingNewsitemCommentFeedDetector @Autowired()(mongoRepository: MongoRep
 
   private val feedSuffixes = Seq("/feed", "/feed/", "feed/")
 
-  override def isValid(url: String): Boolean = {
+  override def isValid(url: URL): Boolean = {
     // If a feed url matches the url of an existing newsitem with /feed appended
     // then it is probably that newsitem's comment feed
     feedSuffixes.exists { suffix =>
-      if (url.endsWith(suffix)) {
-        val newsitemUrl = url.dropRight(suffix.length)
+      val urlString = url.toExternalForm
+      if (urlString.endsWith(suffix)) {
+        val newsitemUrl = urlString.dropRight(suffix.length)
         log.info("Checking for existing newsitem with url: " + newsitemUrl)
         val maybeResource = Await.result(mongoRepository.getResourceByUrl(newsitemUrl), TenSeconds)
         maybeResource.exists { resource =>

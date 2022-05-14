@@ -5,13 +5,15 @@ import org.apache.commons.logging.LogFactory
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
 
+import java.net.URL
+
 @Component class CommentFeedDetectorService @Autowired()(detectors: Array[CommentFeedDetector]) {
 
   private val log = LogFactory.getLog(classOf[CommentFeedDetectorService])
 
   log.info("Autowired " + detectors.length + " comment detectors: " + detectors.toSeq.map(_.getClass.getSimpleName).mkString(", "))
 
-  def isCommentFeedUrl(url: String): Boolean = {
+  def isCommentFeedUrl(url: URL): Boolean = {
     val tuples = detectors.map { d =>
       (d.getClass.getName, d.isValid(url))
     }

@@ -4,6 +4,8 @@ import nz.co.searchwellington.commentfeeds.detectors.{CommentSlashFeedDetector, 
 import org.junit.Assert.assertTrue
 import org.junit.Test
 
+import java.net.URL
+
 class CommendFeedDetectorServiceTest {
 
   val commentSlashFeedDetector = new CommentSlashFeedDetector()
@@ -15,7 +17,7 @@ class CommendFeedDetectorServiceTest {
 
   @Test
   def shouldReturnIsCommentFeedIfAnyGuesserMatches(): Unit = {
-    val scoopArticlesCommentFeedUrl = "http://wellington.scoop.co.nz/?feed=rss2&p=130420"
+    val scoopArticlesCommentFeedUrl = new URL("http://wellington.scoop.co.nz/?feed=rss2&p=130420")
 
     assertTrue(wellingtonScoopCommentFeedDetector.isValid(scoopArticlesCommentFeedUrl))
     assertTrue(service.isCommentFeedUrl(scoopArticlesCommentFeedUrl))
@@ -23,7 +25,7 @@ class CommendFeedDetectorServiceTest {
 
   @Test
   def shouldDetectTheseExplicitExamplesAsCommentFeeds(): Unit = {
-    assertTrue(service.isCommentFeedUrl("https://clubrugby.nz/wp/comments/feed/"))
+    assertTrue(service.isCommentFeedUrl(new URL("https://clubrugby.nz/wp/comments/feed/")))
   }
 
 }

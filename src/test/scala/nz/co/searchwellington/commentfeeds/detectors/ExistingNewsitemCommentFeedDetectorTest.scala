@@ -6,6 +6,7 @@ import org.junit.Assert.{assertFalse, assertTrue}
 import org.junit.Test
 import org.mockito.Mockito.{mock, when}
 
+import java.net.URL
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
@@ -20,7 +21,7 @@ class ExistingNewsitemCommentFeedDetectorTest {
 
     val existing = new ExistingNewsitemCommentFeedDetector(mongoRepository)
 
-    assertTrue(existing.isValid("https://wtmc.org.nz/trip-report/st-arnaud-range-and-the-camel/feed/"))
+    assertTrue(existing.isValid(new URL("https://wtmc.org.nz/trip-report/st-arnaud-range-and-the-camel/feed/")))
   }
 
   @Test
@@ -30,7 +31,7 @@ class ExistingNewsitemCommentFeedDetectorTest {
 
     val existing = new ExistingNewsitemCommentFeedDetector(mongoRepository)
 
-    assertFalse(existing.isValid("https://wtmc.org.nz/trip-report/st-arnaud-range-and-the-camel/feed/"))
+    assertFalse(existing.isValid(new URL("https://wtmc.org.nz/trip-report/st-arnaud-range-and-the-camel/feed/")))
   }
 
 }

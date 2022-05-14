@@ -1,5 +1,7 @@
 package nz.co.searchwellington.commentfeeds.detectors;
 
+import java.net.URL;
+
 public class GenericCommentFeedDetector implements CommentFeedDetector {
 	
 	private String regex;
@@ -11,8 +13,8 @@ public class GenericCommentFeedDetector implements CommentFeedDetector {
 		this.regex = regex;
 	}
 
-	public boolean isValid(String url) {
-		return url != null && url.matches(regex);				
+	public boolean isValid(URL url) {
+		return url != null && url.toExternalForm().matches(regex);
 	}
 	
 	public String getRegex() {

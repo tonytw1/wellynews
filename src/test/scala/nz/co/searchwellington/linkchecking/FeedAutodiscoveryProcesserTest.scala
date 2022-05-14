@@ -14,14 +14,15 @@ import org.mockito.Mockito.{mock, never, verify, when}
 import org.mockito.{ArgumentCaptor, Matchers}
 import reactivemongo.api.commands.WriteResult
 
+import java.net.URL
 import java.util.UUID
 import scala.concurrent.{Await, ExecutionContext, Future}
 
 class FeedAutodiscoveryProcesserTest extends ReasonableWaits {
 
-  private val UNSEEN_FEED_URL = "http://something/new"
+  private val UNSEEN_FEED_URL = new URL("http://something/new")
   private val UNSEEN_FEED_URL_HTTPS = "https://something/new"
-  private val EXISTING_FEED_URL = "http://something/old"
+  private val EXISTING_FEED_URL = new URL("http://something/old")
   private val EXISTING_FEED_URL_HTTPS = "https://something/old"
   private val RELATIVE_FEED_URL = "/feed.xml"
 
@@ -43,12 +44,12 @@ class FeedAutodiscoveryProcesserTest extends ReasonableWaits {
     implicit val ec = ExecutionContext.Implicits.global
     val now = DateTime.now
 
-    when(rssLinkExtractor.extractFeedLinks(pageContent)).thenReturn(Seq(UNSEEN_FEED_URL))
+    when(rssLinkExtractor.extractFeedLinks(pageContent)).thenReturn(Seq(UNSEEN_FEED_URL.toExternalForm))
 
     when(commentFeedDetector.isCommentFeedUrl(UNSEEN_FEED_URL)).thenReturn(false)
-    when(mongoRepository.getDiscoveredFeedByUrl(UNSEEN_FEED_URL)).thenReturn(Future.successful(None))
+    when(mongoRepository.getDiscoveredFeedByUrl(UNSEEN_FEED_URL.toExternalForm)).thenReturn(Future.successful(None))
 
-    when(mongoRepository.getFeedByUrl(UNSEEN_FEED_URL)).thenReturn(Future.successful(None))
+    when(mongoRepository.getFeedByUrl(UNSEEN_FEED_URL.toExternalForm)).thenReturn(Future.successful(None))
     when(mongoRepository.getFeedByUrl(UNSEEN_FEED_URL_HTTPS)).thenReturn(Future.successful(None))
 
     when(mongoRepository.saveDiscoveredFeed(Matchers.any(classOf[DiscoveredFeed]))(Matchers.eq(ec))).thenReturn(Future.successful(successfulWrite))
@@ -59,7 +60,7 @@ class FeedAutodiscoveryProcesserTest extends ReasonableWaits {
     Await.result(eventualBoolean, TenSeconds)
 
     verify(mongoRepository).saveDiscoveredFeed(saved.capture())(Matchers.eq(ec))
-    assertEquals(UNSEEN_FEED_URL, saved.getValue.url)
+    assertEquals(UNSEEN_FEED_URL.toExternalForm, saved.getValue.url)
     assertEquals(resource.page, saved.getValue.occurrences.head.referencedFrom)
   }
 
@@ -69,7 +70,7 @@ class FeedAutodiscoveryProcesserTest extends ReasonableWaits {
 
     when(rssLinkExtractor.extractFeedLinks(pageContent)).thenReturn(Seq(RELATIVE_FEED_URL))
 
-    when(commentFeedDetector.isCommentFeedUrl("https://localhost/feed.xml")).thenReturn(false)
+    when(commentFeedDetector.isCommentFeedUrl(new URL("https://localhost/feed.xml"))).thenReturn(false)
     when(mongoRepository.getDiscoveredFeedByUrl("https://localhost/feed.xml")).thenReturn(Future.successful(None))
     when(mongoRepository.getFeedByUrl("http://localhost/feed.xml")).thenReturn(Future.successful(None))
     when(mongoRepository.getFeedByUrl("https://localhost/feed.xml")).thenReturn(Future.successful(None))
@@ -87,11 +88,11 @@ class FeedAutodiscoveryProcesserTest extends ReasonableWaits {
   def doNotRecordDiscoveredFeedsIfWeAlreadyHaveThisFeed(): Unit = {
     implicit val ec = ExecutionContext.Implicits.global
 
-    val autoDiscoveredLinks = Seq(EXISTING_FEED_URL)
+    val autoDiscoveredLinks = Seq(EXISTING_FEED_URL.toExternalForm)
     when(rssLinkExtractor.extractFeedLinks(pageContent)).thenReturn(autoDiscoveredLinks)
     when(commentFeedDetector.isCommentFeedUrl(EXISTING_FEED_URL)).thenReturn(false)
-    when(mongoRepository.getDiscoveredFeedByUrl(EXISTING_FEED_URL)).thenReturn(Future.successful(None))
-    when(mongoRepository.getFeedByUrl(EXISTING_FEED_URL)).thenReturn(Future.successful(Some(mock(classOf[Feed]))))
+    when(mongoRepository.getDiscoveredFeedByUrl(EXISTING_FEED_URL.toExternalForm)).thenReturn(Future.successful(None))
+    when(mongoRepository.getFeedByUrl(EXISTING_FEED_URL.toExternalForm)).thenReturn(Future.successful(Some(mock(classOf[Feed]))))
     when(mongoRepository.getFeedByUrl(EXISTING_FEED_URL_HTTPS)).thenReturn(Future.successful(None))
 
     Await.result(feedAutodiscoveryProcesser.process(resource, Some(pageContent), DateTime.now), TenSeconds)
