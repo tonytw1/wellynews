@@ -15,7 +15,8 @@ class ExistingNewsitemCommentFeedDetectorTest {
 
   @Test
   def shouldDetectSlashFeedSuffiOfExistingNewsitemsAsCommentFeed(): Unit = {
-    when(mongoRepository.getResourceByUrl("https://wtmc.org.nz/trip-report/st-arnaud-range-and-the-camel")).thenReturn(Future.successful(Some(Newsitem())))
+    when(mongoRepository.getResourceByUrl("https://wtmc.org.nz/trip-report/st-arnaud-range-and-the-camel")).thenReturn(Future.successful(None))
+    when(mongoRepository.getResourceByUrl("https://wtmc.org.nz/trip-report/st-arnaud-range-and-the-camel/")).thenReturn(Future.successful(Some(Newsitem())))
 
     val existing = new ExistingNewsitemCommentFeedDetector(mongoRepository)
 
@@ -25,6 +26,7 @@ class ExistingNewsitemCommentFeedDetectorTest {
   @Test
   def shouldNotObjectToSlashFeedsWithNoExistingNewsitem(): Unit = {
     when(mongoRepository.getResourceByUrl("https://wtmc.org.nz/trip-report/st-arnaud-range-and-the-camel")).thenReturn(Future.successful(None))
+    when(mongoRepository.getResourceByUrl("https://wtmc.org.nz/trip-report/st-arnaud-range-and-the-camel/")).thenReturn(Future.successful(None))
 
     val existing = new ExistingNewsitemCommentFeedDetector(mongoRepository)
 

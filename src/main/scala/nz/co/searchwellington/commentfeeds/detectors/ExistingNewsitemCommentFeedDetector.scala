@@ -1,7 +1,7 @@
 package nz.co.searchwellington.commentfeeds.detectors
 
 import nz.co.searchwellington.ReasonableWaits
-import nz.co.searchwellington.model.Newsitem
+import nz.co.searchwellington.model.{Newsitem, Resource}
 import nz.co.searchwellington.repositories.mongo.MongoRepository
 import org.apache.commons.logging.LogFactory
 import org.springframework.beans.factory.annotation.Autowired
@@ -16,7 +16,7 @@ class ExistingNewsitemCommentFeedDetector @Autowired()(mongoRepository: MongoRep
 
   private val log = LogFactory.getLog(classOf[ExistingNewsitemCommentFeedDetector])
 
-  private val feedSuffixes = Seq("/feed", "/feed/")
+  private val feedSuffixes = Seq("/feed", "/feed/", "feed/")
 
   override def isValid(url: String): Boolean = {
     // If a feed url matches the url of an existing newsitem with /feed appended
