@@ -79,10 +79,7 @@ public class Main {
         detector.setRegex("^http://blog.tepapa.govt.nz/\\d{4}/\\d{2}/\\d{2}/.*?/feed/$");
         return detector;
     }
-    @Bean
-    public CommentFeedDetector textureCommentFeedDetector() {
-        return new TextureCommentFeedDetector();
-    }
+
     @Bean
     public CommentFeedDetector wellingtonistaCommentFeedDetector() {
         GenericCommentFeedDetector detector = new GenericCommentFeedDetector();
