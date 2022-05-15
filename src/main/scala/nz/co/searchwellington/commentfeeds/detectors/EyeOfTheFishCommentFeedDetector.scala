@@ -5,6 +5,7 @@ import org.springframework.stereotype.Component
 import java.net.URL
 import java.util.regex.Pattern
 
+@Deprecated // This is an example of exisiting newsitem page feed
 @Component
 class EyeOfTheFishCommentFeedDetector extends CommentFeedDetector {
 
