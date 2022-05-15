@@ -55,36 +55,26 @@ public class Main {
 
     @Bean
     public CommentFeedDetector newswireCommentFeedDetector() {
-        GenericCommentFeedDetector detector = new GenericCommentFeedDetector();
-        detector.setRegex("^http://www.newswire.co.nz/\\d{4}/\\d{2}/.*?/feed/$");
-        return detector;
+        return new GenericCommentFeedDetector("^http://www.newswire.co.nz/\\d{4}/\\d{2}/.*?/feed/$");
     }
     @Bean
     public CommentFeedDetector aucklandTrainsCommentFeedDetector() {
-        GenericCommentFeedDetector detector = new GenericCommentFeedDetector();
-        detector.setRegex("^http://www.aucklandtrains.co.nz/\\d{4}/\\d{2}/\\d{2}/.*?/feed/$");
-        return detector;
+        return new GenericCommentFeedDetector("^http://www.aucklandtrains.co.nz/\\d{4}/\\d{2}/\\d{2}/.*?/feed/$");
     }
 
     @Bean
     public CommentFeedDetector tepapaBlogCommentFeedDetector() {
-        GenericCommentFeedDetector detector = new GenericCommentFeedDetector();
-        detector.setRegex("^http://blog.tepapa.govt.nz/\\d{4}/\\d{2}/\\d{2}/.*?/feed/$");
-        return detector;
+        return new GenericCommentFeedDetector("^http://blog.tepapa.govt.nz/\\d{4}/\\d{2}/\\d{2}/.*?/feed/$");
     }
 
     @Bean
     public CommentFeedDetector wellingtonistaCommentFeedDetector() {
-        GenericCommentFeedDetector detector = new GenericCommentFeedDetector();
-        detector.setRegex("^http://wellingtonista.com/crss/node/\\d+$");
-        return detector;
+        return new GenericCommentFeedDetector("^http://wellingtonista.com/crss/node/\\d+$");
     }
 
     @Bean
     public CommentFeedDetector yearMonthCommentFeedDetector() {
-        GenericCommentFeedDetector detector = new GenericCommentFeedDetector();
-        detector.setRegex("^http://.*?/\\d{4}/\\d{2}/.*?$");
-        return detector;
+        return new GenericCommentFeedDetector("^http://.*?/\\d{4}/\\d{2}/.*?$");
     }
     @Bean
     public CommentFeedDetector dateRegexCommentFeedDetector() {
