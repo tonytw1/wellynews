@@ -14,17 +14,7 @@ import java.net.URL
   log.info("Autowired " + detectors.length + " comment detectors: " + detectors.toSeq.map(_.getClass.getSimpleName).mkString(", "))
 
   def isCommentFeedUrl(url: URL): Boolean = {
-    val tuples = detectors.map { d =>
-      (d.getClass.getName, d.isValid(url))
-    }
-
-    tuples.foreach( t =>
-      log.info(t._1 + ": " + t._2)
-    )
-
-    tuples.map(_._2).exists(_)
-
-    detectors.find(d => d.isValid(url)).exists { d =>
+    detectors.find(_.isValid(url)).exists { d =>
       log.info(d.getClass.getName + " detected comment feed url: " + url)
       true
     }
