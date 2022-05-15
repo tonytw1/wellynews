@@ -11,7 +11,7 @@ class ExistingNewsitemCommentFeedDetectorTest {
   private val existing = new ExistingNewsitemCommentFeedDetector()
 
   @Test
-  def shouldDetectSlashFeedSuffixOfExistingNewsitemsAsCommentFeed(): Unit = {
+  def shouldDetectSlashFeedSuffixOfSourceNewsitemAsCommentFeed(): Unit = {
     val source = Newsitem(page = "https://wtmc.org.nz/trip-report/st-arnaud-range-and-the-camel/")
 
     assertTrue(existing.isValid(new URL("https://wtmc.org.nz/trip-report/st-arnaud-range-and-the-camel/feed/"), source))
@@ -19,7 +19,7 @@ class ExistingNewsitemCommentFeedDetectorTest {
   }
 
   @Test
-  def shouldNotObjectToSlashFeedsWithAreNotForTheSourceNewsitem(): Unit = {
+  def shouldNotObjectToSlashFeedsWhichAreNotForTheSourceNewsitem(): Unit = {
     val source = Newsitem(page = "https://wtmc.org.nz/trip-report/st-arnaud-range-and-the-camel/")
 
     assertFalse(existing.isValid(new URL("https://wtmc.org.nz/feed/"), source))
