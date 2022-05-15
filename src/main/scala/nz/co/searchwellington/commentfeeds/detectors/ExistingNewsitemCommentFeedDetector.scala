@@ -19,7 +19,7 @@ class ExistingNewsitemCommentFeedDetector @Autowired()(mongoRepository: MongoRep
 
   private val feedSuffixes = Seq("/feed", "/feed/", "feed/")
 
-  override def isValid(url: URL): Boolean = {
+  override def isValid(url: URL, resource: Resource): Boolean = {
     // If a feed url matches the url of an existing newsitem with /feed appended
     // then it is probably that newsitem's comment feed
     feedSuffixes.exists { suffix =>

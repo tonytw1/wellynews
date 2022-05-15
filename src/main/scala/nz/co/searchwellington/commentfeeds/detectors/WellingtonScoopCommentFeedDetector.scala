@@ -1,5 +1,6 @@
 package nz.co.searchwellington.commentfeeds.detectors
 
+import nz.co.searchwellington.model.Resource
 import org.springframework.stereotype.Component
 
 import java.net.URL
@@ -15,7 +16,7 @@ class WellingtonScoopCommentFeedDetector extends CommentFeedDetector {
     Pattern.compile("""^https://wellington.scoop.co.nz/\?feed=rss2\&p=(\d+)$""")
   }
 
-  override def isValid(url: URL): Boolean = {
+  override def isValid(url: URL, source: Resource): Boolean = {
     commentFeedUrlPattern.matcher(url.toString).matches || httpsCommentFeedUrlPattern.matcher(url.toExternalForm).matches
   }
 }

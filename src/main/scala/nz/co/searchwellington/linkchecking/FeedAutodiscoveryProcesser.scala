@@ -44,7 +44,7 @@ import scala.concurrent.{ExecutionContext, Future}
         extractedRssLinkUrls.map { discoveredUrl =>
           log.info("Processing discovered url: " + discoveredUrl)
 
-          if (commentFeedDetector.isCommentFeedUrl(discoveredUrl)) {
+          if (commentFeedDetector.isCommentFeedUrl(discoveredUrl, checkResource)) {
             log.info("Discovered url is a comment feed; ignoring: " + discoveredUrl)
             Future.successful(None)
 
