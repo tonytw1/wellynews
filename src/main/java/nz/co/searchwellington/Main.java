@@ -65,14 +65,7 @@ public class Main {
         detector.setRegex("^http://www.aucklandtrains.co.nz/\\d{4}/\\d{2}/\\d{2}/.*?/feed/$");
         return detector;
     }
-    @Bean
-    public CommentFeedDetector blogspotCommentFeedDetector() {
-        return new BlogspotCommentFeedDetector();
-    }
-    @Bean
-    public CommentFeedDetector eyeOfTheFishCommentFeedDetector() {
-        return new EyeOfTheFishCommentFeedDetector();
-    }
+
     @Bean
     public CommentFeedDetector tepapaBlogCommentFeedDetector() {
         GenericCommentFeedDetector detector = new GenericCommentFeedDetector();
@@ -86,10 +79,7 @@ public class Main {
         detector.setRegex("^http://wellingtonista.com/crss/node/\\d+$");
         return detector;
     }
-    @Bean
-    public CommentFeedDetector wellingtonScoopCommentFeedDetector() {
-        return new WellingtonScoopCommentFeedDetector();
-    }
+
     @Bean
     public CommentFeedDetector yearMonthCommentFeedDetector() {
         GenericCommentFeedDetector detector = new GenericCommentFeedDetector();
