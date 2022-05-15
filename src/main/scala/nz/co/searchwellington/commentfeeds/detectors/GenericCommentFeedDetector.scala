@@ -7,6 +7,6 @@ class GenericCommentFeedDetector(regex: String) extends CommentFeedDetector {
 
   private val pattern = Pattern.compile(regex)
 
-  override def isValid(url: URL) = url != null && pattern.matcher(url.toExternalForm).matches
+  override def isValid(url: URL) = pattern.matcher(url.toExternalForm).matches
 
 }

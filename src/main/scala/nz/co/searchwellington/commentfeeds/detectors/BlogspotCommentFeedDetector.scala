@@ -5,5 +5,7 @@ import java.net.URL
 
 @Component
 class BlogspotCommentFeedDetector extends CommentFeedDetector {
-  override def isValid(url: URL) = url != null && url.toExternalForm.contains("blogspot.com") && url.toExternalForm.contains("/comments/")
+  override def isValid(url: URL) = {
+    url.getHost.endsWith("blogspot.com") && url.getPath.contains("/comments/")
+  }
 }
