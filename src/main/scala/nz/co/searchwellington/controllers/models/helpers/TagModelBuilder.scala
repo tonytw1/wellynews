@@ -2,7 +2,7 @@ package nz.co.searchwellington.controllers.models.helpers
 
 import nz.co.searchwellington.ReasonableWaits
 import nz.co.searchwellington.controllers.{CommonModelObjectsService, RssUrlBuilder}
-import nz.co.searchwellington.model.{PublisherArchiveLink, Resource, Tag, TagArchiveLink, User}
+import nz.co.searchwellington.model.{Resource, Tag, TagArchiveLink, User}
 import nz.co.searchwellington.repositories.{ContentRetrievalService, TagDAO}
 import nz.co.searchwellington.tagging.RelatedTagsService
 import nz.co.searchwellington.urls.UrlBuilder
@@ -23,7 +23,6 @@ import scala.jdk.CollectionConverters._
                                               commonAttributesModelBuilder: CommonAttributesModelBuilder, tagDAO: TagDAO) extends ModelBuilder
   with CommonSizes with Pagination with ReasonableWaits with CommonModelObjectsService with ArchiveMonths {
 
-  private val PAGE = "page"
   private val TAG = "tag"
   private val TAGS = "tags"
   private val TAG_WATCHLIST = "tag_watchlist"
@@ -60,7 +59,6 @@ import scala.jdk.CollectionConverters._
 
         } else {
           val mv = new ModelAndView().
-            addObject(PAGE, page).
             addObject(TAG, tag).
             addObject("heading", tag.display_name).
             addObject("rss_feed_label", tag.display_name.toLowerCase).
@@ -72,11 +70,6 @@ import scala.jdk.CollectionConverters._
           mv.addObject(MAIN_CONTENT, taggedNewsitems.asJava)
           mv.addObject("main_heading", tag.display_name + " related newsitems")
 
-          def paginationLinks(page: Int): String = {
-            urlBuilder.getTagPageUrl(tag, page)
-          }
-
-          populatePagination(mv, startIndex, totalNewsitems, MAX_NEWSITEMS, paginationLinks)
           if (taggedNewsitems.nonEmpty) {
             commonAttributesModelBuilder.setRss(mv, rssUrlBuilder.getRssTitleForTag(tag), rssUrlBuilder.getRssUrlForTag(tag))
           }
@@ -155,12 +148,8 @@ import scala.jdk.CollectionConverters._
 
     val hasSecondaryContent = !taggedWebsites.isEmpty || !tagWatchlist.isEmpty || !tagFeeds.isEmpty
     val isOneContentType = mainContent.isEmpty || !hasSecondaryContent
-    val page = mv.getModel.get(PAGE).asInstanceOf[Integer]
 
-    if (page != null && page > 1) {
-      mv.addObject(PAGE, page)
-      "tagNewsArchive"
-    } else if (isOneContentType) {
+    if (isOneContentType) {
       "tagOneContentType"
     } else {
       "tag"

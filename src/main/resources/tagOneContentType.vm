@@ -26,8 +26,7 @@
 				#parse("includes/main_content.vm")
 			#else
 				#parse("includes/main_content.vm")
-				#parse("includes/page_links.vm")
-			#end						
+			#end
 		</div>
 	</div>
 

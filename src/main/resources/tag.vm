@@ -39,12 +39,8 @@
 			#if ($tag.getMainImage()) 
 				<img src="$urlBuilder.getImageUrl($tag.getMainImage())" width="320" class="mainimage" >
 			#end
-
 			#parse("includes/main_content.vm")
-						
-			#parse("includes/page_links.vm")
 		</div>
-
 
 		<div class="tag_secondary_content">
 			#if ($tag.getSecondaryImage())
