@@ -7,7 +7,6 @@ import nz.co.searchwellington.model.frontend.FrontendResource
 import nz.co.searchwellington.model.mappers.FrontendResourceMapper
 import nz.co.searchwellington.repositories.elasticsearch._
 import nz.co.searchwellington.repositories.mongo.MongoRepository
-import nz.co.searchwellington.urls.UrlParser
 import org.apache.commons.logging.LogFactory
 import org.joda.time.{DateTime, Interval}
 import org.springframework.beans.factory.annotation.Autowired
@@ -351,9 +350,7 @@ import scala.concurrent.{ExecutionContext, Future}
   }
 
   def getDiscoveredFeedsForPublisher(publisher: Website)(implicit ec: ExecutionContext): Future[Seq[DiscoveredFeed]] = {
-    val urlParser = new UrlParser()
-    val publisherHostname = urlParser.extractHostnameFrom(publisher.page)
-    mongoRepository.getDiscoveredFeedsForHostname(publisherHostname, Integer.MAX_VALUE)
+    mongoRepository.getDiscoveredFeedsForPublisher(publisher._id, Integer.MAX_VALUE)
   }
 
   def getTagNamesStartingWith(q: String)(implicit ec: ExecutionContext): Future[Seq[String]] = tagDAO.getTagNamesStartingWith(q)

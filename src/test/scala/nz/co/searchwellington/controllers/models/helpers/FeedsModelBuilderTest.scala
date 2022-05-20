@@ -11,6 +11,7 @@ import org.junit.Assert.{assertEquals, assertTrue}
 import org.junit.{Before, Test}
 import org.mockito.Mockito.{mock, when}
 import org.springframework.mock.web.MockHttpServletRequest
+import reactivemongo.api.bson.BSONObjectID
 
 import java.util.UUID
 import scala.concurrent.ExecutionContext.Implicits.global
@@ -59,9 +60,9 @@ class FeedsModelBuilderTest extends ReasonableWaits with ContentFields {
     val discoveredFeeditems = Seq(
       DiscoveredFeed(
         url = "http://something",
-        hostname = "something",
         occurrences = Seq(DiscoveredFeedOccurrence(referencedFrom = "http://somewhere", seen = DateTime.now.toDate)),
-        firstSeen = DateTime.now.toDate
+        firstSeen = DateTime.now.toDate,
+        publisher = Some(BSONObjectID.generate)
       )
     )
     when(contentRetrievalService.getDiscoveredFeeds(10)).thenReturn(Future.successful(discoveredFeeditems))

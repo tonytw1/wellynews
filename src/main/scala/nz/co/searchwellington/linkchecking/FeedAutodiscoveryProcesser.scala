@@ -3,13 +3,14 @@ package nz.co.searchwellington.linkchecking
 import nz.co.searchwellington.ReasonableWaits
 import nz.co.searchwellington.commentfeeds.CommentFeedDetectorService
 import nz.co.searchwellington.htmlparsing.RssLinkExtractor
-import nz.co.searchwellington.model.{DiscoveredFeed, DiscoveredFeedOccurrence, Resource}
+import nz.co.searchwellington.model.{DiscoveredFeed, DiscoveredFeedOccurrence, PublishedResource, Resource, Website}
 import nz.co.searchwellington.repositories.mongo.MongoRepository
 import nz.co.searchwellington.urls.UrlParser
 import org.apache.commons.logging.LogFactory
 import org.joda.time.DateTime
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
+import reactivemongo.api.bson.BSONObjectID
 
 import java.net.{URI, URL}
 import scala.concurrent.{ExecutionContext, Future}
@@ -93,7 +94,12 @@ import scala.concurrent.{ExecutionContext, Future}
         existing.copy(occurrences = occurrences)
       }.getOrElse{
         val hostname = urlParser.extractHostnameFrom(checkResource.page) // TODO this really wants to be a publisher
-        DiscoveredFeed(url = discoveredFeedUrl, hostname = hostname, occurrences = Seq(occurrence), firstSeen = occurrence.seen)
+        val publisher = checkResource match {
+          case published: PublishedResource => published.publisher
+          case publisher: Website => Some(publisher._id)
+          case _ => None
+        }
+        DiscoveredFeed(url = discoveredFeedUrl, occurrences = Seq(occurrence), firstSeen = occurrence.seen, publisher = publisher)
       }
     }
 
