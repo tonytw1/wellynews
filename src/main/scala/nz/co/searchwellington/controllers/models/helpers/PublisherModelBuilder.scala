@@ -43,7 +43,8 @@ import scala.jdk.CollectionConverters._
       val eventualFrontendWebsite = frontendResourceMapper.createFrontendResourceFrom(publisher)
 
       for {
-        publisherNewsitems <- eventualPublisherNewsitems
+        publisherNewsitemsAndTotalCount: (Seq[FrontendResource], Long) <- eventualPublisherNewsitems
+        (newsitems, totalNewsitems) = publisherNewsitemsAndTotalCount
         publisherFeeds <- eventualPublisherFeeds
         frontendWebsite <- eventualFrontendWebsite
 
@@ -54,12 +55,12 @@ import scala.jdk.CollectionConverters._
           addObject("location", frontendWebsite.getPlace).
           addObject("link", urlBuilder.fullyQualified(urlBuilder.getPublisherUrl(publisher)))
 
-        if (publisherNewsitems._1.nonEmpty) {
-          mv.addObject(MAIN_CONTENT, publisherNewsitems._1.asJava)
+        if (newsitems.nonEmpty) {
+          mv.addObject(MAIN_CONTENT, newsitems.asJava)
           mv.addObject("main_heading", publisher.getTitle + " newsitems")
 
-          if (publisherNewsitems._2 > MAX_NEWSITEMS) {
-            val monthToLinkToForMore = monthOfLastItem(publisherNewsitems._1) // TODO this is a slight off by one.
+          if (totalNewsitems > MAX_NEWSITEMS) {
+            val monthToLinkToForMore = monthOfLastItem(newsitems) // TODO this is a slight off by one.
             monthToLinkToForMore.foreach { i =>
               val moreLink = PublisherArchiveLink(publisher = frontendWebsite, interval = i, count = None)
               mv.addObject("more", moreLink)
@@ -67,7 +68,7 @@ import scala.jdk.CollectionConverters._
           }
 
           commonAttributesModelBuilder.setRss(mv, rssUrlBuilder.getRssTitleForPublisher(publisher), rssUrlBuilder.getRssUrlForPublisher(publisher))
-          populateGeotaggedItems(mv, publisherNewsitems._1) // TODO This should be a seperate query
+          populateGeotaggedItems(mv, newsitems) // TODO This should be a seperate query
         }
         mv.addObject("feeds", publisherFeeds.asJava)
 
