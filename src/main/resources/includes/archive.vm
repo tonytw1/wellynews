@@ -2,7 +2,7 @@
 <h2>Archive</h2>
 
 #if ($site_count && $newsitem_count && $feed_count)
-        <p>Currently tracking $site_count sites, $feed_count feeds and $newsitem_count newsitems.</p>
+        <p>Currently tracking $site_count websites, $feed_count feeds and $newsitem_count newsitems.</p>
 #end
 
 <ul>
