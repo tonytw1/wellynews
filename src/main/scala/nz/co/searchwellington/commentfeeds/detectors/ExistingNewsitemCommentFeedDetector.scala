@@ -19,25 +19,28 @@ class ExistingNewsitemCommentFeedDetector @Autowired()()
   override def isValid(url: URL, source: Resource): Boolean = {
     // If a feed url matches the url of an existing newsitem with /feed appended
     // then it is probably that newsitem's comment feed
-    feedSuffixes.exists { suffix =>
-      val urlString = url.toExternalForm
-      if (urlString.endsWith(suffix)) {
-        val newsitemUrl = urlString.dropRight(suffix.length)
-        log.info("Checking for existing newsitem with url: " + newsitemUrl)
-        source match {
-          case n: Newsitem =>
+    source match {
+      case n: Newsitem =>
+        feedSuffixes.exists { suffix =>
+          val urlString = url.toExternalForm
+          if (urlString.endsWith(suffix)) {
+            val newsitemUrl = urlString.dropRight(suffix.length)
+            log.info("Checking for existing newsitem with url: " + newsitemUrl)
             if (newsitemUrl == source.page) {
               log.info(s"Feed url $url appears to be a comment feed for newsitem: " + n.page)
               true
             } else {
               false
             }
-          case _ =>
+          } else {
             false
+          }
         }
-      } else {
+
+      case _ =>
+        // This check is only applicable to newsitems
         false
-      }
     }
   }
+
 }
