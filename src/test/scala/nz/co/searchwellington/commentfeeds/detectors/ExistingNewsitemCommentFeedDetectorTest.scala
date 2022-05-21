@@ -1,6 +1,6 @@
 package nz.co.searchwellington.commentfeeds.detectors
 
-import nz.co.searchwellington.model.Newsitem
+import nz.co.searchwellington.model.{Newsitem, Website}
 import org.junit.Assert.{assertFalse, assertTrue}
 import org.junit.Test
 
@@ -16,6 +16,12 @@ class ExistingNewsitemCommentFeedDetectorTest {
 
     assertTrue(existing.isValid(new URL("https://wtmc.org.nz/trip-report/st-arnaud-range-and-the-camel/feed/"), source))
     assertTrue(existing.isValid(new URL("https://eyeofthefish.org/te-matapihi/feed/"), Newsitem(page = "https://eyeofthefish.org/te-matapihi/")))
+  }
+
+  @Test
+  def shouldGracefullyIgnoreNonNewsitemSources(): Unit = {
+    val source = Website(page = "https://wtmc.org.nz/")
+    assertFalse(existing.isValid(new URL("https://wtmc.org.nz/feed/"), source))
   }
 
   @Test

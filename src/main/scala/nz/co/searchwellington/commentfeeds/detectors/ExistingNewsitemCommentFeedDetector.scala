@@ -32,6 +32,8 @@ class ExistingNewsitemCommentFeedDetector @Autowired()()
             } else {
               false
             }
+          case _ =>
+            false
         }
       } else {
         false
