@@ -22,10 +22,10 @@ class ExistingNewsitemCommentFeedDetector @Autowired()()
     source match {
       case n: Newsitem =>
         val possibleCommentFeedUrls = feedSuffixes.map{ suffix =>
-          source.page + suffix
+          new URL(source.page + suffix)
         }
         val maybeMatchingCommentFeed = possibleCommentFeedUrls.find { possibleCommentFeedUrl =>
-          possibleCommentFeedUrl == url.toExternalForm
+          withoutProtocol(possibleCommentFeedUrl) == withoutProtocol(url)
         }
         maybeMatchingCommentFeed.foreach { commentFeedUrl =>
           log.info(s"Feed url $commentFeedUrl appears to be a comment feed for newsitem: " + n.page)
@@ -35,6 +35,14 @@ class ExistingNewsitemCommentFeedDetector @Autowired()()
       case _ =>
         // This check is only applicable to newsitems
         false
+    }
+  }
+
+  private def withoutProtocol(url: URL): String = {
+    Option(url.getProtocol).map { p =>
+      url.toExternalForm.replaceFirst(p + "://", "")
+    }.getOrElse{
+      url.toExternalForm
     }
   }
 
