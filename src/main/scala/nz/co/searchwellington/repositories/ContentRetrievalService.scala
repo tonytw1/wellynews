@@ -324,8 +324,8 @@ import scala.concurrent.{ExecutionContext, Future}
     elasticSearchIndexer.getResources(taggedWebsites, elasticSearchIndexer.byTitleAscending, loggedInUser = loggedInUser).flatMap(i => fetchByIds(i._1, loggedInUser))
   }
 
-  def getPublisherNewsitems(publisher: Website, maxItems: Int, startIndex: Int, loggedInUser: Option[User])(implicit ec: ExecutionContext): Future[(Seq[FrontendResource], Long)] = {
-    val publisherNewsitems = ResourceQuery(`type` = newsitems, publisher = Some(publisher), startIndex = startIndex, maxItems = maxItems)
+  def getPublisherNewsitems(publisher: Website, maxItems: Int, loggedInUser: Option[User])(implicit ec: ExecutionContext): Future[(Seq[FrontendResource], Long)] = {
+    val publisherNewsitems = ResourceQuery(`type` = newsitems, publisher = Some(publisher), maxItems = maxItems)
     elasticSearchIndexer.getResources(publisherNewsitems, loggedInUser = loggedInUser).flatMap(r => buildFrontendResourcesFor(r, loggedInUser))
   }
 

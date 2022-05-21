@@ -26,7 +26,7 @@ import scala.jdk.CollectionConverters._
                                                     geotaggedNewsitemExtractor: GeotaggedNewsitemExtractor,
                                                     commonAttributesModelBuilder: CommonAttributesModelBuilder,
                                                     frontendResourceMapper: FrontendResourceMapper) extends ModelBuilder
-  with CommonSizes with Pagination with ReasonableWaits with ArchiveMonths {
+  with CommonSizes with ReasonableWaits with ArchiveMonths {
 
   def isValid(request: HttpServletRequest): Boolean = {
     val tag = request.getAttribute("tag").asInstanceOf[Tag]
@@ -37,10 +37,8 @@ import scala.jdk.CollectionConverters._
 
   def populateContentModel(request: HttpServletRequest, loggedInUser: Option[User]): Future[Option[ModelAndView]] = {
 
-    def populatePublisherPageModelAndView(publisher: Website, page: Int): Future[Option[ModelAndView]] = {
-      val startIndex = getStartIndex(page, MAX_NEWSITEMS)
-
-      val eventualPublisherNewsitems = contentRetrievalService.getPublisherNewsitems(publisher, MAX_NEWSITEMS, startIndex, loggedInUser)
+    def populatePublisherPageModelAndView(publisher: Website): Future[Option[ModelAndView]] = {
+      val eventualPublisherNewsitems = contentRetrievalService.getPublisherNewsitems(publisher, MAX_NEWSITEMS, loggedInUser)
       val eventualPublisherFeeds = contentRetrievalService.getPublisherFeeds(publisher, loggedInUser)
       val eventualFrontendWebsite = frontendResourceMapper.createFrontendResourceFrom(publisher)
 
@@ -56,18 +54,12 @@ import scala.jdk.CollectionConverters._
           addObject("location", frontendWebsite.getPlace).
           addObject("link", urlBuilder.fullyQualified(urlBuilder.getPublisherUrl(publisher)))
 
-        val totalPublisherNewsitems = publisherNewsitems._2
         if (publisherNewsitems._1.nonEmpty) {
           mv.addObject(MAIN_CONTENT, publisherNewsitems._1.asJava)
           mv.addObject("main_heading", publisher.getTitle + " newsitems")
 
-          def paginationLinks(page: Int): String = {
-            urlBuilder.getPublisherPageUrl(publisher, page)
-          }
-          populatePagination(mv, startIndex, totalPublisherNewsitems, MAX_NEWSITEMS, paginationLinks)
-
           if (publisherNewsitems._2 > MAX_NEWSITEMS) {
-            val monthToLinkToForMore = monthOfLastItem(publisherNewsitems._1)
+            val monthToLinkToForMore = monthOfLastItem(publisherNewsitems._1) // TODO this is a slight off by one.
             monthToLinkToForMore.foreach { i =>
               val moreLink = PublisherArchiveLink(publisher = frontendWebsite, interval = i, count = None)
               mv.addObject("more", moreLink)
@@ -75,7 +67,6 @@ import scala.jdk.CollectionConverters._
           }
 
           commonAttributesModelBuilder.setRss(mv, rssUrlBuilder.getRssTitleForPublisher(publisher), rssUrlBuilder.getRssUrlForPublisher(publisher))
-
           populateGeotaggedItems(mv, publisherNewsitems._1) // TODO This should be a seperate query
         }
         mv.addObject("feeds", publisherFeeds.asJava)
@@ -85,8 +76,7 @@ import scala.jdk.CollectionConverters._
     }
 
     val publisher = request.getAttribute("publisher").asInstanceOf[Website]
-    val page = getPage(request)
-    populatePublisherPageModelAndView(publisher, page)
+    populatePublisherPageModelAndView(publisher)
   }
 
   def populateExtraModelContent(request: HttpServletRequest, loggedInUser: Option[User]): Future[ModelMap] = {

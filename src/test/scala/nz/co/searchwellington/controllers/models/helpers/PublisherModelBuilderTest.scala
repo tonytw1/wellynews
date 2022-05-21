@@ -45,7 +45,7 @@ class PublisherModelBuilderTest extends ReasonableWaits with ContentFields {
     val publisherFeeds = Seq(FrontendFeed(id = "789"))
 
     when(frontendResourceMapper.createFrontendResourceFrom(publisher)).thenReturn(Future.successful(frontendPublisher))
-    when(contentRetrievalService.getPublisherNewsitems(publisher, 30, 0, None)).thenReturn(Future.successful((publisherNewsitems, 1L)))
+    when(contentRetrievalService.getPublisherNewsitems(publisher, 30, None)).thenReturn(Future.successful((publisherNewsitems, 1L)))
     when(contentRetrievalService.getPublisherFeeds(publisher, None)).thenReturn(Future.successful(publisherFeeds))
 
     val mv = Await.result(modelBuilder.populateContentModel(request), TenSeconds).get
@@ -68,7 +68,7 @@ class PublisherModelBuilderTest extends ReasonableWaits with ContentFields {
     }
 
     when(frontendResourceMapper.createFrontendResourceFrom(publisher)).thenReturn(Future.successful(frontendPublisher))
-    when(contentRetrievalService.getPublisherNewsitems(publisher, 30, 0, None)).thenReturn(Future.successful((maxedOutPublisherNewsitems, 32L)))
+    when(contentRetrievalService.getPublisherNewsitems(publisher, 30, None)).thenReturn(Future.successful((maxedOutPublisherNewsitems, 32L)))
     when(contentRetrievalService.getPublisherFeeds(publisher, None)).thenReturn(Future.successful(publisherFeeds))
 
     val mv = Await.result(modelBuilder.populateContentModel(request), TenSeconds).get
@@ -88,7 +88,7 @@ class PublisherModelBuilderTest extends ReasonableWaits with ContentFields {
 
     val publisherNewsitems = Seq(newsitem, geotaggedNewsitem)
 
-    when(contentRetrievalService.getPublisherNewsitems(publisher, 30, 0, loggedInUser)).thenReturn(Future.successful((publisherNewsitems, publisherNewsitems.size.toLong)))
+    when(contentRetrievalService.getPublisherNewsitems(publisher, 30, loggedInUser)).thenReturn(Future.successful((publisherNewsitems, publisherNewsitems.size.toLong)))
     when(contentRetrievalService.getPublisherFeeds(publisher, loggedInUser)).thenReturn(Future.successful(Seq.empty))
 
     when(relatedTagsService.getRelatedTagsForPublisher(publisher, None)).thenReturn(Future.successful(Seq()))
