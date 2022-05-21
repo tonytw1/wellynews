@@ -21,21 +21,16 @@ class ExistingNewsitemCommentFeedDetector @Autowired()()
     // then it is probably that newsitem's comment feed
     source match {
       case n: Newsitem =>
-        feedSuffixes.exists { suffix =>
-          val urlString = url.toExternalForm
-          if (urlString.endsWith(suffix)) {
-            val newsitemUrl = urlString.dropRight(suffix.length)
-            log.info("Checking for existing newsitem with url: " + newsitemUrl)
-            if (newsitemUrl == source.page) {
-              log.info(s"Feed url $url appears to be a comment feed for newsitem: " + n.page)
-              true
-            } else {
-              false
-            }
-          } else {
-            false
-          }
+        val possibleCommentFeedUrls = feedSuffixes.map{ suffix =>
+          source.page + suffix
         }
+        val maybeMatchingCommentFeed = possibleCommentFeedUrls.find { possibleCommentFeedUrl =>
+          possibleCommentFeedUrl == url.toExternalForm
+        }
+        maybeMatchingCommentFeed.foreach { commentFeedUrl =>
+          log.info(s"Feed url $commentFeedUrl appears to be a comment feed for newsitem: " + n.page)
+        }
+        maybeMatchingCommentFeed.nonEmpty
 
       case _ =>
         // This check is only applicable to newsitems
