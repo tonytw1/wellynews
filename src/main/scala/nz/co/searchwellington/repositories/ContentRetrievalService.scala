@@ -353,6 +353,12 @@ import scala.concurrent.{ExecutionContext, Future}
     mongoRepository.getDiscoveredFeedsForPublisher(publisher._id, Integer.MAX_VALUE)
   }
 
+  def getPublishedResourcesMatchingHostname(hostname: String): Future[Seq[Resource]] = {
+    // TODO hostname is indexed in elastic; this should be an elastic query.
+    // sessionFactory.getCurrentSession.createCriteria(classOf[Newsitem]).add(Restrictions.sqlRestriction(" page like \"%" + stem + "%\" ")).addOrder(Order.asc("name")).list.asInstanceOf[List[Resource]]
+    Future.successful(Seq.empty) // TODO implement
+  }
+
   def getTagNamesStartingWith(q: String)(implicit ec: ExecutionContext): Future[Seq[String]] = tagDAO.getTagNamesStartingWith(q)
 
   def getFeaturedTags()(implicit ec: ExecutionContext): Future[Seq[Tag]] = tagDAO.getFeaturedTags
