@@ -40,7 +40,7 @@ import scala.jdk.CollectionConverters._
               addObject("heading", "Auto Gathering")
               .addObject("publisher", frontendPublisher)
 
-            val gathered = getPossibleGatheredResources(publisher).filter { resource =>
+            val gathered = getPossibleGatheredResources(publisher, loggedInUser).filter { resource =>
               needsPublisher(resource.asInstanceOf[Newsitem], publisher)
             }
             mv.addObject("gathered", gathered.asJava)
@@ -88,9 +88,9 @@ import scala.jdk.CollectionConverters._
     ???
   }
 
-  private def getPossibleGatheredResources(publisher: Resource): Seq[Resource] = {
+  private def getPossibleGatheredResources(publisher: Resource, loggedInUser: User): Seq[Resource] = {
     val publishersHostname = urlParser.extractHostnameFrom(publisher.page)
-    val newsitemsByHostname = Await.result(contentRetrievalService.getPublishedResourcesMatchingHostname(publishersHostname), TenSeconds)
+    val newsitemsByHostname = Await.result(contentRetrievalService.getPublishedResourcesMatchingHostname(publishersHostname, Some(loggedInUser)), TenSeconds)
     log.info("Gathered " + newsitemsByHostname.size + " newsitems by hostname: " + publishersHostname)
     newsitemsByHostname
   }

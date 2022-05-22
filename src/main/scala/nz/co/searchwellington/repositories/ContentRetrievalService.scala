@@ -29,6 +29,7 @@ import scala.concurrent.{ExecutionContext, Future}
   private val newsitems = Some(Set("N"))
   private val watchlists = Some(Set("L"))
   private val websites = Some(Set("W"))
+  private val published = Some(Set("N", "W", "L"))
 
   private val allNewsitems = ResourceQuery(`type` = newsitems)
 
@@ -353,10 +354,10 @@ import scala.concurrent.{ExecutionContext, Future}
     mongoRepository.getDiscoveredFeedsForPublisher(publisher._id, Integer.MAX_VALUE)
   }
 
-  def getPublishedResourcesMatchingHostname(hostname: String): Future[Seq[Resource]] = {
-    // TODO hostname is indexed in elastic; this should be an elastic query.
+  def getPublishedResourcesMatchingHostname(hostname: String, loggedInUser: Option[User])(implicit ec: ExecutionContext): Future[Seq[Resource]] = {
     // sessionFactory.getCurrentSession.createCriteria(classOf[Newsitem]).add(Restrictions.sqlRestriction(" page like \"%" + stem + "%\" ")).addOrder(Order.asc("name")).list.asInstanceOf[List[Resource]]
-    Future.successful(Seq.empty) // TODO implement
+    val publisherResourcesToGather = ResourceQuery(`type` = published, hostname = Some(hostname)) // TODO and publisher is not set; or not the correct publisher
+    elasticSearchIndexer.getResources(query = publisherResourcesToGather, loggedInUser = loggedInUser).flatMap(i => fetchResourcesByIds(i._1))
   }
 
   def getTagNamesStartingWith(q: String)(implicit ec: ExecutionContext): Future[Seq[String]] = tagDAO.getTagNamesStartingWith(q)
