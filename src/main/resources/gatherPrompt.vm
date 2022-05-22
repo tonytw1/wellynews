@@ -9,13 +9,13 @@
 	</div>
 
 	<div class="main">
-		<h2>Gathering newsitems for publisher $publisher.name</h2>
+		<h2>Gathering newsitems for $publisher.name</h2>
 	
 		<p>The following newsitems might belong to this publisher:</p>
-	
-		<form method="POST" action="$siteInformation.url/admin/gather/apply">
+
+		<form action="$adminUrlBuilder.getPublisherAutoGatherUrl($publisher)" method="POST">
 			<ul class="flat_list">
-				#foreach($item in $resources_to_tag)
+				#foreach($item in $gathered)
 					<li>#parse("includes/content_element.vm")
 					<ul>
 						<li><input name="autotag" value="$item.id" type="checkbox" checked> apply publisher</li>

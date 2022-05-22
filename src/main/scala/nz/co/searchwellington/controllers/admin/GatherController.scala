@@ -2,8 +2,8 @@ package nz.co.searchwellington.controllers.admin
 
 import nz.co.searchwellington.ReasonableWaits
 import nz.co.searchwellington.controllers.{CommonModelObjectsService, LoggedInUserFilter, RequiringLoggedInUser}
-import nz.co.searchwellington.filters.AdminRequestFilter
 import nz.co.searchwellington.model._
+import nz.co.searchwellington.model.mappers.FrontendResourceMapper
 import nz.co.searchwellington.modification.ContentUpdateService
 import nz.co.searchwellington.repositories.ContentRetrievalService
 import nz.co.searchwellington.repositories.mongo.MongoRepository
@@ -15,18 +15,19 @@ import org.springframework.web.bind.annotation.{GetMapping, PathVariable, PostMa
 import org.springframework.web.servlet.ModelAndView
 
 import javax.servlet.http.{HttpServletRequest, HttpServletResponse}
-import scala.concurrent.{Await, Future}
+import scala.concurrent.Await
 import scala.concurrent.ExecutionContext.Implicits.global
+import scala.jdk.CollectionConverters._
 
-@Controller class PublisherAutoGatherController @Autowired()(requestFilter: AdminRequestFilter,
-                                                             mongoRepository: MongoRepository,
-                                                             contentUpdateService: ContentUpdateService,
-                                                             urlParser: UrlParser,
-                                                             val contentRetrievalService: ContentRetrievalService,
-                                                             val loggedInUserFilter: LoggedInUserFilter) extends
+@Controller class GatherController @Autowired()(mongoRepository: MongoRepository,
+                                                contentUpdateService: ContentUpdateService,
+                                                urlParser: UrlParser,
+                                                val contentRetrievalService: ContentRetrievalService,
+                                                val frontendResourceMapper: FrontendResourceMapper,
+                                                val loggedInUserFilter: LoggedInUserFilter) extends
   ReasonableWaits with CommonModelObjectsService with RequiringLoggedInUser {
 
-  private val log = LogFactory.getLog(classOf[PublisherAutoGatherController])
+  private val log = LogFactory.getLog(classOf[GatherController])
 
   @GetMapping(Array("/admin/gather/{id}"))
   def prompt(@PathVariable id: String): ModelAndView = {
@@ -34,14 +35,15 @@ import scala.concurrent.ExecutionContext.Implicits.global
       Await.result(mongoRepository.getResourceById(id).map { maybeResource =>
         maybeResource.map {
           case publisher: Website =>
-            val mv = new ModelAndView("autoGatherPrompt").
+            val frontendPublisher = Await.result(frontendResourceMapper.createFrontendResourceFrom(publisher), TenSeconds)
+            val mv = new ModelAndView("gatherPrompt").
               addObject("heading", "Auto Gathering")
-              .addObject("publisher", publisher)
+              .addObject("publisher", frontendPublisher)
 
-            val resourcesToAutoTag = getPossibleAutotagResources(publisher).filter { resource =>
+            val gathered = getPossibleAutotagResources(publisher).filter { resource =>
               needsPublisher(resource.asInstanceOf[Newsitem], publisher)
             }
-            mv.addObject("resources_to_tag", resourcesToAutoTag)
+            mv.addObject("gathered", gathered.asJava)
           case _ =>
             null
         }
@@ -53,9 +55,11 @@ import scala.concurrent.ExecutionContext.Implicits.global
 
   @PostMapping(Array("/admin/gather/apply"))
   def apply(request: HttpServletRequest, response: HttpServletResponse): ModelAndView = {
+    /*
     def apply(loggedInUser: User): ModelAndView = {
       val mv = new ModelAndView("autoGatherApply").
         addObject("heading", "Auto Gathering")
+
 
       requestFilter.loadAttributesOntoRequest(request)
       val publisher = request.getAttribute("publisher").asInstanceOf[Website]
@@ -80,11 +84,15 @@ import scala.concurrent.ExecutionContext.Implicits.global
     }
 
     requiringAdminUser(apply)
+    */
+    ???
   }
 
   private def getPossibleAutotagResources(publisher: Resource): Seq[Resource] = {
     val publishersHostname = urlParser.extractHostnameFrom(publisher.page)
-    Await.result(mongoRepository.getNewsitemsMatchingHostname(publishersHostname), TenSeconds)
+    val newsitemsByHostname = Await.result(mongoRepository.getNewsitemsMatchingHostname(publishersHostname), TenSeconds)
+    log.info("Found " + newsitemsByHostname.size + " newsitems by hostname: " + publishersHostname)
+    newsitemsByHostname
   }
 
   private def needsPublisher(resource: Newsitem, proposedPublisher: Website): Boolean = {
