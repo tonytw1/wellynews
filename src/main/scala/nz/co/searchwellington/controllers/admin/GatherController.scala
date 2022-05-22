@@ -90,7 +90,7 @@ import scala.jdk.CollectionConverters._
 
   private def getPossibleAutotagResources(publisher: Resource): Seq[Resource] = {
     val publishersHostname = urlParser.extractHostnameFrom(publisher.page)
-    val newsitemsByHostname = Await.result(mongoRepository.getNewsitemsMatchingHostname(publishersHostname), TenSeconds)
+    val newsitemsByHostname = Await.result(mongoRepository.getPublishedResourcesMatchingHostname(publishersHostname), TenSeconds)
     log.info("Found " + newsitemsByHostname.size + " newsitems by hostname: " + publishersHostname)
     newsitemsByHostname
   }

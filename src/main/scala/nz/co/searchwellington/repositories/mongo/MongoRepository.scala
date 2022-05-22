@@ -430,7 +430,8 @@ class MongoRepository @Autowired()(@Value("${mongo.uri}") mongoUri: String) exte
     }
   }
 
-  def getNewsitemsMatchingHostname(stem: String): Future[Seq[Resource]] = {
+  def getPublishedResourcesMatchingHostname(stem: String): Future[Seq[Resource]] = {
+    // TODO hostname is indexed in elastic; this should be an elastic query.
     // sessionFactory.getCurrentSession.createCriteria(classOf[Newsitem]).add(Restrictions.sqlRestriction(" page like \"%" + stem + "%\" ")).addOrder(Order.asc("name")).list.asInstanceOf[List[Resource]]
     Future.successful(Seq.empty) // TODO implement
   }
