@@ -11,7 +11,6 @@ For example:
 - [Consultation about the Central Library](https://wellington.gen.nz/consultation+central-library) (a tag combiner feed)
 - Newsitems published by [Wellington City Council about the draft spatial plan](https://wellington.gen.nz/wellington-city-council+draft-spatial-plan) (a publisher tag combiner feed).
 
-
 This a long running project (> 10 years of continuous operation) and the code base has changed alot over the years.
 
 Currently implemented as Scala controllers served from Spring Boot and built with Maven.
@@ -146,7 +145,9 @@ tag's autotagging rules.
 
 #### Gather publisher resources
 
-Given a publisher, find newsitems and feeds which based on their urls should be assigned to this publisher.
+Given a publisher find unassigned newsitems and feeds which probably belong to this publisher.
+
+This decision is based on url hostnames.
 
 
 ## Local dev

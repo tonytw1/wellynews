@@ -69,8 +69,8 @@ class AdminUrlBuilder @Autowired()(urlBuilder: UrlBuilder, @Value("${whakaoko.ur
     "/suppress/unsuppress?url=" + UrlParameterEncoder.encode(newsitem.getUrl)
   }
 
-  def getPublisherAutoGatherUrl(resource: FrontendWebsite): String = {
-    Option(urlBuilder.getResourceUrl(resource)).map(_ + "/gather").orNull
+  def getPublisherAutoGatherUrl(publisher: FrontendWebsite): String = {
+    "/admin/gather/" + publisher.id
   }
 
   def getAddTagUrl: String = "/new-tag"

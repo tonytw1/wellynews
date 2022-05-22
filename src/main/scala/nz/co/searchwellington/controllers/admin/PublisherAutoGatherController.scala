@@ -11,11 +11,11 @@ import nz.co.searchwellington.urls.UrlParser
 import org.apache.commons.logging.LogFactory
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Controller
-import org.springframework.web.bind.annotation.{GetMapping, PostMapping}
+import org.springframework.web.bind.annotation.{GetMapping, PathVariable, PostMapping}
 import org.springframework.web.servlet.ModelAndView
 
 import javax.servlet.http.{HttpServletRequest, HttpServletResponse}
-import scala.concurrent.Await
+import scala.concurrent.{Await, Future}
 import scala.concurrent.ExecutionContext.Implicits.global
 
 @Controller class PublisherAutoGatherController @Autowired()(requestFilter: AdminRequestFilter,
@@ -28,22 +28,24 @@ import scala.concurrent.ExecutionContext.Implicits.global
 
   private val log = LogFactory.getLog(classOf[PublisherAutoGatherController])
 
-  @GetMapping(Array("/admin/gather/prompt"))  // TODO incorrect path
-  def prompt(request: HttpServletRequest): ModelAndView = {
+  @GetMapping(Array("/admin/gather/{id}"))
+  def prompt(@PathVariable id: String): ModelAndView = {
     def prompt(loggedInUser: User): ModelAndView = {
-      val mv = new ModelAndView("autoGatherPrompt").
-        addObject("heading", "Auto Gathering")
+      Await.result(mongoRepository.getResourceById(id).map { maybeResource =>
+        maybeResource.map {
+          case publisher: Website =>
+            val mv = new ModelAndView("autoGatherPrompt").
+              addObject("heading", "Auto Gathering")
+              .addObject("publisher", publisher)
 
-      requestFilter.loadAttributesOntoRequest(request)
-      val publisher = request.getAttribute("publisher").asInstanceOf[Website]
-      mv.addObject("publisher", publisher)
-      if (publisher != null) {
-        val resourcesToAutoTag = getPossibleAutotagResources(publisher).filter { resource =>
-          needsPublisher(resource.asInstanceOf[Newsitem], publisher)
+            val resourcesToAutoTag = getPossibleAutotagResources(publisher).filter { resource =>
+              needsPublisher(resource.asInstanceOf[Newsitem], publisher)
+            }
+            mv.addObject("resources_to_tag", resourcesToAutoTag)
+          case _ =>
+            null
         }
-        mv.addObject("resources_to_tag", resourcesToAutoTag)
-      }
-      mv
+      }, TenSeconds).orNull
     }
 
     requiringAdminUser(prompt)
