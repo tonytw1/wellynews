@@ -29,7 +29,7 @@ import scala.concurrent.{ExecutionContext, Future}
   private val newsitems = Some(Set("N"))
   private val watchlists = Some(Set("L"))
   private val websites = Some(Set("W"))
-  private val published = Some(Set("N", "W", "L"))
+  private val published = Some(Set("N", "F", "L"))
 
   private val allNewsitems = ResourceQuery(`type` = newsitems)
 
