@@ -41,7 +41,7 @@ import scala.jdk.CollectionConverters._
               .addObject("publisher", frontendPublisher)
 
             val gathered = getPossibleGatheredResources(publisher, loggedInUser).filter { resource =>
-              needsPublisher(resource.asInstanceOf[Newsitem], publisher)
+              needsPublisher(resource, publisher)
             }
             mv.addObject("gathered", gathered.asJava)
           case _ =>
@@ -95,9 +95,14 @@ import scala.jdk.CollectionConverters._
     newsitemsByHostname
   }
 
-  private def needsPublisher(resource: Newsitem, proposedPublisher: Website): Boolean = {
+  private def needsPublisher(resource: Resource, proposedPublisher: Website): Boolean = { // TODO inline this filter into the query
     // Apply the new publisher if the resource currently has no publisher or a different publisher
-    !resource.publisher.contains(proposedPublisher._id) // TODO inline this into the query
+    resource match {
+      case published: PublishedResource =>
+        !published.publisher.contains(proposedPublisher._id)
+      case _ =>
+        false
+    }
   }
 
 }
