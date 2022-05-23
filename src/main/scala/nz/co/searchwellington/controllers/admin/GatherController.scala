@@ -15,7 +15,7 @@ import org.springframework.web.bind.annotation.{GetMapping, PathVariable, PostMa
 import org.springframework.web.servlet.ModelAndView
 
 import javax.servlet.http.{HttpServletRequest, HttpServletResponse}
-import scala.concurrent.Await
+import scala.concurrent.{Await, Future}
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.jdk.CollectionConverters._
 
@@ -43,7 +43,14 @@ import scala.jdk.CollectionConverters._
             val gathered = getPossibleGatheredResources(publisher, loggedInUser).filter { resource =>
               needsPublisher(resource, publisher)
             }
-            mv.addObject("gathered", gathered.asJava)
+
+            val frontendGathered = Await.result(Future.sequence {
+              gathered.map { resource =>
+                frontendResourceMapper.createFrontendResourceFrom(resource, Some(loggedInUser))
+              }
+            }, TenSeconds)
+            mv.addObject("gathered", frontendGathered.asJava)
+
           case _ =>
             null
         }
