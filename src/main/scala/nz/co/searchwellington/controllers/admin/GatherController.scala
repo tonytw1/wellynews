@@ -14,9 +14,9 @@ import org.springframework.stereotype.Controller
 import org.springframework.web.bind.annotation.{GetMapping, PathVariable, PostMapping}
 import org.springframework.web.servlet.ModelAndView
 
-import javax.servlet.http.{HttpServletRequest, HttpServletResponse}
-import scala.concurrent.{Await, Future}
+import javax.servlet.http.HttpServletRequest
 import scala.concurrent.ExecutionContext.Implicits.global
+import scala.concurrent.{Await, Future}
 import scala.jdk.CollectionConverters._
 
 @Controller class GatherController @Autowired()(mongoRepository: MongoRepository,
@@ -60,39 +60,33 @@ import scala.jdk.CollectionConverters._
     requiringAdminUser(prompt)
   }
 
-  @PostMapping(Array("/admin/gather/apply"))
-  def apply(request: HttpServletRequest, response: HttpServletResponse): ModelAndView = {
-    /*
+  @PostMapping(Array("/admin/gather/{id}"))
+  def apply(@PathVariable id: String, request: HttpServletRequest): ModelAndView = {
     def apply(loggedInUser: User): ModelAndView = {
-      val mv = new ModelAndView("autoGatherApply").
-        addObject("heading", "Auto Gathering")
-
-
-      requestFilter.loadAttributesOntoRequest(request)
-      val publisher = request.getAttribute("publisher").asInstanceOf[Website]
-      mv.addObject("publisher", publisher)
-      if (publisher != null) {
-        val autotaggedResourceIds = request.getParameterValues("autotag") // TODO parameter name
-        val resources = autotaggedResourceIds.flatMap(id => Await.result(mongoRepository.getResourceById(id), TenSeconds))
-        val autotaggedNewsitems = resources.filter(resource => resource.`type` == "N").map { newsitem =>
-          log.info("Applying publisher " + publisher.title + " to:" + newsitem.title)
-          newsitem match {
-            case p: PublishedResource => p.setPublisher(publisher)
+      Await.result({
+        mongoRepository.getResourceById(id).map { maybeResource =>
+          maybeResource.map {
+            case publisher: Website =>
+              val autotaggedResourceIds = request.getParameterValues("autotag") // TODO parameter name
+              val resources = autotaggedResourceIds.flatMap(id => Await.result(mongoRepository.getResourceById(id), TenSeconds))
+              resources.foreach { resource =>
+                resource match {
+                  case published: PublishedResource =>
+                    log.info("Applying publisher " + publisher.title + " to:" + publisher.title)
+                    published.setPublisher(publisher)
+                    Await.result(contentUpdateService.update(published), TenSeconds)
+                  case _ =>
+                }
+              }
+              new ModelAndView("autoGatherApply")
             case _ =>
-          }
-          contentUpdateService.update(newsitem)
-          newsitem
+              null
+          }.orNull
         }
-
-        mv.addObject("resources_to_tag", autotaggedNewsitems)
-      }
-
-      mv
+      }, TenSeconds)
     }
 
     requiringAdminUser(apply)
-    */
-    ???
   }
 
   private def getPossibleGatheredResources(publisher: Resource, loggedInUser: User): Seq[Resource] = {
