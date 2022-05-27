@@ -40,10 +40,7 @@ import scala.jdk.CollectionConverters._
               addObject("heading", "Auto Gathering")
               .addObject("publisher", frontendPublisher)
 
-            val gathered = getPossibleGatheredResources(publisher, loggedInUser).filter { resource =>
-              needsPublisher(resource, publisher)
-            }
-
+            val gathered = getPossibleGatheredResources(publisher, loggedInUser)
             val frontendGathered = Await.result(Future.sequence {
               gathered.map { resource =>
                 frontendResourceMapper.createFrontendResourceFrom(resource, Some(loggedInUser))
@@ -89,21 +86,11 @@ import scala.jdk.CollectionConverters._
     requiringAdminUser(apply)
   }
 
-  private def getPossibleGatheredResources(publisher: Resource, loggedInUser: User): Seq[Resource] = {
+  private def getPossibleGatheredResources(publisher: Website, loggedInUser: User): Seq[Resource] = {
     val publishersHostname = urlParser.extractHostnameFrom(publisher.page)
-    val newsitemsByHostname = Await.result(contentRetrievalService.getPublishedResourcesMatchingHostname(publishersHostname, Some(loggedInUser)), TenSeconds)
-    log.info("Gathered " + newsitemsByHostname.size + " newsitems by hostname: " + publishersHostname)
+    val newsitemsByHostname = Await.result(contentRetrievalService.getPublishedResourcesMatchingHostname(publisher, publishersHostname, Some(loggedInUser)), TenSeconds)
+    log.info("Gathered " + newsitemsByHostname.size + " newsitems for publisher: " + publisher.title)
     newsitemsByHostname
-  }
-
-  private def needsPublisher(resource: Resource, proposedPublisher: Website): Boolean = { // TODO inline this filter into the query
-    // Apply the new publisher if the resource currently has no publisher or a different publisher
-    resource match {
-      case published: PublishedResource =>
-        !published.publisher.contains(proposedPublisher._id)
-      case _ =>
-        false
-    }
   }
 
 }

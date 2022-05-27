@@ -284,6 +284,9 @@ class ElasticSearchIndexer @Autowired()(val showBrokenDecisionService: ShowBroke
       },
       query.hostname.map { h =>
         matchQuery(Hostname, h)
+      },
+      query.notPublishedBy.map { p =>
+        not(matchQuery(Publisher, p._id.stringify))
       }
     ).flatten
 

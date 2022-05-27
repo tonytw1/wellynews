@@ -40,7 +40,7 @@ class GatherControllerTest {
     when(mongoRepository.getResourceById(Matchers.eq(publisher.id))(any)).thenReturn(Future.successful(Some(publisher)))
     when(frontendResourceMapper.createFrontendResourceFrom(Matchers.eq(publisher), any)(any)).thenReturn(Future.successful(frontendPublisher))
     val gatheredResources = Seq.empty
-    when(contentRetrievalService.getPublishedResourcesMatchingHostname("www.foo.com", Some(adminUser))).thenReturn(Future.successful(gatheredResources))
+    when(contentRetrievalService.getPublishedResourcesMatchingHostname(publisher, "www.foo.com", Some(adminUser))).thenReturn(Future.successful(gatheredResources))
 
     val mv: ModelAndView = controller.prompt(publisher.id)
 

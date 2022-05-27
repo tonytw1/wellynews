@@ -20,6 +20,7 @@ case class ResourceQuery(`type`: Option[Set[String]] = None,
                          held: Option[Boolean] = None,
                          hostname: Option[String] = None,
                          before: Option[DateTime] = None,
+                         notPublishedBy: Option[Website] = None
                         )
 
 case class Circle(centre: LatLong, radius: Double)
