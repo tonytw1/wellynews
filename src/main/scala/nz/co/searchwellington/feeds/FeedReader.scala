@@ -21,12 +21,9 @@ import scala.concurrent.{ExecutionContext, Future}
 
   private val log = LogFactory.getLog(classOf[FeedReader])
 
-  def processFeed(feed: Feed, loggedInUser: User)(implicit ec: ExecutionContext): Future[Int] = {
-    processFeed(feed, loggedInUser, feed.getAcceptancePolicy)
-  }
-
-  def processFeed(feed: Feed, readingUser: User, acceptancePolicy: FeedAcceptancePolicy)(implicit ec: ExecutionContext): Future[Int] = {
+  def processFeed(feed: Feed, readingUser: User, overriddenAcceptancePolicy: Option[FeedAcceptancePolicy] = None)(implicit ec: ExecutionContext): Future[Int] = {
     try {
+      val acceptancePolicy = overriddenAcceptancePolicy.getOrElse(feed.acceptance)
       log.debug(s"Processing feed: ${feed.title} using acceptance policy $acceptancePolicy. Last read: " + feed.last_read.getOrElse(""))
       whakaokoFeedReader.fetchFeedItems(feed).flatMap { feedItemsFetch =>
         feedItemsFetch.fold({ l =>
@@ -68,7 +65,6 @@ import scala.concurrent.{ExecutionContext, Future}
         Future.failed(e)
     }
   }
-
 
   private def processFeedItems(feed: Feed, feedReaderUser: User, acceptancePolicy: FeedAcceptancePolicy, feedItems: Seq[FeedItem])(implicit ec: ExecutionContext): Future[Seq[Resource]] = {
     val eventualProcessed = feedItems.map { feedItem =>

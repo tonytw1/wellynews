@@ -32,7 +32,7 @@ import scala.concurrent.ExecutionContext.Implicits.global
         log.warn("Not allowed to read this feed") // TODO return http auth error
         throw new RuntimeException("Not allowed")
       }
-      feedReader.processFeed(feed, loggedInUser, FeedAcceptancePolicy.ACCEPT_EVEN_WITHOUT_DATES)
+      feedReader.processFeed(feed, loggedInUser, Some(FeedAcceptancePolicy.ACCEPT_EVEN_WITHOUT_DATES))
       new ModelAndView(new RedirectView(urlBuilder.getFeedUrl(feed)))
     }
 
