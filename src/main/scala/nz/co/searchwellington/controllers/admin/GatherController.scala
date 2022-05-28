@@ -32,26 +32,30 @@ import scala.jdk.CollectionConverters._
   @GetMapping(Array("/admin/gather/{id}"))
   def prompt(@PathVariable id: String): ModelAndView = {
     def prompt(loggedInUser: User): ModelAndView = {
-      Await.result(mongoRepository.getResourceById(id).map { maybeResource =>
+      val eventualModelAndView = mongoRepository.getResourceById(id).flatMap { maybeResource =>
         maybeResource.map {
           case publisher: Website =>
-            val frontendPublisher = Await.result(frontendResourceMapper.createFrontendResourceFrom(publisher), TenSeconds)
-            val mv = new ModelAndView("gatherPrompt").
-              addObject("heading", "Auto Gathering")
-              .addObject("publisher", frontendPublisher)
-
-            val gathered = getPossibleGatheredResources(publisher, loggedInUser)
-            val frontendGathered = Await.result(Future.sequence {
-              gathered.map { resource =>
-                frontendResourceMapper.createFrontendResourceFrom(resource, Some(loggedInUser))
+            for {
+              frontendPublisher <- frontendResourceMapper.createFrontendResourceFrom(publisher)
+              gathered <- getPossibleGatheredResources(publisher, loggedInUser)
+              frontendGathered <- Future.sequence {
+                gathered.map { resource =>
+                  frontendResourceMapper.createFrontendResourceFrom(resource, Some(loggedInUser))
+                }
               }
-            }, TenSeconds)
-            mv.addObject("gathered", frontendGathered.asJava)
-
+            } yield {
+              new ModelAndView("gatherPrompt")
+                .addObject("heading", "Auto Gathering")
+                .addObject("publisher", frontendPublisher)
+                .addObject("gathered", frontendGathered.asJava)
+            }
           case _ =>
-            null
+            Future.successful(null)
+        }.getOrElse {
+          Future.successful(null)
         }
-      }, TenSeconds).orNull
+      }
+      Await.result(eventualModelAndView, TenSeconds)
     }
 
     requiringAdminUser(prompt)
@@ -84,11 +88,12 @@ import scala.jdk.CollectionConverters._
     requiringAdminUser(apply)
   }
 
-  private def getPossibleGatheredResources(publisher: Website, loggedInUser: User): Seq[Resource] = {
+  private def getPossibleGatheredResources(publisher: Website, loggedInUser: User): Future[Seq[Resource]] = {
     val publishersHostname = urlParser.extractHostnameFrom(publisher.page)
-    val newsitemsByHostname = Await.result(contentRetrievalService.getPublishedResourcesMatchingHostname(publisher, publishersHostname, Some(loggedInUser)), TenSeconds)
-    log.info("Gathered " + newsitemsByHostname.size + " newsitems for publisher: " + publisher.title)
-    newsitemsByHostname
+    contentRetrievalService.getPublishedResourcesMatchingHostname(publisher, publishersHostname, Some(loggedInUser)).map { gathered =>
+      log.info("Found  " + gathered.size + " newsitems to gather for publisher: " + publisher.title)
+      gathered
+    }
   }
 
 }
