@@ -381,7 +381,7 @@ class MongoRepository @Autowired()(@Value("${mongo.uri}") mongoUri: String) exte
   }
 
   def getDiscoveredFeedsForPublisher(publisher: BSONObjectID, maxNumber: Int)(implicit ec: ExecutionContext): Future[Seq[DiscoveredFeed]] = {
-    val selector = BSONDocument("hostname" -> publisher)
+    val selector = BSONDocument("publisher" -> publisher)
     discoveredFeedCollection.find(selector, noProjection).cursor[DiscoveredFeed]().
       collect[List](maxDocs = maxNumber, err = Cursor.FailOnError[List[DiscoveredFeed]]())
   }
