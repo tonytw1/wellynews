@@ -77,7 +77,7 @@ import scala.jdk.CollectionConverters._
                   Await.result(contentUpdateService.update(published), TenSeconds)
                 case _ =>
               }
-              new ModelAndView("autoGatherApply")
+              new ModelAndView("gatherApply")
             case _ =>
               null
           }.orNull
