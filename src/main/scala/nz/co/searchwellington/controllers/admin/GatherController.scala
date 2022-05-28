@@ -66,14 +66,12 @@ import scala.jdk.CollectionConverters._
             case publisher: Website =>
               val autotaggedResourceIds = request.getParameterValues("autotag") // TODO parameter name
               val resources = autotaggedResourceIds.flatMap(id => Await.result(mongoRepository.getResourceById(id), TenSeconds))
-              resources.foreach { resource =>
-                resource match {
-                  case published: PublishedResource =>
-                    log.info("Applying publisher " + publisher.title + " to:" + publisher.title)
-                    published.setPublisher(publisher)
-                    Await.result(contentUpdateService.update(published), TenSeconds)
-                  case _ =>
-                }
+              resources.foreach {
+                case published: PublishedResource =>
+                  log.info("Applying publisher " + publisher.title + " to:" + publisher.title)
+                  published.setPublisher(publisher)
+                  Await.result(contentUpdateService.update(published), TenSeconds)
+                case _ =>
               }
               new ModelAndView("autoGatherApply")
             case _ =>
