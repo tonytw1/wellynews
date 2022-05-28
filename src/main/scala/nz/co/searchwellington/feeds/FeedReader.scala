@@ -33,13 +33,13 @@ import scala.concurrent.{ExecutionContext, Future}
           log.warn("Could not fetch feed items for feed + '" + feed.title + "':" + l)
           Future.successful(0)
 
-        }, { feedNewsitems =>
-          log.debug("Feed contains " + feedNewsitems._1.size + " items from " + feedNewsitems._2 + " total items")
-          val inferredHttpStatus = if (feedNewsitems._1.nonEmpty) 200 else -3
+        }, { fetchedFeedItems =>
+          val (feedNewsitems, total) = fetchedFeedItems
+          log.debug("Feed contains " + feedNewsitems.size + " items from " + total + " total items")
 
           val eventuallyAcceptedNewsitems = {
             if (acceptancePolicy.shouldReadFeed) {
-              processFeedItems(feed, readingUser, acceptancePolicy, feedNewsitems._1)
+              processFeedItems(feed, readingUser, acceptancePolicy, feedNewsitems)
             } else {
               Future.successful(Seq.empty)
             }
@@ -50,9 +50,10 @@ import scala.concurrent.{ExecutionContext, Future}
               log.info("Accepted " + acceptedNewsitems.size + " newsitems from " + feed.title)
             }
 
+            val inferredHttpStatus = if (feedNewsitems.nonEmpty) 200 else -3
             contentUpdateService.update(feed.copy(
               last_read = Some(DateTime.now.toDate),
-              latestItemDate = latestPublicationDateOf(feedNewsitems._1),
+              latestItemDate = latestPublicationDateOf(feedNewsitems),
               http_status = inferredHttpStatus
             )).map { _ =>
               acceptedNewsitems.size
