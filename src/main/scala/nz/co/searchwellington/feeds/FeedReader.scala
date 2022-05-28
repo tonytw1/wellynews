@@ -26,45 +26,48 @@ import scala.concurrent.{ExecutionContext, Future}
   }
 
   def processFeed(feed: Feed, readingUser: User, acceptancePolicy: FeedAcceptancePolicy)(implicit ec: ExecutionContext): Future[Int] = {
-    if (acceptancePolicy.shouldReadFeed) {
-      try {
-        log.debug(s"Processing feed: ${feed.title} using acceptance policy $acceptancePolicy. Last read: " + feed.last_read.getOrElse(""))
-        whakaokoFeedReader.fetchFeedItems(feed).flatMap { feedItemsFetch =>
-          feedItemsFetch.fold({ l =>
-            log.warn("Could not fetch feed items for feed + '" + feed.title + "':" + l)
-            Future.successful(0)
+    try {
+      log.debug(s"Processing feed: ${feed.title} using acceptance policy $acceptancePolicy. Last read: " + feed.last_read.getOrElse(""))
+      whakaokoFeedReader.fetchFeedItems(feed).flatMap { feedItemsFetch =>
+        feedItemsFetch.fold({ l =>
+          log.warn("Could not fetch feed items for feed + '" + feed.title + "':" + l)
+          Future.successful(0)
 
-          }, { feedNewsitems =>
-            log.debug("Feed contains " + feedNewsitems._1.size + " items from " + feedNewsitems._2 + " total items")
-            val inferredHttpStatus = if (feedNewsitems._1.nonEmpty) 200 else -3
+        }, { feedNewsitems =>
+          log.debug("Feed contains " + feedNewsitems._1.size + " items from " + feedNewsitems._2 + " total items")
+          val inferredHttpStatus = if (feedNewsitems._1.nonEmpty) 200 else -3
 
-            val eventuallyAcceptedNewsitems = processFeedItems(feed, readingUser, acceptancePolicy, feedNewsitems._1)
-            eventuallyAcceptedNewsitems.flatMap { acceptedNewsitems =>
-              if (acceptedNewsitems.nonEmpty) {
-                log.info("Accepted " + acceptedNewsitems.size + " newsitems from " + feed.title)
-              }
-
-              contentUpdateService.update(feed.copy(
-                last_read = Some(DateTime.now.toDate),
-                latestItemDate = latestPublicationDateOf(feedNewsitems._1),
-                http_status = inferredHttpStatus
-              )).map { _ =>
-                acceptedNewsitems.size
-              }
+          val eventuallyAcceptedNewsitems = {
+            if (acceptancePolicy.shouldReadFeed) {
+              processFeedItems(feed, readingUser, acceptancePolicy, feedNewsitems._1)
+            } else {
+              Future.successful(Seq.empty)
             }
-          })
-        }
+          }
 
-      } catch {
-        case e: Exception =>
-          log.error(e, e)
-          Future.failed(e)
+          eventuallyAcceptedNewsitems.flatMap { acceptedNewsitems =>
+            if (acceptedNewsitems.nonEmpty) {
+              log.info("Accepted " + acceptedNewsitems.size + " newsitems from " + feed.title)
+            }
+
+            contentUpdateService.update(feed.copy(
+              last_read = Some(DateTime.now.toDate),
+              latestItemDate = latestPublicationDateOf(feedNewsitems._1),
+              http_status = inferredHttpStatus
+            )).map { _ =>
+              acceptedNewsitems.size
+            }
+          }
+        })
       }
 
-    } else {
-      Future.successful(0)
+    } catch {
+      case e: Exception =>
+        log.error(e, e)
+        Future.failed(e)
     }
   }
+
 
   private def processFeedItems(feed: Feed, feedReaderUser: User, acceptancePolicy: FeedAcceptancePolicy, feedItems: Seq[FeedItem])(implicit ec: ExecutionContext): Future[Seq[Resource]] = {
     val eventualProcessed = feedItems.map { feedItem =>
