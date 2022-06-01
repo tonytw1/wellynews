@@ -1,15 +1,18 @@
 package nz.co.searchwellington.controllers
 
 import nz.co.searchwellington.controllers.models.{ContentModelBuilderService, ContentModelBuilderServiceFactory}
-import org.junit.Assert.{assertEquals, assertFalse, assertTrue}
-import org.junit.{Ignore, Test}
+import org.junit.Assert.{assertEquals, assertFalse, assertTrue, fail}
+import org.junit.Test
 import org.mockito.Mockito.{mock, verify, verifyZeroInteractions, when}
+import org.springframework.http.HttpStatus
 import org.springframework.util.AntPathMatcher
+import org.springframework.web.server.ResponseStatusException
 import org.springframework.web.servlet.ModelAndView
 
 import javax.servlet.http.{HttpServletRequest, HttpServletResponse}
 import scala.concurrent.Future
 import scala.jdk.CollectionConverters._
+import scala.util.Try
 
 class ContentControllerTest {
   private val contentModelBuilderServiceFactory = mock(classOf[ContentModelBuilderServiceFactory])
@@ -34,25 +37,32 @@ class ContentControllerTest {
     assertEquals(expectedModelAndView, modelAndView)
   }
 
-  @Ignore
   @Test
-  def should404IfNotModelWasAvailableForThisRequest(): Unit = {
+  def should404IfNoModelWasAvailableForThisRequest(): Unit = {
     when(contentModelBuilderServiceFactory.makeContentModelBuilderService()).thenReturn(contentModelBuilderService)
     when(contentModelBuilderService.populateContentModel(unknownPathRequest)).thenReturn(Future.successful(None))
 
-    contentController.normal(unknownPathRequest, response)
-
-    verify(response).setStatus(HttpServletResponse.SC_NOT_FOUND)
+    try {
+      contentController.normal(unknownPathRequest, response)
+      fail()
+    } catch {
+      case r: ResponseStatusException =>
+        assertEquals(HttpStatus.NOT_FOUND, r.getStatus)
+      case _ =>
+        fail()
+    }
   }
 
-  @Ignore
   @Test
   def shouldNotPush404sOntoTheReturnToUrlStack(): Unit = {
     when(contentModelBuilderServiceFactory.makeContentModelBuilderService()).thenReturn(contentModelBuilderService)
     when(contentModelBuilderService.populateContentModel(unknownPathRequest)).thenReturn(Future.successful(None))
 
-    contentController.normal(unknownPathRequest, response)
+    val triedView = Try {
+      contentController.normal(unknownPathRequest, response)
+    }
 
+    assertTrue(triedView.isFailure)
     verifyZeroInteractions(urlStack)
   }
 
