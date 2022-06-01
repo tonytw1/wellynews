@@ -9,6 +9,7 @@ import org.springframework.web.servlet.ModelAndView
 
 import javax.servlet.http.{HttpServletRequest, HttpServletResponse}
 import scala.concurrent.Future
+import scala.jdk.CollectionConverters._
 
 class ContentControllerTest {
   private val contentModelBuilderServiceFactory = mock(classOf[ContentModelBuilderServiceFactory])
@@ -23,8 +24,8 @@ class ContentControllerTest {
   private def contentController = new ContentController(contentModelBuilderServiceFactory, urlStack, loggedInUserFilter)
 
   @Test
-  def shouldDelegateToTheContentModelBuilderToGetTheModelForThisRequest() {
-    val expectedModelAndView = new ModelAndView("a-view") // TODO mock
+  def shouldDelegateToTheContentModelBuilderToGetTheModelForThisRequest(): Unit = {
+    val expectedModelAndView = new ModelAndView("a-view", Map("foo" -> "bar").asJava)
     when(contentModelBuilderServiceFactory.makeContentModelBuilderService()).thenReturn(contentModelBuilderService)
     when(contentModelBuilderService.populateContentModel(request)).thenReturn(Future.successful(Some(expectedModelAndView)))
 
@@ -35,7 +36,7 @@ class ContentControllerTest {
 
   @Ignore
   @Test
-  def should404IfNotModelWasAvailableForThisRequest() {
+  def should404IfNotModelWasAvailableForThisRequest(): Unit = {
     when(contentModelBuilderServiceFactory.makeContentModelBuilderService()).thenReturn(contentModelBuilderService)
     when(contentModelBuilderService.populateContentModel(unknownPathRequest)).thenReturn(Future.successful(None))
 
@@ -46,7 +47,7 @@ class ContentControllerTest {
 
   @Ignore
   @Test
-  def shouldNotPush404sOntoTheReturnToUrlStack() {
+  def shouldNotPush404sOntoTheReturnToUrlStack(): Unit = {
     when(contentModelBuilderServiceFactory.makeContentModelBuilderService()).thenReturn(contentModelBuilderService)
     when(contentModelBuilderService.populateContentModel(unknownPathRequest)).thenReturn(Future.successful(None))
 
@@ -56,8 +57,8 @@ class ContentControllerTest {
   }
 
   @Test
-  def htmlPageViewsShouldBePutOntoTheUrlStack() {
-    val expectedModelAndView: ModelAndView = new ModelAndView("a-view")
+  def htmlPageViewsShouldBePutOntoTheUrlStack(): Unit = {
+    val expectedModelAndView = new ModelAndView("a-view", Map("foo" -> "bar").asJava)
     when(contentModelBuilderServiceFactory.makeContentModelBuilderService()).thenReturn(contentModelBuilderService)
     when(contentModelBuilderService.populateContentModel(request)).thenReturn(Future.successful(Some(expectedModelAndView)))
 
