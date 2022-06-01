@@ -26,12 +26,14 @@ class FeedReaderTest extends ReasonableWaits {
   private val suggestedFeed = Feed(acceptance = FeedAcceptancePolicy.SUGGEST)
   private val loggedInUser = User()
 
-  private val feedReader = new FeedReader(feedItemAcceptanceDecider, contentUpdateService, feedReaderUpdateService, whakaokoFeedReader, feeditemToNewsItemService)
+  private val firstFeedItem = FeedItem(id = UUID.randomUUID().toString, subscriptionId = UUID.randomUUID().toString,
+    url = "http://localhost/1", date = Some(DateTime.now))
+  private val feedItems = Seq(firstFeedItem)
 
+  private val feedReader = new FeedReader(feedItemAcceptanceDecider, contentUpdateService, feedReaderUpdateService, whakaokoFeedReader, feeditemToNewsItemService)
 
   @Test
   def shouldNotAcceptNewsitemsFromSuggestOnlyFeeds(): Unit = {
-    val feedItems = Seq(FeedItem(id = UUID.randomUUID().toString, subscriptionId = UUID.randomUUID().toString, url = "http://localhost/1"))
     when(whakaokoFeedReader.fetchFeedItems(suggestedFeed)).thenReturn(Future.successful(Right((feedItems, feedItems.size))))
     when(contentUpdateService.update(Matchers.any(classOf[Feed]))(Matchers.any())).thenReturn(Future.successful(true))
 
@@ -42,9 +44,6 @@ class FeedReaderTest extends ReasonableWaits {
 
   @Test
   def shouldUpdateLastReadAndLatestItemForSuggestOnlyFeeds(): Unit = {
-    val firstFeedItem = FeedItem(id = UUID.randomUUID().toString, subscriptionId = UUID.randomUUID().toString,
-      url = "http://localhost/1", date = Some(DateTime.now))
-    val feedItems = Seq(firstFeedItem)
     when(whakaokoFeedReader.fetchFeedItems(suggestedFeed)).thenReturn(Future.successful(Right((feedItems, feedItems.size))))
     when(contentUpdateService.update(Matchers.any(classOf[Feed]))(Matchers.any())).thenReturn(Future.successful(true))
 
