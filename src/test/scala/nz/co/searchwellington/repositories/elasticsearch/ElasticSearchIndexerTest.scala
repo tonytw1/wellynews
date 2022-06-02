@@ -11,6 +11,7 @@ import org.joda.time.{DateTime, Interval}
 import org.junit.Assert.{assertFalse, assertTrue}
 import org.junit.Test
 import org.scalatest.concurrent.Eventually.{eventually, interval, _}
+import org.scalatest.matchers.must.Matchers.convertToAnyMustWrapper
 
 import java.util.UUID
 import scala.concurrent.ExecutionContext.Implicits.global
@@ -38,7 +39,7 @@ class ElasticSearchIndexerTest extends ReasonableWaits {
   val mongoRepository: MongoRepository = ElasticSearchIndexerTest.mongoRepository
   val elasticSearchIndexer: ElasticSearchIndexer = ElasticSearchIndexerTest.elasticSearchIndexer
 
-  private val loggedInUser = User()
+  private val loggedInUser = User(admin = true)
   private val allNewsitems = ResourceQuery(`type` = Some(Set("N")))
 
   @Test
@@ -163,7 +164,7 @@ class ElasticSearchIndexerTest extends ReasonableWaits {
   }
 
   @Test
-  def canGetNewsitemMonthlyCounts() {
+  def canGetNewsitemMonthlyCounts(): Unit = {
     val newsitem = Newsitem(date = Some(new DateTime(2019, 1, 1, 0, 0, 0).toDate))
     Await.result(mongoRepository.saveResource(newsitem), TenSeconds)
     val anotherNewsitem = Newsitem(date = Some(new DateTime(2018, 3, 7, 0, 0, 0).toDate))
@@ -174,11 +175,35 @@ class ElasticSearchIndexerTest extends ReasonableWaits {
     indexResources(Seq(newsitem, anotherNewsitem, yetAnotherNewsitem))
 
     def archiveLinks = Await.result(elasticSearchIndexer.createdMonthAggregationFor(allNewsitems, loggedInUser = Some(loggedInUser)), TenSeconds)
+
     def monthStrings = archiveLinks.map(_._1.getStart.toDate.toString)
 
-    eventually(timeout(TenSeconds), interval(TenMilliSeconds), monthStrings.contains("Tue Jan 01 00:00:00 GMT 2019"))
-    eventually(timeout(TenSeconds), interval(TenMilliSeconds), monthStrings.contains("Thu Mar 01 00:00:00 GMT 2018"))
-    eventually(timeout(TenSeconds), interval(TenMilliSeconds), monthStrings.contains("Sat Jul 01 01:00:00 BST 2017"))
+    eventually(timeout(TenSeconds), interval(TenMilliSeconds))(monthStrings.head)
+    eventually(timeout(TenSeconds), interval(TenMilliSeconds))(monthStrings(2))
+
+    monthStrings.contains("Tue Jan 01 00:00:00 GMT 2019") mustBe (true)
+    monthStrings.contains("Thu Mar 01 00:00:00 GMT 2018") mustBe (true)
+    monthStrings.contains("Sat Jul 01 01:00:00 BST 2017") mustBe (true)
+  }
+
+  @Test
+  def canGetNewsitemsAcceptedByDaysCounts(): Unit = {
+    val acceptedNewsitem = Newsitem(
+      date = Some(new DateTime(2022, 6, 1, 0, 0, 0).toDate),
+      accepted = Some(new DateTime(2022, 6, 2, 11, 23, 5).toDate))
+    Await.result(mongoRepository.saveResource(acceptedNewsitem), TenSeconds)
+    val anotherAcceptedNewsitem = Newsitem(date = Some(new DateTime(2022, 6, 2, 0, 0, 0).toDate),
+        accepted = Some(new DateTime(2022, 6, 2, 17, 23, 5).toDate)
+    )
+    Await.result(mongoRepository.saveResource(anotherAcceptedNewsitem), TenSeconds)
+
+    indexResources(Seq(acceptedNewsitem, anotherAcceptedNewsitem))
+
+    def acceptedCounts = Await.result(elasticSearchIndexer.createdMonthAggregationFor(allNewsitems, loggedInUser = Some(loggedInUser)), TenSeconds)
+
+    eventually(timeout(TenSeconds), interval(TenMilliSeconds))(acceptedCounts.head)
+    acceptedCounts.head._1.toString mustBe "2022-06-01T01:00:00.000+01:00/2022-07-01T01:00:00.000+01:00"
+    acceptedCounts.head._2 mustBe 1L
   }
 
   @Test
