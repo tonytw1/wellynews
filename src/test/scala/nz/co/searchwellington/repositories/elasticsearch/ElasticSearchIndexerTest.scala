@@ -179,11 +179,12 @@ class ElasticSearchIndexerTest extends ReasonableWaits {
     def monthStrings = archiveLinks.map(_._1.getStart.toDate.toString)
 
     eventually(timeout(TenSeconds), interval(TenMilliSeconds))(monthStrings.head)
+    eventually(timeout(TenSeconds), interval(TenMilliSeconds))(monthStrings(1))
     eventually(timeout(TenSeconds), interval(TenMilliSeconds))(monthStrings(2))
 
-    monthStrings.contains("Tue Jan 01 00:00:00 GMT 2019") mustBe (true)
-    monthStrings.contains("Thu Mar 01 00:00:00 GMT 2018") mustBe (true)
-    monthStrings.contains("Sat Jul 01 01:00:00 BST 2017") mustBe (true)
+    monthStrings.contains("Tue Jan 01 00:00:00 GMT 2019") mustBe true
+    monthStrings.contains("Thu Mar 01 00:00:00 GMT 2018") mustBe true
+    monthStrings.contains("Sat Jul 01 01:00:00 BST 2017") mustBe true
   }
 
   @Test
