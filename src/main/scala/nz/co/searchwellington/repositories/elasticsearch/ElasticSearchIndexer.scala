@@ -294,7 +294,7 @@ class ElasticSearchIndexer @Autowired()(val showBrokenDecisionService: ShowBroke
   }
 
   def createdAcceptedDateAggregationFor(query: ResourceQuery, loggedInUser: Option[User])(implicit ec: ExecutionContext): Future[Seq[(String, Long)]] = {
-    val aggs = Seq(dateHistogramAgg("accepted", "accepted").calendarInterval(DateHistogramInterval.Day))
+    val aggs = Seq(dateHistogramAgg("accepted", "accepted").calendarInterval(DateHistogramInterval.Day).format("YYYY-MM-dd"))
     val request = search(Index) query composeQueryFor(query, loggedInUser) limit 0 aggregations aggs
 
     client.execute(request).map { r =>
@@ -303,7 +303,7 @@ class ElasticSearchIndexer @Autowired()(val showBrokenDecisionService: ShowBroke
         val day = b.date
         (day, b.docCount)
       }
-      acceptedDays.filter(_._2 > 0).reverse
+      acceptedDays.filter(_._2 > 0).reverse // TODO compared to month aggregation; who should do the date parsing?
     }
   }
 

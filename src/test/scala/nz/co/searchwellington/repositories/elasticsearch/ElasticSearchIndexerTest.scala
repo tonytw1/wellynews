@@ -202,7 +202,7 @@ class ElasticSearchIndexerTest extends ReasonableWaits {
     def acceptedCounts = Await.result(elasticSearchIndexer.createdAcceptedDateAggregationFor(allNewsitems, loggedInUser = Some(loggedInUser)), TenSeconds)
 
     eventually(timeout(TenSeconds), interval(TenMilliSeconds))(acceptedCounts.head)
-    acceptedCounts.head._1 mustBe "2022-06-02T00:00:00.000Z"
+    acceptedCounts.head._1 mustBe "2022-06-02"
     acceptedCounts.head._2 mustBe 2L
   }
 
