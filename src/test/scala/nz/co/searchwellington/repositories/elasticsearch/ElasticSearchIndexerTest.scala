@@ -180,7 +180,7 @@ class ElasticSearchIndexerTest extends ReasonableWaits {
 
     eventually(timeout(TenSeconds), interval(TenMilliSeconds)) (monthStrings.contains("Tue Jan 01 00:00:00 GMT 2019") mustBe true)
     eventually(timeout(TenSeconds), interval(TenMilliSeconds)) (monthStrings.contains("Thu Mar 01 00:00:00 GMT 2018") mustBe true)
-    eventually(timeout(TenSeconds), interval(TenMilliSeconds)) (monthStrings.contains("Sat Jul 01 01:00:00 BST 2017") mustBe true)
+    eventually(timeout(TenSeconds), interval(TenMilliSeconds)) (monthStrings.contains("Sat Jul 01 00:00:00 GMT 2017") mustBe true)
   }
 
   @Test
