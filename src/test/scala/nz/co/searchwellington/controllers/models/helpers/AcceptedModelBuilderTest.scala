@@ -26,7 +26,7 @@ class AcceptedModelBuilderTest extends ReasonableWaits with CommonSizes {
   @Test
   def shouldIncludeLinkOfAcceptedCountsForRecentDays(): Unit = {
     when(contentRetrievalService.getLatestNewsitems(maxItems = 5, loggedInUser = None)).thenReturn(Future.successful(Seq.empty))
-    val acceptDaysAggregation = Seq(("2022-06-01", 12L),("2022-05-31", 7L))
+    val acceptDaysAggregation = Seq(("2022-06-01T00:00:00.000Z", 12L),("2022-05-31T00:00:00.000Z", 7L))
     when(contentRetrievalService.getAcceptedDates(loggedInUser = None)).thenReturn(Future.successful(acceptDaysAggregation))
 
     val extras = Await.result(builder.populateExtraModelContent(new MockHttpServletRequest(), None), TenSeconds)
