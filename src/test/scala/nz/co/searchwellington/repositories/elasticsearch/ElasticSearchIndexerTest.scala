@@ -178,13 +178,9 @@ class ElasticSearchIndexerTest extends ReasonableWaits {
 
     def monthStrings = archiveLinks.map(_._1.getStart.toDate.toString)
 
-    eventually(timeout(TenSeconds), interval(TenMilliSeconds))(monthStrings.head)
-    eventually(timeout(TenSeconds), interval(TenMilliSeconds))(monthStrings(1))
-    eventually(timeout(TenSeconds), interval(TenMilliSeconds))(monthStrings(2))
-
-    monthStrings.contains("Tue Jan 01 00:00:00 GMT 2019") mustBe true
-    monthStrings.contains("Thu Mar 01 00:00:00 GMT 2018") mustBe true
-    monthStrings.contains("Sat Jul 01 01:00:00 BST 2017") mustBe true
+    eventually(timeout(TenSeconds), interval(TenMilliSeconds)) (monthStrings.contains("Tue Jan 01 00:00:00 GMT 2019") mustBe true)
+    eventually(timeout(TenSeconds), interval(TenMilliSeconds)) (monthStrings.contains("Thu Mar 01 00:00:00 GMT 2018") mustBe true)
+    eventually(timeout(TenSeconds), interval(TenMilliSeconds)) (monthStrings.contains("Sat Jul 01 01:00:00 BST 2017") mustBe true)
   }
 
   @Test
@@ -202,9 +198,8 @@ class ElasticSearchIndexerTest extends ReasonableWaits {
 
     def acceptedCounts = Await.result(elasticSearchIndexer.createdAcceptedDateAggregationFor(allNewsitems, loggedInUser = Some(loggedInUser)), TenSeconds)
 
-    eventually(timeout(TenSeconds), interval(TenMilliSeconds))(acceptedCounts.head)
-    acceptedCounts.head._1 mustBe "2022-06-02"
-    acceptedCounts.head._2 mustBe 2L
+    eventually(timeout(TenSeconds), interval(TenMilliSeconds)) (acceptedCounts.headOption.map(_._1) mustBe Some("2022-06-02"))
+    eventually(timeout(TenSeconds), interval(TenMilliSeconds)) (acceptedCounts.headOption.map(_._2) mustBe Some(2L))
   }
 
   @Test
