@@ -6,13 +6,12 @@ import nz.co.searchwellington.filters.RequestPath
 import nz.co.searchwellington.model.{AcceptedDay, User}
 import nz.co.searchwellington.repositories.ContentRetrievalService
 import nz.co.searchwellington.urls.UrlBuilder
-import org.joda.time.LocalDate
-import org.joda.time.format.ISODateTimeFormat
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
 import org.springframework.ui.ModelMap
 import org.springframework.web.servlet.ModelAndView
 
+import java.time.LocalDate
 import javax.servlet.http.HttpServletRequest
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
@@ -54,9 +53,10 @@ import scala.jdk.CollectionConverters._
       latestNewsitems <- latestNewsitems(loggedInUser)
       acceptedDatesAggregation <- contentRetrievalService.getAcceptedDates(loggedInUser)
     } yield {
-      val acceptedDays = acceptedDatesAggregation.take(14).map { acceptedDay =>
-        val time = ISODateTimeFormat.dateTimeParser().parseDateTime(acceptedDay._1)
-        AcceptedDay(new LocalDate(time), acceptedDay._2)
+      val acceptedDays = acceptedDatesAggregation.take(14).map {
+        case (dateString, count) =>
+          val day = LocalDate.parse(dateString)
+          AcceptedDay(day, count)
       }
       new ModelMap().addAllAttributes(latestNewsitems).addAttribute("acceptedDays", acceptedDays.asJava)
     }

@@ -5,12 +5,12 @@ import nz.co.searchwellington.controllers.RssUrlBuilder
 import nz.co.searchwellington.model.AcceptedDay
 import nz.co.searchwellington.repositories.ContentRetrievalService
 import nz.co.searchwellington.urls.UrlBuilder
-import org.joda.time.LocalDate
 import org.junit.Assert.{assertEquals, assertTrue}
 import org.junit.Test
 import org.mockito.Mockito.{mock, when}
 import org.springframework.mock.web.MockHttpServletRequest
 
+import java.time.LocalDate
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.{Await, Future}
 
@@ -33,7 +33,7 @@ class AcceptedModelBuilderTest extends ReasonableWaits with CommonSizes {
 
     val acceptedDays = extras.get("acceptedDays").asInstanceOf[java.util.List[AcceptedDay]]
     assertTrue(Option(acceptedDays).nonEmpty)
-    assertEquals(AcceptedDay(new LocalDate(2022, 6, 1), 12), acceptedDays.get(0))
+    assertEquals(AcceptedDay(LocalDate.of(2022, 6, 1), 12), acceptedDays.get(0))
   }
 
 }

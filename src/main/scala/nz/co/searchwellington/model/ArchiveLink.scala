@@ -1,7 +1,9 @@
 package nz.co.searchwellington.model
 
+import org.joda.time.Interval
+
+import java.time.LocalDate
 import java.util.Date
-import org.joda.time.{Interval, LocalDate}
 
 trait IntervalLink {
   def interval: Interval
