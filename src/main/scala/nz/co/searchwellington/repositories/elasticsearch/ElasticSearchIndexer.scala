@@ -5,6 +5,7 @@ import com.sksamuel.elastic4s.http.JavaClient
 import com.sksamuel.elastic4s.requests.bulk.BulkResponse
 import com.sksamuel.elastic4s.requests.common.DistanceUnit
 import com.sksamuel.elastic4s.requests.indexes.IndexRequest
+import com.sksamuel.elastic4s.requests.searches.aggs.responses.bucket.DateHistogram
 import com.sksamuel.elastic4s.requests.searches.queries.Query
 import com.sksamuel.elastic4s.requests.searches.{DateHistogramInterval, SearchRequest}
 import com.sksamuel.elastic4s.requests.{bulk => _, delete => _, searches => _}
@@ -298,7 +299,7 @@ class ElasticSearchIndexer @Autowired()(val showBrokenDecisionService: ShowBroke
     val request = search(Index) query composeQueryFor(query, loggedInUser) limit 0 aggregations aggs
 
     client.execute(request).map { r =>
-      val dateAgg = r.result.aggregations.dateHistogram("accepted")
+      val dateAgg = r.result.aggs.result[DateHistogram]("accepted")
       val acceptedDays = dateAgg.buckets.map { b =>
         val day = b.date
         (day, b.docCount)
@@ -312,7 +313,7 @@ class ElasticSearchIndexer @Autowired()(val showBrokenDecisionService: ShowBroke
     val request = search(Index) query composeQueryFor(query, loggedInUser) limit 0 aggregations aggs
 
     client.execute(request).map { r =>
-      val dateAgg = r.result.aggregations.dateHistogram("date")
+      val dateAgg = r.result.aggs.result[DateHistogram]("date")
       val archiveLinks = dateAgg.buckets.map { b =>
         val startOfMonth = ISODateTimeFormat.dateTimeParser().parseDateTime(b.date)
         val month = new Interval(startOfMonth, startOfMonth.plusMonths(1))
