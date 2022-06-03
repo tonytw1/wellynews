@@ -16,6 +16,15 @@ case class Geocode(address: Option[String] = None,
 
   def getOsmId: OsmId = osmId.orNull
 
+  def latLong: Option[uk.co.eelpieconsulting.common.geo.model.LatLong] = {
+    for {
+      lat <- latitude
+      lon <- longitude
+    } yield {
+      new uk.co.eelpieconsulting.common.geo.model.LatLong(lat, lon)
+    }
+  }
+
   @deprecated def getOsmPlaceId: String = {
     osmId.map { osmId =>
       osmId.id + "/" + osmId.`type`

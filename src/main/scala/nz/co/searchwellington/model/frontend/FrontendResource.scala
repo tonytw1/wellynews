@@ -6,7 +6,6 @@ import nz.co.searchwellington.model.{Geocode, Tag}
 import reactivemongo.api.bson.BSONObjectID
 import uk.co.eelpieconsulting.common.views.rss.RssFeedable
 
-import java.io.Serializable
 import java.util
 import java.util.Date
 import scala.jdk.CollectionConverters._
@@ -71,14 +70,7 @@ trait FrontendResource extends RssFeedable with Serializable {
 
   def getAuthor: String = null
 
-  def getLatLong: uk.co.eelpieconsulting.common.geo.model.LatLong = place.flatMap { p =>
-    p.latitude.flatMap { latitude =>
-      p.longitude.map { longitude =>
-        new uk.co.eelpieconsulting.common.geo.model.LatLong(latitude, longitude)
-      }
-    }
-
-  }.orNull
+  def getLatLong: uk.co.eelpieconsulting.common.geo.model.LatLong = place.flatMap(_.latLong).orNull
 
   @Override
   override def getCategories: util.List[String] = {

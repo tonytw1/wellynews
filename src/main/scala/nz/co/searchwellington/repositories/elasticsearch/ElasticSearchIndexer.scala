@@ -5,7 +5,7 @@ import com.sksamuel.elastic4s.http.JavaClient
 import com.sksamuel.elastic4s.requests.bulk.BulkResponse
 import com.sksamuel.elastic4s.requests.common.DistanceUnit
 import com.sksamuel.elastic4s.requests.indexes.IndexRequest
-import com.sksamuel.elastic4s.requests.searches.aggs.responses.bucket.DateHistogram
+import com.sksamuel.elastic4s.requests.searches.aggs.responses.bucket.{DateHistogram, Terms}
 import com.sksamuel.elastic4s.requests.searches.queries.Query
 import com.sksamuel.elastic4s.requests.searches.{DateHistogramInterval, SearchRequest}
 import com.sksamuel.elastic4s.requests.{bulk => _, delete => _, searches => _}
@@ -118,14 +118,6 @@ class ElasticSearchIndexer @Autowired()(val showBrokenDecisionService: ShowBroke
       }
 
       indexTagsService.getIndexGeocodeForResource(r._1).map { geocode =>
-        val latLong = geocode.flatMap { gc =>
-          gc.latitude.flatMap { lat =>
-            gc.longitude.map { lon =>
-              new uk.co.eelpieconsulting.common.geo.model.LatLong(lat, lon)
-            }
-          }
-        }
-
         val feedAcceptancePolicy = r._1 match {
           case f: Feed => Some(f.acceptance)
           case _ => None
@@ -145,6 +137,8 @@ class ElasticSearchIndexer @Autowired()(val showBrokenDecisionService: ShowBroke
           case n: Newsitem => n.accepted
           case _ => None
         }
+
+        val latLong = geocode.flatMap(_.latLong)
 
         val fields = Seq(
           Some(Type -> r._1.`type`),
@@ -196,7 +190,7 @@ class ElasticSearchIndexer @Autowired()(val showBrokenDecisionService: ShowBroke
     val aggs = Seq(termsAgg(aggName, aggName) size size.getOrElse(Integer.MAX_VALUE))
     val request = (search(Index) query composeQueryFor(query, loggedInUser)) limit 0 aggregations aggs
     client.execute(request).map { r =>
-      r.result.aggregations.terms(aggName).buckets.map(b => (b.key, b.docCount))
+      r.result.aggs.result[Terms](aggName).buckets.map(b => (b.key, b.docCount))
     }
   }
 
@@ -206,7 +200,7 @@ class ElasticSearchIndexer @Autowired()(val showBrokenDecisionService: ShowBroke
     val request = search(Index) query withModeration(everyThing, loggedInUser) limit 0 aggregations aggs
 
     client.execute(request).map { r =>
-      val typeAgg = r.result.aggregations.terms("type")
+      val typeAgg = r.result.aggs.result[Terms]("type")
       typeAgg.buckets.map { b =>
         (b.key, b.docCount)
       }.toMap
