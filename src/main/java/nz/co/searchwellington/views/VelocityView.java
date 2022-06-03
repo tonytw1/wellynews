@@ -12,7 +12,6 @@ import java.util.Map;
 public class VelocityView extends AbstractTemplateView {
 
     private VelocityEngine velocityEngine;
-    private VelocityEngineUtils velocityEngineUtils;
 
     public VelocityView() {
     }
@@ -21,13 +20,11 @@ public class VelocityView extends AbstractTemplateView {
     protected void initServletContext(ServletContext servletContext) {
         this.velocityEngine = BeanFactoryUtils.beanOfTypeIncludingAncestors(
                 obtainApplicationContext(), VelocityEngine.class, true, false);
-        this.velocityEngineUtils = BeanFactoryUtils.beanOfTypeIncludingAncestors(
-                obtainApplicationContext(), VelocityEngineUtils.class, true, false);
     }
 
     @Override
     protected void renderMergedTemplateModel(Map<String, Object> map, HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse) throws Exception {
-        velocityEngineUtils.mergeTemplate(velocityEngine, this.getUrl(), "UTF-8", map, httpServletResponse.getWriter());
+        VelocityEngineUtils.mergeTemplate(velocityEngine, this.getUrl(), "UTF-8", map, httpServletResponse.getWriter());
     }
 
 }
