@@ -76,8 +76,8 @@ class ElasticSearchIndexerTest extends ReasonableWaits {
 
     def acceptedFeeds = queryForResources(ResourceQuery(`type` = Some(Set("F")), feedAcceptancePolicy = Some(FeedAcceptancePolicy.ACCEPT)))
 
-    eventually(timeout(TenSeconds), interval(TenMilliSeconds), acceptedFeeds.size == 2)
-    eventually(timeout(TenSeconds), interval(TenMilliSeconds), acceptedFeeds.contains(acceptedFeed))
+    eventually(timeout(TenSeconds), interval(TenMilliSeconds))(acceptedFeeds.size mustBe 1)
+    eventually(timeout(TenSeconds), interval(TenMilliSeconds))(acceptedFeeds.contains(acceptedFeed) mustBe true)
     assertFalse(acceptedFeeds.map(_.id).contains(ignoredFeed.id))
     assertTrue(acceptedFeeds.forall(i => i.asInstanceOf[Feed].acceptance == FeedAcceptancePolicy.ACCEPT))
   }
@@ -106,8 +106,8 @@ class ElasticSearchIndexerTest extends ReasonableWaits {
 
     def taggedNewsitems = queryForResources(taggedNewsitemsQuery)
 
-    eventually(timeout(TenSeconds), interval(TenMilliSeconds), taggedNewsitems.nonEmpty)
-    eventually(timeout(TenSeconds), interval(TenMilliSeconds), taggedNewsitems.size == 1)
+    eventually(timeout(TenSeconds), interval(TenMilliSeconds))(taggedNewsitems.nonEmpty mustBe true)
+    eventually(timeout(TenSeconds), interval(TenMilliSeconds))(taggedNewsitems.size mustBe 1)
 
     assertTrue(taggedNewsitems.forall(i => i.`type` == "N"))
     assertTrue(taggedNewsitems.forall(i => i.resource_tags.exists(t => t.tag_id == tag._id)))
@@ -116,7 +116,7 @@ class ElasticSearchIndexerTest extends ReasonableWaits {
 
     def taggedWebsites = queryForResources(taggedWebsitesQuery)
 
-    eventually(timeout(TenSeconds), interval(TenMilliSeconds), taggedNewsitems.nonEmpty)
+    eventually(timeout(TenSeconds), interval(TenMilliSeconds))(taggedNewsitems.nonEmpty mustBe true)
     assertTrue(taggedWebsites.forall(i => i.`type` == "W"))
     assertTrue(taggedWebsites.forall(i => i.resource_tags.exists(t => t.tag_id == tag._id)))
   }
@@ -139,13 +139,13 @@ class ElasticSearchIndexerTest extends ReasonableWaits {
 
     def publisherNewsitems = queryForResources(publisherNewsitemsQuery)
 
-    eventually(timeout(TenSeconds), interval(TenMilliSeconds), publisherNewsitems.nonEmpty)
-    eventually(timeout(TenSeconds), interval(TenMilliSeconds), publisherNewsitems.contains(publishersNewsitem))
+    eventually(timeout(TenSeconds), interval(TenMilliSeconds))(publisherNewsitems.nonEmpty mustBe true)
+    eventually(timeout(TenSeconds), interval(TenMilliSeconds))(publisherNewsitems.contains(publishersNewsitem) mustBe true)
     assertTrue(publisherNewsitems.forall(i => i.asInstanceOf[Newsitem].publisher.contains(publisher._id)))
   }
 
   @Test
-  def canGetFeedsForPublisher() {
+  def canGetFeedsForPublisher(): Unit = {
     val publisher = Website()
     Await.result(mongoRepository.saveResource(publisher), TenSeconds)
     val feed = Feed()
@@ -156,9 +156,9 @@ class ElasticSearchIndexerTest extends ReasonableWaits {
     indexResources(Seq(publisher, publishersFeed))
 
     val publisherFeedsQuery = ResourceQuery(`type` = Some(Set("F")), publisher = Some(publisher))
-    val publisherFeeds = queryForResources(publisherFeedsQuery)
+    def publisherFeeds = queryForResources(publisherFeedsQuery)
 
-    eventually(timeout(TenSeconds), interval(TenMilliSeconds), publisherFeeds.nonEmpty)
+    eventually(timeout(TenSeconds), interval(TenMilliSeconds))(publisherFeeds.nonEmpty mustBe true)
     assertTrue(publisherFeeds.forall(i => i.`type` == "F"))
     assertTrue(publisherFeeds.forall(i => i.asInstanceOf[Feed].publisher.contains(publisher._id)))
   }
@@ -178,9 +178,9 @@ class ElasticSearchIndexerTest extends ReasonableWaits {
 
     def monthStrings = archiveLinks.map(_._1.getStart.toDate.toGMTString)
 
-    eventually(timeout(TenSeconds), interval(TenMilliSeconds)) (monthStrings.contains("1 Jan 2019 00:00:00 GMT") mustBe true)
-    eventually(timeout(TenSeconds), interval(TenMilliSeconds)) (monthStrings.contains("1 Mar 2018 00:00:00 GMT") mustBe true)
-    eventually(timeout(TenSeconds), interval(TenMilliSeconds)) (monthStrings.contains("1 Jul 2017 00:00:00 GMT") mustBe true)
+    eventually(timeout(TenSeconds), interval(TenMilliSeconds))(monthStrings.contains("1 Jan 2019 00:00:00 GMT") mustBe true)
+    eventually(timeout(TenSeconds), interval(TenMilliSeconds))(monthStrings.contains("1 Mar 2018 00:00:00 GMT") mustBe true)
+    eventually(timeout(TenSeconds), interval(TenMilliSeconds))(monthStrings.contains("1 Jul 2017 00:00:00 GMT") mustBe true)
   }
 
   @Test
@@ -198,8 +198,8 @@ class ElasticSearchIndexerTest extends ReasonableWaits {
 
     def acceptedCounts = Await.result(elasticSearchIndexer.createdAcceptedDateAggregationFor(allNewsitems, loggedInUser = Some(loggedInUser)), TenSeconds)
 
-    eventually(timeout(TenSeconds), interval(TenMilliSeconds)) (acceptedCounts.headOption.map(_._1) mustBe Some("2022-06-02"))
-    eventually(timeout(TenSeconds), interval(TenMilliSeconds)) (acceptedCounts.headOption.map(_._2) mustBe Some(2L))
+    eventually(timeout(TenSeconds), interval(TenMilliSeconds))(acceptedCounts.headOption.map(_._1) mustBe Some("2022-06-02"))
+    eventually(timeout(TenSeconds), interval(TenMilliSeconds))(acceptedCounts.headOption.map(_._2) mustBe Some(2L))
   }
 
   @Test
@@ -216,7 +216,7 @@ class ElasticSearchIndexerTest extends ReasonableWaits {
 
     def monthNewsitems = queryForResources(ResourceQuery(`type` = Some(Set("N")), interval = Some(month)))
 
-    eventually(timeout(TenSeconds), interval(TenMilliSeconds), monthNewsitems.contains(newsitem))
+    eventually(timeout(TenSeconds), interval(TenMilliSeconds))(monthNewsitems.contains(newsitem) mustBe true)
     assertTrue(monthNewsitems.forall(n => month.contains(n.date.get.getTime)))
   }
 
@@ -236,7 +236,7 @@ class ElasticSearchIndexerTest extends ReasonableWaits {
     def typeCounts = Await.result(elasticSearchIndexer.getTypeCounts(Some(loggedInUser)), TenSeconds)
     def typesFound = typeCounts.keys.toSet
 
-    eventually(timeout(TenSeconds), interval(TenMilliSeconds), Set("W", "N", "F", "L").equals(typesFound))
+    eventually(timeout(TenSeconds), interval(TenMilliSeconds))(Set("W", "N", "F", "L").equals(typesFound) mustBe (true))
   }
 
   @Test
@@ -249,21 +249,21 @@ class ElasticSearchIndexerTest extends ReasonableWaits {
     Await.result(mongoRepository.saveResource(barWebsite), TenSeconds)
     Await.result(mongoRepository.saveResource(fooNewsitem), TenSeconds)
 
-    eventually(timeout(TenSeconds), interval(TenMilliSeconds), Await.result(mongoRepository.getResourceByObjectId(fooWebsite._id), TenSeconds).nonEmpty)
-    eventually(timeout(TenSeconds), interval(TenMilliSeconds), Await.result(mongoRepository.getResourceByObjectId(barWebsite._id), TenSeconds).nonEmpty)
-    eventually(timeout(TenSeconds), interval(TenMilliSeconds), Await.result(mongoRepository.getResourceByObjectId(fooNewsitem._id), TenSeconds).nonEmpty)
+    eventually(timeout(TenSeconds), interval(TenMilliSeconds))(Await.result(mongoRepository.getResourceByObjectId(fooWebsite._id), TenSeconds).nonEmpty mustBe true)
+    eventually(timeout(TenSeconds), interval(TenMilliSeconds))(Await.result(mongoRepository.getResourceByObjectId(barWebsite._id), TenSeconds).nonEmpty mustBe true)
+    eventually(timeout(TenSeconds), interval(TenMilliSeconds))(Await.result(mongoRepository.getResourceByObjectId(fooNewsitem._id), TenSeconds).nonEmpty mustBe true)
 
     indexResources(Seq(fooWebsite, barWebsite, fooNewsitem))
 
     def fooResources = queryForResources(ResourceQuery(hostname = Some("foo.local")))
     def barResources = queryForResources(ResourceQuery(hostname = Some("bar.local")))
 
-    eventually(timeout(TenSeconds), interval(TenMilliSeconds), fooResources.contains(fooWebsite))
-    eventually(timeout(TenSeconds), interval(TenMilliSeconds), fooResources.contains(fooNewsitem))
-    eventually(timeout(TenSeconds), interval(TenMilliSeconds), barResources.contains(barWebsite))
+    eventually(timeout(TenSeconds), interval(TenMilliSeconds))(fooResources.contains(fooWebsite) mustBe true)
+    eventually(timeout(TenSeconds), interval(TenMilliSeconds))(fooResources.contains(fooNewsitem) mustBe true)
+    eventually(timeout(TenSeconds), interval(TenMilliSeconds))(barResources.contains(barWebsite) mustBe true)
 
-    eventually(timeout(TenSeconds), interval(TenMilliSeconds), fooResources.size == 2)
-    eventually(timeout(TenSeconds), interval(TenMilliSeconds), barResources.size == 1)
+    eventually(timeout(TenSeconds), interval(TenMilliSeconds))(fooResources.size mustBe 2)
+    eventually(timeout(TenSeconds), interval(TenMilliSeconds))(barResources.size mustBe 1)
 
     assertFalse(fooResources.contains(barWebsite))
     assertFalse(barResources.contains(fooWebsite))
