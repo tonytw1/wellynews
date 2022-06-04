@@ -43,7 +43,6 @@ class ContentController @Autowired()(contentModelBuilderServiceFactory: ContentM
         if (isHtmlView(mv)) {
           urlStack.setUrlStack(request)
         }
-        log.info("Served " + RequestPath.getPathFrom(request) + " in " + new Duration(start, new DateTime()).getMillis + "ms")
         mv
       }
     } catch {

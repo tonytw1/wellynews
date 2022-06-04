@@ -25,11 +25,14 @@ class ContentModelBuilderService(viewFactory: ViewFactory,
     modelBuilders.find(mb => mb.isValid(request)).map { mb =>
       val path = RequestPath.getPathFrom(request)
       log.info("Using " + mb.getClass.getSimpleName + " to serve path: " + path)
-
       val start = new DateTime()
-      val eventualMaybeModelAndView = mb.populateContentModel(request, loggedInUser).map { maybeModelAndView =>
-        log.info("Completed main content for " + path + " after " + new Duration(start, new DateTime()).getMillis + "ms using " + mb.getClass.getSimpleName)
+
+      val eventualMaybeModelAndView = mb.populateContentModel(request, loggedInUser).map { maybeModelAndView: Option[ModelAndView] =>
         maybeModelAndView
+      }
+      val eventualMainWithDuration: Future[(Option[ModelAndView], Long)] = eventualMaybeModelAndView.map { mv =>
+        val mainDuration = new Duration(start, new DateTime()).getMillis
+        (mv, mainDuration)
       }
 
       val eventualMaybeExtras = {
@@ -45,26 +48,31 @@ class ContentModelBuilderService(viewFactory: ViewFactory,
             extraContent <- mb.populateExtraModelContent(request, loggedInUser)
             commonLocal <- commonLocal
           } yield {
-            val mv = new ModelMap()
-            mv.addAttribute("loggedInUser", loggedInUser.orNull)
-            mv.addAllAttributes(extraContent)
-            mv.addAllAttributes(commonLocal)
-            log.info("Completed extras for " + path + " after " + new Duration(start, new DateTime()).getMillis + "ms using " + mb.getClass.getSimpleName)
-            Some(mv)
+            val extras = new ModelMap()
+            extras.addAttribute("loggedInUser", loggedInUser.orNull)
+            extras.addAllAttributes(extraContent)
+            extras.addAllAttributes(commonLocal)
+            Some(extras)
           }
         } else {
           Future.successful(None)
         }
       }
+      val eventualExtrasWithDuration = eventualMaybeExtras.map { extras =>
+        val extrasDuration = new Duration(start, new DateTime()).getMillis
+        log.info("Completed extras for " + path + " after " + extrasDuration + "ms using " + mb.getClass.getSimpleName)
+        (extras, extrasDuration)
+      }
 
       for {
-        maybeMv <- eventualMaybeModelAndView
-        maybeExtras <- eventualMaybeExtras
+        maybeMv <- eventualMainWithDuration
+        maybeExtras <- eventualExtrasWithDuration
 
       } yield {
-        maybeMv.map { mv =>
-          log.info("Created mv for " + path + " after " + new Duration(start, new DateTime()).getMillis + "ms using " + mb.getClass.getSimpleName)
-          mv.addAllObjects(maybeExtras.getOrElse(new ModelMap()))
+        maybeMv._1.map { mv =>
+          mv.addAllObjects(maybeExtras._1.getOrElse(new ModelMap()))
+          log.info("Created mv for " + path + " after " + new Duration(start, new DateTime()).getMillis + "(" +
+            maybeMv._2 + " / " + maybeExtras._2 + ")" + "ms using " + mb.getClass.getSimpleName)
           if (path.endsWith("/rss")) {
             rssViewOf(mv)
           } else if (path.endsWith("/json")) {
