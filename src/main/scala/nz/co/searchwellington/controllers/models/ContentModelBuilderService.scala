@@ -24,7 +24,7 @@ class ContentModelBuilderService(viewFactory: ViewFactory,
   def populateContentModel(request: HttpServletRequest, loggedInUser: Option[User] = None): Future[Option[ModelAndView]] = {
     modelBuilders.find(mb => mb.isValid(request)).map { mb =>
       val path = RequestPath.getPathFrom(request)
-      log.info("Using " + mb.getClass.getSimpleName + " to serve path: " + path)
+      log.debug("Using " + mb.getClass.getSimpleName + " to serve path: " + path)
       val start = new DateTime()
 
       val eventualMainWithDuration = {
