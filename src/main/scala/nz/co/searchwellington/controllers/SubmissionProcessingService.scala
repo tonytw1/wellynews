@@ -8,8 +8,9 @@ import nz.co.searchwellington.model._
 import nz.co.searchwellington.repositories.mongo.MongoRepository
 import nz.co.searchwellington.repositories.{HandTaggingDAO, TagDAO}
 import nz.co.searchwellington.utils.{StringWrangling, UrlFilters}
-import org.apache.commons.lang3.{StringEscapeUtils, StringUtils}
+import org.apache.commons.lang3.StringUtils
 import org.apache.commons.logging.LogFactory
+import org.apache.commons.text.StringEscapeUtils
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
 import uk.co.eelpieconsulting.common.geo.model.OsmId
