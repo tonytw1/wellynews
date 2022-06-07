@@ -236,7 +236,7 @@ class ElasticSearchIndexerTest extends ReasonableWaits {
     def typeCounts = Await.result(elasticSearchIndexer.getTypeCounts(Some(loggedInUser)), TenSeconds)
     def typesFound = typeCounts.keys.toSet
 
-    eventually(timeout(TenSeconds), interval(TenMilliSeconds))(Set("W", "N", "F", "L").equals(typesFound) mustBe (true))
+    eventually(timeout(TenSeconds), interval(TenMilliSeconds))(Set("W", "N", "F", "L").equals(typesFound) mustBe true)
   }
 
   @Test
