@@ -22,7 +22,7 @@ class ArchiveModelBuilderTest extends ReasonableWaits with ContentFields with Te
   private val contentRetrievalService = mock(classOf[ContentRetrievalService])
   private val request = new MockHttpServletRequest
 
-  private val newsitem = new FrontendNewsitem(id = "123")
+  private val newsitem = FrontendNewsitem(id = "123")
   private val anotherNewsitem = FrontendNewsitem(id = "456")
   private val monthNewsitems = Seq(newsitem, anotherNewsitem)
 

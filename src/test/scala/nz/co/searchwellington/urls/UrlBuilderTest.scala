@@ -76,7 +76,7 @@ class UrlBuilderTest {
 
   @Test
   def shouldComposeOsmWebsiteLinkforOsmIds(): Unit = {
-    val osmId = new OsmId(24724709, OsmType.WAY.toString)
+    val osmId = OsmId(24724709, OsmType.WAY.toString)
     assertEquals("http://www.openstreetmap.org/browse/way/24724709", urlBuilder.getOsmWebsiteUrl(osmId))
   }
 
@@ -85,7 +85,7 @@ class UrlBuilderTest {
     val feb = new DateTime(2020, 2, 12, 0, 0, 0)
     val monthOfFeb = new Interval(feb, feb.plusMonths(1))
 
-    val link = urlBuilder.getArchiveLinkUrl(new ArchiveLink(monthOfFeb, Some(1)))
+    val link = urlBuilder.getArchiveLinkUrl(ArchiveLink(monthOfFeb, Some(1)))
 
     assertEquals("/archive/2020-feb", link)
   }

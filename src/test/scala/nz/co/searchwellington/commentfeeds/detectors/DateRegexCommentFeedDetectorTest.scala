@@ -12,14 +12,14 @@ class DateRegexCommentFeedDetectorTest {
 
   @Test
   def shouldMatchUrlWithDateInThemAsTheseAreAlmostAlwaysCommentFeedsForSpecficPost(): Unit = {
-    val source = new Newsitem()
+    val source = Newsitem()
     val url = new URL("http://www.blah.nz/something/2011/01/20/comments")
     assertTrue(commentFeedDetector.isValid(url, source))
   }
 
   @Test
   def shouldNotGiveObviousFalsePositives(): Unit = {
-    val source = new Newsitem()
+    val source = Newsitem()
     val url = new URL("http://www.blah.nz/something/comments")
     assertFalse(commentFeedDetector.isValid(url, source))
   }

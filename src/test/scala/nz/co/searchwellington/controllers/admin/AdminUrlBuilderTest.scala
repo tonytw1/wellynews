@@ -10,7 +10,7 @@ import uk.co.eelpieconsulting.common.dates.DateFormatter
 
 class AdminUrlBuilderTest {
 
-  private val frontendFeed: FrontendFeed = new FrontendFeed(id = "124")
+  private val frontendFeed = FrontendFeed(id = "124")
   private val frontendWebsite = FrontendWebsite(id = "123", name = "My local sports team", urlWords = "my-local-sports-team")
 
   private val urlWordsGenerator = new UrlWordsGenerator(new DateFormatter(DateTimeZone.UTC))

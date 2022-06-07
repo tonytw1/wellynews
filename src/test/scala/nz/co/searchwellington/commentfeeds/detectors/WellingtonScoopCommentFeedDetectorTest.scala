@@ -11,7 +11,7 @@ class WellingtonScoopCommentFeedDetectorTest {
   private val SITE_FEED = new URL("http://wellington.scoop.co.nz/?feed=rss2")
   private val COMMENT_FEED = new URL("http://wellington.scoop.co.nz/?feed=rss2&p=34601")
   private val HTTPS_COMMENT_FEED = new URL("https://wellington.scoop.co.nz/?feed=rss2&p=34601")
-  private val source = new Newsitem()
+  private val source = Newsitem()
 
   private val detector = new WellingtonScoopCommentFeedDetector
 

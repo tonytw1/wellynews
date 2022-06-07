@@ -25,7 +25,7 @@ class UrlStackTest {
   @Test
   def redirectionsFromTheStakShouldBeFullyQualifiedUrls(): Unit = {
     val request = new MockHttpServletRequest()
-    request.getSession.setAttribute("url", "/transport");
+    request.getSession.setAttribute("url", "/transport")
 
     val redirectUrl = urlStack.getExitUrlFromStack(request)
 

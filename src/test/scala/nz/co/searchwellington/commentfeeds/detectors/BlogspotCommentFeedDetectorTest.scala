@@ -10,7 +10,7 @@ class BlogspotCommentFeedDetectorTest extends TestCase {
 
   private val BLOGSPOT_COMMENT_URL = new URL("http://wellurban.blogspot.com/feeds/113750684886641660/comments/default")
   private val BLOGSPOT_ATOM_URL = new URL("http://wellurban.blogspot.com/atom.xml")
-  private val source = new Newsitem()
+  private val source = Newsitem()
 
   private val detector = new BlogspotCommentFeedDetector
 

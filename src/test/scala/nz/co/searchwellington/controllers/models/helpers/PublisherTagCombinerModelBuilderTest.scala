@@ -56,7 +56,7 @@ class PublisherTagCombinerModelBuilderTest extends ReasonableWaits with ContentF
     assertEquals(expectedNewsitems.asJava, mv.getModel.get(MAIN_CONTENT))
     assertNotNull(mv.getModel.get("publisher"))
     assertNotNull(mv.getModel.get("tag"))
-    assertEquals("/a-publisher+atag/rss", mv.getModel.get("rss_url"));
+    assertEquals("/a-publisher+atag/rss", mv.getModel.get("rss_url"))
   }
 
 }
