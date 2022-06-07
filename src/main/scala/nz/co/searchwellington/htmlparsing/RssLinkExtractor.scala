@@ -1,6 +1,6 @@
 package nz.co.searchwellington.htmlparsing
 
-import org.apache.commons.lang3.StringEscapeUtils
+import org.apache.commons.text.StringEscapeUtils
 import org.apache.commons.logging.LogFactory
 import org.htmlparser.filters.{AndFilter, HasAttributeFilter, NodeClassFilter, TagNameFilter}
 import org.htmlparser.{Parser, Tag}
