@@ -92,8 +92,8 @@ import scala.concurrent.{ExecutionContext, Future}
           existingOccurrences
         }
         existing.copy(occurrences = occurrences)
+
       }.getOrElse{
-        val hostname = urlParser.extractHostnameFrom(checkResource.page) // TODO this really wants to be a publisher
         val publisher = checkResource match {
           case published: PublishedResource => published.publisher
           case publisher: Website => Some(publisher._id)
