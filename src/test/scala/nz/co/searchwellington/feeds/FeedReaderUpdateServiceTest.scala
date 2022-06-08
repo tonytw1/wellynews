@@ -29,7 +29,7 @@ class FeedReaderUpdateServiceTest extends ReasonableWaits {
     val feedReaderUser = User()
     val autoTagUser = User()
 
-    val newsitem = Newsitem(id = "123", page = "http://localhost/123")
+    val newsitem = Newsitem(id = "123", page = "http://localhost/123", title = "A newsitem")
     val feed = Feed()
 
     val atag = Tag(id = "atag")
