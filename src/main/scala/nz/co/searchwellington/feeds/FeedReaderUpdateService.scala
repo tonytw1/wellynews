@@ -34,7 +34,7 @@ import scala.concurrent.{ExecutionContext, Future}
       autoTaggings <- eventualAutoTaggings
       feedCategoryAutoTaggings <- eventualFeedCategoryAutoTaggings
       withAutoTaggings <- {
-        log.info("Got autotaggings: " + asCommaListOfTagIds(autoTaggings))
+        log.info("Got autotaggings: " + asCommaListOfTagIds(autoTaggings) + " for newsitem: " + feednewsitem.title)
         if (feedCategoryAutoTaggings.nonEmpty) {
           log.info("Got feed info category auto taggings: " + asCommaListOfTagIds(feedCategoryAutoTaggings) + " from feed newsitem categories: "
             + feedItemCategories.map(_.value).mkString(","))
@@ -43,8 +43,6 @@ import scala.concurrent.{ExecutionContext, Future}
 
         val withAutoTaggings = notHeld.withTaggings(allTaggings.map(t =>
           Tagging(tag_id = t.tag._id, user_id = t.taggingUser._id, reason = t.reason)).toSeq)
-
-        log.info("With autotaggings: " + withAutoTaggings)
 
         contentUpdateService.create(withAutoTaggings).map { created =>
           log.info("Created accepted newsitem: " + withAutoTaggings)
