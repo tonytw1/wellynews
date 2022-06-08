@@ -64,7 +64,7 @@ class MongoRepository @Autowired()(@Value("${mongo.uri}") mongoUri: String) exte
 
     log.info("Ensuring mongo indexes")
     val resourceByTypeAndUrlWords = Index(Seq("type" -> IndexType.Ascending, "url_words" -> IndexType.Ascending), name = Some("type_with_url_words"), unique = false)
-    val resourceByUrl = Index(Seq("page" -> IndexType.Ascending), name = Some("page"), unique = false) // TODO Resources with null urls are the problem here
+    val resourceByUrl = Index(Seq("page" -> IndexType.Ascending), name = Some("page"), unique = false)
     val resourceById = Index(Seq("id" -> IndexType.Ascending), name = Some("id"), unique = true)
 
     val requiredResourceIndexes = Seq(resourceByTypeAndUrlWords, resourceByUrl, resourceById)
