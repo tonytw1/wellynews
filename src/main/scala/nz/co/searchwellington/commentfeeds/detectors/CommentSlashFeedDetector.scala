@@ -7,5 +7,5 @@ import java.net.URL
 
 @Component
 class CommentSlashFeedDetector extends CommentFeedDetector {
-  override def isValid(url: URL, source: Resource) = new GenericCommentFeedDetector("^.*\\/comments/feed\\/$").isValid(url, source)
+  override def isValid(url: URL, source: Resource): Boolean = new GenericCommentFeedDetector("^.*\\/comments/feed\\/$").isValid(url, source)
 }

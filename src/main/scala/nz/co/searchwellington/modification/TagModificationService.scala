@@ -22,7 +22,11 @@ import scala.concurrent.{Await, ExecutionContext, Future}
   def deleteTag(tag: Tag)(implicit ec: ExecutionContext): Boolean = {
     log.info("Deleting tag " + tag.getName)
     val eventualOutcome = handTaggingService.clearTaggingsForTag(tag).flatMap { tagClearanceOutcome =>
-      tagDAO.deleteTag(tag)
+      if (tagClearanceOutcome) {
+        tagDAO.deleteTag(tag)
+      } else {
+        Future.successful(tagClearanceOutcome)
+      }
     }
     Await.result(eventualOutcome, ThirtySeconds)
   }

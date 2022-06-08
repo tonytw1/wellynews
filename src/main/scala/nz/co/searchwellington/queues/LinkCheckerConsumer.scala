@@ -57,7 +57,7 @@ import scala.concurrent.{ExecutionContext, ExecutionContextExecutor}
     }
   }
 
-  private def logQueueCount(channel: Channel) = {
+  private def logQueueCount(channel: Channel): Unit = {
     try {
       val count = channel.messageCount(LinkCheckerQueue.QUEUE_NAME)
       log.info(s"Link checker queue contains $count messages")
