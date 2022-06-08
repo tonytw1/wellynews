@@ -19,7 +19,7 @@ class LinkCheckerTest extends ReasonableWaits {
   private val mongoRepository = mock(classOf[MongoRepository])
   private val contentUpdateService = mock(classOf[ContentUpdateService])
   private  val httpFetcher = mock(classOf[RobotsAwareHttpFetcher])
-  private val feedAutodiscoveryProcesser = mock(classOf[FeedAutodiscoveryProcesser])
+  private val feedAutodiscoveryProcessor = mock(classOf[FeedAutodiscoveryProcessor])
   private val twitterPhotoDetector = mock(classOf[TwitterPhotoDetector])
   private val contentHasChangedProcesser = mock(classOf[ContentHasChangedProcesser])
   private val meterRegistry = mock(classOf[MeterRegistry])
@@ -28,7 +28,7 @@ class LinkCheckerTest extends ReasonableWaits {
   def returnsFalseForUnparsableResourceUrls(): Unit = {
     val website = Website(page = "http:////feedproxy.google.com/~r/WellingtonGreens/~3/Tdcpif4nmKI/")
 
-    val linkChecker = new LinkChecker(mongoRepository, contentUpdateService, httpFetcher, meterRegistry, Seq(feedAutodiscoveryProcesser, twitterPhotoDetector, contentHasChangedProcesser).asJava)
+    val linkChecker = new LinkChecker(mongoRepository, contentUpdateService, httpFetcher, meterRegistry, Seq(feedAutodiscoveryProcessor, twitterPhotoDetector, contentHasChangedProcesser).asJava)
 
     val eventualResult = linkChecker.checkResource(website)
 

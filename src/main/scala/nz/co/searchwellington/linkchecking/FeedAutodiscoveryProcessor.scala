@@ -3,43 +3,45 @@ package nz.co.searchwellington.linkchecking
 import nz.co.searchwellington.ReasonableWaits
 import nz.co.searchwellington.commentfeeds.CommentFeedDetectorService
 import nz.co.searchwellington.htmlparsing.RssLinkExtractor
-import nz.co.searchwellington.model.{DiscoveredFeed, DiscoveredFeedOccurrence, PublishedResource, Resource, Website}
+import nz.co.searchwellington.model._
 import nz.co.searchwellington.repositories.mongo.MongoRepository
-import nz.co.searchwellington.urls.UrlParser
 import org.apache.commons.logging.LogFactory
 import org.joda.time.DateTime
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
-import reactivemongo.api.bson.BSONObjectID
 
 import java.net.{URI, URL}
 import scala.concurrent.{ExecutionContext, Future}
+import scala.util.Try
 
-@Component class FeedAutodiscoveryProcesser @Autowired()(mongoRepository: MongoRepository,
+@Component class FeedAutodiscoveryProcessor @Autowired()(mongoRepository: MongoRepository,
                                                          rssLinkExtractor: RssLinkExtractor,
-                                                         commentFeedDetector: CommentFeedDetectorService,
-                                                         urlParser: UrlParser)
+                                                         commentFeedDetector: CommentFeedDetectorService)
   extends LinkCheckerProcessor with ReasonableWaits with UrlWrangling {
 
-  private val log = LogFactory.getLog(classOf[FeedAutodiscoveryProcesser])
+  private val log = LogFactory.getLog(classOf[FeedAutodiscoveryProcessor])
 
   override def process(checkResource: Resource, pageContent: Option[String], seen: DateTime)(implicit ec: ExecutionContext): Future[Boolean] = {
     if (!checkResource.`type`.equals("F")) {
       val pageUrl = new URL(checkResource.page) // TODO catch
 
-      def expandRelativeUrls(url: String): URL = {
-        val uri = new URI(url)
-        if (!isFullQualifiedUrl(uri)) {
-          // TODO Is this really happening; what's an example?
-          log.info("url is not fully qualified; will try to expand: " + url)
-          expandUrlRelativeFrom(uri, pageUrl).toURL
-        } else {
-          uri.toURL
-        }
+      def expandRelativeUrls(url: String): Option[URL] = {
+        Try(new URI(url)).map { uri =>
+          if (!isFullQualifiedUrl(uri)) {
+            // TODO Is this really happening; what's an example?
+            log.info("url is not fully qualified; will try to expand: " + url)
+            expandUrlRelativeFrom(uri, pageUrl).toURL
+          } else {
+            uri.toURL
+          }
+        }.toOption
       }
 
-      val html: String = pageContent.get  // TODO naked get
-      val extractedRssLinkUrls = rssLinkExtractor.extractFeedLinks(html).map(expandRelativeUrls)
+      val extractedRssLinkUrls = {
+        pageContent.map { html =>
+          rssLinkExtractor.extractFeedLinks(html).flatMap(expandRelativeUrls)
+        }.getOrElse(Seq.empty)
+      }
 
       val newlyDiscovered: Future[Seq[String]] = Future.sequence {
         extractedRssLinkUrls.map { discoveredUrl =>

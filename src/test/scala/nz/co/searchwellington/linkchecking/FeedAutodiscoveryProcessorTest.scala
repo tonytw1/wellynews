@@ -18,7 +18,7 @@ import java.net.URL
 import java.util.UUID
 import scala.concurrent.{Await, ExecutionContext, Future}
 
-class FeedAutodiscoveryProcesserTest extends ReasonableWaits {
+class FeedAutodiscoveryProcessorTest extends ReasonableWaits {
 
   private val UNSEEN_FEED_URL = new URL("http://something/new")
   private val UNSEEN_FEED_URL_HTTPS = "https://something/new"
@@ -29,14 +29,13 @@ class FeedAutodiscoveryProcesserTest extends ReasonableWaits {
   private val mongoRepository = mock(classOf[MongoRepository])
   private val rssLinkExtractor = mock(classOf[RssLinkExtractor])
   private val commentFeedDetector = mock(classOf[CommentFeedDetectorService])
-  private val urlParser = new UrlParser()
 
   private val resource = Newsitem(id = UUID.randomUUID().toString, page = "https://localhost/test")
   private val pageContent = "Meh"
 
-  private val feedAutodiscoveryProcesser = new FeedAutodiscoveryProcesser(mongoRepository, rssLinkExtractor, commentFeedDetector, urlParser)
+  private val feedAutodiscoveryProcessor = new FeedAutodiscoveryProcessor(mongoRepository, rssLinkExtractor, commentFeedDetector)
 
-  private val successfulWrite: WriteResult = mock(classOf[WriteResult])
+  private val successfulWrite = mock(classOf[WriteResult])
   when(successfulWrite.writeErrors).thenReturn(Seq.empty)
 
   @Test
@@ -56,7 +55,7 @@ class FeedAutodiscoveryProcesserTest extends ReasonableWaits {
 
     val saved = ArgumentCaptor.forClass(classOf[DiscoveredFeed])
 
-    val eventualBoolean = feedAutodiscoveryProcesser.process(resource, Some(pageContent), now)(ec)
+    val eventualBoolean = feedAutodiscoveryProcessor.process(resource, Some(pageContent), now)(ec)
     Await.result(eventualBoolean, TenSeconds)
 
     verify(mongoRepository).saveDiscoveredFeed(saved.capture())(Matchers.eq(ec))
@@ -78,7 +77,7 @@ class FeedAutodiscoveryProcesserTest extends ReasonableWaits {
 
     val saved = ArgumentCaptor.forClass(classOf[DiscoveredFeed])
 
-    Await.result(feedAutodiscoveryProcesser.process(resource, Some(pageContent), DateTime.now), TenSeconds)
+    Await.result(feedAutodiscoveryProcessor.process(resource, Some(pageContent), DateTime.now), TenSeconds)
 
     verify(mongoRepository).saveDiscoveredFeed(saved.capture())(Matchers.eq(ec))
     assertEquals("https://localhost/feed.xml", saved.getValue.url)
@@ -96,7 +95,18 @@ class FeedAutodiscoveryProcesserTest extends ReasonableWaits {
     when(mongoRepository.getFeedByUrl(EXISTING_FEED_URL.toExternalForm)).thenReturn(Future.successful(Some(mock(classOf[Feed]))))
     when(mongoRepository.getFeedByUrl(EXISTING_FEED_URL_HTTPS)).thenReturn(Future.successful(None))
 
-    Await.result(feedAutodiscoveryProcesser.process(resource, Some(pageContent), DateTime.now), TenSeconds)
+    Await.result(feedAutodiscoveryProcessor.process(resource, Some(pageContent), DateTime.now), TenSeconds)
+
+    verify(mongoRepository, never).saveDiscoveredFeed(any(classOf[DiscoveredFeed]))(Matchers.eq(ec))
+  }
+
+  @Test
+  def shouldIgnoreUnparsableDiscoveredUrls(): Unit = {
+    implicit val ec: ExecutionContext = ExecutionContext.Implicits.global
+
+    when(rssLinkExtractor.extractFeedLinks(pageContent)).thenReturn(Seq("not a url"))
+
+    Await.result(feedAutodiscoveryProcessor.process(resource, Some(pageContent), DateTime.now), TenSeconds)
 
     verify(mongoRepository, never).saveDiscoveredFeed(any(classOf[DiscoveredFeed]))(Matchers.eq(ec))
   }
