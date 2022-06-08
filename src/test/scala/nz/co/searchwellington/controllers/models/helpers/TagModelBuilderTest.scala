@@ -2,8 +2,8 @@ package nz.co.searchwellington.controllers.models.helpers
 
 import nz.co.searchwellington.ReasonableWaits
 import nz.co.searchwellington.controllers.RssUrlBuilder
-import nz.co.searchwellington.model.frontend.{FrontendFeed, FrontendNewsitem, FrontendResource}
 import nz.co.searchwellington.model._
+import nz.co.searchwellington.model.frontend.{FrontendNewsitem, FrontendResource}
 import nz.co.searchwellington.repositories.{ContentRetrievalService, TagDAO}
 import nz.co.searchwellington.tagging.RelatedTagsService
 import nz.co.searchwellington.urls.UrlBuilder
@@ -105,7 +105,6 @@ class TagModelBuilderTest extends ReasonableWaits with ContentFields {
   def monthPaginationShouldBePopulatedFromDateOfFirstOverFetchedMainContentItem(): Unit = {
     val request = new MockHttpServletRequest
     request.setAttribute("tags", Seq(tag))
-    val publisherFeeds = Seq(FrontendFeed(id = "789"))
 
     val maxedOutTagNewsitems = Range(1, 20).map { i =>
       val d = new DateTime(2022, 1, 30, 0, 0, 0)
@@ -126,7 +125,6 @@ class TagModelBuilderTest extends ReasonableWaits with ContentFields {
   @Test
   def shouldIncludeTagMonthArchiveLinksInExtraContent(): Unit = {
     request.setAttribute("tags", Seq(tag))
-    val mv = new ModelAndView()
     when(contentRetrievalService.getGeotaggedNewsitemsForTag(tag, 30, loggedInUser = None)).thenReturn(Future.successful(Seq.empty))
     when(contentRetrievalService.getTaggedWebsites(tag, 500, loggedInUser = None)).thenReturn(Future.successful(Seq.empty))
     when(relatedTagsService.getRelatedTagsForTag(tag, 8, None)).thenReturn(Future.successful(Seq.empty))
@@ -155,8 +153,6 @@ class TagModelBuilderTest extends ReasonableWaits with ContentFields {
   @Test
   def tagPageExtras(): Unit = {
     request.setAttribute("tags", Seq(tag))
-    val mv = new ModelAndView()
-
     val geotagged = Seq(FrontendNewsitem(id = "123", place = Some(Geocode(address = Some("Somewhere")))))
     when(contentRetrievalService.getGeotaggedNewsitemsForTag(tag, 30, loggedInUser = None)).thenReturn(Future.successful(geotagged))
     when(contentRetrievalService.getTaggedWebsites(tag, 500, loggedInUser = None)).thenReturn(Future.successful(Seq.empty))
