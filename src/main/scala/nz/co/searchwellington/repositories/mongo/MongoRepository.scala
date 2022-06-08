@@ -70,8 +70,11 @@ class MongoRepository @Autowired()(@Value("${mongo.uri}") mongoUri: String) exte
     val requiredResourceIndexes = Seq(resourceByTypeAndUrlWords, resourceByUrl, resourceById)
 
     requiredResourceIndexes.foreach { requiredIndex =>
-      val result = Await.result(resourceCollection.indexesManager.ensure(requiredIndex), OneMinute)
-      log.info("Ensured index result for " + requiredIndex.name + ": " + result)
+      if (Await.result(resourceCollection.indexesManager.ensure(requiredIndex), OneMinute)) {
+        log.info("Created missing index " + requiredIndex.name)
+      } else {
+        log.info("Did not create existing index " + requiredIndex.name)
+      }
     }
 
     val suppressedUrls = Index(Seq("url" -> IndexType.Ascending), name = Some("url"), unique = false)
