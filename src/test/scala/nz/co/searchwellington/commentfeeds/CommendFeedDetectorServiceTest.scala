@@ -9,11 +9,11 @@ import java.net.URL
 
 class CommendFeedDetectorServiceTest {
 
-  val commentSlashFeedDetector = new CommentSlashFeedDetector()
-  val wellingtonScoopCommentFeedDetector = new WellingtonScoopCommentFeedDetector()
-  val source = Newsitem()
+  private val commentSlashFeedDetector = new CommentSlashFeedDetector()
+  private val wellingtonScoopCommentFeedDetector = new WellingtonScoopCommentFeedDetector()
+  private val source = Newsitem()
 
-  val service = {
+  private val service = {
     val availableDetectors = Seq(commentSlashFeedDetector, wellingtonScoopCommentFeedDetector).toArray // TODO would be nice to be able to autowire these somehow
     new CommentFeedDetectorService(availableDetectors)
   }

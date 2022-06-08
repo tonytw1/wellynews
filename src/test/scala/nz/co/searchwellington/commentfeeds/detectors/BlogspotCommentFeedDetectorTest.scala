@@ -14,8 +14,8 @@ class BlogspotCommentFeedDetectorTest extends TestCase {
 
   private val detector = new BlogspotCommentFeedDetector
 
-  def testShouldDetectBlogspotCommentFeedUrl() = assertTrue(detector.isValid(BLOGSPOT_COMMENT_URL, source))
+  def testShouldDetectBlogspotCommentFeedUrl(): Unit = assertTrue(detector.isValid(BLOGSPOT_COMMENT_URL, source))
 
-  def testShouldIgnoreBlogspotAtomFeed() = assertFalse(detector.isValid(BLOGSPOT_ATOM_URL, source))
+  def testShouldIgnoreBlogspotAtomFeed(): Unit = assertFalse(detector.isValid(BLOGSPOT_ATOM_URL, source))
 
 }

@@ -29,7 +29,7 @@ class HandTaggingServiceTest extends ReasonableWaits {
   implicit val ec = ExecutionContext.Implicits.global
 
   @Test
-  def clearingTagVotesClearAllVotesForThatTagFromTheDatabase {
+  def clearingTagVotesClearAllVotesForThatTagFromTheDatabase() {
     when(mongoRepository.getResourceIdsByTag(tag)).thenReturn(Future.successful(Seq(taggedResource._id)))
     when(mongoRepository.getResourceByObjectId(taggedResource._id)).thenReturn(Future.successful(Some(taggedResource)))
     when(mongoRepository.saveResource(Matchers.any(classOf[Resource]))(Matchers.eq(ec))).thenReturn(Future.successful(successfulWrite))
@@ -45,7 +45,7 @@ class HandTaggingServiceTest extends ReasonableWaits {
   }
 
   @Test
-  def userCanAddTagToTaggableResource: Unit = {
+  def userCanAddTagToTaggableResource()(): Unit = {
     val user = User()
     val tag = Tag()
     val resource = Newsitem()
@@ -58,7 +58,7 @@ class HandTaggingServiceTest extends ReasonableWaits {
   }
 
   @Test
-  def canSetUsersTagsForResource: Unit = {
+  def canSetUsersTagsForResource(): Unit = {
     val user = User()
     val anotherUser = User()
 
@@ -82,7 +82,7 @@ class HandTaggingServiceTest extends ReasonableWaits {
   }
 
   @Test
-  def usersCannotApplyTheSameTagMultipleTimes: Unit = {
+  def usersCannotApplyTheSameTagMultipleTimes(): Unit = {
     val user = User()
     val tag = Tag()
     val existingTagging = Tagging(user_id = user._id, tag_id = tag._id)
@@ -95,7 +95,7 @@ class HandTaggingServiceTest extends ReasonableWaits {
   }
 
   @Test
-  def clearingTagVotesShouldtriggerFrontendContentUpdateForTheEffectedResources {
+  def clearingTagVotesShouldtriggerFrontendContentUpdateForTheEffectedResources() {
     when(mongoRepository.getResourceIdsByTag(tag)).thenReturn(Future.successful(Seq(taggedResource._id)))
     when(mongoRepository.getResourceByObjectId(taggedResource._id)).thenReturn(Future.successful(Some(taggedResource)))
     when(mongoRepository.saveResource(Matchers.any(classOf[Resource]))(Matchers.eq(ec))).thenReturn(Future.successful(successfulWrite))
@@ -107,7 +107,7 @@ class HandTaggingServiceTest extends ReasonableWaits {
   }
 
   @Test
-  def shouldReassignTheVotesUserAndPreformFrontendUpdateWhenTransferringVotes {
+  def shouldReassignTheVotesUserAndPreformFrontendUpdateWhenTransferringVotes() {
     when(mongoRepository.getResourceIdsByTaggingUser(taggingUser)).thenReturn(Future.successful(Seq(taggedResource._id)))
     when(mongoRepository.getResourceByObjectId(taggedResource._id)).thenReturn(Future.successful(Some(taggedResource)))
     when(mongoRepository.saveResource(Matchers.any(classOf[Resource]))(Matchers.eq(ec))).thenReturn(Future.successful(successfulWrite))

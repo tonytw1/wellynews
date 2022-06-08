@@ -16,24 +16,24 @@ import scala.concurrent.Future
 import scala.concurrent.ExecutionContext.Implicits.global
 
 class AdminRequestFilterTest {
-  val mongoRepository = mock(classOf[MongoRepository])
-  val transportTag = Tag(id = UUID.randomUUID().toString, name = "transport")
-  val feed = mock(classOf[Feed])
-  val resource = mock(classOf[Resource])
-  val tagDAO = mock(classOf[TagDAO])
-  val request = new MockHttpServletRequest
+  private val mongoRepository = mock(classOf[MongoRepository])
+  private val transportTag = Tag(id = UUID.randomUUID().toString, name = "transport")
+  private val feed = mock(classOf[Feed])
+  private val resource = mock(classOf[Resource])
+  private val tagDAO = mock(classOf[TagDAO])
+  private val request = new MockHttpServletRequest
 
   val filter = new AdminRequestFilter(mongoRepository, new ResourceParameterFilter(mongoRepository),
     new TagsParameterFilter(tagDAO, mongoRepository))
 
   @Before
-  def setUp {
+  def setUp() {
     when(mongoRepository.getTagByUrlWords("transport")).thenReturn(Future.successful(Some(transportTag)))
     when(mongoRepository.getResourceById("567")).thenReturn(Future.successful(Some(resource)))
   }
 
   @Test
-  def shouldPopulateParentTagAttribute {
+  def shouldPopulateParentTagAttribute() {
     request.setRequestURI("/edit/tag/save")
     request.setParameter("parent", "transport")
 
@@ -43,7 +43,7 @@ class AdminRequestFilterTest {
   }
 
   @Test
-  def shouldParseDateParameterIntoDateAttribute {
+  def shouldParseDateParameterIntoDateAttribute() {
     request.setRequestURI("/edit/save")
     request.setParameter("date", "23 Apr 2009")
 
@@ -55,7 +55,7 @@ class AdminRequestFilterTest {
   }
 
   @Test
-  def shouldPopulateResourceFromParameter {
+  def shouldPopulateResourceFromParameter() {
     request.setRequestURI("/edit/edit")
     request.setParameter("resource", "567")
 
@@ -67,7 +67,7 @@ class AdminRequestFilterTest {
   }
 
   @Test
-  def shouldPopulateTagFromParameterAsWell {
+  def shouldPopulateTagFromParameterAsWell() {
     request.setRequestURI("/edit/tag/save")
     request.setParameter("tag", "transport")
 
@@ -80,7 +80,7 @@ class AdminRequestFilterTest {
   }
 
   @Test
-  def shouldPopulateFeedAttributeFromParameter {
+  def shouldPopulateFeedAttributeFromParameter() {
     request.setRequestURI("/edit/tag/save")
     request.setParameter("feed", "a-feed")
     when(mongoRepository.getFeedByUrlwords("a-feed")).thenReturn(Future.successful(Some(feed)))

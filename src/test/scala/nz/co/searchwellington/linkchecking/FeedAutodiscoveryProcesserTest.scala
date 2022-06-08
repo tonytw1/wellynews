@@ -41,7 +41,7 @@ class FeedAutodiscoveryProcesserTest extends ReasonableWaits {
 
   @Test
   def newlyDiscoveredFeedsUrlsShouldBeRecordedAsDiscoveredFeeds(): Unit = {
-    implicit val ec = ExecutionContext.Implicits.global
+    implicit val ec: ExecutionContext = ExecutionContext.Implicits.global
     val now = DateTime.now
     val source = Website()
 
@@ -66,7 +66,7 @@ class FeedAutodiscoveryProcesserTest extends ReasonableWaits {
 
   @Test
   def relativeFeedUrlsShouldBeExpandedIntoFullyQualifiedUrls(): Unit = {
-    implicit val ec = ExecutionContext.Implicits.global
+    implicit val ec: ExecutionContext = ExecutionContext.Implicits.global
 
     val source = Website()
     when(rssLinkExtractor.extractFeedLinks(pageContent)).thenReturn(Seq(RELATIVE_FEED_URL))
@@ -86,7 +86,7 @@ class FeedAutodiscoveryProcesserTest extends ReasonableWaits {
 
   @Test
   def doNotRecordDiscoveredFeedsIfWeAlreadyHaveThisFeed(): Unit = {
-    implicit val ec = ExecutionContext.Implicits.global
+    implicit val ec: ExecutionContext = ExecutionContext.Implicits.global
 
     val source = Website()
     val autoDiscoveredLinks = Seq(EXISTING_FEED_URL.toExternalForm)

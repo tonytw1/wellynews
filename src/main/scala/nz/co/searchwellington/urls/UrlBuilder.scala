@@ -23,7 +23,7 @@ class UrlBuilder @Autowired()(siteInformation: SiteInformation, urlWordsGenerato
     siteInformation.getStaticRoot + filename
   }
 
-  def getPublishersUrl(): String = {
+  def getPublishersUrl: String = {
     getHomeUri + "publishers"
   }
 

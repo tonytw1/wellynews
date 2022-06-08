@@ -11,7 +11,7 @@ class EndUserInputsTest extends EndUserInputs {
   val urlCleaner: UrlCleaner =  mock(classOf[UrlCleaner])
 
   @Test
-  def shouldFlattenLoudCapsHeadlinesInUserSubmissions {
+  def shouldFlattenLoudCapsHeadlinesInUserSubmissions() {
     assertEquals("The quick brown fox jumped over the lazy dog", processTitle("THE QUICK BROWN FOX JUMPED OVER THE LAZY DOG"))
   }
 
