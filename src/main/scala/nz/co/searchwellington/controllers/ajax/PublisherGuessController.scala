@@ -8,15 +8,15 @@ import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.servlet.ModelAndView
 import uk.co.eelpieconsulting.common.views.ViewFactory
 
-import javax.servlet.http.{HttpServletRequest, HttpServletResponse}
-import scala.jdk.CollectionConverters._
+import javax.servlet.http.HttpServletRequest
 import scala.concurrent.ExecutionContext.Implicits.global
+import scala.jdk.CollectionConverters._
 
 @Controller
 class PublisherGuessController @Autowired()(publisherGuessingService: PublisherGuessingService, viewFactory: ViewFactory, loggedInUserFilter: LoggedInUserFilter) {
 
   @GetMapping(Array("/ajax/publisher-guess"))
-  def handleRequest(request: HttpServletRequest, response: HttpServletResponse): ModelAndView = {
+  def handleRequest(request: HttpServletRequest): ModelAndView = {
     val maybePublisher = Option(request.getParameter("url")).flatMap { url =>
       publisherGuessingService.guessPublisherBasedOnUrl(url, loggedInUserFilter.getLoggedInUser)
     }
