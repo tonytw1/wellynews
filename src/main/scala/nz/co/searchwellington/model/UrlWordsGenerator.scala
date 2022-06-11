@@ -3,6 +3,7 @@ package nz.co.searchwellington.model
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
 import uk.co.eelpieconsulting.common.dates.DateFormatter
+import scala.collection.mutable
 
 @Component class UrlWordsGenerator @Autowired()(dateFormatter: DateFormatter) {
 
@@ -18,7 +19,7 @@ import uk.co.eelpieconsulting.common.dates.DateFormatter
   }
 
   private def makeUrlWordsForNewsitem(newsitem: Newsitem, publisher: Option[Website]): Option[String] = {
-    val uri = new StringBuilder
+    val uri = new mutable.StringBuilder
 
     publisher.map { p =>
       uri.append("/" + makeUrlWordsFromName(p.title))
