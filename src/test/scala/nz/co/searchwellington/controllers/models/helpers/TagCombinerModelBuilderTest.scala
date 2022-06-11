@@ -35,7 +35,7 @@ class TagCombinerModelBuilderTest extends ReasonableWaits with ContentFields {
   private val modelBuilder = new TagCombinerModelBuilder(contentRetrievalService, rssUrlBuilder, urlBuilder, relatedTagsService, commonAttributesModelBuilder)
 
   @Before
-  def setup() {
+  def setup(): Unit = {
   }
 
   @Test

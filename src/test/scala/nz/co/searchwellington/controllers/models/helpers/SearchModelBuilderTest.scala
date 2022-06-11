@@ -36,7 +36,7 @@ class SearchModelBuilderTest extends ReasonableWaits with ContentFields {
   private val emptySearchResults = (Seq.empty, 0L)
 
   @Test
-  def keywordShouldBeSetToIndicateASearch() {
+  def keywordShouldBeSetToIndicateASearch(): Unit = {
     val request = new MockHttpServletRequest
     request.setRequestURI("")
     assertFalse(modelBuilder.isValid(request))
@@ -46,7 +46,7 @@ class SearchModelBuilderTest extends ReasonableWaits with ContentFields {
   }
 
   @Test
-  def pageHeadingShouldBeSearchKeyword() {
+  def pageHeadingShouldBeSearchKeyword(): Unit = {
     val request = new MockHttpServletRequest
     request.setParameter("q", "widgets")
     when(contentRetrievalService.getNewsitemsMatchingKeywords("widgets", 0, 30, noLoggedInUser, tag = None, publisher = None)).thenReturn(Future.successful(keywordNewsitemResults))
@@ -111,7 +111,7 @@ class SearchModelBuilderTest extends ReasonableWaits with ContentFields {
   }
 
   @Test
-  def shouldShowTagIfTagFilterIsSet() {
+  def shouldShowTagIfTagFilterIsSet(): Unit = {
     val request = new MockHttpServletRequest
     request.setParameter("q", "widgets")
     request.setAttribute("tag", tag)
@@ -127,7 +127,7 @@ class SearchModelBuilderTest extends ReasonableWaits with ContentFields {
   }
 
   @Test
-  def shouldShowTagResultsIfTagFilterIsSet() {
+  def shouldShowTagResultsIfTagFilterIsSet(): Unit = {
     val request = new MockHttpServletRequest
     request.setParameter("q", "widgets")
     request.setAttribute("tag", tag)
@@ -148,7 +148,7 @@ class SearchModelBuilderTest extends ReasonableWaits with ContentFields {
   }
 
   @Test
-  def shouldShowMatchingWebsitedAsSecondaryContent() {
+  def shouldShowMatchingWebsitedAsSecondaryContent(): Unit = {
     val request = new MockHttpServletRequest
     request.setParameter("q", "widgets")
 

@@ -27,13 +27,13 @@ class AdminRequestFilterTest {
     new TagsParameterFilter(tagDAO, mongoRepository))
 
   @Before
-  def setUp() {
+  def setUp(): Unit = {
     when(mongoRepository.getTagByUrlWords("transport")).thenReturn(Future.successful(Some(transportTag)))
     when(mongoRepository.getResourceById("567")).thenReturn(Future.successful(Some(resource)))
   }
 
   @Test
-  def shouldPopulateParentTagAttribute() {
+  def shouldPopulateParentTagAttribute(): Unit = {
     request.setRequestURI("/edit/tag/save")
     request.setParameter("parent", "transport")
 
@@ -43,7 +43,7 @@ class AdminRequestFilterTest {
   }
 
   @Test
-  def shouldParseDateParameterIntoDateAttribute() {
+  def shouldParseDateParameterIntoDateAttribute(): Unit = {
     request.setRequestURI("/edit/save")
     request.setParameter("date", "23 Apr 2009")
 
@@ -55,7 +55,7 @@ class AdminRequestFilterTest {
   }
 
   @Test
-  def shouldPopulateResourceFromParameter() {
+  def shouldPopulateResourceFromParameter(): Unit = {
     request.setRequestURI("/edit/edit")
     request.setParameter("resource", "567")
 
@@ -67,7 +67,7 @@ class AdminRequestFilterTest {
   }
 
   @Test
-  def shouldPopulateTagFromParameterAsWell() {
+  def shouldPopulateTagFromParameterAsWell(): Unit = {
     request.setRequestURI("/edit/tag/save")
     request.setParameter("tag", "transport")
 
@@ -80,7 +80,7 @@ class AdminRequestFilterTest {
   }
 
   @Test
-  def shouldPopulateFeedAttributeFromParameter() {
+  def shouldPopulateFeedAttributeFromParameter(): Unit = {
     request.setRequestURI("/edit/tag/save")
     request.setParameter("feed", "a-feed")
     when(mongoRepository.getFeedByUrlwords("a-feed")).thenReturn(Future.successful(Some(feed)))

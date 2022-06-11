@@ -15,7 +15,7 @@ class ProfileModelBuilderTest extends ReasonableWaits {
   val modelBuilder = new ProfileModelBuilder( contentRetrievalService, mongoRepository)
 
   @Test
-  def usersProfilePathIsValid() {
+  def usersProfilePathIsValid(): Unit = {
     val request = new MockHttpServletRequest()
     request.setRequestURI("/profiles/a-user")
     assertTrue(modelBuilder.isValid(request))

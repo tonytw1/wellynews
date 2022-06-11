@@ -32,17 +32,17 @@ class FeedsModelBuilderTest extends ReasonableWaits with ContentFields {
   val modelBuilder = new FeedsModelBuilder(contentRetrievalService, suggestedFeeditemsService, urlBuilder, commonAttributesModelBuilder)
 
   @Before
-  def setUp() {
+  def setUp(): Unit = {
     request.setRequestURI("/feeds")
   }
 
   @Test
-  def shouldBeValidForFeedsPath() {
+  def shouldBeValidForFeedsPath(): Unit = {
     assertTrue(modelBuilder.isValid(request))
   }
 
   @Test
-  def shouldPopulateMainContentWithFeeds() {
+  def shouldPopulateMainContentWithFeeds(): Unit = {
     val feeds = Seq(FrontendFeed(id = UUID.randomUUID().toString), FrontendFeed(id = UUID.randomUUID().toString))
     when(contentRetrievalService.getFeeds(None, loggedInUser)).thenReturn(Future.successful(feeds))
 
