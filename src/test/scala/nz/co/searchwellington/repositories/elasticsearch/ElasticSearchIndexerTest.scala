@@ -122,7 +122,7 @@ class ElasticSearchIndexerTest extends ReasonableWaits {
   }
 
   @Test
-  def canFilterByPublisher() {
+  def canFilterByPublisher(): Unit = {
     val publisher = Website()
     Await.result(mongoRepository.saveResource(publisher), TenSeconds)
     val anotherPublisher = Website()
@@ -203,7 +203,7 @@ class ElasticSearchIndexerTest extends ReasonableWaits {
   }
 
   @Test
-  def canFilterNewsitemsByDateRange() {
+  def canFilterNewsitemsByDateRange(): Unit = {
     val newsitem = Newsitem(date = Some(new DateTime(2016, 2, 10, 0, 0, 0).toDate))
     Await.result(mongoRepository.saveResource(newsitem), TenSeconds)
     val anotherNewsitem = Newsitem(date = Some(new DateTime(2016, 3, 1, 0, 0, 0).toDate))

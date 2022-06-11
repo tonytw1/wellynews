@@ -28,7 +28,7 @@ class ContentUpdateServiceTest extends ReasonableWaits {
   private val successfulUpdateResult = mock(classOf[WriteResult])
 
   @Test
-  def shouldPersistUpdatesInMongo() {
+  def shouldPersistUpdatesInMongo(): Unit = {
     when(mongoRepository.saveResource(updatedResource)).thenReturn(Future.successful(successfulUpdateResult))
     when(frontendContentUpdater.update(updatedResource)).thenReturn(Future.successful(true))
 
@@ -38,7 +38,7 @@ class ContentUpdateServiceTest extends ReasonableWaits {
   }
 
   @Test
-  def shouldUpdateTheElasticsearchIndexWhenUpdating() {
+  def shouldUpdateTheElasticsearchIndexWhenUpdating(): Unit = {
     when(mongoRepository.saveResource(updatedResource)).thenReturn(Future.successful(successfulUpdateResult))
     when(frontendContentUpdater.update(updatedResource)).thenReturn(Future.successful(true))
 
