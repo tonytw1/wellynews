@@ -5,23 +5,26 @@ import org.apache.commons.io.IOUtils
 import org.joda.time.DateTime
 import org.junit.Test
 
-import scala.concurrent.ExecutionContext
+import java.nio.charset.StandardCharsets
+import scala.concurrent.ExecutionContext.Implicits.global
 
 class TwitterPhotoDetectorTest {
 
   private val twitterPhotoUrl = "https://www.rimutaka-incline-railway.org.nz/sites/default/files/2020-12/20201017-a1328-IMG_6380.JPG"
-  private val pageWithTwitterPhoto = IOUtils.toString(this.getClass.getClassLoader.getResourceAsStream("rimutaka-incline-railway-news.html"))
+  private val pageWithTwitterPhoto = IOUtils.toString(
+    this.getClass.getClassLoader.getResourceAsStream("rimutaka-incline-railway-news.html"),
+    StandardCharsets.UTF_8.name
+  )
 
   private val twitterPhotoDetector = new TwitterPhotoDetector()
 
   @Test
   def canDetectTwitterPhotoUrlFromTwitterMetadata(): Unit = {
-    implicit val ec = ExecutionContext.Implicits.global
 
     val newsitem = Newsitem()
     twitterPhotoDetector.process(newsitem, Some(pageWithTwitterPhoto), DateTime.now)
 
-    // TODO assertEquals(Some(twitterPhotoUrl), newsitem.image)
+    // TODO assert
   }
 
 }
