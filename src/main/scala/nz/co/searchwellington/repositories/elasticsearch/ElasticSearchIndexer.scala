@@ -171,9 +171,7 @@ class ElasticSearchIndexer @Autowired()(val showBrokenDecisionService: ShowBroke
   }
 
   def deleteResource(id: BSONObjectID)(implicit ec: ExecutionContext): Future[Boolean] = {
-    (client execute (
-      delete(id.stringify) from Index
-      )).map { response =>
+    (client execute deleteById(Index, id.stringify)).map { response =>
       response.isSuccess
     }
   }
