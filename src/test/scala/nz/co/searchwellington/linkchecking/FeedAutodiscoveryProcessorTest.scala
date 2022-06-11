@@ -5,7 +5,6 @@ import nz.co.searchwellington.commentfeeds.CommentFeedDetectorService
 import nz.co.searchwellington.htmlparsing.RssLinkExtractor
 import nz.co.searchwellington.model.{DiscoveredFeed, Feed, Newsitem, Website}
 import nz.co.searchwellington.repositories.mongo.MongoRepository
-import nz.co.searchwellington.urls.UrlParser
 import org.joda.time.DateTime
 import org.junit.Assert.assertEquals
 import org.junit.Test
