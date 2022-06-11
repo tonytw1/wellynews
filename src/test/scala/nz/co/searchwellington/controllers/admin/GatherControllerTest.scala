@@ -10,8 +10,8 @@ import nz.co.searchwellington.repositories.mongo.MongoRepository
 import nz.co.searchwellington.urls.UrlParser
 import org.junit.Assert.{assertEquals, assertNotNull}
 import org.junit.Test
-import org.mockito.Matchers
-import org.mockito.Matchers.any
+import org.mockito.ArgumentMatchers
+import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.{mock, when}
 import org.springframework.web.servlet.ModelAndView
 import reactivemongo.api.bson.BSONObjectID
@@ -36,8 +36,8 @@ class GatherControllerTest {
     val frontendPublisher = FrontendWebsite(id = publisher.id)
     val adminUser = User(admin = true)
     when(loggedInUserFilter.getLoggedInUser).thenReturn(Some(adminUser))
-    when(mongoRepository.getResourceById(Matchers.eq(publisher.id))(any)).thenReturn(Future.successful(Some(publisher)))
-    when(frontendResourceMapper.createFrontendResourceFrom(Matchers.eq(publisher), any)(any)).thenReturn(Future.successful(frontendPublisher))
+    when(mongoRepository.getResourceById(ArgumentMatchers.eq(publisher.id))(any)).thenReturn(Future.successful(Some(publisher)))
+    when(frontendResourceMapper.createFrontendResourceFrom(ArgumentMatchers.eq(publisher), any)(any)).thenReturn(Future.successful(frontendPublisher))
     val gatheredResources = Seq.empty
     when(contentRetrievalService.getPublishedResourcesMatchingHostname(publisher, "www.foo.com", Some(adminUser))).thenReturn(Future.successful(gatheredResources))
 

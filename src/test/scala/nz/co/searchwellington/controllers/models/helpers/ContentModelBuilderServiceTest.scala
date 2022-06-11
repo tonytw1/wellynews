@@ -6,7 +6,7 @@ import nz.co.searchwellington.model.User
 import nz.co.searchwellington.repositories.ContentRetrievalService
 import org.junit.Assert.assertEquals
 import org.junit.Test
-import org.mockito.Matchers.anyString
+import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.{mock, when}
 import org.springframework.mock.web.MockHttpServletRequest
 import org.springframework.ui.ModelMap
@@ -104,7 +104,7 @@ class ContentModelBuilderServiceTest extends ReasonableWaits {
     when(validModelBuilder.populateContentModel(request, None)).thenReturn(Future.successful(Some(validModelAndView)))
 
     val rssView = mock(classOf[RssView])
-    when(viewFactory.getRssView(anyString, anyString, anyString)).thenReturn(rssView)
+    when(viewFactory.getRssView(any, any, any)).thenReturn(rssView)
     request.setRequestURI("/something/rss")
     assertEquals(rssView, Await.result(contentModelBuilderService.populateContentModel(request), TenSeconds).get.getView)
   }

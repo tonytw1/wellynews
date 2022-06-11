@@ -10,7 +10,8 @@ import org.joda.time.DateTime
 import org.junit.Assert.assertEquals
 import org.junit.Test
 import org.mockito.Mockito.{mock, verify, when}
-import org.mockito.{ArgumentCaptor, Matchers}
+import org.mockito.{ArgumentCaptor, ArgumentMatchers}
+import org.mockito.ArgumentMatchers.any
 import org.springframework.mock.web.MockHttpServletRequest
 import org.springframework.validation.BindingResult
 import reactivemongo.api.bson.BSONObjectID
@@ -42,16 +43,16 @@ class NewNewsitemControllerTest {
     val publisher = Website(_id = BSONObjectID.generate(), title = "A publisher")
     when(mongoRepository.getWebsiteByName("A publisher")).thenReturn(Future.successful(Some(publisher)))
     when(urlCleaner.cleanSubmittedItemUrl("https://localhost/a-newsitem")).thenReturn("https://localhost/a-newsitem")
-    when(contentUpdateService.create(Matchers.any(classOf[Resource]))(Matchers.any())).thenReturn(Future.successful(null))
+    when(contentUpdateService.create(any(classOf[Resource]))(any())).thenReturn(Future.successful(null))
 
     val bindingResultWithNoErrors = mock(classOf[BindingResult])
-    val createdNewsitem = ArgumentCaptor.forClass(classOf[Newsitem])
+    val createdNewsitem: ArgumentCaptor[Newsitem] = ArgumentCaptor.forClass(classOf[Newsitem])
 
     val request = new MockHttpServletRequest
     request.getSession().setAttribute("user", User())
     controller.submit(newNewsitemSubmission, bindingResultWithNoErrors, request)
 
-    verify(contentUpdateService).create(createdNewsitem.capture)(Matchers.eq(ec))
+    verify(contentUpdateService).create(createdNewsitem.capture)(ArgumentMatchers.eq(ec))
     assertEquals("A newsitem", createdNewsitem.getValue.title)
     assertEquals("https://localhost/a-newsitem", createdNewsitem.getValue.page)
     assertEquals(Some(new DateTime(2020, 1, 22, 0, 0).toDate), createdNewsitem.getValue.date)

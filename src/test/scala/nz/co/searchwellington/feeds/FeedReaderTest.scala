@@ -8,8 +8,9 @@ import nz.co.searchwellington.modification.ContentUpdateService
 import org.joda.time.DateTime
 import org.junit.Assert.{assertEquals, assertTrue}
 import org.junit.Test
+import org.mockito.ArgumentCaptor
+import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.{mock, verify, when}
-import org.mockito.{ArgumentCaptor, Matchers}
 
 import java.util.UUID
 import scala.concurrent.ExecutionContext.Implicits.global
@@ -35,7 +36,7 @@ class FeedReaderTest extends ReasonableWaits {
   @Test
   def shouldNotAcceptNewsitemsFromSuggestOnlyFeeds(): Unit = {
     when(whakaokoFeedReader.fetchFeedItems(suggestedFeed)).thenReturn(Future.successful(Right((feedItems, feedItems.size))))
-    when(contentUpdateService.update(Matchers.any(classOf[Feed]))(Matchers.any())).thenReturn(Future.successful(true))
+    when(contentUpdateService.update(any(classOf[Feed]))(any())).thenReturn(Future.successful(true))
 
     val result = Await.result(feedReader.processFeed(suggestedFeed, loggedInUser), TenSeconds)
 
@@ -45,12 +46,12 @@ class FeedReaderTest extends ReasonableWaits {
   @Test
   def shouldUpdateLastReadAndLatestItemForSuggestOnlyFeeds(): Unit = {
     when(whakaokoFeedReader.fetchFeedItems(suggestedFeed)).thenReturn(Future.successful(Right((feedItems, feedItems.size))))
-    when(contentUpdateService.update(Matchers.any(classOf[Feed]))(Matchers.any())).thenReturn(Future.successful(true))
+    when(contentUpdateService.update(any(classOf[Feed]))(any())).thenReturn(Future.successful(true))
 
     Await.result(feedReader.processFeed(suggestedFeed, loggedInUser), TenSeconds)
 
-    val updatedFeed = ArgumentCaptor.forClass(classOf[Feed])
-    verify(contentUpdateService).update(updatedFeed.capture)(Matchers.any())
+    val updatedFeed: ArgumentCaptor[Feed] = ArgumentCaptor.forClass(classOf[Feed])
+    verify(contentUpdateService).update(updatedFeed.capture)(any())
     assertTrue(updatedFeed.getValue.last_read.nonEmpty)
     assertEquals(firstFeedItem.date.map(_.toDate), updatedFeed.getValue.latestItemDate)
   }

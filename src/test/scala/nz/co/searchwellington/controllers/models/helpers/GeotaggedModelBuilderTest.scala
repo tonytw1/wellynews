@@ -9,7 +9,7 @@ import nz.co.searchwellington.tagging.RelatedTagsService
 import nz.co.searchwellington.urls.UrlBuilder
 import org.junit.Assert.{assertEquals, assertNull, assertTrue}
 import org.junit.Test
-import org.mockito.Matchers._
+import org.mockito.ArgumentMatchers._
 import org.mockito.Mockito.{mock, when}
 import org.springframework.mock.web.MockHttpServletRequest
 import uk.co.eelpieconsulting.common.geo.model.{LatLong, OsmId, OsmType, Place}

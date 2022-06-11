@@ -101,7 +101,7 @@ import scala.util.Try
 
   def checkResource(resource: Resource)(implicit ec: ExecutionContext): Future[Boolean] = {
     val parsedUrl = {
-      if (urlValidator.isValid(resource.page)) {  // java.net.URL's construct is too permissive; ie. http:////
+      if (urlValidator.isValid(resource.page)) {  // java.net.URL's construct is too permissive; ie. http://// // TODO Apply this everywhere
         Try {
           new java.net.URL(resource.page)
         }.toOption

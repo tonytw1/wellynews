@@ -11,7 +11,7 @@ import org.joda.time.DateTime
 import org.junit.Assert.assertEquals
 import org.junit.Test
 import org.mockito.Mockito.{mock, verify, when}
-import org.mockito.{ArgumentCaptor, Matchers}
+import org.mockito.{ArgumentCaptor, ArgumentMatchers}
 import org.springframework.validation.BindingResult
 
 import scala.concurrent.{ExecutionContext, Future}
@@ -53,8 +53,8 @@ class EditNewsitemControllerTest {
 
     controller.submit(existingNewsitem.id, editFormSubmission, mock(classOf[BindingResult]))
 
-    val updatedNewsitem = ArgumentCaptor.forClass(classOf[Newsitem])
-    verify(contentUpdateService).update(updatedNewsitem.capture)(Matchers.eq(ec))
+    val updatedNewsitem: ArgumentCaptor[Newsitem] = ArgumentCaptor.forClass(classOf[Newsitem])
+    verify(contentUpdateService).update(updatedNewsitem.capture)(ArgumentMatchers.eq(ec))
 
     assertEquals("New title", updatedNewsitem.getValue.title)
     assertEquals(Some(new DateTime(2020, 6, 17, 0, 0, 0).toDate), updatedNewsitem.getValue.date)

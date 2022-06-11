@@ -5,8 +5,9 @@ import nz.co.searchwellington.model._
 import nz.co.searchwellington.repositories.mongo.MongoRepository
 import org.junit.Assert.{assertEquals, assertFalse, assertTrue}
 import org.junit.Test
-import org.mockito.Mockito.{mock, verify, verifyZeroInteractions, when}
-import org.mockito.{ArgumentCaptor, Matchers}
+import org.mockito.Mockito.{mock, verify, verifyNoInteractions, when}
+import org.mockito.{ArgumentCaptor, ArgumentMatchers}
+import org.mockito.ArgumentMatchers.any
 import reactivemongo.api.commands.WriteResult
 
 import scala.concurrent.ExecutionContext.Implicits.global
@@ -31,14 +32,14 @@ class HandTaggingServiceTest extends ReasonableWaits {
   def clearingTagVotesClearAllVotesForThatTagFromTheDatabase(): Unit = {
     when(mongoRepository.getResourceIdsByTag(tag)).thenReturn(Future.successful(Seq(taggedResource._id)))
     when(mongoRepository.getResourceByObjectId(taggedResource._id)).thenReturn(Future.successful(Some(taggedResource)))
-    when(mongoRepository.saveResource(Matchers.any(classOf[Resource]))(Matchers.any())).thenReturn(Future.successful(successfulWrite))
-    when(frontendContentUpdater.update(Matchers.any(classOf[Resource]))(Matchers.any())).thenReturn(Future.successful(true))
+    when(mongoRepository.saveResource(any(classOf[Resource]))(any())).thenReturn(Future.successful(successfulWrite))
+    when(frontendContentUpdater.update(any(classOf[Resource]))(any())).thenReturn(Future.successful(true))
 
-    val updated = ArgumentCaptor.forClass(classOf[Resource])
+    val updated: ArgumentCaptor[Resource] = ArgumentCaptor.forClass(classOf[Resource])
     Await.result(handTaggingService.clearTaggingsForTag(tag), TenSeconds)
 
     // Expect the previously tagged resource to be updated with the tagging for the deleted tag removed
-    verify(mongoRepository).saveResource(updated.capture())(Matchers.any())
+    verify(mongoRepository).saveResource(updated.capture())(any())
     assertEquals(taggedResource._id, updated.getValue._id)
     assertTrue(updated.getValue.resource_tags.isEmpty)
   }
@@ -53,7 +54,7 @@ class HandTaggingServiceTest extends ReasonableWaits {
 
     assertTrue(updated.resource_tags.nonEmpty)
     assertEquals(Tagging(user_id = user._id, tag_id = tag._id), updated.resource_tags.head)
-    verifyZeroInteractions(mongoRepository)
+    verifyNoInteractions(mongoRepository)
   }
 
   @Test
@@ -90,15 +91,15 @@ class HandTaggingServiceTest extends ReasonableWaits {
     val updated = handTaggingService.addUserTagging(user, tag, resource)
 
     assertEquals(resource.resource_tags, updated.resource_tags)
-    verifyZeroInteractions(mongoRepository)
+    verifyNoInteractions(mongoRepository)
   }
 
   @Test
   def clearingTagVotesShouldTriggerFrontendContentUpdateForTheEffectedResources(): Unit = {
     when(mongoRepository.getResourceIdsByTag(tag)).thenReturn(Future.successful(Seq(taggedResource._id)))
     when(mongoRepository.getResourceByObjectId(taggedResource._id)).thenReturn(Future.successful(Some(taggedResource)))
-    when(mongoRepository.saveResource(Matchers.any(classOf[Resource]))(Matchers.any())).thenReturn(Future.successful(successfulWrite))
-    when(frontendContentUpdater.update(Matchers.any(classOf[Resource]))(Matchers.any())).thenReturn(Future.successful(true))
+    when(mongoRepository.saveResource(any(classOf[Resource]))(any())).thenReturn(Future.successful(successfulWrite))
+    when(frontendContentUpdater.update(any(classOf[Resource]))(any())).thenReturn(Future.successful(true))
 
     Await.result(handTaggingService.clearTaggingsForTag(tag), TenSeconds)
 
@@ -109,13 +110,13 @@ class HandTaggingServiceTest extends ReasonableWaits {
   def shouldReassignTheVotesUserAndPreformFrontendUpdateWhenTransferringVotes(): Unit = {
     when(mongoRepository.getResourceIdsByTaggingUser(taggingUser)).thenReturn(Future.successful(Seq(taggedResource._id)))
     when(mongoRepository.getResourceByObjectId(taggedResource._id)).thenReturn(Future.successful(Some(taggedResource)))
-    when(mongoRepository.saveResource(Matchers.any(classOf[Resource]))(Matchers.any())).thenReturn(Future.successful(successfulWrite))
-    when(frontendContentUpdater.update(Matchers.any(classOf[Resource]))(Matchers.any())).thenReturn(Future.successful(true))
+    when(mongoRepository.saveResource(any(classOf[Resource]))(any())).thenReturn(Future.successful(successfulWrite))
+    when(frontendContentUpdater.update(any(classOf[Resource]))(any())).thenReturn(Future.successful(true))
 
     val updated = ArgumentCaptor.forClass(classOf[Resource])
     Await.result(handTaggingService.transferVotes(taggingUser, newUser), TenSeconds)
 
-    verify(mongoRepository).saveResource(updated.capture())(Matchers.any())
+    verify(mongoRepository).saveResource(updated.capture())(any())
     assertEquals(taggedResource._id, updated.getValue._id)
     assertEquals(newUser._id, updated.getValue.resource_tags.head.user_id)
   }
