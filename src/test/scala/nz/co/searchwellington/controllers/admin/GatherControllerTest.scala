@@ -18,10 +18,9 @@ import reactivemongo.api.bson.BSONObjectID
 
 import scala.concurrent.Future
 import scala.jdk.CollectionConverters._
+import scala.concurrent.ExecutionContext.Implicits.global
 
 class GatherControllerTest {
-
-  implicit val ec = scala.concurrent.ExecutionContext.Implicits.global
 
   private val mongoRepository: MongoRepository = mock(classOf[MongoRepository])
   private val contentUpdateService = mock(classOf[ContentUpdateService])
