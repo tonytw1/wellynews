@@ -5,13 +5,12 @@ import nz.co.searchwellington.model.{Feed, Tag, Website}
 import nz.co.searchwellington.repositories.TagDAO
 import nz.co.searchwellington.repositories.mongo.MongoRepository
 import org.junit.jupiter.api.Assertions.assertEquals
-import org.junit.jupiter.api.BeforeEach
-import org.junit.{Before, Test}
+import org.junit.jupiter.api.{BeforeEach, Test}
 import org.mockito.Mockito.{mock, verify, verifyNoMoreInteractions, when}
 import org.springframework.mock.web.MockHttpServletRequest
 
-import scala.concurrent.Future
 import scala.concurrent.ExecutionContext.Implicits.global
+import scala.concurrent.Future
 
 class RequestFilterTest {
 

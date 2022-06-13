@@ -75,10 +75,9 @@ class HandTaggingServiceTest extends ReasonableWaits {
 
     val updated = handTaggingService.setUsersTagging(user, usersUpdatedTaggings, newsitem)
 
-    assertTrue("New tag should have been applied", updated.resource_tags.contains(Tagging(user_id = user._id, tag_id = yetAnotherTag._id)))
-    assertFalse("Old tag should have been removed", updated.resource_tags.contains(Tagging(user_id = user._id, tag_id = tag._id)))
-    assertTrue("A user updating their tags for a resource should not effect other user's tagging of the same resource",
-      updated.resource_tags.contains(anotherUserApplyingTag))
+    assertTrue(updated.resource_tags.contains(Tagging(user_id = user._id, tag_id = yetAnotherTag._id)), "New tag should have been applied")
+    assertFalse(updated.resource_tags.contains(Tagging(user_id = user._id, tag_id = tag._id)), "Old tag should have been removed")
+    assertTrue(updated.resource_tags.contains(anotherUserApplyingTag), "A user updating their tags for a resource should not effect other user's tagging of the same resource")
   }
 
   @Test

@@ -114,7 +114,7 @@ class FeedModelBuilderTest extends ReasonableWaits with ContentFields {
     modelBuilder.populateExtraModelContent(request, None)
 
     assertEquals(Seq(anotherFrontendNewsitemWithActions).asJava, mv.getModel.get("geocoded"))
-    assertEquals("Expected whakaoko subscription to be shown", whakaokoSubscription, mv.getModel.get("subscription"))
+    assertEquals(whakaokoSubscription, mv.getModel.get("subscription"), "Expected whakaoko subscription to be shown")
   }
 
 }

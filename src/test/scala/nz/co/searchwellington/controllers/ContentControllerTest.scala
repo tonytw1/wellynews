@@ -48,7 +48,7 @@ class ContentControllerTest {
     } catch {
       case r: ResponseStatusException =>
         assertEquals(HttpStatus.NOT_FOUND, r.getStatus)
-      case _ =>
+      case _: Throwable =>
         fail()
     }
   }

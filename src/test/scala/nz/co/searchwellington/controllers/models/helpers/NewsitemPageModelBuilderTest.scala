@@ -82,13 +82,13 @@ class NewsitemPageModelBuilderTest extends ReasonableWaits {
     val mv = Await.result(modelBuilder.populateContentModel(request), TenSeconds).get
 
     val handTaggingVotes = mv.getModel.get("hand_tagging_votes")
-    assertEquals("Expect to be able to see all hand tagging votes for this newsitem", Seq(handTagging).asJava, handTaggingVotes)
+    assertEquals(Seq(handTagging).asJava, handTaggingVotes, "Expect to be able to see all hand tagging votes for this newsitem")
 
     val otherTaggingVotes = mv.getModel.get("other_tagging_votes")
-    assertEquals("Expect to be see other tagging votes", Seq.empty.asJava, otherTaggingVotes)
+    assertEquals(Seq.empty.asJava, otherTaggingVotes, "Expect to be see other tagging votes")
 
     val geoTagVotes = mv.getModel.get("geotag_votes")
-    assertEquals("Expect to be see geotagging votes", geotagVotesForNewsitem.asJava, geoTagVotes)
+    assertEquals(geotagVotesForNewsitem.asJava, geoTagVotes,"Expect to be see geotagging votes")
   }
 
   @Test
