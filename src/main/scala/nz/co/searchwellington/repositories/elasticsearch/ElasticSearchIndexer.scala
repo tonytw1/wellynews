@@ -4,7 +4,6 @@ import com.sksamuel.elastic4s.ElasticDsl._
 import com.sksamuel.elastic4s.http.JavaClient
 import com.sksamuel.elastic4s.requests.bulk.BulkResponse
 import com.sksamuel.elastic4s.requests.common.DistanceUnit
-import com.sksamuel.elastic4s.requests.indexes.IndexRequest
 import com.sksamuel.elastic4s.requests.searches.aggs.HistogramOrder
 import com.sksamuel.elastic4s.requests.searches.aggs.responses.bucket.{DateHistogram, Terms}
 import com.sksamuel.elastic4s.requests.searches.queries.Query
@@ -14,7 +13,6 @@ import com.sksamuel.elastic4s.{ElasticClient, ElasticProperties, Response}
 import nz.co.searchwellington.ReasonableWaits
 import nz.co.searchwellington.controllers.ShowBrokenDecisionService
 import nz.co.searchwellington.model._
-import nz.co.searchwellington.tagging.IndexTagsService
 import org.apache.commons.logging.LogFactory
 import org.joda.time.format.ISODateTimeFormat
 import org.joda.time.{DateTime, Interval}
@@ -28,9 +26,7 @@ import scala.util.Try
 @Component
 class ElasticSearchIndexer @Autowired()(val showBrokenDecisionService: ShowBrokenDecisionService,
                                         @Value("${elasticsearch.url}") elasticsearchUrl: String,
-                                        @Value("${elasticsearch.index}") elasticsearchIndex: String,
-                                        indexTagsService: IndexTagsService) // TODO this should have been dealt with higher up
-  extends ElasticFields with ModeratedQueries with ReasonableWaits {
+                                        @Value("${elasticsearch.index}") elasticsearchIndex: String) extends ElasticFields with ModeratedQueries with ReasonableWaits {
 
   def byDateDescending(request: SearchRequest): SearchRequest = request sortByFieldDesc Date
 
@@ -109,70 +105,63 @@ class ElasticSearchIndexer @Autowired()(val showBrokenDecisionService: ShowBroke
     client
   }
 
-  def updateMultipleContentItems(resources: Seq[(Resource, Seq[String], Seq[String])])(implicit ec: ExecutionContext): Future[Response[BulkResponse]] = {
+  def updateMultipleContentItems(resources: Seq[(Resource, Seq[String], Seq[String], Option[Geocode])])(implicit ec: ExecutionContext): Future[Response[BulkResponse]] = {
     log.debug("Index batch of size: " + resources.size)
 
-    val eventualIndexDefinitions: Seq[Future[IndexRequest]] = resources.map {
-      case (resource: Resource, tags: Seq[String], handTags: Seq[String]) =>
-        for {
-          geocode <- indexTagsService.getIndexGeocodeForResource(resource)
-
-        } yield {
-          val publisher = resource match {
-            case p: PublishedResource => p.getPublisher
-            case _ => None
-          }
-
-          val feedAcceptancePolicy = resource match {
-            case f: Feed => Some(f.acceptance)
-            case _ => None
-          }
-          val feedLatestItemDate = resource match {
-            case f: Feed => f.latestItemDate
-            case _ => None
-          }
-
-          val hostname = Try {  // TODO make the official url parser copy of this
-            new java.net.URL(resource.page)
-          }.toOption.map { url =>
-            url.getHost
-          }
-
-          val accepted = resource match {
-            case n: Newsitem => n.accepted
-            case _ => None
-          }
-
-          val latLong = geocode.flatMap(_.latLong)
-
-          val fields = Seq(
-            Some(Type -> resource.`type`),
-            Some(Title -> resource.title),
-            Some(TitleSort -> resource.title),
-            Some(HttpStatus -> resource.http_status.toString),
-            resource.description.map(d => Description -> d),
-            resource.date.map(d => Date -> new DateTime(d)),
-            Some(Tags, tags),
-            Some(HandTags, handTags),
-            publisher.map(p => Publisher -> p.stringify),
-            Some(Held -> resource.held),
-            resource.owner.map(o => Owner -> o.stringify),
-            latLong.map(ll => LatLong -> Map("lat" -> ll.getLatitude, "lon" -> ll.getLongitude)),
-            Some(TaggingUsers, resource.resource_tags.map(_.user_id.stringify)),
-            feedAcceptancePolicy.map(ap => FeedAcceptancePolicy -> ap.toString),
-            feedLatestItemDate.map(fid => FeedLatestItemDate -> new DateTime(fid)),
-            resource.last_changed.map(lc => LastChanged -> new DateTime(lc)),
-            hostname.map(u => Hostname -> u),
-            accepted.map(a => AcceptedDate -> new DateTime(a))
-          )
-
-          indexInto(Index).fields(fields.flatten) id resource._id.stringify
+    val indexDefinitions = resources.map {
+      case (resource: Resource, tags: Seq[String], handTags: Seq[String], geocode: Option[Geocode]) =>
+        val publisher = resource match {
+          case p: PublishedResource => p.getPublisher
+          case _ => None
         }
+
+        val feedAcceptancePolicy = resource match {
+          case f: Feed => Some(f.acceptance)
+          case _ => None
+        }
+        val feedLatestItemDate = resource match {
+          case f: Feed => f.latestItemDate
+          case _ => None
+        }
+
+        val hostname = Try { // TODO make the official url parser copy of this
+          new java.net.URL(resource.page)
+        }.toOption.map { url =>
+          url.getHost
+        }
+
+        val accepted = resource match {
+          case n: Newsitem => n.accepted
+          case _ => None
+        }
+
+        val latLong = geocode.flatMap(_.latLong)
+
+        val fields = Seq(
+          Some(Type -> resource.`type`),
+          Some(Title -> resource.title),
+          Some(TitleSort -> resource.title),
+          Some(HttpStatus -> resource.http_status.toString),
+          resource.description.map(d => Description -> d),
+          resource.date.map(d => Date -> new DateTime(d)),
+          Some(Tags, tags),
+          Some(HandTags, handTags),
+          publisher.map(p => Publisher -> p.stringify),
+          Some(Held -> resource.held),
+          resource.owner.map(o => Owner -> o.stringify),
+          latLong.map(ll => LatLong -> Map("lat" -> ll.getLatitude, "lon" -> ll.getLongitude)),
+          Some(TaggingUsers, resource.resource_tags.map(_.user_id.stringify)),
+          feedAcceptancePolicy.map(ap => FeedAcceptancePolicy -> ap.toString),
+          feedLatestItemDate.map(fid => FeedLatestItemDate -> new DateTime(fid)),
+          resource.last_changed.map(lc => LastChanged -> new DateTime(lc)),
+          hostname.map(u => Hostname -> u),
+          accepted.map(a => AcceptedDate -> new DateTime(a))
+        )
+
+        indexInto(Index).fields(fields.flatten) id resource._id.stringify
     }
 
-    Future.sequence(eventualIndexDefinitions).flatMap { indexDefinitions =>
-      client.execute(bulk(indexDefinitions))
-    }
+    client.execute(bulk(indexDefinitions))
   }
 
   def deleteResource(id: BSONObjectID)(implicit ec: ExecutionContext): Future[Boolean] = {

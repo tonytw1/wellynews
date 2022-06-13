@@ -31,7 +31,7 @@ object ElasticSearchIndexerTest {
   val indexTagsService = new IndexTagsService(taggingReturnsOfficerService)
 
   val elasticSearchIndexer = new ElasticSearchIndexer(showBrokenDecisionService, s"http://$elasticHost:9200",
-    ElasticSearchIndexerTest.databaseAndIndexName, indexTagsService)
+    ElasticSearchIndexerTest.databaseAndIndexName)
 }
 
 class ElasticSearchIndexerTest extends ReasonableWaits {
@@ -271,9 +271,16 @@ class ElasticSearchIndexerTest extends ReasonableWaits {
 
   private def indexResources(resources: Seq[Resource]) = {
     def indexWithHandTaggings(resource: Resource) = {
-      val handTags = resource.resource_tags.map(_.tag_id.stringify)
-      val indexTags = Await.result(indexTagsService.getIndexTagsForResource(resource), TenSeconds).map(_._id.stringify)
-      (resource, indexTags, handTags)
+      val eventualIndexTags = indexTagsService.getIndexTagsForResource(resource)
+      val eventualGeocode = indexTagsService.getIndexGeocodeForResource(resource)
+      val eventuallyIndexed = for {
+        indexTags <- eventualIndexTags
+        geocode <- eventualGeocode
+      } yield {
+        val handTags = resource.resource_tags.map(_.tag_id.stringify)
+        (resource, indexTags.map(_._id.stringify), handTags, geocode)
+      }
+      Await.result(eventuallyIndexed, TenSeconds)
     }
 
     Await.result(elasticSearchIndexer.updateMultipleContentItems(resources.map(indexWithHandTaggings)), TenSeconds)

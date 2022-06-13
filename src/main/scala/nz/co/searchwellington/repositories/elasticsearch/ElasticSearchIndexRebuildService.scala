@@ -1,7 +1,7 @@
 package nz.co.searchwellington.repositories.elasticsearch
 
 import nz.co.searchwellington.ReasonableWaits
-import nz.co.searchwellington.model.Resource
+import nz.co.searchwellington.model.{Geocode, Resource}
 import nz.co.searchwellington.repositories.mongo.MongoRepository
 import nz.co.searchwellington.tagging.IndexTagsService
 import org.apache.commons.logging.LogFactory
@@ -20,7 +20,7 @@ import scala.concurrent.{ExecutionContext, Future}
   private val BATCH_COMMIT_SIZE = 100
 
   def index(resource: Resource)(implicit ec: ExecutionContext): Future[Boolean] = {
-    withTags(resource).map { toIndex =>
+    toIndexable(resource).map { toIndex =>
       elasticSearchIndexer.updateMultipleContentItems(Seq(toIndex))
     }.map { r =>
       r.isCompleted
@@ -33,8 +33,8 @@ import scala.concurrent.{ExecutionContext, Future}
       log.info("Processing batch: " + batch.size + " - " + i + " / " + resourcesToIndex.size)
 
       val eventualResources = Future.sequence(batch.map(i => mongoRepository.getResourceByObjectId(i))).map(_.flatten)
-      val eventualWithIndexTags = eventualResources.flatMap { rs =>
-        Future.sequence(rs.map(withTags))
+      val eventualWithIndexTags = eventualResources.flatMap { rs: Seq[Resource] =>
+        Future.sequence(rs.map(toIndexable))
       }
 
       eventualWithIndexTags.flatMap { rs =>
@@ -63,15 +63,16 @@ import scala.concurrent.{ExecutionContext, Future}
     }
   }
 
-  private def withTags(resource: Resource)(implicit ec: ExecutionContext): Future[(Resource, Seq[String], Seq[String])] = {
-    // TODO this is a confusing overloading of resource.resource_tags; elastic indexer also calls out got geo taggings itself.
-    // Push down to the Elastic indexer or introduce a POJO?
+  private def toIndexable(resource: Resource)(implicit ec: ExecutionContext): Future[(Resource, Seq[String], Seq[String], Option[Geocode])] = {
+    val eventualIndexTags = indexTagsService.getIndexTagsForResource(resource)
+    val eventualGeocode = indexTagsService.getIndexGeocodeForResource(resource)
     for {
-      indexTags <- indexTagsService.getIndexTagsForResource(resource)
+      indexTags <- eventualIndexTags
+      geocode <- eventualGeocode
     } yield {
       val indexTagIds = indexTags.map(_._id.stringify)
       val handTagIds = resource.resource_tags.map(_.tag_id.stringify).distinct
-      (resource, indexTagIds, handTagIds)
+      (resource, indexTagIds, handTagIds, geocode)
     }
   }
 
