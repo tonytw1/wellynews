@@ -112,12 +112,15 @@ class ElasticSearchIndexer @Autowired()(val showBrokenDecisionService: ShowBroke
     log.debug("Index batch of size: " + resources.size)
 
     val eventualIndexDefinitions: Seq[Future[IndexRequest]] = resources.map { r =>
-      val publisher = r._1 match {
-        case p: PublishedResource => p.getPublisher
-        case _ => None
-      }
+      for {
+        geocode <- indexTagsService.getIndexGeocodeForResource(r._1)
 
-      indexTagsService.getIndexGeocodeForResource(r._1).map { geocode =>
+      } yield {
+        val publisher = r._1 match {
+          case p: PublishedResource => p.getPublisher
+          case _ => None
+        }
+
         val feedAcceptancePolicy = r._1 match {
           case f: Feed => Some(f.acceptance)
           case _ => None
