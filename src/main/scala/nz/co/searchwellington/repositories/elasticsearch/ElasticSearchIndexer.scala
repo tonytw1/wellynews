@@ -111,61 +111,62 @@ class ElasticSearchIndexer @Autowired()(val showBrokenDecisionService: ShowBroke
   def updateMultipleContentItems(resources: Seq[(Resource, Seq[String], Seq[String])])(implicit ec: ExecutionContext): Future[Response[BulkResponse]] = {
     log.debug("Index batch of size: " + resources.size)
 
-    val eventualIndexDefinitions: Seq[Future[IndexRequest]] = resources.map { r =>
-      for {
-        geocode <- indexTagsService.getIndexGeocodeForResource(r._1)
+    val eventualIndexDefinitions: Seq[Future[IndexRequest]] = resources.map {
+      case (resource: Resource, tags: Seq[String], handTags: Seq[String]) =>
+        for {
+          geocode <- indexTagsService.getIndexGeocodeForResource(resource)
 
-      } yield {
-        val publisher = r._1 match {
-          case p: PublishedResource => p.getPublisher
-          case _ => None
+        } yield {
+          val publisher = resource match {
+            case p: PublishedResource => p.getPublisher
+            case _ => None
+          }
+
+          val feedAcceptancePolicy = resource match {
+            case f: Feed => Some(f.acceptance)
+            case _ => None
+          }
+          val feedLatestItemDate = resource match {
+            case f: Feed => f.latestItemDate
+            case _ => None
+          }
+
+          val hostname = Try {
+            new java.net.URL(resource.page)
+          }.toOption.map { url =>
+            url.getHost
+          }
+
+          val accepted = resource match {
+            case n: Newsitem => n.accepted
+            case _ => None
+          }
+
+          val latLong = geocode.flatMap(_.latLong)
+
+          val fields = Seq(
+            Some(Type -> resource.`type`),
+            Some(Title -> resource.title),
+            Some(TitleSort -> resource.title),
+            Some(HttpStatus -> resource.http_status.toString),
+            resource.description.map(d => Description -> d),
+            resource.date.map(d => Date -> new DateTime(d)),
+            Some(Tags, tags),
+            Some(HandTags, handTags),
+            publisher.map(p => Publisher -> p.stringify),
+            Some(Held -> resource.held),
+            resource.owner.map(o => Owner -> o.stringify),
+            latLong.map(ll => LatLong -> Map("lat" -> ll.getLatitude, "lon" -> ll.getLongitude)),
+            Some(TaggingUsers, resource.resource_tags.map(_.user_id.stringify)),
+            feedAcceptancePolicy.map(ap => FeedAcceptancePolicy -> ap.toString),
+            feedLatestItemDate.map(fid => FeedLatestItemDate -> new DateTime(fid)),
+            resource.last_changed.map(lc => LastChanged -> new DateTime(lc)),
+            hostname.map(u => Hostname -> u),
+            accepted.map(a => AcceptedDate -> new DateTime(a))
+          )
+
+          indexInto(Index).fields(fields.flatten) id resource._id.stringify
         }
-
-        val feedAcceptancePolicy = r._1 match {
-          case f: Feed => Some(f.acceptance)
-          case _ => None
-        }
-        val feedLatestItemDate = r._1 match {
-          case f: Feed => f.latestItemDate
-          case _ => None
-        }
-
-        val hostname = Try {
-          new java.net.URL(r._1.page)
-        }.toOption.map { url =>
-          url.getHost
-        }
-
-        val accepted = r._1 match {
-          case n: Newsitem => n.accepted
-          case _ => None
-        }
-
-        val latLong = geocode.flatMap(_.latLong)
-
-        val fields = Seq(
-          Some(Type -> r._1.`type`),
-          Some(Title -> r._1.title),
-          Some(TitleSort -> r._1.title),
-          Some(HttpStatus -> r._1.http_status.toString),
-          r._1.description.map(d => Description -> d),
-          r._1.date.map(d => Date -> new DateTime(d)),
-          Some(Tags, r._2),
-          Some(HandTags, r._3),
-          publisher.map(p => Publisher -> p.stringify),
-          Some(Held -> r._1.held),
-          r._1.owner.map(o => Owner -> o.stringify),
-          latLong.map(ll => LatLong -> Map("lat" -> ll.getLatitude, "lon" -> ll.getLongitude)),
-          Some(TaggingUsers, r._1.resource_tags.map(_.user_id.stringify)),
-          feedAcceptancePolicy.map(ap => FeedAcceptancePolicy -> ap.toString),
-          feedLatestItemDate.map(fid => FeedLatestItemDate -> new DateTime(fid)),
-          r._1.last_changed.map(lc => LastChanged -> new DateTime(lc)),
-          hostname.map(u => Hostname -> u),
-          accepted.map(a => AcceptedDate -> new DateTime(a))
-        )
-
-        indexInto(Index).fields(fields.flatten) id r._1._id.stringify
-      }
     }
 
     Future.sequence(eventualIndexDefinitions).flatMap { indexDefinitions =>
