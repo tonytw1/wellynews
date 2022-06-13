@@ -131,7 +131,7 @@ class ElasticSearchIndexer @Autowired()(val showBrokenDecisionService: ShowBroke
             case _ => None
           }
 
-          val hostname = Try {
+          val hostname = Try {  // TODO make the official url parser copy of this
             new java.net.URL(resource.page)
           }.toOption.map { url =>
             url.getHost
