@@ -5,6 +5,7 @@ import com.sksamuel.elastic4s.http.JavaClient
 import com.sksamuel.elastic4s.requests.bulk.BulkResponse
 import com.sksamuel.elastic4s.requests.common.DistanceUnit
 import com.sksamuel.elastic4s.requests.indexes.IndexRequest
+import com.sksamuel.elastic4s.requests.searches.aggs.HistogramOrder
 import com.sksamuel.elastic4s.requests.searches.aggs.responses.bucket.{DateHistogram, Terms}
 import com.sksamuel.elastic4s.requests.searches.queries.Query
 import com.sksamuel.elastic4s.requests.searches.{DateHistogramInterval, SearchRequest}
@@ -291,7 +292,8 @@ class ElasticSearchIndexer @Autowired()(val showBrokenDecisionService: ShowBroke
   }
 
   def createdAcceptedDateAggregationFor(query: ResourceQuery, loggedInUser: Option[User])(implicit ec: ExecutionContext): Future[Seq[(String, Long)]] = {
-    val aggs = Seq(dateHistogramAgg("accepted", "accepted").calendarInterval(DateHistogramInterval.Day).format("YYYY-MM-dd"))
+    val aggs = Seq(dateHistogramAgg("accepted", "accepted").
+      calendarInterval(DateHistogramInterval.Day).format("YYYY-MM-dd").order(HistogramOrder.KEY_DESC))
     val request = search(Index) query composeQueryFor(query, loggedInUser) limit 0 aggregations aggs
 
     client.execute(request).map { r =>
@@ -300,12 +302,12 @@ class ElasticSearchIndexer @Autowired()(val showBrokenDecisionService: ShowBroke
         val day = b.date
         (day, b.docCount)
       }
-      acceptedDays.filter(_._2 > 0).reverse // TODO compared to month aggregation; who should do the date parsing?
+      acceptedDays.filter(_._2 > 0) // TODO compared to month aggregation; who should do the date parsing?
     }
   }
 
   def createdMonthAggregationFor(query: ResourceQuery, loggedInUser: Option[User])(implicit ec: ExecutionContext): Future[Seq[(Interval, Long)]] = {
-    val aggs = Seq(dateHistogramAgg(Date, Date).calendarInterval(DateHistogramInterval.Month))
+    val aggs = Seq(dateHistogramAgg(Date, Date).calendarInterval(DateHistogramInterval.Month).order(HistogramOrder.KEY_DESC))
     val request = search(Index) query composeQueryFor(query, loggedInUser) limit 0 aggregations aggs
 
     client.execute(request).map { r =>
@@ -315,7 +317,7 @@ class ElasticSearchIndexer @Autowired()(val showBrokenDecisionService: ShowBroke
         val month = new Interval(startOfMonth, startOfMonth.plusMonths(1))
         (month, b.docCount)
       }
-      archiveLinks.filter(_._2 > 0).reverse
+      archiveLinks.filter(_._2 > 0)
     }
   }
 
