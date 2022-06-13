@@ -247,10 +247,10 @@ class ElasticSearchIndexer @Autowired()(val showBrokenDecisionService: ShowBroke
         matchQuery(Publisher, p._id.stringify)
       },
       query.interval.map { i =>
-        rangeQuery("date") gte i.getStartMillis lt i.getEndMillis
+        rangeQuery(Date) gte i.getStartMillis lt i.getEndMillis
       },
       query.before.map { d =>
-        rangeQuery("date") lt d.getMillis
+        rangeQuery(Date) lt d.getMillis
       },
       query.q.map { qt =>
         val titleMatches = matchQuery(Title, qt).boost(5)
@@ -305,11 +305,11 @@ class ElasticSearchIndexer @Autowired()(val showBrokenDecisionService: ShowBroke
   }
 
   def createdMonthAggregationFor(query: ResourceQuery, loggedInUser: Option[User])(implicit ec: ExecutionContext): Future[Seq[(Interval, Long)]] = {
-    val aggs = Seq(dateHistogramAgg("date", "date").calendarInterval(DateHistogramInterval.Month))
+    val aggs = Seq(dateHistogramAgg(Date, Date).calendarInterval(DateHistogramInterval.Month))
     val request = search(Index) query composeQueryFor(query, loggedInUser) limit 0 aggregations aggs
 
     client.execute(request).map { r =>
-      val dateAgg = r.result.aggs.result[DateHistogram]("date")
+      val dateAgg = r.result.aggs.result[DateHistogram](Date)
       val archiveLinks = dateAgg.buckets.map { b =>
         val startOfMonth = ISODateTimeFormat.dateTimeParser().parseDateTime(b.date)
         val month = new Interval(startOfMonth, startOfMonth.plusMonths(1))
