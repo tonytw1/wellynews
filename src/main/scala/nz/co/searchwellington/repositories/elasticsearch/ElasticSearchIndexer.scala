@@ -292,32 +292,34 @@ class ElasticSearchIndexer @Autowired()(val showBrokenDecisionService: ShowBroke
   }
 
   def createdAcceptedDateAggregationFor(query: ResourceQuery, loggedInUser: Option[User])(implicit ec: ExecutionContext): Future[Seq[(String, Long)]] = {
-    val aggs = Seq(dateHistogramAgg(AcceptedDate, AcceptedDate).
-      calendarInterval(DateHistogramInterval.Day).format("YYYY-MM-dd").order(HistogramOrder.KEY_DESC))
-    val request = search(Index) query composeQueryFor(query, loggedInUser) limit 0 aggregations aggs
+    val dateDay = dateHistogramAgg(AcceptedDate, AcceptedDate).
+      calendarInterval(DateHistogramInterval.Day).format("YYYY-MM-dd").
+      order(HistogramOrder.KEY_DESC).
+      minDocCount(1)
+
+    val request = search(Index) query composeQueryFor(query, loggedInUser) limit 0 aggregations Seq(dateDay)
 
     client.execute(request).map { r =>
       val dateAgg = r.result.aggs.result[DateHistogram](AcceptedDate)
-      val acceptedDays = dateAgg.buckets.map { b =>
+      dateAgg.buckets.map { b =>
         val day = b.date
         (day, b.docCount)
-      }
-      acceptedDays.filter(_._2 > 0) // TODO compared to month aggregation; who should do the date parsing?
+      } // TODO compared to month aggregation; who should do the date parsing?
     }
   }
 
   def createdMonthAggregationFor(query: ResourceQuery, loggedInUser: Option[User])(implicit ec: ExecutionContext): Future[Seq[(Interval, Long)]] = {
-    val aggs = Seq(dateHistogramAgg(Date, Date).calendarInterval(DateHistogramInterval.Month).order(HistogramOrder.KEY_DESC))
-    val request = search(Index) query composeQueryFor(query, loggedInUser) limit 0 aggregations aggs
+    val dateMonth = dateHistogramAgg(Date, Date).calendarInterval(DateHistogramInterval.Month).order(HistogramOrder.KEY_DESC).minDocCount(1)
+
+    val request = search(Index) query composeQueryFor(query, loggedInUser) limit 0 aggregations Seq(dateMonth)
 
     client.execute(request).map { r =>
       val dateAgg = r.result.aggs.result[DateHistogram](Date)
-      val archiveLinks = dateAgg.buckets.map { b =>
+      dateAgg.buckets.map { b =>
         val startOfMonth = ISODateTimeFormat.dateTimeParser().parseDateTime(b.date)
         val month = new Interval(startOfMonth, startOfMonth.plusMonths(1))
         (month, b.docCount)
       }
-      archiveLinks.filter(_._2 > 0)
     }
   }
 
