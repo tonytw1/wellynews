@@ -3,7 +3,7 @@ package nz.co.searchwellington.controllers
 import nz.co.searchwellington.model.User
 import nz.co.searchwellington.repositories.HandTaggingService
 import nz.co.searchwellington.repositories.mongo.MongoRepository
-import org.junit.Test
+import org.junit.jupiter.api.Test
 import org.mockito.Mockito.{mock, verify, when}
 
 import scala.concurrent.Future

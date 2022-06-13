@@ -8,7 +8,7 @@ import nz.co.searchwellington.modification.ContentUpdateService
 import nz.co.searchwellington.queues.LinkCheckerQueue
 import nz.co.searchwellington.repositories.FrontendContentUpdater
 import nz.co.searchwellington.repositories.mongo.MongoRepository
-import org.junit.Test
+import org.junit.jupiter.api.Test
 import org.mockito.Mockito.{mock, verify, when}
 import reactivemongo.api.commands.WriteResult
 

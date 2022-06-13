@@ -9,8 +9,7 @@ import nz.co.searchwellington.filters.AdminRequestFilter;
 import nz.co.searchwellington.model.Resource;
 import nz.co.searchwellington.model.User;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.springframework.mock.web.MockHttpServletRequest;
@@ -38,7 +37,7 @@ public class PublicTaggingControllerTest {
 	
 	PublicTaggingController controller;
 
-	@Before
+	@BeforeEach
 	public void setup() {
 		MockitoAnnotations.initMocks(this);
 		controller = new PublicTaggingController(adminRequestFilter,

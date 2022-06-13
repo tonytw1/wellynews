@@ -3,8 +3,8 @@ package nz.co.searchwellington.feeds
 import nz.co.searchwellington.model.{Feed, FeedAcceptancePolicy, Newsitem, User}
 import nz.co.searchwellington.urls.UrlCleaner
 import org.joda.time.DateTime
-import org.junit.Assert.{assertEquals, assertFalse, assertTrue}
-import org.junit.Test
+import org.junit.jupiter.api.Assertions.{assertEquals, assertFalse, assertTrue}
+import org.junit.jupiter.api.Test
 import org.mockito.Mockito.{mock, when}
 import reactivemongo.api.bson.BSONObjectID
 

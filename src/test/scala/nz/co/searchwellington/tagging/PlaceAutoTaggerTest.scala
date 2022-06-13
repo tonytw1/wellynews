@@ -3,8 +3,9 @@ package nz.co.searchwellington.tagging
 import nz.co.searchwellington.ReasonableWaits
 import nz.co.searchwellington.model.{Newsitem, Tag}
 import nz.co.searchwellington.repositories.mongo.MongoRepository
-import org.junit.Assert._
-import org.junit.{Before, Test}
+import org.junit.jupiter.api.Assertions.assertTrue
+import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.BeforeEach
 import org.mockito.Mockito.{mock, when}
 import reactivemongo.api.bson.BSONObjectID
 
@@ -24,7 +25,7 @@ class PlaceAutoTaggerTest extends ReasonableWaits {
 
   private val placeAutoTagger = new PlaceAutoTagger(mongoRepository)
 
-  @Before
+  @BeforeEach
   def setUp(): Unit = {
     when(mongoRepository.getTagByUrlWords("places")).thenReturn(Future.successful(Some(placesTag)))
     when(mongoRepository.getTagsByParent(placesTag._id)).thenReturn(Future.successful(List(aroValleyTag, islandBayTag)))

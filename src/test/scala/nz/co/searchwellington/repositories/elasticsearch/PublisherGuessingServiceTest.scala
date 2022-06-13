@@ -3,8 +3,8 @@ package nz.co.searchwellington.repositories.elasticsearch
 import nz.co.searchwellington.model.{User, Website}
 import nz.co.searchwellington.repositories.ContentRetrievalService
 import nz.co.searchwellington.urls.UrlParser
-import org.junit.Assert._
-import org.junit.Test
+import org.junit.jupiter.api.Assertions._
+import org.junit.jupiter.api.Test
 import org.mockito.Mockito.{mock, when}
 
 import scala.concurrent.Future

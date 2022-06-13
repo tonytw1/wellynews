@@ -6,8 +6,8 @@ import nz.co.searchwellington.feeds.whakaoko.model.FeedItem
 import nz.co.searchwellington.model.{Feed, FeedAcceptancePolicy, User}
 import nz.co.searchwellington.modification.ContentUpdateService
 import org.joda.time.DateTime
-import org.junit.Assert.{assertEquals, assertTrue}
-import org.junit.Test
+import org.junit.jupiter.api.Assertions.{assertEquals, assertTrue}
+import org.junit.jupiter.api.Test
 import org.mockito.ArgumentCaptor
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.{mock, verify, when}

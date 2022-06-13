@@ -2,8 +2,8 @@ package nz.co.searchwellington.controllers.models.helpers
 
 import nz.co.searchwellington.model.ArchiveLink
 import org.joda.time.{DateTime, DateTimeZone, Interval}
-import org.junit.Assert.assertEquals
-import org.junit.Test
+import org.junit.jupiter.api.Assertions.assertEquals
+import org.junit.jupiter.api.Test
 
 class ArchiveMonthsTest extends ArchiveMonths {
 

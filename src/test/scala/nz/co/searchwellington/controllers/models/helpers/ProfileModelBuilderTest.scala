@@ -3,8 +3,8 @@ package nz.co.searchwellington.controllers.models.helpers
 import nz.co.searchwellington.ReasonableWaits
 import nz.co.searchwellington.repositories.ContentRetrievalService
 import nz.co.searchwellington.repositories.mongo.MongoRepository
-import org.junit.Assert.assertTrue
-import org.junit.Test
+import org.junit.jupiter.api.Assertions.assertTrue
+import org.junit.jupiter.api.Test
 import org.mockito.Mockito.mock
 import org.springframework.mock.web.MockHttpServletRequest
 

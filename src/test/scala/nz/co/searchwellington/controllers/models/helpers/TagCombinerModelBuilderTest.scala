@@ -7,16 +7,17 @@ import nz.co.searchwellington.model.frontend.{FrontendNewsitem, FrontendResource
 import nz.co.searchwellington.repositories.{ContentRetrievalService, TagDAO}
 import nz.co.searchwellington.tagging.RelatedTagsService
 import nz.co.searchwellington.urls.UrlBuilder
-import org.junit.Assert.{assertEquals, assertFalse, assertTrue}
-import org.junit.{Before, Test}
+import org.junit.jupiter.api.Assertions.{assertEquals, assertFalse, assertTrue}
+import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.BeforeEach
 import org.mockito.Mockito.{mock, when}
 import org.springframework.mock.web.MockHttpServletRequest
 import reactivemongo.api.bson.BSONObjectID
 
 import java.util.UUID
+import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.{Await, Future}
 import scala.jdk.CollectionConverters._
-import scala.concurrent.ExecutionContext.Implicits.global
 
 class TagCombinerModelBuilderTest extends ReasonableWaits with ContentFields {
 
@@ -34,7 +35,7 @@ class TagCombinerModelBuilderTest extends ReasonableWaits with ContentFields {
 
   private val modelBuilder = new TagCombinerModelBuilder(contentRetrievalService, rssUrlBuilder, urlBuilder, relatedTagsService, commonAttributesModelBuilder)
 
-  @Before
+  @BeforeEach
   def setup(): Unit = {
   }
 

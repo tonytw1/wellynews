@@ -1,12 +1,12 @@
 package nz.co.searchwellington.http
 
-import java.net.URL
-
 import nz.co.searchwellington.ReasonableWaits
-import org.junit.Assert.assertEquals
-import org.junit.{Before, Test}
+import org.junit.jupiter.api.Assertions.assertEquals
+import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.BeforeEach
 import org.mockito.Mockito.{mock, verify, verifyNoMoreInteractions, when}
 
+import java.net.URL
 import scala.concurrent.Await
 import scala.concurrent.ExecutionContext.Implicits.global
 
@@ -20,7 +20,7 @@ class RobotsAwareHttpFetcherTest extends ReasonableWaits {
 
   private val robotsAwareFetcher = new RobotsAwareHttpFetcher(robotExclusionService, httpFetcher)
 
-  @Before
+  @BeforeEach
   def setup(): Unit = {
     when(httpFetcher.getUserAgent).thenReturn(TEST_USER_AGENT)
   }

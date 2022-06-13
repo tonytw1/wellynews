@@ -8,8 +8,8 @@ import nz.co.searchwellington.model.{SiteInformation, Tag, Website}
 import nz.co.searchwellington.repositories.ContentRetrievalService
 import nz.co.searchwellington.tagging.RelatedTagsService
 import nz.co.searchwellington.urls.UrlBuilder
-import org.junit.Assert.{assertEquals, assertNotNull, assertTrue}
-import org.junit.Test
+import org.junit.jupiter.api.Assertions.{assertEquals, assertNotNull, assertTrue}
+import org.junit.jupiter.api.Test
 import org.mockito.Mockito.{mock, when}
 import org.springframework.mock.web.MockHttpServletRequest
 

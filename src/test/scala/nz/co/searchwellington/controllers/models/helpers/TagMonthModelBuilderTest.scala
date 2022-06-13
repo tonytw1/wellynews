@@ -5,8 +5,8 @@ import nz.co.searchwellington.controllers.RssUrlBuilder
 import nz.co.searchwellington.model._
 import nz.co.searchwellington.repositories.ContentRetrievalService
 import org.joda.time.{DateTime, Interval}
-import org.junit.Assert.{assertFalse, assertNotNull, assertTrue}
-import org.junit.Test
+import org.junit.jupiter.api.Assertions.{assertFalse, assertNotNull, assertTrue}
+import org.junit.jupiter.api.Test
 import org.mockito.Mockito.{mock, when}
 import org.springframework.mock.web.MockHttpServletRequest
 import uk.co.eelpieconsulting.common.dates.DateFormatter

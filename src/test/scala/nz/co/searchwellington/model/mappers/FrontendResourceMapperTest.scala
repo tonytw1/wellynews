@@ -8,8 +8,8 @@ import nz.co.searchwellington.repositories.mongo.MongoRepository
 import nz.co.searchwellington.tagging.{IndexTagsService, TaggingReturnsOfficerService}
 import nz.co.searchwellington.urls.UrlBuilder
 import org.joda.time.{DateTime, DateTimeZone}
-import org.junit.Assert.{assertEquals, assertFalse, assertTrue}
-import org.junit.Test
+import org.junit.jupiter.api.Assertions.{assertEquals, assertFalse, assertTrue}
+import org.junit.jupiter.api.Test
 import org.mockito.Mockito.{mock, when}
 import reactivemongo.api.bson.BSONObjectID
 import uk.co.eelpieconsulting.common.dates.DateFormatter

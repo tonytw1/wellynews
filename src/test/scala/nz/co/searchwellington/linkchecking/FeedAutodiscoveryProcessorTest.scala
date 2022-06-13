@@ -6,8 +6,8 @@ import nz.co.searchwellington.htmlparsing.RssLinkExtractor
 import nz.co.searchwellington.model.{DiscoveredFeed, Feed, Newsitem, Website}
 import nz.co.searchwellington.repositories.mongo.MongoRepository
 import org.joda.time.DateTime
-import org.junit.Assert.assertEquals
-import org.junit.Test
+import org.junit.jupiter.api.Assertions.assertEquals
+import org.junit.jupiter.api.Test
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.{mock, never, verify, when}
 import org.mockito.{ArgumentCaptor, ArgumentMatchers}

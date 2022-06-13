@@ -1,8 +1,9 @@
 package nz.co.searchwellington.urls
 
 import nz.co.searchwellington.urls.shorturls.CachingShortUrlResolverService
-import org.junit.Assert.assertEquals
-import org.junit.{Before, Test}
+import org.junit.jupiter.api.Assertions.assertEquals
+import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.BeforeEach
 import org.mockito.Mockito.{mock, verify, when}
 
 import java.net.URI
@@ -19,7 +20,7 @@ class UrlCleanerTests {
   private val shortUrlResolverService = mock(classOf[CachingShortUrlResolverService])
   private val cleaner = new UrlCleaner(shortUrlResolverService)
 
-  @Before
+  @BeforeEach
   def setUp(): Unit = {
     when(shortUrlResolverService.resolveUrl(BASIC_CLEANED_URL)).thenReturn(BASIC_CLEANED_URL)
     when(shortUrlResolverService.resolveUrl(SHORT_URL)).thenReturn(BASIC_CLEANED_URL)

@@ -1,8 +1,8 @@
 package nz.co.searchwellington.controllers.models.helpers
 
 import nz.co.searchwellington.model.PaginationLink
-import org.junit.Assert.{assertEquals, assertFalse, assertTrue}
-import org.junit.Test
+import org.junit.jupiter.api.Assertions.{assertEquals, assertFalse, assertTrue}
+import org.junit.jupiter.api.Test
 import org.springframework.web.servlet.ModelAndView
 
 import scala.jdk.CollectionConverters._

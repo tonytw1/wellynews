@@ -6,8 +6,8 @@ import nz.co.searchwellington.http.RobotsAwareHttpFetcher
 import nz.co.searchwellington.model.Website
 import nz.co.searchwellington.modification.ContentUpdateService
 import nz.co.searchwellington.repositories.mongo.MongoRepository
-import org.junit.Assert.assertFalse
-import org.junit.Test
+import org.junit.jupiter.api.Assertions.assertFalse
+import org.junit.jupiter.api.Test
 import org.mockito.Mockito.mock
 
 import scala.concurrent.Await

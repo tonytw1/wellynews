@@ -1,7 +1,7 @@
 package nz.co.searchwellington.linkchecking
 
-import org.junit.Assert.{assertEquals, assertFalse, assertTrue}
-import org.junit.Test
+import org.junit.jupiter.api.Assertions.{assertEquals, assertFalse, assertTrue}
+import org.junit.jupiter.api.Test
 
 import java.net.{URI, URL}
 

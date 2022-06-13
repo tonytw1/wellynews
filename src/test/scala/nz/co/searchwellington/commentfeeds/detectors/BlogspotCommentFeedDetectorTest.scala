@@ -2,7 +2,7 @@ package nz.co.searchwellington.commentfeeds.detectors
 
 import junit.framework.TestCase
 import nz.co.searchwellington.model.Newsitem
-import org.junit.Assert.{assertFalse, assertTrue}
+import org.junit.jupiter.api.Assertions.{assertFalse, assertTrue}
 
 import java.net.URL
 

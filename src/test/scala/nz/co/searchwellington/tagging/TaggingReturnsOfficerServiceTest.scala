@@ -6,8 +6,8 @@ import nz.co.searchwellington.model._
 import nz.co.searchwellington.model.taggingvotes.{GeotaggingVote, HandTagging}
 import nz.co.searchwellington.repositories.HandTaggingDAO
 import nz.co.searchwellington.repositories.mongo.MongoRepository
-import org.junit.Assert.assertTrue
-import org.junit.Test
+import org.junit.jupiter.api.Assertions.assertTrue
+import org.junit.jupiter.api.Test
 import org.mockito.Mockito.{mock, when}
 
 import scala.concurrent.ExecutionContext.Implicits.global

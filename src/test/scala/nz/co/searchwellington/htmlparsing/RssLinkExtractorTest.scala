@@ -1,8 +1,8 @@
 package nz.co.searchwellington.htmlparsing
 
 import org.apache.commons.io.IOUtils
-import org.junit.Assert.{assertEquals, assertTrue}
-import org.junit.Test
+import org.junit.jupiter.api.Assertions.{assertEquals, assertTrue}
+import org.junit.jupiter.api.Test
 
 class RssLinkExtractorTest {
 

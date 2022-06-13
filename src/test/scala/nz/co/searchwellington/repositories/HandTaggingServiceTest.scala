@@ -3,8 +3,8 @@ package nz.co.searchwellington.repositories
 import nz.co.searchwellington.ReasonableWaits
 import nz.co.searchwellington.model._
 import nz.co.searchwellington.repositories.mongo.MongoRepository
-import org.junit.Assert.{assertEquals, assertFalse, assertTrue}
-import org.junit.Test
+import org.junit.jupiter.api.Assertions.{assertEquals, assertFalse, assertTrue}
+import org.junit.jupiter.api.Test
 import org.mockito.Mockito.{mock, verify, verifyNoInteractions, when}
 import org.mockito.{ArgumentCaptor, ArgumentMatchers}
 import org.mockito.ArgumentMatchers.any
