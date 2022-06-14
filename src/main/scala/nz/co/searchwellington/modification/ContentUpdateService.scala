@@ -2,7 +2,7 @@ package nz.co.searchwellington.modification
 
 import nz.co.searchwellington.model.Resource
 import nz.co.searchwellington.queues.LinkCheckerQueue
-import nz.co.searchwellington.repositories.FrontendContentUpdater
+import nz.co.searchwellington.repositories.elasticsearch.ElasticSearchIndexRebuildService
 import nz.co.searchwellington.repositories.mongo.MongoRepository
 import org.apache.commons.logging.LogFactory
 import org.springframework.beans.factory.annotation.Autowired
@@ -11,7 +11,7 @@ import org.springframework.stereotype.Component
 import scala.concurrent.{ExecutionContext, Future}
 
 @Component class ContentUpdateService @Autowired()(mongoRepository: MongoRepository,
-                                                   frontendContentUpdater: FrontendContentUpdater,
+                                                   elasticSearchIndexRebuildService: ElasticSearchIndexRebuildService,
                                                    linkCheckerQueue: LinkCheckerQueue) {
 
   private val log = LogFactory.getLog(classOf[ContentUpdateService])
@@ -40,7 +40,7 @@ import scala.concurrent.{ExecutionContext, Future}
       */
 
       mongoRepository.saveResource(resource).flatMap { _ =>
-        frontendContentUpdater.update(resource)
+        elasticSearchIndexRebuildService.index(resource)
       }
     }
     catch {
@@ -55,7 +55,7 @@ import scala.concurrent.{ExecutionContext, Future}
     log.debug("Creating resource: " + resource.page)
     mongoRepository.saveResource(resource).flatMap { r =>
       log.debug("Result of save for " + resource._id + " " + resource.page + ": " + r)
-      frontendContentUpdater.update(resource).map { _ =>
+      elasticSearchIndexRebuildService.index(resource).map { _ =>
         linkCheckerQueue.add(resource._id.stringify)
         resource
       }

@@ -2,6 +2,7 @@ package nz.co.searchwellington.repositories
 
 import nz.co.searchwellington.ReasonableWaits
 import nz.co.searchwellington.model.{Resource, Tag, Tagging, User}
+import nz.co.searchwellington.modification.ContentUpdateService
 import nz.co.searchwellington.repositories.mongo.MongoRepository
 import org.apache.commons.logging.LogFactory
 import org.springframework.beans.factory.annotation.Autowired
@@ -11,7 +12,7 @@ import reactivemongo.api.bson.BSONObjectID
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
-@Component class HandTaggingService @Autowired()(frontendContentUpdater: FrontendContentUpdater,
+@Component class HandTaggingService @Autowired()(contentUpdateService: ContentUpdateService,
                                                  mongoRepository: MongoRepository) extends ReasonableWaits {
 
   private val log = LogFactory.getLog(classOf[HandTaggingService])
@@ -75,11 +76,10 @@ import scala.concurrent.Future
         val eventualTransferOutcomes = resourcesToTransfer.map { resource =>
           val updatedResource = transferTaggings(resource)
           mongoRepository.saveResource(updatedResource).flatMap { saveWriteResult =>
-            frontendContentUpdater.update(updatedResource)
+            contentUpdateService.update(updatedResource)
           }
         }
         Future.sequence(eventualTransferOutcomes)
-
       }
     }
 
@@ -89,7 +89,7 @@ import scala.concurrent.Future
   private def updateAndReindexResource(update: Resource => Resource, resource: Resource): Future[Boolean] = {
     val updatedResource = update(resource)
     mongoRepository.saveResource(updatedResource).flatMap { saveWriteResult =>
-      frontendContentUpdater.update(updatedResource)
+      contentUpdateService.update(updatedResource)
     }
   }
 
