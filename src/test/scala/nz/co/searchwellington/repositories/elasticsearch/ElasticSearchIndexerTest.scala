@@ -8,8 +8,8 @@ import nz.co.searchwellington.repositories.elasticsearch.ElasticSearchIndexerTes
 import nz.co.searchwellington.repositories.mongo.MongoRepository
 import nz.co.searchwellington.tagging.{IndexTagsService, TaggingReturnsOfficerService}
 import org.joda.time.{DateTime, Interval}
-import org.junit.Assert.{assertFalse, assertTrue}
-import org.junit.Test
+import org.junit.jupiter.api.Assertions.{assertFalse, assertTrue}
+import org.junit.jupiter.api.Test
 import org.scalatest.concurrent.Eventually.{eventually, interval, _}
 import org.scalatest.matchers.must.Matchers.convertToAnyMustWrapper
 

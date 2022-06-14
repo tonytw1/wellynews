@@ -7,8 +7,8 @@ import nz.co.searchwellington.model.helpers.ArchiveLinksService
 import nz.co.searchwellington.model.{ArchiveLink, SiteInformation}
 import nz.co.searchwellington.repositories.ContentRetrievalService
 import org.joda.time.{DateTime, DateTimeZone, Interval}
-import org.junit.Assert.{assertEquals, assertTrue}
-import org.junit.Test
+import org.junit.jupiter.api.Assertions.{assertEquals, assertTrue}
+import org.junit.jupiter.api.Test
 import org.mockito.Mockito.{mock, when}
 import org.springframework.mock.web.MockHttpServletRequest
 import uk.co.eelpieconsulting.common.dates.DateFormatter

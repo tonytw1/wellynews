@@ -2,7 +2,7 @@ package nz.co.searchwellington.filters;
 
 import nz.co.searchwellington.geocoding.osm.GeoCodeService;
 import nz.co.searchwellington.geocoding.osm.OsmIdParser;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.springframework.mock.web.MockHttpServletRequest;
 import uk.co.eelpieconsulting.common.geo.model.LatLong;

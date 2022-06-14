@@ -9,8 +9,9 @@ import nz.co.searchwellington.model.frontend.{FrontendFeed, FrontendNewsitem}
 import nz.co.searchwellington.model.mappers.FrontendResourceMapper
 import nz.co.searchwellington.model.{Feed, Geocode, Newsitem}
 import nz.co.searchwellington.repositories.ContentRetrievalService
-import org.junit.Assert.{assertEquals, assertTrue}
-import org.junit.{Before, Test}
+import org.junit.jupiter.api.Assertions.{assertEquals, assertTrue}
+import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.BeforeEach
 import org.mockito.ArgumentMatchers
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.{mock, when}
@@ -59,7 +60,7 @@ class FeedModelBuilderTest extends ReasonableWaits with ContentFields {
     feedItemActionDecorator, frontendResourceMapper, commonAttributesModelBuilder, feeditemToNewsitemService,
     whakaokoFeedReader, whakaokoService)
 
-  @Before
+  @BeforeEach
   def setUp(): Unit = {
     when(whakaokoFeedReader.fetchFeedItems(feed)).thenReturn(Future.successful(Right((feeditems, feeditems.size.toLong))))
 
@@ -113,7 +114,7 @@ class FeedModelBuilderTest extends ReasonableWaits with ContentFields {
     modelBuilder.populateExtraModelContent(request, None)
 
     assertEquals(Seq(anotherFrontendNewsitemWithActions).asJava, mv.getModel.get("geocoded"))
-    assertEquals("Expected whakaoko subscription to be shown", whakaokoSubscription, mv.getModel.get("subscription"))
+    assertEquals(whakaokoSubscription, mv.getModel.get("subscription"), "Expected whakaoko subscription to be shown")
   }
 
 }

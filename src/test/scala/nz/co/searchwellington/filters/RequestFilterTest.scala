@@ -4,13 +4,13 @@ import nz.co.searchwellington.filters.attributesetters.{CombinerPageAttributeSet
 import nz.co.searchwellington.model.{Feed, Tag, Website}
 import nz.co.searchwellington.repositories.TagDAO
 import nz.co.searchwellington.repositories.mongo.MongoRepository
-import org.junit.Assert.assertEquals
-import org.junit.{Before, Test}
+import org.junit.jupiter.api.Assertions.assertEquals
+import org.junit.jupiter.api.{BeforeEach, Test}
 import org.mockito.Mockito.{mock, verify, verifyNoMoreInteractions, when}
 import org.springframework.mock.web.MockHttpServletRequest
 
-import scala.concurrent.Future
 import scala.concurrent.ExecutionContext.Implicits.global
+import scala.concurrent.Future
 
 class RequestFilterTest {
 
@@ -27,7 +27,7 @@ class RequestFilterTest {
   private val filter = new RequestFilter(new CombinerPageAttributeSetter(mongoRepository), new PublisherPageAttributeSetter(mongoRepository),
     new FeedAttributeSetter(mongoRepository), new TagPageAttributeSetter(tagDAO, mongoRepository), filters) // TODO suggests test coverage at wrong level
 
-  @Before
+  @BeforeEach
   def setUp(): Unit = {
     when(mongoRepository.getTagByUrlWords("transport")).thenReturn(Future.successful(Some(transportTag)))
     when(mongoRepository.getTagByUrlWords("soccer")).thenReturn(Future.successful(Some(soccerTag)))

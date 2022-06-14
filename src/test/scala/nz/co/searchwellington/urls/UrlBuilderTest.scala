@@ -4,8 +4,8 @@ import java.util.UUID
 import nz.co.searchwellington.model.frontend.{FrontendFeed, FrontendNewsitem, FrontendWebsite}
 import nz.co.searchwellington.model._
 import org.joda.time.{DateTime, DateTimeZone, Interval}
-import org.junit.Assert.{assertEquals, assertNull}
-import org.junit.Test
+import org.junit.jupiter.api.Assertions.{assertEquals, assertNull}
+import org.junit.jupiter.api.Test
 import uk.co.eelpieconsulting.common.dates.DateFormatter
 import uk.co.eelpieconsulting.common.geo.model.{LatLong, OsmType, Place}
 

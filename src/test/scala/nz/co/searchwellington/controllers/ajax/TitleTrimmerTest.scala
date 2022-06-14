@@ -1,8 +1,8 @@
 package nz.co.searchwellington.controllers.ajax
 
 import nz.co.searchwellington.model.Website
-import org.junit.Assert.assertEquals
-import org.junit.Test
+import org.junit.jupiter.api.Assertions.assertEquals
+import org.junit.jupiter.api.Test
 
 class TitleTrimmerTest {
 

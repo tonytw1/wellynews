@@ -1,8 +1,8 @@
 package nz.co.searchwellington.views
 
 import nz.co.searchwellington.model.{Geocode, Newsitem}
-import org.junit.Assert.{assertEquals, assertFalse, assertTrue}
-import org.junit.Test
+import org.junit.jupiter.api.Assertions.{assertEquals, assertFalse, assertTrue}
+import org.junit.jupiter.api.Test
 
 class MapPinDeduplicatorTest {
   private val here = Geocode(Some("here"), Some(1.1), Some(1.1))

@@ -3,8 +3,8 @@ package nz.co.searchwellington.controllers
 import java.util.UUID
 
 import nz.co.searchwellington.model.{SiteInformation, Tag}
-import org.junit.Assert.assertEquals
-import org.junit.Test
+import org.junit.jupiter.api.Assertions.assertEquals
+import org.junit.jupiter.api.Test
 
 class RssUrlBuilderTest {
 

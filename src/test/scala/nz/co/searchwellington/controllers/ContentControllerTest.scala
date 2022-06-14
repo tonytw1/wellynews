@@ -1,8 +1,8 @@
 package nz.co.searchwellington.controllers
 
 import nz.co.searchwellington.controllers.models.{ContentModelBuilderService, ContentModelBuilderServiceFactory}
-import org.junit.Assert.{assertEquals, assertFalse, assertTrue, fail}
-import org.junit.Test
+import org.junit.jupiter.api.Assertions.{assertEquals, assertFalse, assertTrue, fail}
+import org.junit.jupiter.api.Test
 import org.mockito.Mockito.{mock, verify, verifyNoInteractions, when}
 import org.springframework.http.HttpStatus
 import org.springframework.util.AntPathMatcher
@@ -48,7 +48,7 @@ class ContentControllerTest {
     } catch {
       case r: ResponseStatusException =>
         assertEquals(HttpStatus.NOT_FOUND, r.getStatus)
-      case _ =>
+      case _: Throwable =>
         fail()
     }
   }

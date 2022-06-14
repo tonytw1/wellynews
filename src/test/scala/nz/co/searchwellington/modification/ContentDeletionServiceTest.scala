@@ -4,8 +4,8 @@ import nz.co.searchwellington.model.{Newsitem, Watchlist}
 import nz.co.searchwellington.repositories.SuppressionDAO
 import nz.co.searchwellington.repositories.elasticsearch.ElasticSearchIndexer
 import nz.co.searchwellington.repositories.mongo.MongoRepository
-import org.junit.Assert.assertTrue
-import org.junit.Test
+import org.junit.jupiter.api.Assertions.assertTrue
+import org.junit.jupiter.api.Test
 import org.mockito.Mockito.{mock, verify, when}
 import reactivemongo.api.commands.WriteResult
 

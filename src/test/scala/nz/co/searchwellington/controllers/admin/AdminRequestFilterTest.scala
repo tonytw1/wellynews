@@ -1,19 +1,19 @@
 package nz.co.searchwellington.controllers.admin
 
-import java.util.{Date, UUID}
-
 import nz.co.searchwellington.filters.{AdminRequestFilter, ResourceParameterFilter, TagsParameterFilter}
 import nz.co.searchwellington.model.{Feed, Resource, Tag}
 import nz.co.searchwellington.repositories.TagDAO
 import nz.co.searchwellington.repositories.mongo.MongoRepository
 import org.joda.time.DateTime
-import org.junit.Assert.{assertEquals, assertNotNull}
-import org.junit.{Before, Test}
+import org.junit.jupiter.api.Assertions.{assertEquals, assertNotNull}
+import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.BeforeEach
 import org.mockito.Mockito.{mock, verify, when}
 import org.springframework.mock.web.MockHttpServletRequest
 
-import scala.concurrent.Future
+import java.util.{Date, UUID}
 import scala.concurrent.ExecutionContext.Implicits.global
+import scala.concurrent.Future
 
 class AdminRequestFilterTest {
   private val mongoRepository = mock(classOf[MongoRepository])
@@ -26,7 +26,7 @@ class AdminRequestFilterTest {
   val filter = new AdminRequestFilter(mongoRepository, new ResourceParameterFilter(mongoRepository),
     new TagsParameterFilter(tagDAO, mongoRepository))
 
-  @Before
+  @BeforeEach
   def setUp(): Unit = {
     when(mongoRepository.getTagByUrlWords("transport")).thenReturn(Future.successful(Some(transportTag)))
     when(mongoRepository.getResourceById("567")).thenReturn(Future.successful(Some(resource)))

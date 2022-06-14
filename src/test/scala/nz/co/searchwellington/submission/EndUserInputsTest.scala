@@ -2,8 +2,8 @@ package nz.co.searchwellington.submission
 
 import nz.co.searchwellington.controllers.submission.EndUserInputs
 import nz.co.searchwellington.urls.UrlCleaner
-import org.junit.Assert._
-import org.junit.Test
+import org.junit.jupiter.api.Assertions._
+import org.junit.jupiter.api.Test
 import org.mockito.Mockito.mock
 
 class EndUserInputsTest extends EndUserInputs {

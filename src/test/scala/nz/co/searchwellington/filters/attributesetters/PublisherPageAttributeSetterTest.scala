@@ -2,8 +2,9 @@ package nz.co.searchwellington.filters.attributesetters
 
 import nz.co.searchwellington.model.Website
 import nz.co.searchwellington.repositories.mongo.MongoRepository
-import org.junit.Assert.assertEquals
-import org.junit.{Before, Test}
+import org.junit.jupiter.api.Assertions.assertEquals
+import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.BeforeEach
 import org.mockito.Mockito.{mock, when}
 import org.springframework.mock.web.MockHttpServletRequest
 
@@ -18,11 +19,13 @@ class PublisherPageAttributeSetterTest {
 
   private val pageAttributeSetter = new PublisherPageAttributeSetter(mongoRepository)
 
-  @Before def setup(): Unit = {
+  @BeforeEach
+  def setup(): Unit = {
     when(mongoRepository.getWebsiteByUrlwords("wellington-city-council")).thenReturn(Future.successful(Some(publisher)))
   }
 
-  @Test def shouldSetPublisherAttributeForPublisherPath(): Unit = {
+  @Test
+  def shouldSetPublisherAttributeForPublisherPath(): Unit = {
     request.setRequestURI("/wellington-city-council")
 
     pageAttributeSetter.setAttributes(request)
@@ -31,7 +34,8 @@ class PublisherPageAttributeSetterTest {
   }
 
 
-  @Test def shouldSetPublisherAttributeForPublisherArchivePath(): Unit = {
+  @Test
+  def shouldSetPublisherAttributeForPublisherArchivePath(): Unit = {
     request.setRequestURI("/wellington-city-council/2020-mar")
 
     pageAttributeSetter.setAttributes(request)
@@ -39,7 +43,8 @@ class PublisherPageAttributeSetterTest {
     assertEquals(publisher, request.getAttribute("publisher"))
   }
 
-  @Test def shouldSetPublisherAttributeForPublisherRssPath(): Unit = {
+  @Test
+  def shouldSetPublisherAttributeForPublisherRssPath(): Unit = {
     request.setRequestURI("/wellington-city-council/rss")
 
     pageAttributeSetter.setAttributes(request)

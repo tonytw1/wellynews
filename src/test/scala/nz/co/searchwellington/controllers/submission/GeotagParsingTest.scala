@@ -2,8 +2,8 @@ package nz.co.searchwellington.controllers.submission
 
 import nz.co.searchwellington.geocoding.osm.GeoCodeService
 import nz.co.searchwellington.model.{Geocode, OsmId}
-import org.junit.Assert.assertEquals
-import org.junit.Test
+import org.junit.jupiter.api.Assertions.assertEquals
+import org.junit.jupiter.api.Test
 import org.mockito.Mockito.{mock, when}
 import uk.co.eelpieconsulting.common.geo.model
 import uk.co.eelpieconsulting.common.geo.model.{LatLong, OsmType, Place}

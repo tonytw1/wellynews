@@ -4,8 +4,8 @@ import nz.co.searchwellington.model.{SiteInformation, UrlWordsGenerator}
 import nz.co.searchwellington.model.frontend.{FrontendFeed, FrontendNewsitem, FrontendWebsite}
 import nz.co.searchwellington.urls.UrlBuilder
 import org.joda.time.{DateTime, DateTimeZone}
-import org.junit.Assert.assertEquals
-import org.junit.Test
+import org.junit.jupiter.api.Assertions.assertEquals
+import org.junit.jupiter.api.Test
 import uk.co.eelpieconsulting.common.dates.DateFormatter
 
 class AdminUrlBuilderTest {

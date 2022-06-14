@@ -7,8 +7,9 @@ import nz.co.searchwellington.model.{DiscoveredFeed, DiscoveredFeedOccurrence, U
 import nz.co.searchwellington.repositories.ContentRetrievalService
 import nz.co.searchwellington.urls.UrlBuilder
 import org.joda.time.DateTime
-import org.junit.Assert.{assertEquals, assertTrue}
-import org.junit.{Before, Test}
+import org.junit.jupiter.api.Assertions.{assertEquals, assertTrue}
+import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.BeforeEach
 import org.mockito.Mockito.{mock, when}
 import org.springframework.mock.web.MockHttpServletRequest
 import reactivemongo.api.bson.BSONObjectID
@@ -31,7 +32,7 @@ class FeedsModelBuilderTest extends ReasonableWaits with ContentFields {
 
   val modelBuilder = new FeedsModelBuilder(contentRetrievalService, suggestedFeeditemsService, urlBuilder, commonAttributesModelBuilder)
 
-  @Before
+  @BeforeEach
   def setUp(): Unit = {
     request.setRequestURI("/feeds")
   }

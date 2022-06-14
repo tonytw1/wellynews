@@ -3,7 +3,7 @@ package nz.co.searchwellington.linkchecking
 import nz.co.searchwellington.model.Newsitem
 import org.apache.commons.io.IOUtils
 import org.joda.time.DateTime
-import org.junit.Test
+import org.junit.jupiter.api.Test
 
 import java.nio.charset.StandardCharsets
 import scala.concurrent.ExecutionContext.Implicits.global

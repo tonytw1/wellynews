@@ -1,8 +1,9 @@
 package nz.co.searchwellington.commentfeeds.detectors
 
-import nz.co.searchwellington.model.{Newsitem, Website}
-import org.junit.Assert.{assertFalse, assertTrue}
-import org.junit.Test
+import nz.co.searchwellington.model.Newsitem
+import org.junit.jupiter.api.Assertions.assertFalse
+import org.junit.jupiter.api.Assertions.assertTrue
+import org.junit.jupiter.api.Test
 
 import java.net.URL
 

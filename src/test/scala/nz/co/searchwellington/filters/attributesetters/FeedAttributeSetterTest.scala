@@ -2,8 +2,9 @@ package nz.co.searchwellington.filters.attributesetters
 
 import nz.co.searchwellington.model.Feed
 import nz.co.searchwellington.repositories.mongo.MongoRepository
-import org.junit.Assert.assertEquals
-import org.junit.{Before, Test}
+import org.junit.jupiter.api.Assertions.assertEquals
+import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.BeforeEach
 import org.mockito.Mockito.{mock, when}
 import org.springframework.mock.web.MockHttpServletRequest
 
@@ -18,7 +19,8 @@ class FeedAttributeSetterTest {
 
   private val feedAttributeSetter = new FeedAttributeSetter(mongoRepository)
 
-  @Before def setup(): Unit = {
+  @BeforeEach
+  def setup(): Unit = {
     when(mongoRepository.getFeedByUrlwords("wcc-news")).thenReturn(Future.successful(Some(feed)))
   }
 

@@ -4,8 +4,8 @@ import java.util.UUID
 
 import junit.framework.TestCase
 import nz.co.searchwellington.model.Website
-import org.junit.Assert._
-import org.junit.Test
+import org.junit.jupiter.api.Assertions._
+import org.junit.jupiter.api.Test
 
 class SpamFilterTest extends TestCase {
 

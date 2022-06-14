@@ -1,8 +1,8 @@
 package nz.co.searchwellington.model
 
 import org.joda.time.{DateTime, DateTimeZone}
-import org.junit.Assert.assertEquals
-import org.junit.Test
+import org.junit.jupiter.api.Assertions.assertEquals
+import org.junit.jupiter.api.Test
 import uk.co.eelpieconsulting.common.dates.DateFormatter
 
 class UrlWordsGeneratorTest {

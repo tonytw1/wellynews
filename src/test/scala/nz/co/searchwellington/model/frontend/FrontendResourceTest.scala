@@ -1,8 +1,8 @@
 package nz.co.searchwellington.model.frontend
 
 import nz.co.searchwellington.model.Tag
-import org.junit.Assert.assertEquals
-import org.junit.Test
+import org.junit.jupiter.api.Assertions.assertEquals
+import org.junit.jupiter.api.Test
 
 import java.util.UUID
 import scala.jdk.CollectionConverters._
