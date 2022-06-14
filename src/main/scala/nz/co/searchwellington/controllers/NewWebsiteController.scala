@@ -2,8 +2,8 @@ package nz.co.searchwellington.controllers
 
 import nz.co.searchwellington.ReasonableWaits
 import nz.co.searchwellington.controllers.submission.EndUserInputs
-import nz.co.searchwellington.forms.{NewNewsitem, NewWebsite}
-import nz.co.searchwellington.model.{UrlWordsGenerator, User, Website}
+import nz.co.searchwellington.forms.NewWebsite
+import nz.co.searchwellington.model.{UrlWordsGenerator, Website}
 import nz.co.searchwellington.modification.ContentUpdateService
 import nz.co.searchwellington.repositories.mongo.MongoRepository
 import nz.co.searchwellington.urls.{UrlBuilder, UrlCleaner}
@@ -12,7 +12,7 @@ import org.joda.time.DateTime
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Controller
 import org.springframework.validation.{BindingResult, ObjectError}
-import org.springframework.web.bind.annotation.{GetMapping, ModelAttribute, PostMapping, RequestMapping, RequestMethod}
+import org.springframework.web.bind.annotation.{GetMapping, ModelAttribute, PostMapping}
 import org.springframework.web.servlet.ModelAndView
 import org.springframework.web.servlet.view.RedirectView
 
@@ -49,10 +49,11 @@ class NewWebsiteController @Autowired()(contentUpdateService: ContentUpdateServi
         page = cleanUrl(newWebsite.getUrl),
         date = Some(DateTime.now.toDate),
       )
-      val website = w.copy(url_words = urlWordsGenerator.makeUrlWordsFor(w))
+      val urlWords = urlWordsGenerator.makeUrlWordsFor(w)
 
-      val eventualModelAndView = mongoRepository.getWebsiteByUrlwords(website.url_words.get).flatMap { maybeExistingWebsite =>
+      val eventualModelAndView = mongoRepository.getWebsiteByUrlwords(urlWords).flatMap { maybeExistingWebsite =>
         maybeExistingWebsite.fold {
+          val website = w.copy(url_words = Some(urlWords))
           val submittingUser = ensuredSubmittingUser(loggedInUser)
           val withSubmittingUser = website.copy(owner = Some(submittingUser._id), held = submissionShouldBeHeld(Some(submittingUser)))
           contentUpdateService.create(withSubmittingUser).map { _ =>

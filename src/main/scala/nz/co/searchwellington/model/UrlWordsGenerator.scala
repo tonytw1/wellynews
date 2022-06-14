@@ -3,14 +3,13 @@ package nz.co.searchwellington.model
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
 import uk.co.eelpieconsulting.common.dates.DateFormatter
-import scala.collection.mutable
 
 @Component class UrlWordsGenerator @Autowired()(dateFormatter: DateFormatter) {
 
-  def makeUrlWordsFor(resource: Resource, publisher: Option[Website] = None): Option[String] = {
+  def makeUrlWordsFor(resource: Resource, publisher: Option[Website] = None): String = {
     resource match {
       case n: Newsitem => makeUrlWordsForNewsitem(n, publisher)
-      case r: Resource => Some(makeUrlWordsFromName(r.title))
+      case r: Resource => makeUrlWordsFromName(r.title)
     }
   }
 
@@ -18,18 +17,16 @@ import scala.collection.mutable
     makeUrlWordsFromName(tag.getDisplayName)
   }
 
-  private def makeUrlWordsForNewsitem(newsitem: Newsitem, publisher: Option[Website]): Option[String] = {
-    val uri = new mutable.StringBuilder
-
-    publisher.map { p =>
-      uri.append("/" + makeUrlWordsFromName(p.title))
+  private def makeUrlWordsForNewsitem(newsitem: Newsitem, publisher: Option[Website]): String = {
+    val publisherComponent = publisher.map { p =>
+      makeUrlWordsFromName(p.title)
     }
-
-    newsitem.date.map { d =>
-      uri.append("/" + dateFormatter.yearMonthDayUrlStub(d))
-      uri.append("/" + makeUrlWordsFromName(newsitem.title))
-      uri.toString()
+    val dateComponent = newsitem.date.map { d =>
+      dateFormatter.yearMonthDayUrlStub(d)
     }
+    val titleComponent = Some(makeUrlWordsFromName(newsitem.title))
+
+    Seq(publisherComponent, dateComponent, titleComponent).flatten.mkString("/")
   }
 
   def makeUrlWordsFromName(name: String): String = {

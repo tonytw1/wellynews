@@ -12,17 +12,31 @@ class UrlWordsGeneratorTest {
   private val urlWordsGenerator = new UrlWordsGenerator(new DateFormatter(DateTimeZone.UTC))
 
   @Test
+  def shouldProduceSeoStyleUrlWordsForPublisher(): Unit = {
+    val publisher = Website(title = "Island Bay school")
+
+    val urlWords = urlWordsGenerator.makeUrlWordsFor(publisher, None)
+
+    assertEquals("island-bay-school", urlWords)
+  }
+
+  @Test
   def shouldProduceCorrectUrlBasedOnPublisherDateAndHeadline(): Unit = {
     val publisher = Website(title = "Island Bay school")
     val newsitemWithPublisher = Newsitem(title = "Something happened at the school", date = Some(april2010), publisher = Some(publisher._id))
 
-    assertEquals(Some("/island-bay-school/2010/apr/2/something-happened-at-the-school"), urlWordsGenerator.makeUrlWordsFor(newsitemWithPublisher, Some(publisher)))
+    val urlWords = urlWordsGenerator.makeUrlWordsFor(newsitemWithPublisher, Some(publisher))
+
+    assertEquals("island-bay-school/2010/apr/2/something-happened-at-the-school", urlWords)  // TODO should URLS words be slash prefixed?
   }
 
   @Test
   def urlWordshouldBeDateAndHeadlineIfPublisherIsNotSet(): Unit = {
     val newsitemWithNoPublisher = Newsitem(title = "Something-happening", date = Some(april2010))
-    assertEquals(Some("/2010/apr/2/something-happening"), urlWordsGenerator.makeUrlWordsFor(newsitemWithNoPublisher))
+
+    val urlWords = urlWordsGenerator.makeUrlWordsFor(newsitemWithNoPublisher)
+
+    assertEquals("2010/apr/2/something-happening", urlWords)
   }
 
 }

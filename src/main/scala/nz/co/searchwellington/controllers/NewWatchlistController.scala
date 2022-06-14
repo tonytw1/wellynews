@@ -55,9 +55,9 @@ class NewWatchlistController @Autowired()(contentUpdateService: ContentUpdateSer
         date = Some(DateTime.now.toDate),
         publisher = maybePublisher.map(_._id)
       )
-      val watchlist = w.copy(url_words = urlWordsGenerator.makeUrlWordsFor(w))
+      val urlWords = urlWordsGenerator.makeUrlWordsFor(w)
 
-      Await.result(mongoRepository.getWebsiteByUrlwords(watchlist.url_words.get), TenSeconds).fold {  // TODO naked get
+      Await.result(mongoRepository.getWebsiteByUrlwords(urlWords), TenSeconds).fold {
         val submittingUser = ensuredSubmittingUser(loggedInUser)
         val withSubmittingUser = w.copy(owner = Some(submittingUser._id), held = submissionShouldBeHeld(Some(submittingUser)))
 

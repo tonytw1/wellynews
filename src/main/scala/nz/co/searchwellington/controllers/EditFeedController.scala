@@ -90,7 +90,7 @@ class EditFeedController @Autowired()(contentUpdateService: ContentUpdateService
             acceptance = formObject.getAcceptancePolicy,
             held = submissionShouldBeHeld(loggedInUser)
           )
-          val updatedFeed = uf.copy(url_words = urlWordsGenerator.makeUrlWordsFor(uf, publisher))
+          val updatedFeed = uf.copy(url_words = Some(urlWordsGenerator.makeUrlWordsFor(uf, publisher)))
           val submittedTags = Await.result(tagDAO.loadTagsById(formObject.getTags.asScala.toSeq), TenSeconds).toSet
 
           val updated = handTaggingService.setUsersTagging(loggedInUser, submittedTags.map(_._id), updatedFeed)

@@ -81,9 +81,12 @@ class NewFeedController @Autowired()(contentUpdateService: ContentUpdateService,
           acceptance = newFeed.getAcceptancePolicy,
           date = Some(DateTime.now.toDate),
         )
-        val feed = f.copy(url_words = urlWordsGenerator.makeUrlWordsFor(f, publisher))
 
-        val existingFeedWithSameUrlWords = Await.result(mongoRepository.getFeedByUrlwords(feed.url_words.get), TenSeconds)  // TODO naked get
+        val urlWords = urlWordsGenerator.makeUrlWordsFor(f, publisher)
+        val feed = f.copy(url_words = Some(urlWords))
+        val eventualMaybeExistingFeed = mongoRepository.getFeedByUrlwords(urlWords)
+
+        val existingFeedWithSameUrlWords = Await.result(eventualMaybeExistingFeed, TenSeconds)
         if (existingFeedWithSameUrlWords.nonEmpty) {
           result.addError(new ObjectError("urlWords", "Found existing feed with same URL words"))
         }
