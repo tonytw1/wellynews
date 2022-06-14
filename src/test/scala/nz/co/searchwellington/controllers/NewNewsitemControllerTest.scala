@@ -26,8 +26,9 @@ class NewNewsitemControllerTest {
   private val anonUserService = mock(classOf[AnonUserService])
   private val urlCleaner = mock(classOf[UrlCleaner])
   private val geoCodeService = mock(classOf[GeoCodeService])
+  private val loggedInUserFilter = mock(classOf[LoggedInUserFilter])
 
-  val controller = new NewNewsitemController(contentUpdateService, mongoRepository, urlBuilder, anonUserService, urlCleaner, geoCodeService)
+  val controller = new NewNewsitemController(contentUpdateService, mongoRepository, urlBuilder, anonUserService, urlCleaner, geoCodeService, loggedInUserFilter)
 
   @Test
   def shouldSubmitNewsitems(): Unit = {
@@ -44,6 +45,7 @@ class NewNewsitemControllerTest {
     when(mongoRepository.getWebsiteByName("A publisher")).thenReturn(Future.successful(Some(publisher)))
     when(urlCleaner.cleanSubmittedItemUrl("https://localhost/a-newsitem")).thenReturn("https://localhost/a-newsitem")
     when(contentUpdateService.create(any(classOf[Resource]))(any())).thenReturn(Future.successful(null))
+    when(loggedInUserFilter.getLoggedInUser).thenReturn(Some(User()))
 
     val bindingResultWithNoErrors = mock(classOf[BindingResult])
     val createdNewsitem: ArgumentCaptor[Newsitem] = ArgumentCaptor.forClass(classOf[Newsitem])

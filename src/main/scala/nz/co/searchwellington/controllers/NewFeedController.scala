@@ -29,7 +29,8 @@ class NewFeedController @Autowired()(contentUpdateService: ContentUpdateService,
                                      urlWordsGenerator: UrlWordsGenerator, urlBuilder: UrlBuilder,
                                      whakaokoService: WhakaokoService,
                                      val anonUserService: AnonUserService,
-                                     val urlCleaner: UrlCleaner) extends ReasonableWaits with EnsuredSubmitter
+                                     val urlCleaner: UrlCleaner,
+                                     loggedInUserFilter: LoggedInUserFilter) extends ReasonableWaits with EnsuredSubmitter
   with AcceptancePolicyOptions with EndUserInputs {
 
   private val log = LogFactory.getLog(classOf[NewFeedController])
@@ -60,7 +61,7 @@ class NewFeedController @Autowired()(contentUpdateService: ContentUpdateService,
 
   @PostMapping(Array("/new-feed"))
   def submit(@Valid @ModelAttribute("formObject") newFeed: NewFeed, result: BindingResult, request: HttpServletRequest): ModelAndView = {
-    val loggedInUser = getLoggedInUser(request)
+    val loggedInUser = loggedInUserFilter.getLoggedInUser
     if (!result.hasErrors) {
       log.info("Got valid new feed submission: " + newFeed)
 

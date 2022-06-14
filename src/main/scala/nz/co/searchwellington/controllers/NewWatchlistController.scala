@@ -26,7 +26,8 @@ class NewWatchlistController @Autowired()(contentUpdateService: ContentUpdateSer
                                           mongoRepository: MongoRepository,
                                           urlWordsGenerator: UrlWordsGenerator, urlBuilder: UrlBuilder,
                                           val anonUserService: AnonUserService,
-                                          val urlCleaner: UrlCleaner) extends ReasonableWaits
+                                          val urlCleaner: UrlCleaner,
+                                          loggedInUserFilter: LoggedInUserFilter) extends ReasonableWaits
                                           with EnsuredSubmitter with EndUserInputs {
 
   private val log = LogFactory.getLog(classOf[NewWatchlistController])
@@ -38,7 +39,7 @@ class NewWatchlistController @Autowired()(contentUpdateService: ContentUpdateSer
 
   @PostMapping(Array("/new-watchlist"))
   def submit(@Valid @ModelAttribute("formObject") newWatchlist: NewWatchlist, result: BindingResult, request: HttpServletRequest): ModelAndView = {
-    val loggedInUser = getLoggedInUser(request)
+    val loggedInUser = loggedInUserFilter.getLoggedInUser
     if (result.hasErrors) {
       log.warn("New website submission has errors: " + result)
       renderNewWatchlistForm(newWatchlist)

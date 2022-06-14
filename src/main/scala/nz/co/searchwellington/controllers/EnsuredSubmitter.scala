@@ -16,7 +16,7 @@ trait EnsuredSubmitter {
     loggedInUser.getOrElse(createAnonUser)
   }
 
-  def submissionShouldBeHeld(owner: Option[User]): Boolean = {
+  def submissionShouldBeHeld(owner: Option[User]): Boolean = {  // TODO weird placement
     !owner.exists(_.isAdmin)
   }
 
@@ -27,13 +27,6 @@ trait EnsuredSubmitter {
     } else {
       None
     }
-  }
-
-  // TODO Spike In a Scala  / functional code base replacing the Spring request scoped loggedInUserFilter with
-  // a trait and injecting the request into all calling controllers might be a better fit
-  def getLoggedInUser(request: HttpServletRequest): Option[User] = {
-    val sessionUser = request.getSession.getAttribute("user").asInstanceOf[User]
-    Option(sessionUser)
   }
 
   def setSignedInUser(request: HttpServletRequest, user: User): Unit = {

@@ -28,7 +28,8 @@ class NewNewsitemController @Autowired()(contentUpdateService: ContentUpdateServ
                                          mongoRepository: MongoRepository, urlBuilder: UrlBuilder,
                                          val anonUserService: AnonUserService,
                                          val urlCleaner: UrlCleaner,
-                                         val geocodeService: GeoCodeService) extends ReasonableWaits
+                                         val geocodeService: GeoCodeService,
+                                         loggedInUserFilter: LoggedInUserFilter) extends ReasonableWaits
                                          with EnsuredSubmitter with EndUserInputs with GeotagParsing {
 
   private val log = LogFactory.getLog(classOf[NewNewsitemController])
@@ -43,7 +44,7 @@ class NewNewsitemController @Autowired()(contentUpdateService: ContentUpdateServ
 
   @PostMapping(Array("/new-newsitem"))
   def submit(@Valid @ModelAttribute("formObject") formObject: NewNewsitem, result: BindingResult, request: HttpServletRequest): ModelAndView = {
-    val loggedInUser = getLoggedInUser(request)
+    val loggedInUser = loggedInUserFilter.getLoggedInUser
     if (result.hasErrors) {
       log.warn("New newsitem submission has errors: " + result)
       renderNewNewsitemForm(formObject)
