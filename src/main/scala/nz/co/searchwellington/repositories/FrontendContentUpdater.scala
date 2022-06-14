@@ -8,6 +8,7 @@ import org.springframework.stereotype.Component
 
 import scala.concurrent.{ExecutionContext, Future}
 
+// TODO inline?
 @Component class FrontendContentUpdater @Autowired()(elasticSearchIndexRebuildService: ElasticSearchIndexRebuildService) {
 
   private val log = LogFactory.getLog(classOf[FrontendContentUpdater])
