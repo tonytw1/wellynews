@@ -1,5 +1,7 @@
 package nz.co.searchwellington.repositories
 
+import com.sksamuel.elastic4s.requests.searches.SearchRequest
+import com.sksamuel.elastic4s.requests.searches.sort.{ScoreSort, SortOrder}
 import nz.co.searchwellington.ReasonableWaits
 import nz.co.searchwellington.controllers.models.helpers.CommonSizes
 import nz.co.searchwellington.model._
@@ -59,8 +61,11 @@ import scala.concurrent.{ExecutionContext, Future}
   def getNewsitemsMatchingKeywordsNotTaggedByUser(keywords: Set[String], user: User, tag: Tag, loggedInUser: Option[User])(implicit ec: ExecutionContext): Future[Seq[FrontendResource]] = {
 
     def getNewsitemIDsMatchingKeywords(keywords: Set[String], user: User): Future[(Seq[BSONObjectID], Long)] = {
+      def byRelevance(request: SearchRequest): SearchRequest = {
+        request sortBy ScoreSort(SortOrder.DESC)
+      }
       val query = ResourceQuery(`type` = newsitems, q = Some(keywords.mkString(" ")))
-      elasticSearchIndexer.getResources(query, loggedInUser = Some(user))
+      elasticSearchIndexer.getResources(query, order = byRelevance, loggedInUser = Some(user))
     }
 
     getNewsitemIDsMatchingKeywords(keywords, user).flatMap(i => fetchResourcesByIds(i._1)).map { resources =>
