@@ -11,10 +11,10 @@ import org.springframework.stereotype.Component
 
 import scala.concurrent.{Await, ExecutionContext, Future}
 
-@Component class TagModificationService @Autowired()(val tagDAO: TagDAO,
-                                                     val handTaggingService: HandTaggingService,
-                                                     val mongoRepository: MongoRepository,
-                                                     val elasticSearchIndexRebuildService: ElasticSearchIndexRebuildService)
+@Component class TagModificationService @Autowired()(tagDAO: TagDAO,
+                                                     handTaggingService: HandTaggingService,
+                                                     mongoRepository: MongoRepository,
+                                                     elasticSearchIndexRebuildService: ElasticSearchIndexRebuildService)
   extends ReasonableWaits {
 
   private val log = LogFactory.getLog(classOf[TagModificationService])

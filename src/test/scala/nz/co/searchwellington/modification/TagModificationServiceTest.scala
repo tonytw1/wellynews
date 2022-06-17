@@ -1,14 +1,14 @@
 package nz.co.searchwellington.modification
 
 import nz.co.searchwellington.model.{Geocode, Newsitem, Tag}
-import nz.co.searchwellington.repositories.{HandTaggingService, TagDAO}
 import nz.co.searchwellington.repositories.elasticsearch.ElasticSearchIndexRebuildService
 import nz.co.searchwellington.repositories.mongo.MongoRepository
+import nz.co.searchwellington.repositories.{HandTaggingService, TagDAO}
 import org.junit.jupiter.api.Test
 import org.mockito.Mockito.{mock, verify, when}
 
-import scala.concurrent.Future
 import scala.concurrent.ExecutionContext.Implicits.global
+import scala.concurrent.Future
 
 class TagModificationServiceTest {
 
