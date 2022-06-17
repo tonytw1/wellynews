@@ -35,6 +35,10 @@ import scala.concurrent.{ExecutionContext, Future}
 
   private val allNewsitems = ResourceQuery(`type` = newsitems)
 
+  private def byRelevance(request: SearchRequest): SearchRequest = {
+    request sortBy ScoreSort(SortOrder.DESC)
+  }
+
   def getAllPublishers(loggedInUser: Option[User])(implicit ec: ExecutionContext): Future[Seq[Website]] = {
 
     def getAllPublisherIds(loggedInUser: Option[User]): Future[Seq[(String, Long)]] = {
@@ -61,9 +65,6 @@ import scala.concurrent.{ExecutionContext, Future}
   def getNewsitemsMatchingKeywordsNotTaggedByUser(keywords: Set[String], user: User, tag: Tag, loggedInUser: Option[User])(implicit ec: ExecutionContext): Future[Seq[FrontendResource]] = {
 
     def getNewsitemIDsMatchingKeywords(keywords: Set[String], user: User): Future[(Seq[BSONObjectID], Long)] = {
-      def byRelevance(request: SearchRequest): SearchRequest = {
-        request sortBy ScoreSort(SortOrder.DESC)
-      }
       val query = ResourceQuery(`type` = newsitems, q = Some(keywords.mkString(" ")))
       elasticSearchIndexer.getResources(query, order = byRelevance, loggedInUser = Some(user))
     }
@@ -85,7 +86,7 @@ import scala.concurrent.{ExecutionContext, Future}
   def getNewsitemsMatchingKeywords(keywords: String, startIndex: Int, maxItems: Int, loggedInUser: Option[User], tag: Option[Tag] = None, publisher: Option[Website] = None)(implicit ec: ExecutionContext): Future[(Seq[FrontendResource], Long)] = {
     val newsitemsByKeywords = ResourceQuery(`type` = newsitems, q = Some(keywords), publisher = publisher, tags = tag.map(t => Set(t)))
     val withPagination = newsitemsByKeywords.copy(startIndex = startIndex, maxItems = maxItems)
-    toFrontendResourcesWithTotalCount(elasticSearchIndexer.getResources(withPagination, loggedInUser = loggedInUser), loggedInUser)
+    toFrontendResourcesWithTotalCount(elasticSearchIndexer.getResources(withPagination, order = byRelevance, loggedInUser = loggedInUser), loggedInUser)
   }
 
   def getNewsitemKeywordSearchRelatedTags(keywords: String, loggedInUser: Option[User])(implicit ec: ExecutionContext): Future[Seq[TagContentCount]] = {
@@ -256,7 +257,7 @@ import scala.concurrent.{ExecutionContext, Future}
       startIndex = startIndex,
       maxItems = maxItems
     )
-    toFrontendResourcesWithTotalCount(elasticSearchIndexer.getResources(websitesByKeyword, loggedInUser = loggedInUser), loggedInUser)
+    toFrontendResourcesWithTotalCount(elasticSearchIndexer.getResources(websitesByKeyword, order = byRelevance, loggedInUser = loggedInUser), loggedInUser)
   }
 
   def getAcceptedDates(loggedInUser: Option[User])(implicit ec: ExecutionContext): Future[Seq[(String, Long)]] = {
