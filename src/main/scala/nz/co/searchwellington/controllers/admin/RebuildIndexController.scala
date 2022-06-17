@@ -26,7 +26,7 @@ import scala.concurrent.ExecutionContext.Implicits.global
   @RequestMapping(value = Array("/admin/rebuild-index"), method = Array(RequestMethod.GET))
   def prompt(): ModelAndView = {
       val eventualResult = mongoRepository.getAllResourceIds().flatMap { resourceIds =>
-        elasticSearchIndexRebuildService.reindexResources(resourceIds)
+        elasticSearchIndexRebuildService.reindexResources(resourceIds, totalResources = resourceIds.size)
       }.map { i =>
         log.info("Reindexed " + i + " resources.")
         i

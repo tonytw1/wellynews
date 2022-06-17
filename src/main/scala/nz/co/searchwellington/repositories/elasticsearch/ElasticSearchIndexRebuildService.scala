@@ -27,10 +27,11 @@ import scala.concurrent.{ExecutionContext, Future}
     }
   }
 
-  def reindexResources(resourcesToIndex: Seq[BSONObjectID], i: Int = 0)(implicit ec: ExecutionContext): Future[Int] = {
+  def reindexResources(resourcesToIndex: Seq[BSONObjectID], i: Int = 0, totalResources: Int)(implicit ec: ExecutionContext): Future[Int] = {
+    val remaining = resourcesToIndex.size
 
     def indexBatch(batch: Seq[BSONObjectID], i: Int): Future[Int] = {
-      log.info("Processing batch: " + batch.size + " - " + i + " / " + resourcesToIndex.size)
+      log.info("Processing batch: " + batch.size + " - " + i + " / " + remaining)
 
       val eventualResources = Future.sequence(batch.map(i => mongoRepository.getResourceByObjectId(i))).map(_.flatten)
       val eventualWithIndexTags = eventualResources.flatMap { rs: Seq[Resource] =>
@@ -45,14 +46,14 @@ import scala.concurrent.{ExecutionContext, Future}
       }
     }
 
-    log.info("Reindexing: " + resourcesToIndex.size + " in batches of " + BATCH_COMMIT_SIZE)
+    log.info("Reindexing " + remaining + " remaining in batches of " + BATCH_COMMIT_SIZE)
     val batches = resourcesToIndex.grouped(BATCH_COMMIT_SIZE).toSeq
 
     batches.headOption.map { batch =>
       indexBatch(batch, i).flatMap { j =>
         val remaining = batches.tail
         if (remaining.nonEmpty) {
-          reindexResources(remaining.flatten, j)
+          reindexResources(remaining.flatten, j, totalResources)
         } else {
           Future.successful(j)
         }

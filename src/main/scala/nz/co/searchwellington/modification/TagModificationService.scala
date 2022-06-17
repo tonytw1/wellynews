@@ -38,7 +38,7 @@ import scala.concurrent.{Await, ExecutionContext, Future}
     val needToUpdateTagsResource = parentHasChanged || geocodeChanged
     if (needToUpdateTagsResource) {
       mongoRepository.getResourceIdsByTag(tag).flatMap { taggedResourceIds =>
-        elasticSearchIndexRebuildService.reindexResources(taggedResourceIds)
+        elasticSearchIndexRebuildService.reindexResources(taggedResourceIds, totalResources = taggedResourceIds.size)
       }.map { numberReindexed =>
         log.info("Reindexed resource after tag parent change: " + numberReindexed)
         numberReindexed

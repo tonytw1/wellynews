@@ -50,7 +50,7 @@ class TagModificationServiceTest {
 
     tagModificationService.updateAffectedResources(tag, updatedWithGeocode)
 
-    verify(elasticSearchIndexRebuildService).reindexResources(Seq(taggedResource._id))
+    verify(elasticSearchIndexRebuildService).reindexResources(Seq(taggedResource._id), 0, 1)
   }
 
 }
