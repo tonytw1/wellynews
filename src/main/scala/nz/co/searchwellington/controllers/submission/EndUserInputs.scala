@@ -12,17 +12,14 @@ trait EndUserInputs extends StringWrangling {
   def urlCleaner: UrlCleaner
 
   // Given a user supplied url string provide any remedial work which might produce a more parsable URL.
-  def cleanUrl(urlString: String): String = {
+  def cleanUrl(urlString: String): Either[Throwable, URL] = {
     // Trim and add prefix is missing from user submitted input
     var cleanedString = UrlFilters.trimWhiteSpace(urlString)
     cleanedString = UrlFilters.addHttpPrefixIfMissing(cleanedString)
     Try {
-      new URL(cleanedString)
-    }.toOption.map { url =>
-      urlCleaner.cleanSubmittedItemUrl(url).toExternalForm
-    }.getOrElse{
-      urlString // TODO error handling
-    }
+      val url = new URL(cleanedString)
+      urlCleaner.cleanSubmittedItemUrl(url)
+    }.toEither
   }
 
   def processTitle(t: String): String = {

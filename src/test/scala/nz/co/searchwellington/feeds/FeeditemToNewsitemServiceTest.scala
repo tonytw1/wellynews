@@ -3,6 +3,7 @@ package nz.co.searchwellington.feeds
 import nz.co.searchwellington.feeds.whakaoko.model.{FeedItem, LatLong, Place}
 import nz.co.searchwellington.model.Feed
 import nz.co.searchwellington.urls.UrlCleaner
+import nz.co.searchwellington.urls.shorturls.CachingShortUrlResolverService
 import org.junit.jupiter.api.Assertions.{assertEquals, assertNotNull, assertTrue}
 import org.junit.jupiter.api.Test
 import org.mockito.Mockito.{mock, when}
@@ -12,27 +13,30 @@ import java.net.URL
 
 class FeeditemToNewsitemServiceTest {
 
-  private val urlCleaner = mock(classOf[UrlCleaner])
+  private val cachingShortUrlResolverService = mock(classOf[CachingShortUrlResolverService])
+  private val urlCleaner = new UrlCleaner(cachingShortUrlResolverService)
 
   private val feed = Feed(publisher = Some(BSONObjectID.generate))
 
-  private val service = new FeeditemToNewsitemService(new PlaceToGeocodeMapper, urlCleaner)
+  private val feeditemToNewsitemService = new FeeditemToNewsitemService(new PlaceToGeocodeMapper, urlCleaner)
+
+  when(cachingShortUrlResolverService.resolveUrl(new URL("http://localhost/123"))).thenReturn(new URL("http://localhost/123"))
 
   @Test
   def shouldFlattenLoudHeadlinesWhenConvertingToNewsitem(): Unit = {
-    val newsitemWithLoudCapsHeadline = FeedItem(id = "", title = Some("HEADLINE"), body = None, subscriptionId = "123", url = "")
+    val newsitemWithLoudCapsHeadline = FeedItem(id = "", title = Some("HEADLINE"), body = None, subscriptionId = "123", url = "http://localhost/123")
 
-    val newsitem = service.makeNewsitemFromFeedItem(newsitemWithLoudCapsHeadline, feed)
+    val newsitem = feeditemToNewsitemService.makeNewsitemFromFeedItem(newsitemWithLoudCapsHeadline, feed)
 
     assertEquals("Headline", newsitem.title)
   }
 
   @Test
-  def shouldCleanUrlToNewsitem(): Unit = {
+  def shouldResolveFeedItemShoreUrlsWhenMappingToNewsitem(): Unit = {
     val newsitemWithLoudCapsHeadline = FeedItem(id = "", title = Some("Headline"), body = None, subscriptionId = "123", url = "https://localhost/blah?PHPSESSION=123")
-    when(urlCleaner.cleanSubmittedItemUrl(new URL("https://localhost/blah?PHPSESSION=123"))).thenReturn( new URL("https://localhost/blah"))
+    when(cachingShortUrlResolverService.resolveUrl(new URL("https://localhost/blah?PHPSESSION=123"))).thenReturn( new URL("https://localhost/blah"))
 
-    val newsitem = service.makeNewsitemFromFeedItem(newsitemWithLoudCapsHeadline, feed)
+    val newsitem = feeditemToNewsitemService.makeNewsitemFromFeedItem(newsitemWithLoudCapsHeadline, feed)
 
     assertEquals("https://localhost/blah", newsitem.page)
   }
@@ -41,9 +45,9 @@ class FeeditemToNewsitemServiceTest {
   def shouldSetGeocodeWhenAcceptingFeedNewsitem(): Unit = {
     val feedItemLatLong = LatLong(51.3, -0.3)
     val place = Place(latLong = Some(feedItemLatLong))
-    val feedNewsitem = FeedItem(id = "", url = "", subscriptionId = "", place = Some(place))
+    val feedNewsitem = FeedItem(id = "", url = "http://localhost/123", subscriptionId = "", place = Some(place))
 
-    val newsitem = service.makeNewsitemFromFeedItem(feedNewsitem, feed)
+    val newsitem = feeditemToNewsitemService.makeNewsitemFromFeedItem(feedNewsitem, feed)
 
     assertTrue(newsitem.geocode.nonEmpty)
     assertEquals(None, newsitem.geocode.get.address)
@@ -53,9 +57,9 @@ class FeeditemToNewsitemServiceTest {
 
   @Test
   def shouldPropogateFeedPublisherWhenAcceptingNewsitem(): Unit = {
-    val feedNewsitem = FeedItem(id = "", url = "", subscriptionId = "")
+    val feedNewsitem = FeedItem(id = "", url = "http://localhost/123", subscriptionId = "")
 
-    val newsitem = service.makeNewsitemFromFeedItem(feedNewsitem, feed)
+    val newsitem = feeditemToNewsitemService.makeNewsitemFromFeedItem(feedNewsitem, feed)
 
     assertTrue(feed.publisher.nonEmpty)
     assertEquals(feed.publisher, newsitem.publisher)
@@ -63,9 +67,9 @@ class FeeditemToNewsitemServiceTest {
 
   @Test
   def shouldRecordSourceFeedWithAcceptingNewsitem(): Unit = {
-    val feedNewsitem = FeedItem(id = "", url = "", subscriptionId = "")
+    val feedNewsitem = FeedItem(id = "", url = "http://localhost/123", subscriptionId = "")
 
-    val newsitem = service.makeNewsitemFromFeedItem(feedNewsitem, feed)
+    val newsitem = feeditemToNewsitemService.makeNewsitemFromFeedItem(feedNewsitem, feed)
 
     assertNotNull(feed._id)
     assertTrue(newsitem.feed.nonEmpty)
@@ -74,9 +78,9 @@ class FeeditemToNewsitemServiceTest {
 
   @Test
   def shouldNotSetAcceptanceDetails(): Unit = {
-    val feedNewsitem = FeedItem(id = "", url = "", subscriptionId = "")
+    val feedNewsitem = FeedItem(id = "", url = "http://localhost/123", subscriptionId = "")
 
-    val newsitem = service.makeNewsitemFromFeedItem(feedNewsitem, feed)
+    val newsitem = feeditemToNewsitemService.makeNewsitemFromFeedItem(feedNewsitem, feed)
 
     assertTrue(newsitem.accepted.isEmpty)
     assertTrue(newsitem.acceptedBy.isEmpty)

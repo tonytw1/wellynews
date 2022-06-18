@@ -20,7 +20,7 @@ class EndUserInputsTest extends EndUserInputs {
 
     val cleanedUrl = cleanUrl(WITH_BLANK_SPACES)
 
-    assertEquals("http://localhost/1234", cleanedUrl)
+    assertEquals("http://localhost/1234", cleanedUrl.right.get.toExternalForm)
   }
 
   @Test
@@ -29,7 +29,7 @@ class EndUserInputsTest extends EndUserInputs {
 
     val cleanedUrl = cleanUrl(WITH_MISSING_PROTOCOL)
 
-    assertEquals("http://localhost/123", cleanedUrl)
+    assertEquals("http://localhost/123", cleanedUrl.right.get.toExternalForm)
   }
 
 }

@@ -46,12 +46,13 @@ class NewWatchlistController @Autowired()(contentUpdateService: ContentUpdateSer
 
     } else {
       log.info("Got valid new watchlist submission: " + newWatchlist)
+      val url = cleanUrl(newWatchlist.getUrl).toOption.get.toExternalForm  // TODO error handling
       val maybePublisher = trimToOption(newWatchlist.getPublisher).flatMap { publisherName =>
         Await.result(mongoRepository.getWebsiteByName(publisherName), TenSeconds)
       }
 
       val w = Watchlist(title = processTitle(newWatchlist.getTitle),
-        page = cleanUrl(newWatchlist.getUrl),
+        page = url,
         date = Some(DateTime.now.toDate),
         publisher = maybePublisher.map(_._id)
       )

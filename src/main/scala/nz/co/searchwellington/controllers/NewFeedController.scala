@@ -66,6 +66,8 @@ class NewFeedController @Autowired()(contentUpdateService: ContentUpdateService,
       log.info("Got valid new feed submission: " + newFeed)
 
       if (!result.hasErrors) {
+        val url = cleanUrl(newFeed.getUrl).toOption.get.toExternalForm  // TODO error handling
+
         val publisherName = if (newFeed.getPublisher.trim.nonEmpty) {
           Some(newFeed.getPublisher.trim)
         } else {
@@ -76,7 +78,7 @@ class NewFeedController @Autowired()(contentUpdateService: ContentUpdateService,
         }
 
         val f = Feed(title = processTitle(newFeed.getTitle),
-          page = cleanUrl(newFeed.getUrl),
+          page = url,
           publisher = publisher.map(_._id),
           acceptance = newFeed.getAcceptancePolicy,
           date = Some(DateTime.now.toDate),

@@ -45,8 +45,10 @@ class NewWebsiteController @Autowired()(contentUpdateService: ContentUpdateServi
 
     } else {
       log.info("Got valid new website submission: " + newWebsite)
+      val url = cleanUrl(newWebsite.getUrl).toOption.get.toExternalForm  // TODO error handling
+
       val w = Website(title = processTitle(newWebsite.getTitle),
-        page = cleanUrl(newWebsite.getUrl),
+        page = url,
         date = Some(DateTime.now.toDate),
       )
       val urlWords = urlWordsGenerator.makeUrlWordsFor(w)

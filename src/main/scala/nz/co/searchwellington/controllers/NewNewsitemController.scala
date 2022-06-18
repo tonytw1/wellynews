@@ -51,6 +51,7 @@ class NewNewsitemController @Autowired()(contentUpdateService: ContentUpdateServ
 
     } else {
       log.info("Got valid new newsitem submission: " + formObject)
+      val url = cleanUrl(formObject.getUrl).toOption.get.toExternalForm  // TODO error handling
       val parsedDate = dateFormatter.parseDateTime(formObject.getDate)
 
       val eventualMaybePublisher = trimToOption(formObject.getPublisher).map { publisherName =>
@@ -71,7 +72,7 @@ class NewNewsitemController @Autowired()(contentUpdateService: ContentUpdateServ
 
           val newsitem = Newsitem(
             title = processTitle(formObject.getTitle),
-            page = cleanUrl(formObject.getUrl),
+            page = url,
             date = Some(parsedDate.toDate),
             publisher = maybePublisher.map(_._id),
             description = Some(formObject.getDescription.trim),
