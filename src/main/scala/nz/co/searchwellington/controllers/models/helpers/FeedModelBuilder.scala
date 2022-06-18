@@ -50,7 +50,7 @@ import scala.jdk.CollectionConverters._
         feedItemsForFeed.fold({ l =>
           Future.successful(Left(l))
         }, { feedItems =>
-            val feedNewsitems = feedItems._1.map(i => feeditemToNewsitemService.makeNewsitemFromFeedItem(i, feed))
+            val feedNewsitems = feedItems._1.flatMap(i => feeditemToNewsitemService.makeNewsitemFromFeedItem(i, feed))
             val totalCount = feedItems._2
 
             val eventualFrontendFeedNewitems = Future.sequence {

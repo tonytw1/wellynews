@@ -64,8 +64,8 @@ class FeedModelBuilderTest extends ReasonableWaits with ContentFields {
   def setUp(): Unit = {
     when(whakaokoFeedReader.fetchFeedItems(feed)).thenReturn(Future.successful(Right((feeditems, feeditems.size.toLong))))
 
-    when(feeditemToNewsitemService.makeNewsitemFromFeedItem(feedItem, feed)).thenReturn(newsItem)
-    when(feeditemToNewsitemService.makeNewsitemFromFeedItem(anotherFeedItem, feed)).thenReturn(anotherNewsitem)
+    when(feeditemToNewsitemService.makeNewsitemFromFeedItem(feedItem, feed)).thenReturn(Some(newsItem))
+    when(feeditemToNewsitemService.makeNewsitemFromFeedItem(anotherFeedItem, feed)).thenReturn(Some(anotherNewsitem))
 
     when(frontendResourceMapper.mapFrontendResource(newsItem, newsItem.geocode)).thenReturn(Future.successful(frontendNewsitem))
     when(frontendResourceMapper.mapFrontendResource(anotherNewsitem, newsItem.geocode)).thenReturn(Future.successful(anotherFrontendNewsitem))

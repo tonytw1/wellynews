@@ -40,7 +40,7 @@ import scala.concurrent.{ExecutionContext, Future}
       getChannelFeedItemsDecoratedWithFeeds(page, feeds).flatMap { channelFeedItems =>
         log.info("Found " + channelFeedItems.size + " channel newsitems on page " + page)
 
-        val suggestedChannelNewsitems = channelFeedItems.map(i => feeditemToNewsitemService.makeNewsitemFromFeedItem(i._1, i._2))
+        val suggestedChannelNewsitems = channelFeedItems.flatMap(i => feeditemToNewsitemService.makeNewsitemFromFeedItem(i._1, i._2))
 
         val eventuallyFiltered = suggestedChannelNewsitems.map { newsitem =>
           val eventuallyLocalCopy = mongoRepository.getResourceByUrl(newsitem.page)

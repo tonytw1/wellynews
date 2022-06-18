@@ -43,22 +43,23 @@ class AcceptFeedItemController @Autowired()(mongoRepository: MongoRepository,
 
           eventualFeedItemToAccept.flatMap { maybeFeedItem =>
             maybeFeedItem.map { feedItemToAccept =>
-              val newsitemToAccept = feeditemToNewsItemService.makeNewsitemFromFeedItem(feedItemToAccept, feed)
-              (feedReaderUpdateService acceptFeeditem(loggedInUser, newsitemToAccept, feed,
-                feedItemToAccept.categories.getOrElse(Seq.empty))).map { accepted =>
-                log.info("Accepted newsitem: " + accepted.title)
-                new ModelAndView(new RedirectView(urlBuilder.getFeedUrl(feed)))
-              } recover {
-                case e: Exception =>
-                  log.error("Error while accepting feeditem", e)
-                  NotFound
+              feeditemToNewsItemService.makeNewsitemFromFeedItem(feedItemToAccept, feed).map { newsitemToAccept =>
+                (feedReaderUpdateService acceptFeeditem(loggedInUser, newsitemToAccept, feed,
+                  feedItemToAccept.categories.getOrElse(Seq.empty))).map { accepted =>
+                  log.info("Accepted newsitem: " + accepted.title)
+                  new ModelAndView(new RedirectView(urlBuilder.getFeedUrl(feed)))
+                } recover {
+                  case e: Exception =>
+                    log.error("Error while accepting feeditem", e)
+                    NotFound
+                }
+              }.getOrElse {
+                Future.successful(NotFound)
               }
-
             }.getOrElse {
               Future.successful(NotFound)
             }
           }
-
         }.getOrElse {
           Future.successful(NotFound)
         }

@@ -67,29 +67,32 @@ import scala.concurrent.{ExecutionContext, Future}
   }
 
   private def processFeedItems(feed: Feed, feedReaderUser: User, acceptancePolicy: FeedAcceptancePolicy, feedItems: Seq[FeedItem])(implicit ec: ExecutionContext): Future[Seq[Resource]] = {
-    val eventualProcessed = feedItems.map { feedItem =>
-      val newsitem = feeditemToNewsItemService.makeNewsitemFromFeedItem(feedItem, feed)
-      feedItemAcceptanceDecider.getAcceptanceErrors(newsitem, acceptancePolicy).flatMap { acceptanceErrors =>
-        if (acceptanceErrors.isEmpty) {
-          feedReaderUpdateService.acceptFeeditem(feedReaderUser, newsitem, feed,
-            feedItem.categories.getOrElse(Seq.empty)
-          ).map { acceptedNewsitem =>
-            Some(acceptedNewsitem)
-          }.recover {
-            case e: Exception =>
-              log.error("Error while accepting feeditem", e)
-              None
+    val eventualMaybeAccepted = feedItems.map { feedItem =>
+      feeditemToNewsItemService.makeNewsitemFromFeedItem(feedItem, feed).map { newsitem =>
+        feedItemAcceptanceDecider.getAcceptanceErrors(newsitem, acceptancePolicy).flatMap { acceptanceErrors =>
+          if (acceptanceErrors.isEmpty) {
+            feedReaderUpdateService.acceptFeeditem(feedReaderUser, newsitem, feed,
+              feedItem.categories.getOrElse(Seq.empty)
+            ).map { acceptedNewsitem =>
+              Some(acceptedNewsitem)
+            }.recover {
+              case e: Exception =>
+                log.error("Error while accepting feeditem", e)
+                None
+            }
+          } else {
+            log.debug("Not accepting " + newsitem.page + " due to acceptance errors: " + acceptanceErrors.mkString(", "))
+            Future.successful(None)
           }
-        } else {
-          log.debug("Not accepting " + newsitem.page + " due to acceptance errors: " + acceptanceErrors.mkString(", "))
-          Future.successful(None)
         }
+      }.getOrElse {
+        Future.successful(None)
       }
     }
 
-    Future.sequence(eventualProcessed).map { processed =>
-      val accepted = processed.flatten
-      log.debug("Processed feed items " + processed.size + " and accepted " + accepted.size)
+    Future.sequence(eventualMaybeAccepted).map { maybeAccepted =>
+      val accepted = maybeAccepted.flatten
+      log.debug("Processed feed items " + maybeAccepted.size + " and accepted " + accepted.size)
       accepted
     }
   }

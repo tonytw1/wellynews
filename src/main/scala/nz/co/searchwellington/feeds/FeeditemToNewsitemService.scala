@@ -12,25 +12,22 @@ class FeeditemToNewsitemService @Autowired()(placeToGeocodeMapper: PlaceToGeocod
 
   private val MAXIMUM_BODY_LENGTH = 400
 
-  def makeNewsitemFromFeedItem(feedItem: FeedItem, feed: Feed): Newsitem = {
-    val url = cleanUrl(feedItem.url).toOption.get.toExternalForm  // TODO error handling
-
-    val newsitem = Newsitem(
-      title = feedItem.title.map(processTitle).getOrElse(feedItem.url),
-      page = url,
-      description = Some(composeDescription(feedItem)),
-      date = feedItem.date.map(_.toDate),
-      feed = Some(feed._id),
-      publisher = feed.publisher,
-      geocode = feedItem.place.map(placeToGeocodeMapper.mapPlaceToGeocode)
-    )
-    // newsitem.setImage(if (feedNewsitem.getFrontendImage != null) new Image(feedNewsitem.getFrontendImage.getUrl, null) else null)
-
-    if (feedItem.imageUrl != null) {  // TODO option
+  def makeNewsitemFromFeedItem(feedItem: FeedItem, feed: Feed): Option[Newsitem] = {
+    cleanUrl(feedItem.url).toOption.map { url =>
+      // newsitem.setImage(if (feedNewsitem.getFrontendImage != null) new Image(feedNewsitem.getFrontendImage.getUrl, null) else null)
+      //if (feedItem.imageUrl != null) {
       // newsitem.setImage(new Image(feedNewsitem.getFrontendImage.getUrl, ""))
+      //}
+      Newsitem(
+        title = feedItem.title.map(processTitle).getOrElse(feedItem.url),
+        page = url.toExternalForm,
+        description = Some(composeDescription(feedItem)),
+        date = feedItem.date.map(_.toDate),
+        feed = Some(feed._id),
+        publisher = feed.publisher,
+        geocode = feedItem.place.map(placeToGeocodeMapper.mapPlaceToGeocode)
+      )
     }
-
-    newsitem
   }
 
   private def composeDescription(feedNewsitem: FeedItem): String = {
