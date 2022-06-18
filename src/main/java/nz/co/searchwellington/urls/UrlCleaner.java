@@ -22,32 +22,22 @@ public class UrlCleaner {
         this.shortUrlResolver = shortUrlResolver;
     }
 
-    public String cleanSubmittedItemUrl(String urlString) {
-        if (!urlString.isEmpty()) {
-            try {
-                // Trim and add prefix is missing from user submitted input
-                urlString = UrlFilters.trimWhiteSpace(urlString);
-                urlString = UrlFilters.addHttpPrefixIfMissing(urlString);
+    // Given a user or feed supplied parsed URL attempt to reduce it to a more canonical form
+    public URL cleanSubmittedItemUrl(URL url) {
+        try {
+            // Resolve short urls
+            URL expanded = shortUrlResolver.resolveUrl(url);
 
-                // Expand short urls
-                URL url = new URL(urlString);  // TODO nudge this step up
-                URL expanded = shortUrlResolver.resolveUrl(url);
+            // Strip obvious per request artifacts from the url to help with duplicate detection
+            expanded = UrlFilters.stripUTMParams(expanded);
+            expanded = UrlFilters.stripPhpSession(expanded);
 
-                // Strip obvious pre request artifacts from the url to help with duplicate detection
-                expanded = UrlFilters.stripUTMParams(expanded);
-                expanded = UrlFilters.stripPhpSession(expanded);
+            log.debug("Cleaned url is: " + expanded.toExternalForm());
+            return expanded;
 
-                log.debug("Cleaned url is: " + expanded.toExternalForm());
-                return expanded.toExternalForm();
-
-            } catch (URISyntaxException | MalformedURLException e) {
-                log.warn("Invalid URL given; returning unaltered: " + urlString);
-                return urlString;
-            }
-
-        } else {
-            log.warn("Called with an empty url");
-            return urlString;
+        } catch (URISyntaxException | MalformedURLException e) {
+            log.warn("Invalid URL given; returning unaltered: " + url.toExternalForm());
+            return url;
         }
     }
 

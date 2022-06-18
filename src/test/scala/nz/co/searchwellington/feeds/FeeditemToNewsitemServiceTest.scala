@@ -8,6 +8,8 @@ import org.junit.jupiter.api.Test
 import org.mockito.Mockito.{mock, when}
 import reactivemongo.api.bson.BSONObjectID
 
+import java.net.URL
+
 class FeeditemToNewsitemServiceTest {
 
   private val urlCleaner = mock(classOf[UrlCleaner])
@@ -28,7 +30,7 @@ class FeeditemToNewsitemServiceTest {
   @Test
   def shouldCleanUrlToNewsitem(): Unit = {
     val newsitemWithLoudCapsHeadline = FeedItem(id = "", title = Some("Headline"), body = None, subscriptionId = "123", url = "https://localhost/blah?PHPSESSION=123")
-    when(urlCleaner.cleanSubmittedItemUrl( "https://localhost/blah?PHPSESSION=123")).thenReturn( "https://localhost/blah")
+    when(urlCleaner.cleanSubmittedItemUrl(new URL("https://localhost/blah?PHPSESSION=123"))).thenReturn( new URL("https://localhost/blah"))
 
     val newsitem = service.makeNewsitemFromFeedItem(newsitemWithLoudCapsHeadline, feed)
 

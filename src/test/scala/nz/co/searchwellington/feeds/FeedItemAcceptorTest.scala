@@ -8,6 +8,8 @@ import org.junit.jupiter.api.Test
 import org.mockito.Mockito.{mock, when}
 import reactivemongo.api.bson.BSONObjectID
 
+import java.net.URL
+
 class FeedItemAcceptorTest {
 
   private val feed = Feed(publisher = Some(BSONObjectID.generate))
@@ -29,7 +31,7 @@ class FeedItemAcceptorTest {
 
   def shouldCleanUrlWhenAccepting(): Unit = {
     val newsitem = Newsitem(id = "", title = "A headline", page ="https://localhost/blah?PHPSESSION=123", description = None)
-    when(urlCleaner.cleanSubmittedItemUrl("https://localhost/blah?PHPSESSION=123")).thenReturn("https://localhost/blah")
+    when(urlCleaner.cleanSubmittedItemUrl(new URL("https://localhost/blah?PHPSESSION=123"))).thenReturn(new URL("https://localhost/blah"))
 
     val acceptedNewsitem = feedItemAcceptor.acceptFeedItem(feedReadingUser, (newsitem, feed))
 

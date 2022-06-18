@@ -16,6 +16,7 @@ import org.springframework.mock.web.MockHttpServletRequest
 import org.springframework.validation.BindingResult
 import reactivemongo.api.bson.BSONObjectID
 
+import java.net.URL
 import scala.concurrent.{ExecutionContext, Future}
 
 class NewNewsitemControllerTest {
@@ -36,14 +37,14 @@ class NewNewsitemControllerTest {
 
     val newNewsitemSubmission = new NewNewsitem()
     newNewsitemSubmission.setTitle("A newsitem")
-    newNewsitemSubmission.setUrl("https://localhost/a-newsitem")
+    newNewsitemSubmission.setUrl("localhost/a-newsitem    ")
     newNewsitemSubmission.setDate("20200122")
     newNewsitemSubmission.setPublisher("A publisher")
     newNewsitemSubmission.setDescription("Something interesting")
 
     val publisher = Website(_id = BSONObjectID.generate(), title = "A publisher")
     when(mongoRepository.getWebsiteByName("A publisher")).thenReturn(Future.successful(Some(publisher)))
-    when(urlCleaner.cleanSubmittedItemUrl("https://localhost/a-newsitem")).thenReturn("https://localhost/a-newsitem")
+    when(urlCleaner.cleanSubmittedItemUrl(new URL("http://localhost/a-newsitem"))).thenReturn(new URL("http://localhost/a-newsitem"))
     when(contentUpdateService.create(any(classOf[Resource]))(any())).thenReturn(Future.successful(null))
     when(loggedInUserFilter.getLoggedInUser).thenReturn(Some(User()))
 
@@ -56,7 +57,7 @@ class NewNewsitemControllerTest {
 
     verify(contentUpdateService).create(createdNewsitem.capture)(ArgumentMatchers.eq(ec))
     assertEquals("A newsitem", createdNewsitem.getValue.title)
-    assertEquals("https://localhost/a-newsitem", createdNewsitem.getValue.page)
+    assertEquals("http://localhost/a-newsitem", createdNewsitem.getValue.page)
     assertEquals(Some(new DateTime(2020, 1, 22, 0, 0).toDate), createdNewsitem.getValue.date)
     assertEquals(publisher._id, createdNewsitem.getValue.publisher.get)
     assertEquals(Some("Something interesting"), createdNewsitem.getValue.description)
