@@ -57,18 +57,14 @@ import scala.concurrent.ExecutionContext.Implicits.global
       if (request.getParameter("oauth_token") != null && request.getParameter("oauth_verifier") != null) {
         val token = request.getParameter("oauth_token")
         val verifier = request.getParameter("oauth_verifier")
-        log.info("oauth_token: " + token)
-        log.info("oauth_verifier: " + verifier)
-        log.info("Looking for request token: " + token)
-
         tokens.get(token).flatMap { requestToken =>
-          log.info("Found stored request token: " + requestToken)
+          log.debug("Found stored request token: " + requestToken)
           try {
             log.debug("Exchanging request token for access token")
             Option(twitterApiFactory.getTwitterApi.getOAuthAccessToken(requestToken, verifier)).flatMap { accessToken =>
               log.debug("Got access token: '" + accessToken.getToken + "', '" + accessToken.getTokenSecret + "'")
               tokens.remove(requestToken.getToken)
-              log.info("Using access token to lookup twitter user details")
+              log.info("Using twitter access token to lookup twitter user details")
 
               getTwitterUserCredentials(accessToken).map { twitterUser =>
                 log.info("Authenticated Twitter user is: " + twitterUser.getName)
