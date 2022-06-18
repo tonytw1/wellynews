@@ -1,5 +1,6 @@
-package nz.co.searchwellington.controllers
+package nz.co.searchwellington.signin
 
+import nz.co.searchwellington.controllers.{CommonModelObjectsService, LoggedInUserFilter, UrlStack}
 import nz.co.searchwellington.repositories.ContentRetrievalService
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Controller
@@ -8,7 +9,7 @@ import org.springframework.web.servlet.ModelAndView
 import org.springframework.web.servlet.view.RedirectView
 
 import javax.servlet.http.HttpServletRequest
-import scala.concurrent.{Await, Future}
+import scala.concurrent.Await
 import scala.concurrent.ExecutionContext.Implicits.global
 
 @Controller class LoginController @Autowired()(urlStack: UrlStack,
@@ -22,7 +23,9 @@ import scala.concurrent.ExecutionContext.Implicits.global
         commonLocal <- commonLocal
         latestNewsitems <- latestNewsitems(loggedInUser)
       } yield {
-        new ModelAndView("signin").addObject("heading", "Sign in").addAllObjects(commonLocal).addObject(latestNewsitems)
+        new ModelAndView("signin").addObject("heading", "Sign in").
+          addAllObjects(commonLocal).
+          addAllObjects(latestNewsitems)
       }, TenSeconds)
     } else {
       redirectToUrlStack(request)
