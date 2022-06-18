@@ -17,7 +17,7 @@ public class CachingShortUrlResolverService {
     private static final Logger log = Logger.getLogger(CachingShortUrlResolverService.class);
 
     private static final int ONE_DAY = 3600 * 24;
-    private final static String KEY_PREFIX = "resolved-shorturls::";
+    private final static String KEY_PREFIX = "resolved-shorturls-uris::";
 
     private ShortUrlResolver shortUrlResolverService;
     private MemcachedCache cache;
@@ -44,7 +44,7 @@ public class CachingShortUrlResolverService {
             log.debug("Delegating to live url resolver");
             final URL result = shortUrlResolverService.resolveUrl(parsed);
             if (result != null) {
-                putUrlIntoCache(result, result.toExternalForm());
+                putUrlIntoCache(result, result.toURI());
                 return result.toURI();
             }
 
@@ -57,7 +57,7 @@ public class CachingShortUrlResolverService {
         }
     }
 
-    private void putUrlIntoCache(URL url, String result) {
+    private void putUrlIntoCache(URL url, URI result) {
         log.debug("Caching result for url: " + url.toExternalForm());
         cache.put(generateKey(url), ONE_DAY, result);
     }
