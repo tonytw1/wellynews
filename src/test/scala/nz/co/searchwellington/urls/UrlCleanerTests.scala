@@ -2,19 +2,18 @@ package nz.co.searchwellington.urls
 
 import nz.co.searchwellington.urls.shorturls.CachingShortUrlResolverService
 import org.junit.jupiter.api.Assertions.assertEquals
-import org.junit.jupiter.api.Test
-import org.junit.jupiter.api.BeforeEach
+import org.junit.jupiter.api.{BeforeEach, Test}
 import org.mockito.Mockito.{mock, verify, when}
 
-import java.net.URI
+import java.net.URL
 
 class UrlCleanerTests {
 
-  private val SECURE_URL = new URI("https://www.secure/rss")
+  private val SECURE_URL = new URL("https://www.secure/rss")
   private val URL_FROM_USERLAND = " www.capitalshakers.co.nz/news/genesis-energy-shakers-vs-otago-rebels-easter-sunday/?PHPSESSID=eb1ca7999e13201d6dbf02a02fffacdd  "
-  private val BASIC_CLEANED_URL = new URI("http://www.capitalshakers.co.nz/news/genesis-energy-shakers-vs-otago-rebels-easter-sunday/?PHPSESSID=eb1ca7999e13201d6dbf02a02fffacdd")
+  private val BASIC_CLEANED_URL = new URL("http://www.capitalshakers.co.nz/news/genesis-energy-shakers-vs-otago-rebels-easter-sunday/?PHPSESSID=eb1ca7999e13201d6dbf02a02fffacdd")
   private val EXPECTED_CLEAN_URL = "http://www.capitalshakers.co.nz/news/genesis-energy-shakers-vs-otago-rebels-easter-sunday/"
-  private val SHORT_URL = new URI("http://short.url/12234")
+  private val SHORT_URL = new URL("http://short.url/12234")
   private val UNCLEANED_SHORT_URL = " http://short.url/12234  "
   
   private val shortUrlResolverService = mock(classOf[CachingShortUrlResolverService])
@@ -32,7 +31,7 @@ class UrlCleanerTests {
 
   @Test
   def shouldConsultRedirectingUrlResolvers(): Unit = {
-    val cleanedUrl = cleaner.cleanSubmittedItemUrl(SHORT_URL.toURL.toExternalForm)
+    val cleanedUrl = cleaner.cleanSubmittedItemUrl(SHORT_URL.toExternalForm)
     verify(shortUrlResolverService).resolveUrl(SHORT_URL)
     assertEquals(EXPECTED_CLEAN_URL, cleanedUrl)
   }
@@ -52,8 +51,8 @@ class UrlCleanerTests {
 
   @Test
   def testShouldAllowHttpsPrefix(): Unit = {
-    val cleanedUrl = cleaner.cleanSubmittedItemUrl(SECURE_URL.toURL.toExternalForm)
-    assertEquals(SECURE_URL.toURL.toExternalForm, cleanedUrl)
+    val cleanedUrl = cleaner.cleanSubmittedItemUrl(SECURE_URL.toExternalForm)
+    assertEquals(SECURE_URL.toExternalForm, cleanedUrl)
   }
 
 }

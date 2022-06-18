@@ -5,8 +5,9 @@ import org.apache.http.NameValuePair;
 import org.apache.http.client.utils.URIBuilder;
 import uk.co.eelpieconsulting.common.html.HtmlCleaner;
 
-import java.net.URI;
+import java.net.MalformedURLException;
 import java.net.URISyntaxException;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Pattern;
@@ -19,8 +20,8 @@ public class UrlFilters {
 
     private static final HtmlCleaner htmlCleaner = new HtmlCleaner();
     
-    public static URI stripPhpSession(URI uri) throws URISyntaxException {
-        return removeQueryParameterFrom(uri, PHPSESSID);
+    public static URL stripPhpSession(URL url) throws URISyntaxException, MalformedURLException {
+        return removeQueryParameterFrom(url, PHPSESSID);
     }
 
     public static String trimWhiteSpace(String title) {
@@ -53,17 +54,17 @@ public class UrlFilters {
 		return htmlCleaner.stripHtml(content);        
     }
     
-	public static URI stripUTMParams(URI uri) throws URISyntaxException {
-        return removeQueryParametersFrom(uri, UTM_PARAMETERS);
+	public static URL stripUTMParams(URL url) throws URISyntaxException, MalformedURLException {
+        return removeQueryParametersFrom(url, UTM_PARAMETERS);
 	}
 
-    private static URI removeQueryParameterFrom(URI uri, String parameterName) throws URISyntaxException {
+    private static URL removeQueryParameterFrom(URL url, String parameterName) throws URISyntaxException, MalformedURLException {
         Pattern p = Pattern.compile("^" + parameterName + "$");
-        return removeQueryParametersFrom(uri, p);
+        return removeQueryParametersFrom(url, p);
     }
 
-    private static URI removeQueryParametersFrom(URI uri, Pattern p) throws URISyntaxException {
-        URIBuilder uriBuilder = new URIBuilder(uri);
+    private static URL removeQueryParametersFrom(URL url, Pattern p) throws URISyntaxException, MalformedURLException {
+        URIBuilder uriBuilder = new URIBuilder(url.toURI());
         List<NameValuePair> filteredParams = new ArrayList<>();
         for (NameValuePair param: uriBuilder.getQueryParams()) {
             if (p.matcher(param.getName()).matches()) {
@@ -71,7 +72,7 @@ public class UrlFilters {
             }
             filteredParams.add(param);
         }
-        return uriBuilder.setParameters(filteredParams).build();
+        return uriBuilder.setParameters(filteredParams).build().toURL();
     }
 
 }

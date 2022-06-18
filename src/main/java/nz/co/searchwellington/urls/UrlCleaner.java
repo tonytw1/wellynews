@@ -7,7 +7,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.net.MalformedURLException;
-import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
 
@@ -23,33 +22,32 @@ public class UrlCleaner {
         this.shortUrlResolver = shortUrlResolver;
     }
 
-    public String cleanSubmittedItemUrl(String url) throws Exception {
-        if (!url.isEmpty()) {
+    public String cleanSubmittedItemUrl(String urlString) {
+        if (!urlString.isEmpty()) {
             try {
                 // Trim and add prefix is missing from user submitted input
-                url = UrlFilters.trimWhiteSpace(url);
-
-                url = UrlFilters.addHttpPrefixIfMissing(url);
+                urlString = UrlFilters.trimWhiteSpace(urlString);
+                urlString = UrlFilters.addHttpPrefixIfMissing(urlString);
 
                 // Expand short urls
-                URI uri = new URL(url).toURI(); // TODO nudge this step up
-                uri = shortUrlResolver.resolveUrl(uri);
+                URL url = new URL(urlString);  // TODO nudge this step up
+                URL expanded = shortUrlResolver.resolveUrl(url);
 
                 // Strip obvious pre request artifacts from the url to help with duplicate detection
-                uri = UrlFilters.stripUTMParams(uri);
-                uri = UrlFilters.stripPhpSession(uri);
+                expanded = UrlFilters.stripUTMParams(expanded);
+                expanded = UrlFilters.stripPhpSession(expanded);
 
-                log.debug("Cleaned url is: " + uri.toURL().toExternalForm());
-                return uri.toURL().toExternalForm();
+                log.debug("Cleaned url is: " + expanded.toExternalForm());
+                return expanded.toExternalForm();
 
             } catch (URISyntaxException | MalformedURLException e) {
-                log.warn("Invalid URL given; returning unaltered: " + url);
-                return url;
+                log.warn("Invalid URL given; returning unaltered: " + urlString);
+                return urlString;
             }
 
         } else {
             log.warn("Called with an empty url");
-            return url;
+            return urlString;
         }
     }
 
