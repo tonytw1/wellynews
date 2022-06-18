@@ -58,4 +58,17 @@ class FeedItemAcceptanceDeciderTest extends ReasonableWaits {
     assertEquals("This item is suppressed", objections.head)
   }
 
+  @Test
+  def shouldRejectFeeditemsWithDatesWayInTheFuture(): Unit = {
+    val newsitemWithFuturePublicationDate = Newsitem(id = UUID.randomUUID().toString, title = "A feeditem", page = "http://localhost/foo", date = Some(DateTime.now.plusDays(10).toDate))
+
+    when(suppressionDAO.isSupressed(newsitemWithFuturePublicationDate.page)).thenReturn(Future.successful(false))
+    when(mongoRepository.getResourceByUrl(newsitemWithFuturePublicationDate.page)).thenReturn(Future.successful(None))
+
+    val objections = Await.result(feedItemAcceptanceDecider.getAcceptanceErrors(newsitemWithFuturePublicationDate, FeedAcceptancePolicy.ACCEPT), TenSeconds)
+
+    assertTrue(objections.nonEmpty)
+    assertEquals("This item has a date more than one week in the future", objections.head)
+  }
+
 }

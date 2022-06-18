@@ -56,7 +56,19 @@ import scala.concurrent.{ExecutionContext, Future}
       }
     }
 
-    val cannotHaveDateInTheFuture = (_: Newsitem) => Future.successful(None) // TODO
+    val cannotBeMoreThanOneWeekInTheFuture = (newsitem: Newsitem) => {
+      Future.successful {
+        newsitem.date.flatMap { date =>
+          val oneWeekFromNow = DateTime.now.plusWeeks(1)
+          val isMoreThanOneWeekFromNow = new DateTime(date).isAfter(oneWeekFromNow)
+          if (isMoreThanOneWeekFromNow) {
+            Some("This item has a date more than one week in the future")
+          } else {
+            None
+          }
+        }
+      }
+    }
 
     val cannotAlreadyHaveThisFeedItem = (newsitem: Newsitem) => {
       val eventualAlreadyHaveThisFeedItem = mongoRepository.getResourceByUrl(newsitem.page).map(_.nonEmpty)
@@ -74,13 +86,12 @@ import scala.concurrent.{ExecutionContext, Future}
       Future.successful(None)
     } // TODO implement me
 
-
     val reasonsToRejectFeedItems = Seq(
       cannotAlreadyHaveThisFeedItem,
       cannotBeSuppressed,
       titleCannotBeBlank,
       cannotBeMoreThanOneWeekOld,
-      cannotHaveDateInTheFuture,
+      cannotBeMoreThanOneWeekInTheFuture,
       alreadyHaveAnItemWithTheSameHeadlineFromTheSamePublisherWithinTheLastMonth)
 
     Future.sequence(reasonsToRejectFeedItems.map(reason => reason(newsitem))).map { possibleObjections =>
