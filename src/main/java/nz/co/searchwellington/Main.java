@@ -81,7 +81,6 @@ public class Main {
     }
 
     @Bean("feedReaderTaskExecutor")
-    @Primary    // TODO work out why this is needed
     public TaskExecutor feedReaderTaskExecutor() {
         ThreadPoolTaskExecutor threadPoolTaskExecutor = new ThreadPoolTaskExecutor();
         threadPoolTaskExecutor.setCorePoolSize(5);
@@ -91,7 +90,6 @@ public class Main {
     }
 
     @Bean("linkCheckerTaskExecutor")
-    @Primary    // TODO work out why this is needed
     public TaskExecutor linkCheckerTaskExecutor() {
         ThreadPoolTaskExecutor threadPoolTaskExecutor = new ThreadPoolTaskExecutor();
         threadPoolTaskExecutor.setCorePoolSize(5);
