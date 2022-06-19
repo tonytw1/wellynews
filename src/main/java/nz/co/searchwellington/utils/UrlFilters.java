@@ -15,14 +15,12 @@ import java.util.regex.Pattern;
 public class UrlFilters {
 
     private static final String HTTP_PREFIX = "http://";
-    private static final String PHPSESSID = "PHPSESSID";
+
+    private static final Pattern PHPSESSION_PARAMETER = Pattern.compile("^" + "PHPSESSID" + "$");
+
     private static final Pattern UTM_PARAMETERS = Pattern.compile("^utm_.*$");
 
     private static final HtmlCleaner htmlCleaner = new HtmlCleaner();
-    
-    public static URL stripPhpSession(URL url) throws URISyntaxException, MalformedURLException {
-        return removeQueryParameterFrom(url, PHPSESSID);
-    }
 
     public static String trimWhiteSpace(String title) {
         return title.trim();
@@ -53,15 +51,15 @@ public class UrlFilters {
     public static String stripHtml(String content) {
 		return htmlCleaner.stripHtml(content);        
     }
-    
+
+
+    public static URL stripPhpSession(URL url) throws URISyntaxException, MalformedURLException {
+        return removeQueryParametersFrom(url, PHPSESSION_PARAMETER);
+    }
+
 	public static URL stripUTMParams(URL url) throws URISyntaxException, MalformedURLException {
         return removeQueryParametersFrom(url, UTM_PARAMETERS);
 	}
-
-    private static URL removeQueryParameterFrom(URL url, String parameterName) throws URISyntaxException, MalformedURLException {
-        Pattern p = Pattern.compile("^" + parameterName + "$");
-        return removeQueryParametersFrom(url, p);
-    }
 
     private static URL removeQueryParametersFrom(URL url, Pattern p) throws URISyntaxException, MalformedURLException {
         URIBuilder uriBuilder = new URIBuilder(url.toURI());
