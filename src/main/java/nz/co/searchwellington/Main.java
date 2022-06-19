@@ -35,10 +35,9 @@ import java.io.IOException;
 import java.util.Map;
 import java.util.Properties;
 
-@SpringBootApplication
-@EnableAutoConfiguration(exclude = {DataSourceAutoConfiguration.class})
+@SpringBootApplication(exclude = {DataSourceAutoConfiguration.class})
 @EnableScheduling
-@ComponentScan("nz.co.searchwellington,uk.co.eelpieconsulting.common")
+@ComponentScan({"nz.co.searchwellington","uk.co.eelpieconsulting.common"})
 @Configuration
 public class Main {
 
