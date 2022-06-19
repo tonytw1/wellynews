@@ -18,10 +18,10 @@ import javax.servlet.http.HttpServletRequest;
 @Scope(value = "request")
 public class LocationParameterFilter implements RequestAttributeFilter {
 
-	private static Logger log = Logger.getLogger(LocationParameterFilter.class);
+	private static final Logger log = Logger.getLogger(LocationParameterFilter.class);
 
 	public static final String LOCATION = "location";
-	public static String RADIUS = "radius";
+	public static final String RADIUS = "radius";
 	
 	private static final String LATITUDE = "latitude";	
 	private static final String LONGITUDE = "longitude";

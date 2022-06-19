@@ -16,11 +16,11 @@ public class LocationParameterFilterTest {
 	
 	private static final String VALID_LOCATION = "Petone Station";
 
-	private GeoCodeService geocodeService = Mockito.mock(GeoCodeService.class);
+	private final GeoCodeService geocodeService = Mockito.mock(GeoCodeService.class);
 
-	private Place petoneStation = new Place(VALID_LOCATION, new LatLong(1.1, 2.2), new OsmId(123, OsmType.NODE));
+	private final Place petoneStation = new Place(VALID_LOCATION, new LatLong(1.1, 2.2), new OsmId(123, OsmType.NODE));
 
-	private LocationParameterFilter filter = new LocationParameterFilter(geocodeService, new OsmIdParser());
+	private final LocationParameterFilter filter = new LocationParameterFilter(geocodeService, new OsmIdParser());
 
 	@Test
 	public void canResolveOsmIdAsLocation() {

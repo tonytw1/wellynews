@@ -24,10 +24,10 @@ import com.google.common.collect.Sets;
 @Scope(value = "request", proxyMode = ScopedProxyMode.TARGET_CLASS)
 public class RequestFilter {
 
-  private static Logger log = Logger.getLogger(RequestFilter.class);
+  private final static Logger log = Logger.getLogger(RequestFilter.class);
 
-  private RequestAttributeFilter[] filters;
-  private List<AttributeSetter> attributeSetters;
+  private final RequestAttributeFilter[] filters;
+  private final List<AttributeSetter> attributeSetters;
 
   @Autowired
   public RequestFilter(CombinerPageAttributeSetter combinerPageAttributeSetter,

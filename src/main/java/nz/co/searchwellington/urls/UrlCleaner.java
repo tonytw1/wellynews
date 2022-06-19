@@ -13,7 +13,7 @@ import java.net.URL;
 @Component
 public class UrlCleaner {
 
-    Logger log = Logger.getLogger(UrlCleaner.class);
+    private final Logger log = Logger.getLogger(UrlCleaner.class);
 
     private final CachingShortUrlResolverService shortUrlResolver;
 
