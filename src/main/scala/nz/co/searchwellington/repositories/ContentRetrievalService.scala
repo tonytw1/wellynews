@@ -361,7 +361,6 @@ import scala.concurrent.{ExecutionContext, Future}
   }
 
   def getPublishedResourcesMatchingHostname(publisher: Website, hostname: String, loggedInUser: Option[User])(implicit ec: ExecutionContext): Future[Seq[Resource]] = {
-    // sessionFactory.getCurrentSession.createCriteria(classOf[Newsitem]).add(Restrictions.sqlRestriction(" page like \"%" + stem + "%\" ")).addOrder(Order.asc("name")).list.asInstanceOf[List[Resource]]
     val publisherResourcesToGather = ResourceQuery(`type` = published, hostname = Some(hostname), notPublishedBy = Some(publisher))
     elasticSearchIndexer.getResources(query = publisherResourcesToGather, loggedInUser = loggedInUser).flatMap(i => fetchResourcesByIds(i._1))
   }

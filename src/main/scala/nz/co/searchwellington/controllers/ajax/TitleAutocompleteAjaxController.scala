@@ -9,13 +9,15 @@ import org.apache.commons.text.StringEscapeUtils
 import org.apache.commons.logging.LogFactory
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Controller
-import org.springframework.web.bind.annotation.GetMapping
+import org.springframework.web.bind.annotation.{GetMapping, RequestParam}
 import org.springframework.web.servlet.ModelAndView
 import uk.co.eelpieconsulting.common.views.ViewFactory
 
-import javax.servlet.http.{HttpServletRequest, HttpServletResponse}
+import java.net.URL
+import javax.servlet.http.HttpServletResponse
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.{Await, Future}
+import scala.util.Try
 
 @Controller
 class TitleAutocompleteAjaxController @Autowired()(viewFactory: ViewFactory, loggedInUserFilter: LoggedInUserFilter,
@@ -26,57 +28,55 @@ class TitleAutocompleteAjaxController @Autowired()(viewFactory: ViewFactory, log
   private val log = LogFactory.getLog(classOf[TitleAutocompleteAjaxController])
 
   @GetMapping(Array("/ajax/title-autofill"))
-  def handleRequest(request: HttpServletRequest): ModelAndView = {
+  def handleRequest(@RequestParam url: String): ModelAndView = {
     val loggedInUser = loggedInUserFilter.getLoggedInUser
 
+    val parsedUrl = Option(url).flatMap { urlString =>
+      Try {
+        new URL(urlString)
+      }.toOption
+    }
+
     /* Given the url of a new page fetch it and try to extract the HTML title.
-    This can be used to prefill the title field with submitted a new resource.
-    Restrict to admin users to prevent abuse.
-    */
-    val eventualTitle: Future[Option[String]] = Option(request.getParameter("url")).map { url =>
-      val isAdmin = loggedInUser.exists(_.isAdmin)
-      if (isAdmin) {
+        This can be used to prefill the title field with submitted a new resource.
+        If we can determine the name of the publisher try to strip that from the title as well
+        Restrict to admin users to prevent abuse.
+        */
+    val eventualTitle = parsedUrl.map { url =>
+      if (loggedInUser.exists(_.isAdmin)) {
+        val eventualMaybePageTitle = httpFetcher.httpFetch(url).map { r =>
+          if (r.status == HttpServletResponse.SC_OK) {
+            titleExtractor.extractTitle(r.body).map(StringEscapeUtils.unescapeHtml4)
+          } else {
+            None
+          }
+        }
+        val eventualMaybePublisherName = publisherGuessingService.guessPublisherBasedOnUrl(url.toExternalForm, loggedInUser).map(_.map(_.title))
 
-        try {
-          val uri = java.net.URI.create(url)  // TODO use a Try instead
+        for {
+          maybePageTitle <- eventualMaybePageTitle
+          maybePublisherName <- eventualMaybePublisherName
 
-          httpFetcher.httpFetch(uri.toURL).map { r =>
-            if (r.status == HttpServletResponse.SC_OK) {
-              val maybePageTitle = titleExtractor.extractTitle(r.body)
-
-              val maybeTrimmedTitle = maybePageTitle.map { pageTitle =>
-                // HTML unescape
-                val unescaped = StringEscapeUtils.unescapeHtml4(pageTitle)
-                
-                // Attempt to trim common seo publisher name suffix from title
-                val maybePublisher = Option(request.getParameter("url")).flatMap { url =>
-                  publisherGuessingService.guessPublisherBasedOnUrl(url, loggedInUser)
-                }
-                titleTrimmer.trimTitle(unescaped, maybePublisher)
-              }
-
-              Seq(maybeTrimmedTitle, maybePageTitle).flatten.headOption
-
-            } else {
-              None
+        } yield {
+          maybePageTitle.map { pageTitle =>
+            maybePublisherName.map { publisherName =>
+              // Attempt to trim common seo publisher name suffix from title
+              titleTrimmer.trimTitleSuffix(pageTitle, publisherName)
+            }.getOrElse {
+              pageTitle
             }
           }
-
-        } catch {
-          case _: IllegalArgumentException =>
-            log.warn("Likely invalid url; ignoring: " + url)
-            Future.successful(None)
-          case _: Throwable =>
-            Future.successful(None)
         }
 
       } else {
         Future.successful(None)
       }
-    }.getOrElse(Future.successful(None))
+    }.getOrElse {
+      Future.successful(None)
+    }
 
     val title = Await.result(eventualTitle, TenSeconds).getOrElse("")
-    log.info("Returning title: " + title)
+    log.info(s"Returning title '$title' for page")
     new ModelAndView(viewFactory.getJsonView).addObject("data", title)
   }
 

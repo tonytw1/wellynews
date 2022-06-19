@@ -89,10 +89,14 @@ import scala.jdk.CollectionConverters._
   }
 
   private def getPossibleGatheredResources(publisher: Website, loggedInUser: User): Future[Seq[Resource]] = {
-    val publishersHostname = urlParser.extractHostnameFrom(publisher.page)
-    contentRetrievalService.getPublishedResourcesMatchingHostname(publisher, publishersHostname, Some(loggedInUser)).map { gathered =>
-      log.info("Found  " + gathered.size + " newsitems to gather for publisher: " + publisher.title)
-      gathered
+    urlParser.extractHostnameFrom(publisher.page).map { publishersHostname =>
+      contentRetrievalService.getPublishedResourcesMatchingHostname(publisher,
+        publishersHostname, Some(loggedInUser)).map { gathered =>
+        log.info("Found  " + gathered.size + " newsitems to gather for publisher: " + publisher.title)
+        gathered
+      }
+    }.getOrElse{
+      Future.successful(Seq.empty)
     }
   }
 

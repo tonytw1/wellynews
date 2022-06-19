@@ -1,5 +1,6 @@
 package nz.co.searchwellington.repositories.elasticsearch
 
+import nz.co.searchwellington.ReasonableWaits
 import nz.co.searchwellington.model.{User, Website}
 import nz.co.searchwellington.repositories.ContentRetrievalService
 import nz.co.searchwellington.urls.UrlParser
@@ -7,10 +8,10 @@ import org.junit.jupiter.api.Assertions._
 import org.junit.jupiter.api.Test
 import org.mockito.Mockito.{mock, when}
 
-import scala.concurrent.Future
+import scala.concurrent.{Await, Future}
 import scala.concurrent.ExecutionContext.Implicits.global
 
-class PublisherGuessingServiceTest {
+class PublisherGuessingServiceTest extends ReasonableWaits {
 
   private val contentRetrievalService = mock(classOf[ContentRetrievalService])
   private val publisherGuessingService = new PublisherGuessingService(contentRetrievalService, new UrlParser)
@@ -21,7 +22,9 @@ class PublisherGuessingServiceTest {
   def shouldNotMatchIfNoMatchingPublishers(): Unit = {
     when(contentRetrievalService.getWebsitesByHostname("www.spammer.com", Some(adminUser))).thenReturn(Future.successful(Seq.empty))
 
-    assertEquals(None, publisherGuessingService.guessPublisherBasedOnUrl("http://www.spammer.com", Some(adminUser)))
+    val guess = Await.result(publisherGuessingService.guessPublisherBasedOnUrl("http://www.spammer.com", Some(adminUser)), TenSeconds)
+
+    assertEquals(None, guess)
   }
 
   @Test
@@ -33,7 +36,9 @@ class PublisherGuessingServiceTest {
     val possiblePublishers = Seq(golfCourseSite, heritageInventory, wccMainSite)
     when(contentRetrievalService.getWebsitesByHostname("www.wellington.govt.nz", Some(adminUser))).thenReturn(Future.successful(possiblePublishers))
 
-    assertEquals(Some(wccMainSite), publisherGuessingService.guessPublisherBasedOnUrl("http://www.wellington.govt.nz/news/display-item.php?id=3542", Some(adminUser)))
+    val guess = Await.result(publisherGuessingService.guessPublisherBasedOnUrl("http://www.wellington.govt.nz/news/display-item.php?id=3542", Some(adminUser)), TenSeconds)
+
+    assertEquals(Some(wccMainSite), guess)
   }
 
   @Test
@@ -42,7 +47,9 @@ class PublisherGuessingServiceTest {
     val possiblePublishers = Seq(wellingtonista)
     when(contentRetrievalService.getWebsitesByHostname("www.wellingtonista.com", Some(adminUser))).thenReturn(Future.successful(possiblePublishers))
 
-    assertEquals(Some(wellingtonista), publisherGuessingService.guessPublisherBasedOnUrl("http://www.wellingtonista.com/a-week-of-it", Some(adminUser)))
+    val guess = Await.result(publisherGuessingService.guessPublisherBasedOnUrl("http://www.wellingtonista.com/a-week-of-it", Some(adminUser)), TenSeconds)
+
+    assertEquals(Some(wellingtonista), guess)
   }
 
   @Test
@@ -53,7 +60,9 @@ class PublisherGuessingServiceTest {
     val possiblePublishers = Seq(hostedOne, hostedTwo)
     when(contentRetrievalService.getWebsitesByHostname("homepages.ihug.co.nz", Some(adminUser))).thenReturn(Future.successful(possiblePublishers))
 
-    assertEquals(None, publisherGuessingService.guessPublisherBasedOnUrl("http://homepages.ihug.co.nz/~spammer/", Some(adminUser)))
+    val guess = Await.result(publisherGuessingService.guessPublisherBasedOnUrl("http://homepages.ihug.co.nz/~spammer/", Some(adminUser)), TenSeconds)
+
+    assertEquals(None, guess)
   }
 
 }

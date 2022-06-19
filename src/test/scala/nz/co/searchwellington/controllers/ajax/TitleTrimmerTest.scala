@@ -11,7 +11,7 @@ class TitleTrimmerTest {
     val publisher = Website(title = "Upper Hutt City Football")
     val pageTitle = "Stu Jacobs joins Upper Hutt City Football - Upper Hutt City Football"
 
-    val trimmed = new TitleTrimmer().trimTitle(pageTitle, Some(publisher))
+    val trimmed = new TitleTrimmer().trimTitleSuffix(pageTitle, publisher.title)
 
     assertEquals("Stu Jacobs joins Upper Hutt City Football", trimmed)
   }
