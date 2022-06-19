@@ -1,6 +1,5 @@
 package nz.co.searchwellington.controllers.ajax
 
-import nz.co.searchwellington.model.Website
 import org.springframework.stereotype.Component
 
 @Component
