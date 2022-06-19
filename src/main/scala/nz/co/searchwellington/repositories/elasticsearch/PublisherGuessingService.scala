@@ -1,13 +1,13 @@
 package nz.co.searchwellington.repositories.elasticsearch
 
 import nz.co.searchwellington.ReasonableWaits
-import nz.co.searchwellington.model.{Resource, User, Website}
+import nz.co.searchwellington.model.{User, Website}
 import nz.co.searchwellington.repositories.ContentRetrievalService
 import nz.co.searchwellington.urls.UrlParser
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
 
-import scala.concurrent.{Await, ExecutionContext, Future}
+import scala.concurrent.{ExecutionContext, Future}
 
 @Component class PublisherGuessingService @Autowired()(contentRetrievalService: ContentRetrievalService, var urlParser: UrlParser) extends ReasonableWaits {
 
