@@ -11,7 +11,10 @@
 
 <h2>$heading</h2>
 
-<p>The $siteInformation.areaname newslog is available as an <a href="https://en.wikipedia.org/wiki/RSS">RSS feed</a>.</p>
+<p>The $siteInformation.areaname newslog is available as an <a href="https://en.wikipedia.org/wiki/RSS">RSS feed</a>
+(Find out <a href="https://aboutfeeds.com/">about feeds</a>)
+</p>
+
 <p>Add the following link to your feed reader to subscribe:</p>
 <ul>
 	<li>#parse("includes/rss_icon.vm") <code>$rss_url</code></li>
