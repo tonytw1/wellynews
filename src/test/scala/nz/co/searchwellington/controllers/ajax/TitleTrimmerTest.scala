@@ -8,12 +8,13 @@ class TitleTrimmerTest {
 
   @Test
   def shouldTrimTrailingPublisherNameFromTitle(): Unit = {
-    val publisher = Website(title = "Upper Hutt City Football")
-    val pageTitle = "Stu Jacobs joins Upper Hutt City Football - Upper Hutt City Football"
+    val trimmer = new TitleTrimmer()
 
-    val trimmed = new TitleTrimmer().trimTitleSuffix(pageTitle, publisher.title)
-
+    val trimmed = trimmer.trimTitleSuffix("Stu Jacobs joins Upper Hutt City Football - Upper Hutt City Football", "Upper Hutt City Football")
     assertEquals("Stu Jacobs joins Upper Hutt City Football", trimmed)
+
+    val trimmedMdash = trimmer.trimTitleSuffix("Lōemis Art Show — Lōemis", "Lōemis")
+    assertEquals("Lōemis Art Show", trimmedMdash)
   }
 
 }

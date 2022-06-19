@@ -6,7 +6,7 @@ import org.springframework.stereotype.Component
 @Component
 class TitleTrimmer {
 
-  private val possibleSeparators = Set("-", "|")
+  private val possibleSeparators = Set("-", "|", "—")
 
   def trimTitleSuffix(title: String, suffix: String): String = {
       val possiblePublisherNameSuffixes = possibleSeparators.map { _ + " " + suffix}
