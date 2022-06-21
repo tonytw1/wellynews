@@ -21,7 +21,6 @@ import org.springframework.stereotype.Component
 import reactivemongo.api.bson.BSONObjectID
 
 import scala.concurrent.{Await, ExecutionContext, Future}
-import scala.util.Try
 
 @Component
 class ElasticSearchIndexer @Autowired()(val showBrokenDecisionService: ShowBrokenDecisionService,
@@ -196,14 +195,11 @@ class ElasticSearchIndexer @Autowired()(val showBrokenDecisionService: ShowBroke
     val request = order(search(Index) query composeQueryFor(query, loggedInUser)) start query.startIndex limit query.maxItems
 
     val start = DateTime.now()
-    val eventualTuple: Future[(Seq[BSONObjectID], Long)] = client.execute(request).map { r =>
-      val hits = r.result.hits.hits
-      val ids = hits.map(h => BSONObjectID.parse(h.id).get)
-      val total = r.result.totalHits
-      (ids, total)
+    val eventualTuples = client.execute(request).map { r =>
+      val ids  = r.result.hits.hits.toSeq.flatMap( h => BSONObjectID.parse(h.id).toOption)
+      (ids, r.result.totalHits)
     }
-
-    eventualTuple.map { r =>
+    eventualTuples.map { r =>
       val duration = new org.joda.time.Duration(start, DateTime.now)
       log.debug("Elastic query " + query + " took: " + duration.getMillis + " ms")
       r
