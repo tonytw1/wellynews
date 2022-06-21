@@ -105,11 +105,11 @@ class ElasticSearchIndexer @Autowired()(val showBrokenDecisionService: ShowBroke
     client
   }
 
-  def updateMultipleContentItems(resources: Seq[(Resource, Seq[String], Seq[String], Option[Geocode])])(implicit ec: ExecutionContext): Future[Response[BulkResponse]] = {
+  def updateMultipleContentItems(resources: Seq[(Resource, Seq[String], Seq[String], Option[Geocode], Option[String])])(implicit ec: ExecutionContext): Future[Response[BulkResponse]] = {
     log.debug("Index batch of size: " + resources.size)
 
     val indexDefinitions = resources.map {
-      case (resource: Resource, tags: Seq[String], handTags: Seq[String], geocode: Option[Geocode]) =>
+      case (resource: Resource, tags: Seq[String], handTags: Seq[String], geocode: Option[Geocode], hostname: Option[String]) =>
         val publisher = resource match {
           case p: PublishedResource => p.getPublisher
           case _ => None
@@ -122,12 +122,6 @@ class ElasticSearchIndexer @Autowired()(val showBrokenDecisionService: ShowBroke
         val feedLatestItemDate = resource match {
           case f: Feed => f.latestItemDate
           case _ => None
-        }
-
-        val hostname = Try { // TODO make the official url parser copy of this
-          new java.net.URL(resource.page)
-        }.toOption.map { url =>
-          url.getHost
         }
 
         val accepted = resource match {

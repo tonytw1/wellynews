@@ -7,6 +7,7 @@ import nz.co.searchwellington.repositories.HandTaggingDAO
 import nz.co.searchwellington.repositories.elasticsearch.ElasticSearchIndexerTest.indexTagsService
 import nz.co.searchwellington.repositories.mongo.MongoRepository
 import nz.co.searchwellington.tagging.{IndexTagsService, TaggingReturnsOfficerService}
+import nz.co.searchwellington.urls.UrlParser
 import org.joda.time.{DateTime, Interval}
 import org.junit.jupiter.api.Assertions.{assertFalse, assertTrue}
 import org.junit.jupiter.api.Test
@@ -269,7 +270,7 @@ class ElasticSearchIndexerTest extends ReasonableWaits {
     assertFalse(barResources.contains(fooWebsite))
   }
 
-  private def indexResources(resources: Seq[Resource]) = {
+  private def indexResources(resources: Seq[Resource]) = {  // TODO push to real code
     def indexWithHandTaggings(resource: Resource) = {
       val eventualIndexTags = indexTagsService.getIndexTagsForResource(resource)
       val eventualGeocode = indexTagsService.getIndexGeocodeForResource(resource)
@@ -278,7 +279,7 @@ class ElasticSearchIndexerTest extends ReasonableWaits {
         geocode <- eventualGeocode
       } yield {
         val handTags = resource.resource_tags.map(_.tag_id.stringify)
-        (resource, indexTags.map(_._id.stringify), handTags, geocode)
+        (resource, indexTags.map(_._id.stringify), handTags, geocode, new UrlParser().extractHostnameFrom(resource.page))
       }
       Await.result(eventuallyIndexed, TenSeconds)
     }

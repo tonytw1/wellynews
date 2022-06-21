@@ -4,6 +4,7 @@ import nz.co.searchwellington.ReasonableWaits
 import nz.co.searchwellington.model.{Geocode, Resource}
 import nz.co.searchwellington.repositories.mongo.MongoRepository
 import nz.co.searchwellington.tagging.IndexTagsService
+import nz.co.searchwellington.urls.UrlParser
 import org.apache.commons.logging.LogFactory
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
@@ -13,7 +14,8 @@ import scala.concurrent.{ExecutionContext, Future}
 
 @Component class ElasticSearchIndexRebuildService @Autowired()(mongoRepository: MongoRepository,
                                                                elasticSearchIndexer: ElasticSearchIndexer,
-                                                               indexTagsService: IndexTagsService) extends ReasonableWaits {
+                                                               indexTagsService: IndexTagsService,
+                                                               urlParser: UrlParser) extends ReasonableWaits {
 
   private val log = LogFactory.getLog(classOf[ElasticSearchIndexRebuildService])
 
@@ -64,7 +66,8 @@ import scala.concurrent.{ExecutionContext, Future}
     }
   }
 
-  private def toIndexable(resource: Resource)(implicit ec: ExecutionContext): Future[(Resource, Seq[String], Seq[String], Option[Geocode])] = {
+  private def toIndexable(resource: Resource)(implicit ec: ExecutionContext): Future[(Resource, Seq[String], Seq[String],
+    Option[Geocode], Option[String])] = {
     val eventualIndexTags = indexTagsService.getIndexTagsForResource(resource)
     val eventualGeocode = indexTagsService.getIndexGeocodeForResource(resource)
     for {
@@ -73,7 +76,8 @@ import scala.concurrent.{ExecutionContext, Future}
     } yield {
       val indexTagIds = indexTags.map(_._id.stringify)
       val handTagIds = resource.resource_tags.map(_.tag_id.stringify).distinct
-      (resource, indexTagIds, handTagIds, geocode)
+      val hostname = urlParser.extractHostnameFrom(resource.page)
+      (resource, indexTagIds, handTagIds, geocode, hostname)
     }
   }
 
