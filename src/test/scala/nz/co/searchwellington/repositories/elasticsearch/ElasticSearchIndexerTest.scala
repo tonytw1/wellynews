@@ -4,7 +4,6 @@ import nz.co.searchwellington.ReasonableWaits
 import nz.co.searchwellington.controllers.ShowBrokenDecisionService
 import nz.co.searchwellington.model._
 import nz.co.searchwellington.repositories.HandTaggingDAO
-import nz.co.searchwellington.repositories.elasticsearch.ElasticSearchIndexerTest.indexTagsService
 import nz.co.searchwellington.repositories.mongo.MongoRepository
 import nz.co.searchwellington.tagging.{IndexTagsService, TaggingReturnsOfficerService}
 import nz.co.searchwellington.urls.UrlParser
@@ -35,10 +34,12 @@ object ElasticSearchIndexerTest {
     ElasticSearchIndexerTest.databaseAndIndexName)
 }
 
-class ElasticSearchIndexerTest extends ReasonableWaits {
+class ElasticSearchIndexerTest extends IndexableResource with ReasonableWaits {
 
   val mongoRepository: MongoRepository = ElasticSearchIndexerTest.mongoRepository
   val elasticSearchIndexer: ElasticSearchIndexer = ElasticSearchIndexerTest.elasticSearchIndexer
+  val indexTagsService: IndexTagsService = ElasticSearchIndexerTest.indexTagsService
+  val urlParser = new UrlParser
 
   private val loggedInUser = User(admin = true)
   private val allNewsitems = ResourceQuery(`type` = Some(Set("N")))
@@ -270,21 +271,10 @@ class ElasticSearchIndexerTest extends ReasonableWaits {
     assertFalse(barResources.contains(fooWebsite))
   }
 
-  private def indexResources(resources: Seq[Resource]) = {  // TODO push to real code
-    def indexWithHandTaggings(resource: Resource) = {
-      val eventualIndexTags = indexTagsService.getIndexTagsForResource(resource)
-      val eventualGeocode = indexTagsService.getIndexGeocodeForResource(resource)
-      val eventuallyIndexed = for {
-        indexTags <- eventualIndexTags
-        geocode <- eventualGeocode
-      } yield {
-        val handTags = resource.resource_tags.map(_.tag_id.stringify)
-        (resource, indexTags.map(_._id.stringify), handTags, geocode, new UrlParser().extractHostnameFrom(resource.page))
-      }
-      Await.result(eventuallyIndexed, TenSeconds)
-    }
-
-    Await.result(elasticSearchIndexer.updateMultipleContentItems(resources.map(indexWithHandTaggings)), TenSeconds)
+  private def indexResources(resources: Seq[Resource]) = {
+    Await.result(Future.sequence(resources.map(toIndexable)).map { i =>
+      elasticSearchIndexer.updateMultipleContentItems(i)
+    }, TenSeconds)
   }
 
   private def queryForResources(query: ResourceQuery, user: User = loggedInUser): Seq[Resource] = {

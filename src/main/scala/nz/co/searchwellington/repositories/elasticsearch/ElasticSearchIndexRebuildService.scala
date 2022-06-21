@@ -1,7 +1,7 @@
 package nz.co.searchwellington.repositories.elasticsearch
 
 import nz.co.searchwellington.ReasonableWaits
-import nz.co.searchwellington.model.{Geocode, Resource}
+import nz.co.searchwellington.model.Resource
 import nz.co.searchwellington.repositories.mongo.MongoRepository
 import nz.co.searchwellington.tagging.IndexTagsService
 import nz.co.searchwellington.urls.UrlParser
@@ -14,8 +14,9 @@ import scala.concurrent.{ExecutionContext, Future}
 
 @Component class ElasticSearchIndexRebuildService @Autowired()(mongoRepository: MongoRepository,
                                                                elasticSearchIndexer: ElasticSearchIndexer,
-                                                               indexTagsService: IndexTagsService,
-                                                               urlParser: UrlParser) extends ReasonableWaits {
+                                                               val indexTagsService: IndexTagsService,
+                                                               val urlParser: UrlParser) extends IndexableResource
+  with ReasonableWaits {
 
   private val log = LogFactory.getLog(classOf[ElasticSearchIndexRebuildService])
 
@@ -63,21 +64,6 @@ import scala.concurrent.{ExecutionContext, Future}
 
     }.getOrElse {
       Future.successful(i)
-    }
-  }
-
-  private def toIndexable(resource: Resource)(implicit ec: ExecutionContext): Future[(Resource, Seq[String], Seq[String],
-    Option[Geocode], Option[String])] = {
-    val eventualIndexTags = indexTagsService.getIndexTagsForResource(resource)
-    val eventualGeocode = indexTagsService.getIndexGeocodeForResource(resource)
-    for {
-      indexTags <- eventualIndexTags
-      geocode <- eventualGeocode
-    } yield {
-      val indexTagIds = indexTags.map(_._id.stringify)
-      val handTagIds = resource.resource_tags.map(_.tag_id.stringify).distinct
-      val hostname = urlParser.extractHostnameFrom(resource.page)
-      (resource, indexTagIds, handTagIds, geocode, hostname)
     }
   }
 
