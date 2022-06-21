@@ -11,8 +11,7 @@ trait IndexableResource {
   def indexTagsService: IndexTagsService
   def urlParser: UrlParser
 
-  def toIndexable(resource: Resource)(implicit ec: ExecutionContext): Future[(Resource, Seq[String], Seq[String],
-    Option[Geocode], Option[String])] = {
+  def toIndexable(resource: Resource)(implicit ec: ExecutionContext): Future[IndexResource] = {
     val eventualIndexTags = indexTagsService.getIndexTagsForResource(resource)
     val eventualGeocode = indexTagsService.getIndexGeocodeForResource(resource)
     for {
@@ -22,8 +21,10 @@ trait IndexableResource {
       val indexTagIds = indexTags.map(_._id.stringify)
       val handTagIds = resource.resource_tags.map(_.tag_id.stringify).distinct
       val hostname = urlParser.extractHostnameFrom(resource.page)
-      (resource, indexTagIds, handTagIds, geocode, hostname)
+      IndexResource(resource, indexTagIds, handTagIds, geocode, hostname)
     }
   }
-
 }
+
+case class IndexResource(resource: Resource, indexTagIds: Seq[String], handTagIds: Seq[String],
+                         geocode: Option[Geocode], hostname: Option[String])

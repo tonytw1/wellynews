@@ -105,54 +105,53 @@ class ElasticSearchIndexer @Autowired()(val showBrokenDecisionService: ShowBroke
     client
   }
 
-  def updateMultipleContentItems(resources: Seq[(Resource, Seq[String], Seq[String], Option[Geocode], Option[String])])(implicit ec: ExecutionContext): Future[Response[BulkResponse]] = {
+  def updateMultipleContentItems(resources: Seq[IndexResource])(implicit ec: ExecutionContext): Future[Response[BulkResponse]] = {
     log.debug("Index batch of size: " + resources.size)
+    val indexDefinitions = resources.map { indexResource =>
+      val resource = indexResource.resource
+      val publisher = resource match {
+        case p: PublishedResource => p.getPublisher
+        case _ => None
+      }
 
-    val indexDefinitions = resources.map {
-      case (resource: Resource, tags: Seq[String], handTags: Seq[String], geocode: Option[Geocode], hostname: Option[String]) =>
-        val publisher = resource match {
-          case p: PublishedResource => p.getPublisher
-          case _ => None
-        }
+      val feedAcceptancePolicy = resource match {
+        case f: Feed => Some(f.acceptance)
+        case _ => None
+      }
+      val feedLatestItemDate = resource match {
+        case f: Feed => f.latestItemDate
+        case _ => None
+      }
 
-        val feedAcceptancePolicy = resource match {
-          case f: Feed => Some(f.acceptance)
-          case _ => None
-        }
-        val feedLatestItemDate = resource match {
-          case f: Feed => f.latestItemDate
-          case _ => None
-        }
+      val accepted = resource match {
+        case n: Newsitem => n.accepted
+        case _ => None
+      }
 
-        val accepted = resource match {
-          case n: Newsitem => n.accepted
-          case _ => None
-        }
+      val latLong = indexResource.geocode.flatMap(_.latLong)
 
-        val latLong = geocode.flatMap(_.latLong)
+      val fields = Seq(
+        Some(Type -> resource.`type`),
+        Some(Title -> resource.title),
+        Some(TitleSort -> resource.title),
+        Some(HttpStatus -> resource.http_status.toString),
+        resource.description.map(d => Description -> d),
+        resource.date.map(d => Date -> new DateTime(d)),
+        Some(Tags, indexResource.indexTagIds),
+        Some(HandTags, indexResource.handTagIds),
+        publisher.map(p => Publisher -> p.stringify),
+        Some(Held -> resource.held),
+        resource.owner.map(o => Owner -> o.stringify),
+        latLong.map(ll => LatLong -> Map("lat" -> ll.getLatitude, "lon" -> ll.getLongitude)),
+        Some(TaggingUsers, resource.resource_tags.map(_.user_id.stringify)),
+        feedAcceptancePolicy.map(ap => FeedAcceptancePolicy -> ap.toString),
+        feedLatestItemDate.map(fid => FeedLatestItemDate -> new DateTime(fid)),
+        resource.last_changed.map(lc => LastChanged -> new DateTime(lc)),
+        indexResource.hostname.map(u => Hostname -> u),
+        accepted.map(a => AcceptedDate -> new DateTime(a))
+      )
 
-        val fields = Seq(
-          Some(Type -> resource.`type`),
-          Some(Title -> resource.title),
-          Some(TitleSort -> resource.title),
-          Some(HttpStatus -> resource.http_status.toString),
-          resource.description.map(d => Description -> d),
-          resource.date.map(d => Date -> new DateTime(d)),
-          Some(Tags, tags),
-          Some(HandTags, handTags),
-          publisher.map(p => Publisher -> p.stringify),
-          Some(Held -> resource.held),
-          resource.owner.map(o => Owner -> o.stringify),
-          latLong.map(ll => LatLong -> Map("lat" -> ll.getLatitude, "lon" -> ll.getLongitude)),
-          Some(TaggingUsers, resource.resource_tags.map(_.user_id.stringify)),
-          feedAcceptancePolicy.map(ap => FeedAcceptancePolicy -> ap.toString),
-          feedLatestItemDate.map(fid => FeedLatestItemDate -> new DateTime(fid)),
-          resource.last_changed.map(lc => LastChanged -> new DateTime(lc)),
-          hostname.map(u => Hostname -> u),
-          accepted.map(a => AcceptedDate -> new DateTime(a))
-        )
-
-        indexInto(Index).fields(fields.flatten) id resource._id.stringify
+      indexInto(Index).fields(fields.flatten) id resource._id.stringify
     }
 
     client.execute(bulk(indexDefinitions))
