@@ -22,6 +22,15 @@ trait EndUserInputs extends StringWrangling {
     }.toEither
   }
 
+  def trimToOption(i: String): Option[String] = {
+    // Given a non null string check that it's not just blank space
+    if (i.trim.nonEmpty) {
+      Some(i.trim)
+    } else {
+      None
+    }
+  }
+
   def processTitle(t: String): String = {
     lowerCappedSentence(t).trim
   }

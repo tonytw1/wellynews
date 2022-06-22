@@ -20,15 +20,6 @@ trait EnsuredSubmitter {
     !owner.exists(_.isAdmin)
   }
 
-  def trimToOption(i: String): Option[String] = { // TODO push to somewhere more sensible
-    // Given a non null string check that it's not just blank space
-    if (i.trim.nonEmpty) {
-      Some(i.trim)
-    } else {
-      None
-    }
-  }
-
   def setSignedInUser(request: HttpServletRequest, user: User): Unit = {
     request.getSession.setAttribute("user", user)
   }

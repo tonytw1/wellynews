@@ -19,7 +19,7 @@ import org.springframework.web.servlet.view.RedirectView
 
 import javax.servlet.http.HttpServletRequest
 import javax.validation.Valid
-import scala.concurrent.Await
+import scala.concurrent.{Await, Future}
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.jdk.CollectionConverters._
 
@@ -68,23 +68,22 @@ class NewFeedController @Autowired()(contentUpdateService: ContentUpdateService,
       if (!result.hasErrors) {
         val url = cleanUrl(newFeed.getUrl).toOption.get.toExternalForm  // TODO error handling
 
-        val publisherName = if (newFeed.getPublisher.trim.nonEmpty) {
-          Some(newFeed.getPublisher.trim)
-        } else {
-          None
+
+        val eventualMaybePublisher = trimToOption(newFeed.getPublisher).map { publisherName =>
+          mongoRepository.getWebsiteByName(publisherName)
+        }.getOrElse {
+          Future.successful(None)
         }
-        val publisher = publisherName.flatMap { publisherName =>
-          Await.result(mongoRepository.getWebsiteByName(publisherName), TenSeconds)
-        }
+        val maybePublisher = Await.result(eventualMaybePublisher, TenSeconds)
 
         val f = Feed(title = processTitle(newFeed.getTitle),
           page = url,
-          publisher = publisher.map(_._id),
+          publisher = maybePublisher.map(_._id),
           acceptance = newFeed.getAcceptancePolicy,
           date = Some(DateTime.now.toDate),
         )
 
-        val urlWords = urlWordsGenerator.makeUrlWordsFor(f, publisher)
+        val urlWords = urlWordsGenerator.makeUrlWordsFor(f, maybePublisher)
         val feed = f.copy(url_words = Some(urlWords))
         val eventualMaybeExistingFeed = mongoRepository.getFeedByUrlwords(urlWords)
 
