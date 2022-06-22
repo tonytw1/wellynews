@@ -13,15 +13,15 @@ trait CommonModelObjectsService extends ReasonableWaits {
   def contentRetrievalService: ContentRetrievalService
 
   def commonLocal()(implicit ec: ExecutionContext): Future[ModelMap] = {
-    val mv = new ModelMap()
     val eventualTopLevelTags = contentRetrievalService.getTopLevelTags
     val eventualFeaturedTags = contentRetrievalService.getFeaturedTags
     for {
       topLevelTags <- eventualTopLevelTags
       featuredTags <- eventualFeaturedTags
     } yield {
-      mv.addAttribute("top_level_tags",topLevelTags.asJava)
-      mv.addAttribute("featuredTags", featuredTags.asJava)
+      new ModelMap().
+        addAttribute("top_level_tags", topLevelTags.asJava).
+        addAttribute("featuredTags", featuredTags.asJava)
     }
   }
 
