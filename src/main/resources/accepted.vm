@@ -32,7 +32,7 @@
         #set ($first = 1)
         #foreach($acceptedDay in $acceptedDays)
              <li class="archive_link">
-                $acceptedDay.day
+                $dateFormatter.formatLocalDate($acceptedDay.day)
                 #if ($first == 1)
                     ($acceptedDay.count accepted)
                     #set ($first = 0)
