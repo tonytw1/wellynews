@@ -1,7 +1,9 @@
 package nz.co.searchwellington;
 
 import com.google.common.collect.Maps;
-import nz.co.searchwellington.commentfeeds.detectors.*;
+import nz.co.searchwellington.commentfeeds.detectors.CommentFeedDetector;
+import nz.co.searchwellington.commentfeeds.detectors.DateRegexCommentFeedDetector;
+import nz.co.searchwellington.commentfeeds.detectors.GenericCommentFeedDetector;
 import nz.co.searchwellington.controllers.RssUrlBuilder;
 import nz.co.searchwellington.controllers.admin.AdminUrlBuilder;
 import nz.co.searchwellington.filters.RequestObjectLoadingFilter;
@@ -10,6 +12,7 @@ import nz.co.searchwellington.permissions.EditPermissionService;
 import nz.co.searchwellington.urls.UrlBuilder;
 import nz.co.searchwellington.utils.EscapeTools;
 import nz.co.searchwellington.views.ColumnSplitter;
+import nz.co.searchwellington.views.DateFormatter;
 import nz.co.searchwellington.views.VelocityViewResolver;
 import org.apache.log4j.Logger;
 import org.apache.velocity.app.Velocity;
@@ -17,19 +20,16 @@ import org.apache.velocity.spring.VelocityEngineFactoryBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.SpringApplication;
-import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Primary;
 import org.springframework.core.task.TaskExecutor;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import uk.co.eelpieconsulting.common.caching.MemcachedCache;
-import uk.co.eelpieconsulting.common.dates.DateFormatter;
 
 import java.io.IOException;
 import java.util.Map;
@@ -101,11 +101,6 @@ public class Main {
     @Bean
     public MemcachedCache memcachedCache(@Value("${memcached.urls}") String memcacheUrl) throws IOException {
         return new MemcachedCache(memcacheUrl);
-    }
-
-    @Bean
-    public DateFormatter dateFormatter() {
-        return new uk.co.eelpieconsulting.common.dates.DateFormatter("Europe/London");
     }
 
     @Bean
