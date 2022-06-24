@@ -4,7 +4,7 @@
 <p>Relevent newsitems are geotagged with location information.</p>
 
 <p>
-#parse("includes/geotag_icon.vm") Geotagged newsitems are indicated throughout the site using the geotag icon.
+#parse("includes/geotag_icon.vm") Geotagged newsitems are indicated using the geotag icon.
 </p>
 
 <p>Geotags are also export in RSS feeds using the <a href="https://en.wikipedia.org/wiki/GeoRSS">GeoRSS</a> standard. A GeoRSS tagged feed item has this format:</p>
