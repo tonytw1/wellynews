@@ -51,7 +51,7 @@
                     <div class="alert">$error</div>
                 #end
 
-               #parse("includes/location_picker.vm")
+                #parse("includes/location_picker.vm")
 
                 #springBind("formObject.tags")
                 <label for="${status.expression}">Tags:</label>
@@ -60,6 +60,9 @@
                         <option value="$tag.id" #if($status.actualValue.contains($tag.getBSONId())) SELECTED #end>$tag.displayName
                     #end
                 </select>
+
+                <input id="tagName" name="tagName" class="title" value="" />
+
                 <br />
                 #foreach($error in $status.errorMessages)
                     <div class="alert">$error</div>

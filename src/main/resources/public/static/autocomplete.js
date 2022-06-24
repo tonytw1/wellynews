@@ -1,8 +1,7 @@
 $(function() {  	
 
 	if ($('#tagName').length) {
-		$("#tagName").autocomplete({
-			source: "http://wellington.gen.nz/ajax/tags"});
+		$("#tagName").autocomplete({source: "/ajax/tags"});
 	}
 	
 	if ($('#publisher').length) {
