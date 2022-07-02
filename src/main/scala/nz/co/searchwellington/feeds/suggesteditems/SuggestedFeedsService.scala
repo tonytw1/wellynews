@@ -12,7 +12,7 @@ import org.springframework.stereotype.Component
 import scala.concurrent.{ExecutionContext, Future}
 
 @Component
-class InboxFeedsService @Autowired()(mongoRepository: MongoRepository, whakaokoService: WhakaokoService, frontendResourceMapper: FrontendResourceMapper)
+class SuggestedFeedsService @Autowired()(mongoRepository: MongoRepository, whakaokoService: WhakaokoService, frontendResourceMapper: FrontendResourceMapper)
   extends ReasonableWaits {
 
   def getSuggestedFeedsOrderedByLatestFeeditemDate()(implicit ec: ExecutionContext): Future[Seq[FrontendFeed]] = {

@@ -2,7 +2,7 @@ package nz.co.searchwellington.controllers.models.helpers
 
 import nz.co.searchwellington.ReasonableWaits
 import nz.co.searchwellington.controllers.RssUrlBuilder
-import nz.co.searchwellington.feeds.suggesteditems.{InboxFeedsService, SuggestedFeeditemsService}
+import nz.co.searchwellington.feeds.suggesteditems.{SuggestedFeedsService, SuggestedFeeditemsService}
 import nz.co.searchwellington.filters.RequestPath
 import nz.co.searchwellington.model.User
 import nz.co.searchwellington.repositories.ContentRetrievalService
@@ -18,12 +18,10 @@ import scala.concurrent.Future
 import scala.jdk.CollectionConverters._
 
 @Component class SuggestionsModelBuilder @Autowired()(suggestedFeeditemsService: SuggestedFeeditemsService,
-                                                      rssUrlBuilder: RssUrlBuilder,
-                                                      urlBuilder: UrlBuilder,
+                                                      suggestedFeedsService: SuggestedFeedsService,
+                                                      rssUrlBuilder: RssUrlBuilder, urlBuilder: UrlBuilder,
                                                       val contentRetrievalService: ContentRetrievalService,
-                                                      commonAttributesModelBuilder: CommonAttributesModelBuilder,
-                                                      inboxFeedsService: InboxFeedsService) extends ModelBuilder
-  with ReasonableWaits {
+                                                      commonAttributesModelBuilder: CommonAttributesModelBuilder) extends ModelBuilder with ReasonableWaits {
 
   private val MAX_SUGGESTIONS = 50
 
@@ -47,7 +45,7 @@ import scala.jdk.CollectionConverters._
 
   def populateExtraModelContent(request: HttpServletRequest, loggedInUser: Option[User]): Future[ModelMap] = {
     for {
-      inboxFeeds <- inboxFeedsService.getSuggestedFeedsOrderedByLatestFeeditemDate()
+      inboxFeeds <- suggestedFeedsService.getSuggestedFeedsOrderedByLatestFeeditemDate()
     } yield {
       new ModelMap().addAttribute("righthand_heading", "Suggest only feeds")
         .addAttribute("righthand_description", "Newsitems from these feeds are not automatically accepted.")
