@@ -64,8 +64,8 @@ class GeotaggedModelBuilderTest extends ReasonableWaits with ContentFields {
 
     val modelAndView = Await.result(modelBuilder.populateContentModel(request), TenSeconds).get
 
-    assertEquals(1, modelAndView.getModel.get("page"))
-    assertEquals(TOTAL_GEOTAGGED_COUNT, modelAndView.getModel.get("main_content_total"))
+    assertEquals(1, modelAndView.get("page"))
+    assertEquals(TOTAL_GEOTAGGED_COUNT, modelAndView.get("main_content_total"))
   }
 
   @Test
@@ -79,11 +79,11 @@ class GeotaggedModelBuilderTest extends ReasonableWaits with ContentFields {
 
     val modelAndView = Await.result(modelBuilder.populateContentModel(request), TenSeconds).get
 
-    assertEquals(newsitemsNearPetoneStationFirstPage.asJava, modelAndView.getModel.get(MAIN_CONTENT))
+    assertEquals(newsitemsNearPetoneStationFirstPage.asJava, modelAndView.get(MAIN_CONTENT))
 
     // User selected location should be available to the view
-    assertEquals("Petone Station", modelAndView.getModel.get("location").asInstanceOf[Place].getAddress)
-    assertEquals(new OsmId(123, OsmType.NODE), modelAndView.getModel.get("location").asInstanceOf[Place].getOsmId)
+    assertEquals("Petone Station", modelAndView.get("location").asInstanceOf[Place].getAddress)
+    assertEquals(new OsmId(123, OsmType.NODE), modelAndView.get("location").asInstanceOf[Place].getOsmId)
   }
 
   @Test
@@ -98,7 +98,7 @@ class GeotaggedModelBuilderTest extends ReasonableWaits with ContentFields {
 
     val modelAndView = Await.result(modelBuilder.populateContentModel(request), TenSeconds).get
 
-    assertEquals(newsitemsNearPetoneStationFirstPage.asJava, modelAndView.getModel.get(MAIN_CONTENT))
+    assertEquals(newsitemsNearPetoneStationFirstPage.asJava, modelAndView.get(MAIN_CONTENT))
   }
 
   @Test
@@ -112,8 +112,8 @@ class GeotaggedModelBuilderTest extends ReasonableWaits with ContentFields {
 
     val modelAndView = Await.result(modelBuilder.populateContentModel(request), TenSeconds).get
 
-    assertEquals(1, modelAndView.getModel.get("page"))
-    assertEquals(LOCATION_RESULTS_COUNT, modelAndView.getModel.get("main_content_total"))
+    assertEquals(1, modelAndView.get("page"))
+    assertEquals(LOCATION_RESULTS_COUNT, modelAndView.get("main_content_total"))
   }
 
   @Test
@@ -128,8 +128,8 @@ class GeotaggedModelBuilderTest extends ReasonableWaits with ContentFields {
 
     val modelAndView = Await.result(modelBuilder.populateContentModel(request), TenSeconds).get
 
-    assertEquals(2, modelAndView.getModel.get("page"))
-    assertEquals(newsitemsNearPetoneStationSecondPage.asJava, modelAndView.getModel.get(MAIN_CONTENT))
+    assertEquals(2, modelAndView.get("page"))
+    assertEquals(newsitemsNearPetoneStationSecondPage.asJava, modelAndView.get(MAIN_CONTENT))
   }
 
   @Test
@@ -140,7 +140,7 @@ class GeotaggedModelBuilderTest extends ReasonableWaits with ContentFields {
 
     val modelAndView = Await.result(modelBuilder.populateContentModel(request), TenSeconds).get
 
-    assertNull(modelAndView.getModel.get("location"))
+    assertNull(modelAndView.get("location"))
   }
 
 }

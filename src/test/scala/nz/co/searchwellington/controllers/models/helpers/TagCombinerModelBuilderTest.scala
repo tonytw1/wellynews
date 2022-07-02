@@ -65,8 +65,8 @@ class TagCombinerModelBuilderTest extends ReasonableWaits with ContentFields {
 
     val mv = Await.result(modelBuilder.populateContentModel(request), TenSeconds).get
 
-    assertEquals(tags.asJava, mv.getModel.get("tags"))
-    assertEquals(tagCombinerNewsitems._1.asJava, mv.getModel.get(MAIN_CONTENT))
+    assertEquals(tags.asJava, mv.get("tags"))
+    assertEquals(tagCombinerNewsitems._1.asJava, mv.get(MAIN_CONTENT))
   }
 
 }

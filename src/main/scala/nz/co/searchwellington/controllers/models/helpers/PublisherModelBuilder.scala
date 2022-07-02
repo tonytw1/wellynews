@@ -12,7 +12,6 @@ import nz.co.searchwellington.urls.UrlBuilder
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
 import org.springframework.ui.ModelMap
-import org.springframework.web.servlet.ModelAndView
 
 import javax.servlet.http.HttpServletRequest
 import scala.concurrent.ExecutionContext.Implicits.global
@@ -35,9 +34,9 @@ import scala.jdk.CollectionConverters._
     isPublisherPage
   }
 
-  def populateContentModel(request: HttpServletRequest, loggedInUser: Option[User]): Future[Option[ModelAndView]] = {
+  def populateContentModel(request: HttpServletRequest, loggedInUser: Option[User]): Future[Option[ModelMap]] = {
 
-    def populatePublisherPageModelAndView(publisher: Website): Future[Option[ModelAndView]] = {
+    def populatePublisherPageModelAndView(publisher: Website): Future[Option[ModelMap]] = {
       val eventualPublisherNewsitems = contentRetrievalService.getPublisherNewsitems(publisher, MAX_NEWSITEMS, loggedInUser)
       val eventualPublisherFeeds = contentRetrievalService.getPublisherFeeds(publisher, loggedInUser)
       val eventualFrontendWebsite = frontendResourceMapper.createFrontendResourceFrom(publisher)
@@ -49,28 +48,29 @@ import scala.jdk.CollectionConverters._
         frontendWebsite <- eventualFrontendWebsite
 
       } yield {
-        val mv = new ModelAndView().addObject("heading", publisher.title).
-          addObject("description", publisher.title + " newsitems").
-          addObject("publisher", frontendWebsite).
-          addObject("location", frontendWebsite.getPlace).
-          addObject("link", urlBuilder.fullyQualified(urlBuilder.getPublisherUrl(publisher)))
+        val mv = new ModelMap().
+          addAttribute("heading", publisher.title).
+          addAttribute("description", publisher.title + " newsitems").
+          addAttribute("publisher", frontendWebsite).
+          addAttribute("location", frontendWebsite.getPlace).
+          addAttribute("link", urlBuilder.fullyQualified(urlBuilder.getPublisherUrl(publisher)))
 
         if (newsitems.nonEmpty) {
-          mv.addObject(MAIN_CONTENT, newsitems.asJava)
-          mv.addObject("main_heading", publisher.getTitle + " newsitems")
+          mv.addAttribute(MAIN_CONTENT, newsitems.asJava)
+          mv.addAttribute("main_heading", publisher.getTitle + " newsitems")
 
           if (totalNewsitems > MAX_NEWSITEMS) {
             val monthToLinkToForMore = monthOfLastItem(newsitems) // TODO this is a slight off by one.
             monthToLinkToForMore.foreach { i =>
               val moreLink = PublisherArchiveLink(publisher = frontendWebsite, interval = i, count = None)
-              mv.addObject("more", moreLink)
+              mv.addAttribute("more", moreLink)
             }
           }
 
           commonAttributesModelBuilder.setRss(mv, rssUrlBuilder.getRssTitleForPublisher(publisher), rssUrlBuilder.getRssUrlForPublisher(publisher))
           populateGeotaggedItems(mv, newsitems) // TODO This should be a seperate query
         }
-        mv.addObject("feeds", publisherFeeds.asJava)
+        mv.addAttribute("feeds", publisherFeeds.asJava)
 
         Some(mv)
       }
@@ -116,12 +116,12 @@ import scala.jdk.CollectionConverters._
     }
   }
 
-  def getViewName(mv: ModelAndView, loggedInUser: Option[User]): String = "publisher"
+  def getViewName(mv: ModelMap, loggedInUser: Option[User]): String = "publisher"
 
-  private def populateGeotaggedItems(mv: ModelAndView, mainContent: Seq[FrontendResource]): Unit = {
+  private def populateGeotaggedItems(mv: ModelMap, mainContent: Seq[FrontendResource]): Unit = {
     val geotaggedNewsitems = geotaggedNewsitemExtractor.extractGeotaggedItems(mainContent)
     if (geotaggedNewsitems.nonEmpty) {
-      mv.addObject("geocoded", geotaggedNewsitems.asJava)
+      mv.addAttribute("geocoded", geotaggedNewsitems.asJava)
     }
   }
 

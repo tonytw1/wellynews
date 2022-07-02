@@ -4,14 +4,13 @@ import nz.co.searchwellington.ReasonableWaits
 import nz.co.searchwellington.filters.RequestPath
 import nz.co.searchwellington.model.User
 import nz.co.searchwellington.model.mappers.FrontendResourceMapper
-import nz.co.searchwellington.model.taggingvotes.{HandTagging, TaggingVote}
+import nz.co.searchwellington.model.taggingvotes.HandTagging
 import nz.co.searchwellington.repositories.ContentRetrievalService
 import nz.co.searchwellington.repositories.mongo.MongoRepository
 import nz.co.searchwellington.tagging.TaggingReturnsOfficerService
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
 import org.springframework.ui.ModelMap
-import org.springframework.web.servlet.ModelAndView
 
 import java.util.regex.Pattern
 import javax.servlet.http.HttpServletRequest
@@ -30,7 +29,7 @@ import scala.jdk.CollectionConverters._
     pattern.matcher(RequestPath.getPathFrom(request)).matches()
   }
 
-  def populateContentModel(request: HttpServletRequest, loggedInUser: Option[User]): Future[Option[ModelAndView]] = {
+  def populateContentModel(request: HttpServletRequest, loggedInUser: Option[User]): Future[Option[ModelMap]] = {
     val matcher = pattern.matcher(RequestPath.getPathFrom(request))
     if (matcher.matches()) {
       val id = matcher.group(1)
@@ -45,9 +44,9 @@ import scala.jdk.CollectionConverters._
             taggingVotes <- eventualTaggingVotes
 
           } yield {
-            val mv = new ModelAndView
-            mv.addObject("item", frontendResource)
-            mv.addObject("heading", resource.title)
+            val mv = new ModelMap().
+              addAttribute("item", frontendResource).
+              addAttribute("heading", resource.title)
 
             val handTaggingVotes = taggingVotes.filter { vote =>
               vote match {
@@ -58,12 +57,12 @@ import scala.jdk.CollectionConverters._
 
             val otherTaggingVotes = taggingVotes.filterNot(handTaggingVotes.contains(_))
 
-            mv.addObject("hand_tagging_votes", handTaggingVotes.asJava)
-            mv.addObject("other_tagging_votes", otherTaggingVotes.asJava)
-            mv.addObject("geotag_votes", geotagVotes.asJava)
+            mv.addAttribute("hand_tagging_votes", handTaggingVotes.asJava)
+            mv.addAttribute("other_tagging_votes", otherTaggingVotes.asJava)
+            mv.addAttribute("geotag_votes", geotagVotes.asJava)
 
             if (frontendResource.getPlace != null) {
-              mv.addObject("geocoded", List(frontendResource).asJava)
+              mv.addAttribute("geocoded", List(frontendResource).asJava)
             }
 
             Some(mv)
@@ -83,6 +82,6 @@ import scala.jdk.CollectionConverters._
     latestNewsitems(loggedInUser)
   }
 
-  def getViewName(mv: ModelAndView, loggedInUser: Option[User]): String = "newsitemPage"
+  def getViewName(mv: ModelMap, loggedInUser: Option[User]): String = "newsitemPage"
 
 }

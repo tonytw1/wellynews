@@ -33,7 +33,7 @@ class ContentController @Autowired()(contentModelBuilderServiceFactory: ContentM
   ))
   def normal(request: HttpServletRequest, response: HttpServletResponse): ModelAndView = {
     val start = new DateTime()
-    val eventualMaybeView = contentModelBuilderService.populateContentModel(request, loggedInUserFilter.getLoggedInUser)
+    val eventualMaybeView = contentModelBuilderService.buildModelAndView(request, loggedInUserFilter.getLoggedInUser)
     try {
       Await.result(eventualMaybeView, TenSeconds).fold {
         log.warn("Model was null; returning 404")

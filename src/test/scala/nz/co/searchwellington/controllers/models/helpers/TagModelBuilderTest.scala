@@ -12,6 +12,7 @@ import org.junit.jupiter.api.Assertions.{assertEquals, assertFalse, assertNotNul
 import org.junit.jupiter.api.Test
 import org.mockito.Mockito.{mock, when}
 import org.springframework.mock.web.MockHttpServletRequest
+import org.springframework.ui.ModelMap
 import org.springframework.web.servlet.ModelAndView
 import uk.co.eelpieconsulting.common.dates.DateFormatter
 
@@ -76,7 +77,7 @@ class TagModelBuilderTest extends ReasonableWaits with ContentFields {
 
     val mv = Await.result(modelBuilder.populateContentModel(request), TenSeconds).get
 
-    assertEquals(TAG_DISPLAY_NAME, mv.getModel.get("heading"))
+    assertEquals(TAG_DISPLAY_NAME, mv.get("heading"))
   }
 
   @Test
@@ -87,8 +88,8 @@ class TagModelBuilderTest extends ReasonableWaits with ContentFields {
 
     val mv = Await.result(modelBuilder.populateContentModel(request), TenSeconds).get
 
-    assertEquals(tagNewsitems.asJava, mv.getModel.get(MAIN_CONTENT))
-    assertEquals("Penguins related newsitems", mv.getModel.get("main_heading"))
+    assertEquals(tagNewsitems.asJava, mv.get(MAIN_CONTENT))
+    assertEquals("Penguins related newsitems", mv.get("main_heading"))
   }
 
   @Test
@@ -98,7 +99,7 @@ class TagModelBuilderTest extends ReasonableWaits with ContentFields {
 
     val mv = Await.result(modelBuilder.populateContentModel(request), TenSeconds).get
 
-    assertEquals(parentTag, mv.getModel.get("parent"))
+    assertEquals(parentTag, mv.get("parent"))
   }
 
   @Test
@@ -116,8 +117,8 @@ class TagModelBuilderTest extends ReasonableWaits with ContentFields {
 
     val mv = Await.result(modelBuilder.populateContentModel(request), TenSeconds).get
 
-    assertNotNull(mv.getModel.get("more"))
-    val moreLink = mv.getModel.get("more").asInstanceOf[TagArchiveLink]
+    assertNotNull(mv.get("more"))
+    val moreLink = mv.get("more").asInstanceOf[TagArchiveLink]
     assertEquals(tag, moreLink.getTag)
     assertEquals(new DateTime(2022, 1, 1, 0, 0, 0).toDate, moreLink.getMonth)
   }
@@ -171,12 +172,12 @@ class TagModelBuilderTest extends ReasonableWaits with ContentFields {
   @Test
   def shouldSetTagRssFeed(): Unit = {
     val newsitems = Seq(FrontendNewsitem(id = "123", place = Some(Geocode(address = Some("Somewhere")))))
-    val mv = new ModelAndView().addObject("tag", tag).addObject(MAIN_CONTENT, newsitems.asJava)
+    val mv = new ModelMap().addAttribute("tag", tag).addAttribute(MAIN_CONTENT, newsitems.asJava)
 
     val withRss = modelBuilder.setRss(mv)
 
-    assertEquals("Site name - Penguins", withRss.getModel.get("rss_title"))
-    assertEquals("/penguins/rss", withRss.getModel.get("rss_url"))
+    assertEquals("Site name - Penguins", withRss.get("rss_title"))
+    assertEquals("/penguins/rss", withRss.get("rss_url"))
   }
 
 }

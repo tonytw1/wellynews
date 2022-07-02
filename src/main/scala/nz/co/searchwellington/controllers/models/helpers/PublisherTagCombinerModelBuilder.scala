@@ -28,7 +28,7 @@ import scala.jdk.CollectionConverters._
     publisher != null && tag != null
   }
 
-  def populateContentModel(request: HttpServletRequest, loggedInUser: Option[User]): Future[Option[ModelAndView]] = {
+  def populateContentModel(request: HttpServletRequest, loggedInUser: Option[User]): Future[Option[ModelMap]] = {
     val tag = request.getAttribute("tag").asInstanceOf[Tag]
     val publisher = request.getAttribute("publisher").asInstanceOf[Website]
     val eventualFrontendPublisher = frontendResourceMapper.createFrontendResourceFrom(publisher)
@@ -36,14 +36,14 @@ import scala.jdk.CollectionConverters._
       frontendPublisher <- eventualFrontendPublisher
       publisherTagNewsitems <- contentRetrievalService.getPublisherTagCombinerNewsitems(publisher, tag, 0, MAX_NEWSITEMS, loggedInUser) // TODO pagination
     } yield {
-      val mv = new ModelAndView().
-        addObject("publisher", frontendPublisher).
-        addObject("tag", tag).
-        addObject("heading", publisher.title + " and " + tag.getDisplayName).
-        addObject("description", "Items tagged with " + publisher.getTitle + " and " + tag.getDisplayName + ".").
-        addObject("link", urlBuilder.fullyQualified(urlBuilder.getPublisherCombinerUrl(publisher, tag))).
-        addObject("rss_url", rssUrlBuilder.getRssUrlForPublisherTagCombiner(publisher, tag)).
-        addObject(MAIN_CONTENT, publisherTagNewsitems.asJava)
+      val mv = new ModelMap().
+        addAttribute("publisher", frontendPublisher).
+        addAttribute("tag", tag).
+        addAttribute("heading", publisher.title + " and " + tag.getDisplayName).
+        addAttribute("description", "Items tagged with " + publisher.getTitle + " and " + tag.getDisplayName + ".").
+        addAttribute("link", urlBuilder.fullyQualified(urlBuilder.getPublisherCombinerUrl(publisher, tag))).
+        addAttribute("rss_url", rssUrlBuilder.getRssUrlForPublisherTagCombiner(publisher, tag)).
+        addAttribute(MAIN_CONTENT, publisherTagNewsitems.asJava)
 
       if (publisherTagNewsitems.nonEmpty) {
         commonAttributesModelBuilder.setRss(mv, rssUrlBuilder.getRssTitleForPublisherCombiner(publisher, tag), rssUrlBuilder.getRssUrlForPublisherTagCombiner(publisher, tag))
@@ -67,6 +67,6 @@ import scala.jdk.CollectionConverters._
     }
   }
 
-  def getViewName(mv: ModelAndView, loggedInUser: Option[User]): String = "publisherTagCombiner"
+  def getViewName(mv: ModelMap, loggedInUser: Option[User]): String = "publisherTagCombiner"
 
 }

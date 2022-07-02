@@ -9,7 +9,6 @@ import org.apache.commons.logging.LogFactory
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
 import org.springframework.ui.ModelMap
-import org.springframework.web.servlet.ModelAndView
 
 import javax.servlet.http.HttpServletRequest
 import scala.concurrent.ExecutionContext.Implicits.global
@@ -27,7 +26,7 @@ import scala.jdk.CollectionConverters._
     request.getParameter(KEYWORDS_PARAMETER) != null
   }
 
-  def populateContentModel(request: HttpServletRequest, loggedInUser: Option[User]): Future[Option[ModelAndView]] = {
+  def populateContentModel(request: HttpServletRequest, loggedInUser: Option[User]): Future[Option[ModelMap]] = {
     val keywords = request.getParameter(KEYWORDS_PARAMETER)
     val page = getPage(request)
 
@@ -64,24 +63,24 @@ import scala.jdk.CollectionConverters._
       publisherRefinements <- eventualPublisherRefinements
 
     } yield {
-      val mv = new ModelAndView().
-        addObject("page", page).
-        addObject("heading", "Search results - " + keywords).
-        addObject(MAIN_CONTENT, newsitemsWithCount._1.asJava).
-        addObject("main_heading", "Matching Newsitems").
-        addObject("query", keywords).
-        addObject("tag", maybeTag.orNull).
-        addObject("publisher", maybeFrontendPublisher.orNull)
+      val mv = new ModelMap().
+        addAttribute("page", page).
+        addAttribute("heading", "Search results - " + keywords).
+        addAttribute(MAIN_CONTENT, newsitemsWithCount._1.asJava).
+        addAttribute("main_heading", "Matching Newsitems").
+        addAttribute("query", keywords).
+        addAttribute("tag", maybeTag.orNull).
+        addAttribute("publisher", maybeFrontendPublisher.orNull)
 
       if (matchingWebsites._2 > 0) {
-        mv.addObject("secondary_heading", "Matching websites")
-        mv.addObject("secondary_content", matchingWebsites._1.asJava)
+        mv.addAttribute("secondary_heading", "Matching websites")
+        mv.addAttribute("secondary_content", matchingWebsites._1.asJava)
       }
       if (tagRefinements.nonEmpty) {
-        mv.addObject("related_tags", tagRefinements.asJava)
+        mv.addAttribute("related_tags", tagRefinements.asJava)
       }
       if (publisherRefinements.nonEmpty) {
-        mv.addObject("related_publishers", publisherRefinements.asJava)
+        mv.addAttribute("related_publishers", publisherRefinements.asJava)
       }
 
       val contentCount = newsitemsWithCount._2
@@ -94,9 +93,9 @@ import scala.jdk.CollectionConverters._
     }
     */
 
-      mv.addObject("main_description", "Found " + contentCount + " matching newsitems")
-      mv.addObject("description", "Search results for '" + keywords + "'")
-      mv.addObject("link", urlBuilder.fullyQualified(urlBuilder.getSearchUrlFor(keywords)))
+      mv.addAttribute("main_description", "Found " + contentCount + " matching newsitems")
+      mv.addAttribute("description", "Search results for '" + keywords + "'")
+      mv.addAttribute("link", urlBuilder.fullyQualified(urlBuilder.getSearchUrlFor(keywords)))
 
       Some(mv)
     }
@@ -106,6 +105,6 @@ import scala.jdk.CollectionConverters._
     latestNewsitems(loggedInUser)
   }
 
-  def getViewName(mv: ModelAndView, loggedInUser: Option[User]): String = "search"
+  def getViewName(mv: ModelMap, loggedInUser: Option[User]): String = "search"
 
 }

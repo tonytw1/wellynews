@@ -21,7 +21,7 @@ class ContentModelBuilderService(viewFactory: ViewFactory,
 
   private val log = LogFactory.getLog(classOf[ContentModelBuilderService])
 
-  def populateContentModel(request: HttpServletRequest, loggedInUser: Option[User] = None): Future[Option[ModelAndView]] = {
+  def buildModelAndView(request: HttpServletRequest, loggedInUser: Option[User] = None): Future[Option[ModelAndView]] = {
     modelBuilders.find(mb => mb.isValid(request)).map { mb =>
       val path = RequestPath.getPathFrom(request)
       log.debug("Using " + mb.getClass.getSimpleName + " to serve path: " + path)
@@ -72,7 +72,7 @@ class ContentModelBuilderService(viewFactory: ViewFactory,
 
       } yield {
         maybeMv._1.map { mv =>
-          mv.addAllObjects(maybeExtras._1.getOrElse(new ModelMap()))
+          mv.addAllAttributes(maybeExtras._1.getOrElse(new ModelMap()))
           val duration = new Duration(start, new DateTime()).getMillis
           log.info("Created mv for " + path + " after " + duration + "ms using " +
             mb.getClass.getSimpleName +
@@ -82,8 +82,7 @@ class ContentModelBuilderService(viewFactory: ViewFactory,
           } else if (path.endsWith("/json")) {
             jsonViewOf(mv)
           } else {
-            mv.setViewName(mb.getViewName(mv, loggedInUser))
-            mv
+            new ModelAndView(mb.getViewName(mv, loggedInUser)).addAllObjects(mv)
           }
         }
       }
@@ -94,15 +93,15 @@ class ContentModelBuilderService(viewFactory: ViewFactory,
     }
   }
 
-  private def jsonViewOf(mv: ModelAndView): ModelAndView = {
+  private def jsonViewOf(mv: ModelMap): ModelAndView = {
     val jsonView = viewFactory.getJsonView
     jsonView.setDataField(MAIN_CONTENT) // TODO push to a parameter of getJsonView
-    new ModelAndView(jsonView).addObject(MAIN_CONTENT, mv.getModel.get(MAIN_CONTENT))
+    new ModelAndView(jsonView).addObject(MAIN_CONTENT, mv.get(MAIN_CONTENT))
   }
 
-  private def rssViewOf(mv: ModelAndView): ModelAndView = {
-    val rssView = viewFactory.getRssView(mv.getModel.get("heading").asInstanceOf[String], mv.getModel.get("link").asInstanceOf[String], mv.getModel.get("description").asInstanceOf[String])
-    new ModelAndView(rssView).addObject("data", mv.getModel.get(MAIN_CONTENT))
+  private def rssViewOf(mv: ModelMap): ModelAndView = {
+    val rssView = viewFactory.getRssView(mv.get("heading").asInstanceOf[String], mv.get("link").asInstanceOf[String], mv.get("description").asInstanceOf[String])
+    new ModelAndView(rssView).addObject("data", mv.get(MAIN_CONTENT))
   }
 
 }

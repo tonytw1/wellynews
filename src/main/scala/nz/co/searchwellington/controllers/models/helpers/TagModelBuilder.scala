@@ -35,9 +35,9 @@ import scala.jdk.CollectionConverters._
     tags != null && tags.size == 1
   }
 
-  def populateContentModel(request: HttpServletRequest, loggedInUser: Option[User]): Future[Option[ModelAndView]] = {
+  def populateContentModel(request: HttpServletRequest, loggedInUser: Option[User]): Future[Option[ModelMap]] = {
 
-    def populateTagPageModelAndView(tag: Tag, page: Int): Future[Option[ModelAndView]] = {
+    def populateTagPageModelAndView(tag: Tag, page: Int): Future[Option[ModelMap]] = {
       val startIndex = getStartIndex(page, MAX_NEWSITEMS)
 
       val eventualTaggedNewsitems = contentRetrievalService.getTaggedNewsitems(tag, startIndex, MAX_NEWSITEMS, loggedInUser)
@@ -59,28 +59,28 @@ import scala.jdk.CollectionConverters._
           None
 
         } else {
-          val mv = new ModelAndView().
-            addObject(TAG, tag).
-            addObject("heading", tag.display_name).
-            addObject("rss_feed_label", tag.display_name.toLowerCase).
-            addObject("description", rssUrlBuilder.getRssDescriptionForTag(tag)).
-            addObject("link", urlBuilder.fullyQualified(urlBuilder.getTagUrl(tag))).
-            addObject("parent", maybeParent.orNull)
+          val mv = new ModelMap().
+            addAttribute(TAG, tag).
+            addAttribute("heading", tag.display_name).
+            addAttribute("rss_feed_label", tag.display_name.toLowerCase).
+            addAttribute("description", rssUrlBuilder.getRssDescriptionForTag(tag)).
+            addAttribute("link", urlBuilder.fullyQualified(urlBuilder.getTagUrl(tag))).
+            addAttribute("parent", maybeParent.orNull)
 
           val taggedNewsitems = taggedNewsitemsAndTotalCount._1
-          mv.addObject(MAIN_CONTENT, taggedNewsitems.asJava)
-          mv.addObject("main_heading", tag.display_name + " related newsitems")
+          mv.addAttribute(MAIN_CONTENT, taggedNewsitems.asJava)
+          mv.addAttribute("main_heading", tag.display_name + " related newsitems")
 
           setRss(mv)
 
           if (totalNewsitems > MAX_NEWSITEMS) {
             monthOfLastItem(taggedNewsitems).foreach { i =>
-              mv.addObject("more", TagArchiveLink(tag = tag, interval = i, count = None))
+              mv.addAttribute("more", TagArchiveLink(tag = tag, interval = i, count = None))
             }
           }
 
           if (children.nonEmpty) {
-            mv.addObject("children", children.asJava)
+            mv.addAttribute("children", children.asJava)
           }
 
           Some(mv)
@@ -137,11 +137,11 @@ import scala.jdk.CollectionConverters._
     }
   }
 
-  def getViewName(mv: ModelAndView, loggedInUser: Option[User]): String = {
-    val mainContent = mv.getModel.get(MAIN_CONTENT).asInstanceOf[util.List[Resource]]
-    val taggedWebsites = mv.getModel.get(WEBSITES).asInstanceOf[util.List[Resource]]
-    val tagWatchlist = mv.getModel.get(TAG_WATCHLIST).asInstanceOf[util.List[Resource]]
-    val tagFeeds = mv.getModel.get(TAG_FEEDS).asInstanceOf[util.List[Resource]]
+  def getViewName(mv: ModelMap, loggedInUser: Option[User]): String = {
+    val mainContent = mv.get(MAIN_CONTENT).asInstanceOf[util.List[Resource]]
+    val taggedWebsites = mv.get(WEBSITES).asInstanceOf[util.List[Resource]]
+    val tagWatchlist = mv.get(TAG_WATCHLIST).asInstanceOf[util.List[Resource]]
+    val tagFeeds = mv.get(TAG_FEEDS).asInstanceOf[util.List[Resource]]
 
     val hasSecondaryContent = !taggedWebsites.isEmpty || !tagWatchlist.isEmpty || !tagFeeds.isEmpty
     val isOneContentType = mainContent.isEmpty || !hasSecondaryContent
@@ -153,9 +153,9 @@ import scala.jdk.CollectionConverters._
     }
   }
 
-  def setRss(mv: ModelAndView): ModelAndView = {
-    val tag = mv.getModel.get(TAG).asInstanceOf[Tag]
-    val mainContent = mv.getModel.get(MAIN_CONTENT).asInstanceOf[util.List[FrontendResource]].asScala
+  def setRss(mv: ModelMap): ModelMap = {
+    val tag = mv.get(TAG).asInstanceOf[Tag]
+    val mainContent = mv.get(MAIN_CONTENT).asInstanceOf[util.List[FrontendResource]].asScala
     if (mainContent.nonEmpty) {
       commonAttributesModelBuilder.setRss(mv, rssUrlBuilder.getRssTitleForTag(tag), rssUrlBuilder.getRssUrlForTag(tag))
     }

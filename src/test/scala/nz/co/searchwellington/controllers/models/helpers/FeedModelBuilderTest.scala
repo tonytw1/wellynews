@@ -89,7 +89,7 @@ class FeedModelBuilderTest extends ReasonableWaits with ContentFields {
 
     val mv = Await.result(modelBuilder.populateContentModel(request), TenSeconds).get
 
-    assertEquals(frontendFeed, mv.getModel.get("feed"))
+    assertEquals(frontendFeed, mv.get("feed"))
   }
 
   @Test
@@ -100,7 +100,7 @@ class FeedModelBuilderTest extends ReasonableWaits with ContentFields {
 
     val mv = Await.result(modelBuilder.populateContentModel(request), TenSeconds).get
 
-    assertEquals(Seq(frontendNewsitemWithActions, anotherFrontendNewsitemWithActions).asJava, mv.getModel.get(MAIN_CONTENT))
+    assertEquals(Seq(frontendNewsitemWithActions, anotherFrontendNewsitemWithActions).asJava, mv.get(MAIN_CONTENT))
   }
 
   @Test
@@ -113,8 +113,8 @@ class FeedModelBuilderTest extends ReasonableWaits with ContentFields {
 
     modelBuilder.populateExtraModelContent(request, None)
 
-    assertEquals(Seq(anotherFrontendNewsitemWithActions).asJava, mv.getModel.get("geocoded"))
-    assertEquals(whakaokoSubscription, mv.getModel.get("subscription"), "Expected whakaoko subscription to be shown")
+    assertEquals(Seq(anotherFrontendNewsitemWithActions).asJava, mv.get("geocoded"))
+    assertEquals(whakaokoSubscription, mv.get("subscription"), "Expected whakaoko subscription to be shown")
   }
 
 }

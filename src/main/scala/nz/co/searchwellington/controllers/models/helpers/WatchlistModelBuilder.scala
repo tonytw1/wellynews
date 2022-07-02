@@ -8,7 +8,6 @@ import nz.co.searchwellington.urls.UrlBuilder
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
 import org.springframework.ui.ModelMap
-import org.springframework.web.servlet.ModelAndView
 
 import javax.servlet.http.HttpServletRequest
 import scala.concurrent.ExecutionContext.Implicits.global
@@ -25,16 +24,16 @@ import scala.jdk.CollectionConverters._
     RequestPath.getPathFrom(request).matches("^/watchlist(/(rss|json))?$")
   }
 
-  def populateContentModel(request: HttpServletRequest, loggedInUser: Option[User]): Future[Option[ModelAndView]] = {
+  def populateContentModel(request: HttpServletRequest, loggedInUser: Option[User]): Future[Option[ModelMap]] = {
     val page = getPage(request)
     for {
       watchlists <- contentRetrievalService.getWatchlistItems(loggedInUser, page = page)
     } yield {
-      val mv = new ModelAndView().
-        addObject("heading", "News watchlist").
-        addObject("description", "The news watchlist").
-        addObject("link", urlBuilder.fullyQualified(urlBuilder.getWatchlistUrl)).
-        addObject(MAIN_CONTENT, watchlists._1.asJava)
+      val mv = new ModelMap().
+        addAttribute("heading", "News watchlist").
+        addAttribute("description", "The news watchlist").
+        addAttribute("link", urlBuilder.fullyQualified(urlBuilder.getWatchlistUrl)).
+        addAttribute(MAIN_CONTENT, watchlists._1.asJava)
       commonAttributesModelBuilder.setRss(mv, rssUrlBuilder.getRssTitleForJustin, rssUrlBuilder.getRssUrlForWatchlist)
 
       val startIndex = getStartIndex(page, MAX_NEWSITEMS)
@@ -51,6 +50,6 @@ import scala.jdk.CollectionConverters._
     latestNewsitems(loggedInUser)
   }
 
-  def getViewName(mv: ModelAndView, loggedInUser: Option[User]): String = "watchlist"
+  def getViewName(mv: ModelMap, loggedInUser: Option[User]): String = "watchlist"
 
 }

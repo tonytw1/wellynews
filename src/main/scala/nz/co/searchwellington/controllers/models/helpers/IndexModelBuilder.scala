@@ -11,7 +11,6 @@ import nz.co.searchwellington.urls.UrlBuilder
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
 import org.springframework.ui.ModelMap
-import org.springframework.web.servlet.ModelAndView
 
 import javax.servlet.http.HttpServletRequest
 import scala.concurrent.ExecutionContext.Implicits.global
@@ -32,20 +31,18 @@ import scala.jdk.CollectionConverters._
       path.matches("^/rss$")
   }
 
-  def getViewName(mv: ModelAndView, loggedInUser: Option[User]): String = "index"
-
-  def populateContentModel(request: HttpServletRequest, loggedInUser: Option[User]): Future[Option[ModelAndView]] = {
+  def populateContentModel(request: HttpServletRequest, loggedInUser: Option[User]): Future[Option[ModelMap]] = {
     for {
       latestNewsitems <- contentRetrievalService.getLatestNewsitems(MAX_NEWSITEMS, getPage(request), loggedInUser = loggedInUser)
     } yield {
-      val mv = new ModelAndView().
-        addObject("heading", "Wellynews").
-        addObject("description", "Wellington related newsitems").
-        addObject("link", urlBuilder.fullyQualified(urlBuilder.getHomeUri)).
-        addObject(MAIN_CONTENT, latestNewsitems.asJava)
+      val mv = new ModelMap().
+        addAttribute("heading", "Wellynews").
+        addAttribute("description", "Wellington related newsitems").
+        addAttribute("link", urlBuilder.fullyQualified(urlBuilder.getHomeUri)).
+        addAttribute(MAIN_CONTENT, latestNewsitems.asJava)
 
       monthOfLastItem(latestNewsitems).map { month =>
-        mv.addObject("main_content_moreurl", urlBuilder.getIntervalUrl(month))
+        mv.addAttribute("main_content_moreurl", urlBuilder.getIntervalUrl(month))
       }
 
       commonAttributesModelBuilder.setRss(mv, rssUrlBuilder.getBaseRssTitle, rssUrlBuilder.getBaseRssUrl)
@@ -94,6 +91,8 @@ import scala.jdk.CollectionConverters._
     }
   }
 
+  def getViewName(mv: ModelMap, loggedInUser: Option[User]): String = "index"
+  
   private def populateGeocoded(geocoded: Seq[FrontendResource]): ModelMap = {
     if (geocoded.nonEmpty) {
       new ModelMap().addAttribute("geocoded", geocoded.asJava)

@@ -30,7 +30,7 @@ class ContentControllerTest {
   def shouldDelegateToTheContentModelBuilderToGetTheModelForThisRequest(): Unit = {
     val expectedModelAndView = new ModelAndView("a-view", Map("foo" -> "bar").asJava)
     when(contentModelBuilderServiceFactory.makeContentModelBuilderService()).thenReturn(contentModelBuilderService)
-    when(contentModelBuilderService.populateContentModel(request)).thenReturn(Future.successful(Some(expectedModelAndView)))
+    when(contentModelBuilderService.buildModelAndView(request)).thenReturn(Future.successful(Some(expectedModelAndView)))
 
     val modelAndView = contentController.normal(request, response)
 
@@ -40,7 +40,7 @@ class ContentControllerTest {
   @Test
   def should404IfNoModelWasAvailableForThisRequest(): Unit = {
     when(contentModelBuilderServiceFactory.makeContentModelBuilderService()).thenReturn(contentModelBuilderService)
-    when(contentModelBuilderService.populateContentModel(unknownPathRequest)).thenReturn(Future.successful(None))
+    when(contentModelBuilderService.buildModelAndView(unknownPathRequest)).thenReturn(Future.successful(None))
 
     try {
       contentController.normal(unknownPathRequest, response)
@@ -56,7 +56,7 @@ class ContentControllerTest {
   @Test
   def shouldNotPush404sOntoTheReturnToUrlStack(): Unit = {
     when(contentModelBuilderServiceFactory.makeContentModelBuilderService()).thenReturn(contentModelBuilderService)
-    when(contentModelBuilderService.populateContentModel(unknownPathRequest)).thenReturn(Future.successful(None))
+    when(contentModelBuilderService.buildModelAndView(unknownPathRequest)).thenReturn(Future.successful(None))
 
     val triedView = Try {
       contentController.normal(unknownPathRequest, response)
@@ -70,7 +70,7 @@ class ContentControllerTest {
   def htmlPageViewsShouldBePutOntoTheUrlStack(): Unit = {
     val expectedModelAndView = new ModelAndView("a-view", Map("foo" -> "bar").asJava)
     when(contentModelBuilderServiceFactory.makeContentModelBuilderService()).thenReturn(contentModelBuilderService)
-    when(contentModelBuilderService.populateContentModel(request)).thenReturn(Future.successful(Some(expectedModelAndView)))
+    when(contentModelBuilderService.buildModelAndView(request)).thenReturn(Future.successful(Some(expectedModelAndView)))
 
     contentController.normal(request, response)
 

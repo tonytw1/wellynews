@@ -33,9 +33,9 @@ class WatchlistModelBuilderTest extends ReasonableWaits with ContentFields {
 
     val mv = Await.result(modelBuilder.populateContentModel(request), TenSeconds).get
 
-    assertEquals(watchlistItems._1.asJava, mv.getModel.get(MAIN_CONTENT))
+    assertEquals(watchlistItems._1.asJava, mv.get(MAIN_CONTENT))
 
-    val pageLinks = mv.getModel.get("page_links").asInstanceOf[java.util.List[PaginationLink]].asScala
+    val pageLinks = mv.get("page_links").asInstanceOf[java.util.List[PaginationLink]].asScala
     assertEquals(2, pageLinks.size)
   }
 

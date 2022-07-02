@@ -12,7 +12,6 @@ import org.apache.commons.logging.LogFactory
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
 import org.springframework.ui.ModelMap
-import org.springframework.web.servlet.ModelAndView
 
 import javax.servlet.http.HttpServletRequest
 import scala.concurrent.ExecutionContext.Implicits.global
@@ -35,13 +34,13 @@ import scala.jdk.CollectionConverters._
     request.getAttribute(FEED_ATTRIBUTE) != null
   }
 
-  def populateContentModel(request: HttpServletRequest, loggedInUser: Option[User]): Future[Option[ModelAndView]] = {
+  def populateContentModel(request: HttpServletRequest, loggedInUser: Option[User]): Future[Option[ModelMap]] = {
 
-    def populateGeotaggedFeedItems(mv: ModelAndView, feedNewsitems: Seq[FrontendResource]): Unit = {
+    def populateGeotaggedFeedItems(mv: ModelMap, feedNewsitems: Seq[FrontendResource]): Unit = {
       val geotaggedItems = geotaggedNewsitemExtractor.extractGeotaggedItems(feedNewsitems)
       if (geotaggedItems.nonEmpty) {
         log.info("Adding " + geotaggedItems.size + " geotagged feed items")
-        mv.addObject("geocoded", geotaggedItems.asJava) // TODO deduplicate overlapping
+        mv.addAttribute("geocoded", geotaggedItems.asJava) // TODO deduplicate overlapping
       }
     }
 
@@ -77,15 +76,15 @@ import scala.jdk.CollectionConverters._
       }
     }
 
-    def populateFeedItems(mv: ModelAndView, feedItems: Either[String, (Seq[FrontendResource], Long)]): ModelAndView = {
+    def populateFeedItems(mv: ModelMap, feedItems: Either[String, (Seq[FrontendResource], Long)]): ModelMap = {
       feedItems.fold({
         l =>
-          mv.addObject("feed_error", l)
+          mv.addAttribute("feed_error", l)
           mv
       }, { result =>
-        mv.addObject(MAIN_CONTENT, result._1.asJava)
+        mv.addAttribute(MAIN_CONTENT, result._1.asJava)
         populateGeotaggedFeedItems(mv, result._1)
-        mv.addObject("feed_total_count", result._2)
+        mv.addAttribute("feed_total_count", result._2)
         mv
       })
     }
@@ -105,9 +104,9 @@ import scala.jdk.CollectionConverters._
       } yield {
         val maybeMaybeSubscription = getSubscriptionResult.toOption.flatten
 
-        val mv = new ModelAndView().
-          addObject("feed", frontendFeed).
-          addObject("subscription", maybeMaybeSubscription.orNull)
+        val mv = new ModelMap().
+          addAttribute("feed", frontendFeed).
+          addAttribute("subscription", maybeMaybeSubscription.orNull)
 
         commonAttributesModelBuilder.setRss(mv, feed.title, feed.page)
         populateFeedItems(mv, feedItems) // TODO inline
@@ -128,6 +127,6 @@ import scala.jdk.CollectionConverters._
     }
   }
 
-  def getViewName(mv: ModelAndView, loggedInUser: Option[User]): String = "viewfeed"
+  def getViewName(mv: ModelMap, loggedInUser: Option[User]): String = "viewfeed"
 
 }

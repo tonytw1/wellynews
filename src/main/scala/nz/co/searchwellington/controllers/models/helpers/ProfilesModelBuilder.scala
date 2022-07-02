@@ -25,13 +25,13 @@ import scala.jdk.CollectionConverters._
     RequestPath.getPathFrom(request).matches(profilesPageRegex)
   }
 
-  def populateContentModel(request: HttpServletRequest, loggedInUser: Option[User]): Future[Option[ModelAndView]] = {
+  def populateContentModel(request: HttpServletRequest, loggedInUser: Option[User]): Future[Option[ModelMap]] = {
     for {
       users <- mongoRepository.getAllUsers
     } yield {
-      Some(new ModelAndView().
-        addObject("heading", "Profiles").
-        addObject(MAIN_CONTENT, users.asJava))
+      Some(new ModelMap().
+        addAttribute("heading", "Profiles").
+        addAttribute(MAIN_CONTENT, users.asJava))
     }
   }
 
@@ -39,6 +39,6 @@ import scala.jdk.CollectionConverters._
     Future.successful(new ModelMap())
   }
 
-  def getViewName(mv: ModelAndView, loggedInUser: Option[User]): String = "profiles"
+  def getViewName(mv: ModelMap, loggedInUser: Option[User]): String = "profiles"
 
 }

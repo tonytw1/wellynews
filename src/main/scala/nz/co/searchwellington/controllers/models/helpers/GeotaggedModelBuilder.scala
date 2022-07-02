@@ -10,7 +10,6 @@ import nz.co.searchwellington.urls.UrlBuilder
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
 import org.springframework.ui.ModelMap
-import org.springframework.web.servlet.ModelAndView
 import uk.co.eelpieconsulting.common.geo.model.Place
 
 import javax.servlet.http.HttpServletRequest
@@ -31,16 +30,16 @@ import scala.jdk.CollectionConverters._
     RequestPath.getPathFrom(request).matches("^/geotagged(/(rss|json))?$")
   }
 
-  def populateContentModel(request: HttpServletRequest, loggedInUser: Option[User]): Future[Option[ModelAndView]] = {
-    val mv = new ModelAndView
-    mv.addObject("description", "Geotagged newsitems")
-    mv.addObject("link", urlBuilder.fullyQualified(urlBuilder.getGeotaggedUrl))
+  def populateContentModel(request: HttpServletRequest, loggedInUser: Option[User]): Future[Option[ModelMap]] = {
+    val mv = new ModelMap().
+      addAttribute("description", "Geotagged newsitems").
+      addAttribute("link", urlBuilder.fullyQualified(urlBuilder.getGeotaggedUrl))
 
     val userSuppliedPlace = request.getAttribute(LocationParameterFilter.LOCATION).asInstanceOf[Place]
     val hasUserSuppliedALocation = userSuppliedPlace != null && userSuppliedPlace.getLatLong != null
 
     val page = getPage(request)
-    mv.addObject("page", page)
+    mv.addAttribute("page", page)
     val startIndex = getStartIndex(page, MAX_NEWSITEMS)
 
     if (hasUserSuppliedALocation) {
@@ -50,14 +49,14 @@ import scala.jdk.CollectionConverters._
     }
   }
 
-  private def processModel(loggedInUser: Option[User], mv: ModelAndView, startIndex: Int): Future[Option[ModelAndView]] = {
+  private def processModel(loggedInUser: Option[User], mv: ModelMap, startIndex: Int): Future[Option[ModelMap]] = {
     for {
       geocodedNewsitems <- contentRetrievalService.getGeocodedNewsitems(startIndex, MAX_NEWSITEMS, loggedInUser)
     } yield {
       if (startIndex < geocodedNewsitems._2) {
         populatePagination(mv, startIndex, geocodedNewsitems._2, MAX_NEWSITEMS, paginationLinks)
-        mv.addObject("heading", "Geotagged newsitems")
-        mv.addObject(MAIN_CONTENT, geocodedNewsitems._1.asJava)
+        mv.addAttribute("heading", "Geotagged newsitems")
+        mv.addAttribute(MAIN_CONTENT, geocodedNewsitems._1.asJava)
         commonAttributesModelBuilder.setRss(mv, rssUrlBuilder.getRssTitleForGeotagged, rssUrlBuilder.getRssUrlForGeotagged)
         Some(mv)
       } else {
@@ -66,7 +65,7 @@ import scala.jdk.CollectionConverters._
     }
   }
 
-  private def processLocationSuppliedModel(request: HttpServletRequest, loggedInUser: Option[User], mv: ModelAndView, userSuppliedPlace: Place, startIndex: Int): Future[Option[ModelAndView]] = {
+  private def processLocationSuppliedModel(request: HttpServletRequest, loggedInUser: Option[User], mv: ModelMap, userSuppliedPlace: Place, startIndex: Int): Future[Option[ModelMap]] = {
     val radius = getLocationSearchRadius(request)
     val latLong = userSuppliedPlace.getLatLong
 
@@ -82,18 +81,18 @@ import scala.jdk.CollectionConverters._
       if (startIndex < newsitemsNear._2) {
         populatePagination(mv, startIndex, newsitemsNear._2, MAX_NEWSITEMS, paginationLinks)
 
-        mv.addObject("location", userSuppliedPlace)
-        mv.addObject("radius", radius)
-        mv.addObject(MAIN_CONTENT, newsitemsNear._1.asJava)
+        mv.addAttribute("location", userSuppliedPlace)
+        mv.addAttribute("radius", radius)
+        mv.addAttribute(MAIN_CONTENT, newsitemsNear._1.asJava)
 
         if (relatedTagLinks.nonEmpty) {
-          mv.addObject("related_tags", relatedTagLinks.asJava)
+          mv.addAttribute("related_tags", relatedTagLinks.asJava)
         }
         if (relatedPublisherLinks.nonEmpty) {
-          mv.addObject("related_publishers", relatedPublisherLinks.asJava)
+          mv.addAttribute("related_publishers", relatedPublisherLinks.asJava)
         }
 
-        mv.addObject("heading", rssUrlBuilder.getRssTitleForPlace(userSuppliedPlace, radius))
+        mv.addAttribute("heading", rssUrlBuilder.getRssTitleForPlace(userSuppliedPlace, radius))
         setRssUrlForLocation(mv, userSuppliedPlace, radius)
         Some(mv)
 
@@ -107,9 +106,9 @@ import scala.jdk.CollectionConverters._
     latestNewsitems(loggedInUser)
   }
 
-  def getViewName(mv: ModelAndView, loggedInUser: Option[User]): String = "geocoded"
+  def getViewName(mv: ModelMap, loggedInUser: Option[User]): String = "geocoded"
 
-  private def setRssUrlForLocation(mv: ModelAndView, place: Place, radius: Double): Unit = {
+  private def setRssUrlForLocation(mv: ModelMap, place: Place, radius: Double): Unit = {
     commonAttributesModelBuilder.setRss(mv, rssUrlBuilder.getRssTitleForPlace(place, radius), rssUrlBuilder.getRssUrlForPlace(place, radius))
   }
 

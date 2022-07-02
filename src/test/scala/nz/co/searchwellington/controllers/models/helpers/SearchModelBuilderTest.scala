@@ -56,7 +56,7 @@ class SearchModelBuilderTest extends ReasonableWaits with ContentFields {
 
     val mv = Await.result(modelBuilder.populateContentModel(request), TenSeconds).get
 
-    assertEquals("Search results - widgets", mv.getModel.get("heading"))
+    assertEquals("Search results - widgets", mv.get("heading"))
   }
 
   @Test
@@ -79,8 +79,8 @@ class SearchModelBuilderTest extends ReasonableWaits with ContentFields {
     when(contentRetrievalService.getWebsitesMatchingKeywords(q, None, 0, 30, noLoggedInUser)).thenReturn(Future.successful(emptySearchResults))
 
     val mv = Await.result(modelBuilder.populateContentModel(request), TenSeconds).get
-    assertEquals(tagRefinements.asJava, mv.getModel.get("related_tags"))
-    assertEquals(publisherRefinements.asJava, mv.getModel.get("related_publishers"))
+    assertEquals(tagRefinements.asJava, mv.get("related_tags"))
+    assertEquals(publisherRefinements.asJava, mv.get("related_publishers"))
   }
 
   @Test
@@ -99,15 +99,15 @@ class SearchModelBuilderTest extends ReasonableWaits with ContentFields {
 
     val mv = Await.result(modelBuilder.populateContentModel(request), TenSeconds).get
 
-    assertEquals(publisherNewsitemSearchResults._1.asJava, mv.getModel.get(MAIN_CONTENT))
+    assertEquals(publisherNewsitemSearchResults._1.asJava, mv.get(MAIN_CONTENT))
 
     // Do not show refinements when a publisher refinement has been selected
-    assertNull(mv.getModel.get("related_tags"))
-    assertNull(mv.getModel.get("related_publishers"))
+    assertNull(mv.get("related_tags"))
+    assertNull(mv.get("related_publishers"))
 
     // Do not show publishers when a publisher is selected
-    assertNull( mv.getModel.get("secondary_content"))
-    assertNull(mv.getModel.get("secondary_heading"))
+    assertNull( mv.get("secondary_content"))
+    assertNull(mv.get("secondary_heading"))
   }
 
   @Test
@@ -123,7 +123,7 @@ class SearchModelBuilderTest extends ReasonableWaits with ContentFields {
 
     val mv = Await.result(modelBuilder.populateContentModel(request), TenSeconds).get
 
-    assertEquals(tag, mv.getModel.get("tag"))
+    assertEquals(tag, mv.get("tag"))
   }
 
   @Test
@@ -137,14 +137,14 @@ class SearchModelBuilderTest extends ReasonableWaits with ContentFields {
 
     val mv = Await.result(modelBuilder.populateContentModel(request), TenSeconds).get
 
-    assertEquals(tagKeywordNewsitemResults._1.asJava, mv.getModel.get(MAIN_CONTENT))
-    assertEquals(2L, mv.getModel.get("main_content_total"))
+    assertEquals(tagKeywordNewsitemResults._1.asJava, mv.get(MAIN_CONTENT))
+    assertEquals(2L, mv.get("main_content_total"))
 
     // Do not show refinements when a publisher refinement has been selected
-    assertNull(mv.getModel.get("related_tags"))
-    assertNull(mv.getModel.get("related_publishers"))
+    assertNull(mv.get("related_tags"))
+    assertNull(mv.get("related_publishers"))
 
-    assertEquals(websitesMatchingTag._1.asJava, mv.getModel.get("secondary_content"))
+    assertEquals(websitesMatchingTag._1.asJava, mv.get("secondary_content"))
   }
 
   @Test
@@ -163,8 +163,8 @@ class SearchModelBuilderTest extends ReasonableWaits with ContentFields {
 
     val mv = Await.result(modelBuilder.populateContentModel(request), TenSeconds).get
 
-    assertEquals(keywordMatchingWebsites._1.asJava, mv.getModel.get("secondary_content"))
-    assertEquals("Matching websites", mv.getModel.get("secondary_heading"))
+    assertEquals(keywordMatchingWebsites._1.asJava, mv.get("secondary_content"))
+    assertEquals("Matching websites", mv.get("secondary_heading"))
   }
 
 }

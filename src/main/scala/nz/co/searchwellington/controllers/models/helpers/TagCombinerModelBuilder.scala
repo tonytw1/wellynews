@@ -28,9 +28,9 @@ import scala.jdk.CollectionConverters._
     isTagCombinerPage
   }
 
-  def populateContentModel(request: HttpServletRequest, loggedInUser: Option[User]): Future[Option[ModelAndView]] = {
+  def populateContentModel(request: HttpServletRequest, loggedInUser: Option[User]): Future[Option[ModelMap]] = {
 
-    def populateTagCombinerModelAndView(tags: Seq[Tag], page: Int): Future[Option[ModelAndView]] = {
+    def populateTagCombinerModelAndView(tags: Seq[Tag], page: Int): Future[Option[ModelMap]] = {
       val startIndex = getStartIndex(page, MAX_NEWSITEMS)
       for {
         taggedNewsitemsAndCount <- contentRetrievalService.getTaggedNewsitems(tags.toSet, startIndex, MAX_NEWSITEMS, loggedInUser)
@@ -44,13 +44,13 @@ import scala.jdk.CollectionConverters._
           val secondTag = tags(1)
 
           if (totalNewsitemCount > 0) {
-            val mv = new ModelAndView().
-              addObject("tag", firstTag).
-              addObject("tags", tags.asJava).
-              addObject("heading", firstTag.getDisplayName + " and " + secondTag.getDisplayName).
-              addObject("description", "Items tagged with " + firstTag.getDisplayName + " and " + secondTag.getDisplayName + ".").
-              addObject("link", urlBuilder.fullyQualified(urlBuilder.getTagCombinerUrl(firstTag, secondTag))).
-              addObject(MAIN_CONTENT, taggedNewsitemsAndCount._1.asJava)
+            val mv = new ModelMap().
+              addAttribute("tag", firstTag).
+              addAttribute("tags", tags.asJava).
+              addAttribute("heading", firstTag.getDisplayName + " and " + secondTag.getDisplayName).
+              addAttribute("description", "Items tagged with " + firstTag.getDisplayName + " and " + secondTag.getDisplayName + ".").
+              addAttribute("link", urlBuilder.fullyQualified(urlBuilder.getTagCombinerUrl(firstTag, secondTag))).
+              addAttribute(MAIN_CONTENT, taggedNewsitemsAndCount._1.asJava)
 
             def paginationLinks(page: Int): String = urlBuilder.getTagCombinerUrl(firstTag, secondTag, page)
             populatePagination(mv, startIndex, totalNewsitemCount, MAX_NEWSITEMS, paginationLinks)
@@ -91,9 +91,9 @@ import scala.jdk.CollectionConverters._
     }
   }
 
-  def getViewName(mv: ModelAndView, loggedInUser: Option[User]): String = {
-    val taggedNewsitemsCount = mv.getModel.get("main_content_total").asInstanceOf[Long]
-    val taggedWebsites = mv.getModel.get("websites").asInstanceOf[util.List[Resource]]
+  def getViewName(mv: ModelMap, loggedInUser: Option[User]): String = {
+    val taggedNewsitemsCount = mv.get("main_content_total").asInstanceOf[Long]
+    val taggedWebsites = mv.get("websites").asInstanceOf[util.List[Resource]]
     val isOneContentType = taggedNewsitemsCount == 0 || taggedWebsites.size == 0
     if (isOneContentType) {
       "tagCombinedOneContentType"

@@ -50,10 +50,10 @@ class PublisherModelBuilderTest extends ReasonableWaits with ContentFields {
 
     val mv = Await.result(modelBuilder.populateContentModel(request), TenSeconds).get
 
-    assertEquals(publisherNewsitems.asJava, mv.getModel.get(MAIN_CONTENT))
-    assertEquals(publisherFeeds.asJava, mv.getModel.get("feeds"))
-    assertEquals("A publisher newsitems", mv.getModel.get("main_heading"))
-    assertEquals("/a-publisher/rss", mv.getModel.get("rss_url"))
+    assertEquals(publisherNewsitems.asJava, mv.get(MAIN_CONTENT))
+    assertEquals(publisherFeeds.asJava, mv.get("feeds"))
+    assertEquals("A publisher newsitems", mv.get("main_heading"))
+    assertEquals("/a-publisher/rss", mv.get("rss_url"))
   }
 
   @Test
@@ -73,8 +73,8 @@ class PublisherModelBuilderTest extends ReasonableWaits with ContentFields {
 
     val mv = Await.result(modelBuilder.populateContentModel(request), TenSeconds).get
 
-    assertNotNull(mv.getModel.get("more"))
-    val moreLink = mv.getModel.get("more").asInstanceOf[PublisherArchiveLink]
+    assertNotNull(mv.get("more"))
+    val moreLink = mv.get("more").asInstanceOf[PublisherArchiveLink]
     assertEquals(frontendPublisher, moreLink.getPublisher)
     assertEquals(new DateTime(2022, 1, 1, 0, 0, 0).toDate, moreLink.getMonth)
   }
@@ -99,7 +99,7 @@ class PublisherModelBuilderTest extends ReasonableWaits with ContentFields {
 
     val mv = Await.result(modelBuilder.populateContentModel(request), TenSeconds).get
 
-    val geotaggedPublisherNewsitemsOnModel = mv.getModel.get("geocoded").asInstanceOf[java.util.List[FrontendResource]]
+    val geotaggedPublisherNewsitemsOnModel = mv.get("geocoded").asInstanceOf[java.util.List[FrontendResource]]
     assertEquals(geotaggedNewsitem, geotaggedPublisherNewsitemsOnModel.get(0))
   }
 

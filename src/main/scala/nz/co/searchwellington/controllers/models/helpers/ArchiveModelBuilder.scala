@@ -4,13 +4,12 @@ import nz.co.searchwellington.ReasonableWaits
 import nz.co.searchwellington.controllers.RssUrlBuilder
 import nz.co.searchwellington.filters.RequestPath
 import nz.co.searchwellington.model.helpers.ArchiveLinksService
-import nz.co.searchwellington.model.{ArchiveLink, PublisherArchiveLink, User}
+import nz.co.searchwellington.model.{PublisherArchiveLink, User}
 import nz.co.searchwellington.repositories.ContentRetrievalService
 import org.joda.time.Interval
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
 import org.springframework.ui.ModelMap
-import org.springframework.web.servlet.ModelAndView
 import uk.co.eelpieconsulting.common.dates.DateFormatter
 
 import javax.servlet.http.HttpServletRequest
@@ -28,17 +27,17 @@ import scala.jdk.CollectionConverters._
     RequestPath.getPathFrom(request).matches(archiveMonthPath)
   }
 
-  def populateContentModel(request: HttpServletRequest, loggedInUser: Option[User]): Future[Option[ModelAndView]] = {
+  def populateContentModel(request: HttpServletRequest, loggedInUser: Option[User]): Future[Option[ModelMap]] = {
     getArchiveMonthFromPath(RequestPath.getPathFrom(request)).map { month =>
       for {
         newsitemsForMonth <- contentRetrievalService.getNewsitemsForInterval(month, loggedInUser)
       } yield {
         val monthLabel = dateFormatter.fullMonthYear(month.getStart.toDate)
-        Some(new ModelAndView().
-          addObject("heading", monthLabel).
-          addObject("description", "Archived newsitems for the month of " + monthLabel).
-          addObject(MAIN_CONTENT, newsitemsForMonth.asJava).
-          addObject("rss_url", rssUrlBuilder.getBaseRssUrl))
+        Some(new ModelMap().
+          addAttribute("heading", monthLabel).
+          addAttribute("description", "Archived newsitems for the month of " + monthLabel).
+          addAttribute(MAIN_CONTENT, newsitemsForMonth.asJava).
+          addAttribute("rss_url", rssUrlBuilder.getBaseRssUrl))
       }
     }.getOrElse {
       Future.successful(None)
@@ -71,7 +70,7 @@ import scala.jdk.CollectionConverters._
     }
   }
 
-  def getViewName(mv: ModelAndView, loggedInUser: Option[User]): String = "archivePage"
+  def getViewName(mv: ModelMap, loggedInUser: Option[User]): String = "archivePage"
 
   private def getArchiveMonthFromPath(path: String): Option[Interval] = {
     if (path.matches(archiveMonthPath)) {

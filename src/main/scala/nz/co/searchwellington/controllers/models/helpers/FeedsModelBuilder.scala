@@ -10,7 +10,6 @@ import org.apache.commons.logging.LogFactory
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
 import org.springframework.ui.ModelMap
-import org.springframework.web.servlet.ModelAndView
 
 import javax.servlet.http.HttpServletRequest
 import scala.concurrent.ExecutionContext.Implicits.global
@@ -31,17 +30,17 @@ import scala.jdk.CollectionConverters._
     RequestPath.getPathFrom(request).matches("^/feeds(/(rss|json))?$")
   }
 
-  def populateContentModel(request: HttpServletRequest, loggedInUser: Option[User]): Future[Option[ModelAndView]] = {
+  def populateContentModel(request: HttpServletRequest, loggedInUser: Option[User]): Future[Option[ModelMap]] = {
     log.info("Building feed page model")
     val withAcceptancePolicy = Option(request.getParameter("acceptance")).map(FeedAcceptancePolicy.valueOf)
     for {
       feeds <- contentRetrievalService.getFeeds(withAcceptancePolicy, loggedInUser)
     } yield {
-      val mv = new ModelAndView().
-        addObject("heading", "Feeds").
-        addObject("description", "Incoming feeds").
-        addObject("link", urlBuilder.fullyQualified(urlBuilder.getFeedsUrl)).
-        addObject(MAIN_CONTENT, feeds.asJava)
+      val mv = new ModelMap().
+        addAttribute("heading", "Feeds").
+        addAttribute("description", "Incoming feeds").
+        addAttribute("link", urlBuilder.fullyQualified(urlBuilder.getFeedsUrl)).
+        addAttribute(MAIN_CONTENT, feeds.asJava)
       Some(mv)
     }
   }
@@ -79,6 +78,6 @@ import scala.jdk.CollectionConverters._
     }
   }
 
-  def getViewName(mv: ModelAndView, loggedInUser: Option[User]): String = "feeds"
+  def getViewName(mv: ModelMap, loggedInUser: Option[User]): String = "feeds"
 
 }

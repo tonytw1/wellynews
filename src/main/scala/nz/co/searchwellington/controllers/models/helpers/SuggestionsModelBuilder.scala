@@ -2,7 +2,7 @@ package nz.co.searchwellington.controllers.models.helpers
 
 import nz.co.searchwellington.ReasonableWaits
 import nz.co.searchwellington.controllers.RssUrlBuilder
-import nz.co.searchwellington.feeds.suggesteditems.{SuggestedFeedsService, SuggestedFeeditemsService}
+import nz.co.searchwellington.feeds.suggesteditems.{SuggestedFeeditemsService, SuggestedFeedsService}
 import nz.co.searchwellington.filters.RequestPath
 import nz.co.searchwellington.model.User
 import nz.co.searchwellington.repositories.ContentRetrievalService
@@ -10,7 +10,6 @@ import nz.co.searchwellington.urls.UrlBuilder
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
 import org.springframework.ui.ModelMap
-import org.springframework.web.servlet.ModelAndView
 
 import javax.servlet.http.HttpServletRequest
 import scala.concurrent.ExecutionContext.Implicits.global
@@ -29,15 +28,15 @@ import scala.jdk.CollectionConverters._
     RequestPath.getPathFrom(request).matches("^/feeds/inbox(/(rss|json))?$")
   }
 
-  def populateContentModel(request: HttpServletRequest, loggedInUser: Option[User]): Future[Option[ModelAndView]] = {
+  def populateContentModel(request: HttpServletRequest, loggedInUser: Option[User]): Future[Option[ModelMap]] = {
     for {
       suggestions <- suggestedFeeditemsService.getSuggestionFeednewsitems(MAX_SUGGESTIONS, loggedInUser)
     } yield {
-      val mv = new ModelAndView().
-        addObject(MAIN_CONTENT, suggestions.asJava).
-        addObject("heading", "Inbox").
-        addObject("link", urlBuilder.fullyQualified(urlBuilder.getFeedsInboxUrl)).
-        addObject("description", "Suggested news items from local feeds.")
+      val mv = new ModelMap().
+        addAttribute(MAIN_CONTENT, suggestions.asJava).
+        addAttribute("heading", "Inbox").
+        addAttribute("link", urlBuilder.fullyQualified(urlBuilder.getFeedsInboxUrl)).
+        addAttribute("description", "Suggested news items from local feeds.")
       commonAttributesModelBuilder.setRss(mv, rssUrlBuilder.getTitleForSuggestions, rssUrlBuilder.getRssUrlForFeedSuggestions)
       Some(mv)
     }
@@ -53,6 +52,6 @@ import scala.jdk.CollectionConverters._
     }
   }
 
-  def getViewName(mv: ModelAndView, loggedInUser: Option[User]): String = "suggestions"
+  def getViewName(mv: ModelMap, loggedInUser: Option[User]): String = "suggestions"
 
 }

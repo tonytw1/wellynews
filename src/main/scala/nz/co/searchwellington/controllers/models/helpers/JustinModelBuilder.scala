@@ -9,7 +9,6 @@ import nz.co.searchwellington.urls.UrlBuilder
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
 import org.springframework.ui.ModelMap
-import org.springframework.web.servlet.ModelAndView
 
 import javax.servlet.http.HttpServletRequest
 import scala.concurrent.ExecutionContext.Implicits.global
@@ -25,17 +24,17 @@ import scala.jdk.CollectionConverters._
     RequestPath.getPathFrom(request).matches("^/justin(/(rss|json))?$")
   }
 
-  def populateContentModel(request: HttpServletRequest, loggedInUser: Option[User]): Future[Option[ModelAndView]] = {
+  def populateContentModel(request: HttpServletRequest, loggedInUser: Option[User]): Future[Option[ModelMap]] = {
     val page = getPage(request)
 
     for {
       websites <- contentRetrievalService.getLatestWebsites(MAX_NEWSITEMS, loggedInUser = loggedInUser, page = page)
     } yield {
-      val mv = new ModelAndView().
-        addObject("heading", "Latest additions").
-        addObject("description", "The most recently submitted website listings.").
-        addObject("link", urlBuilder.fullyQualified(urlBuilder.getJustinUrl)).
-        addObject(MAIN_CONTENT, websites._1.asJava)
+      val mv = new ModelMap().
+        addAttribute("heading", "Latest additions").
+        addAttribute("description", "The most recently submitted website listings.").
+        addAttribute("link", urlBuilder.fullyQualified(urlBuilder.getJustinUrl)).
+        addAttribute(MAIN_CONTENT, websites._1.asJava)
 
       val startIndex = getStartIndex(page, MAX_NEWSITEMS)
       def paginationLinks(page: Int): String = {
@@ -52,6 +51,6 @@ import scala.jdk.CollectionConverters._
     latestNewsitems(loggedInUser)
   }
 
-  def getViewName(mv: ModelAndView, loggedInUser: Option[User]): String = "justin"
+  def getViewName(mv: ModelMap, loggedInUser: Option[User]): String = "justin"
 
 }

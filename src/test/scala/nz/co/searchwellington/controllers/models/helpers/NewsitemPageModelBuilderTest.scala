@@ -56,7 +56,7 @@ class NewsitemPageModelBuilderTest extends ReasonableWaits {
 
     val mv = Await.result(modelBuilder.populateContentModel(request), TenSeconds).get
 
-    val item = mv.getModel.get("item")
+    val item = mv.get("item")
     assertEquals(frontendNewsitem, item)
   }
 
@@ -81,13 +81,13 @@ class NewsitemPageModelBuilderTest extends ReasonableWaits {
 
     val mv = Await.result(modelBuilder.populateContentModel(request), TenSeconds).get
 
-    val handTaggingVotes = mv.getModel.get("hand_tagging_votes")
+    val handTaggingVotes = mv.get("hand_tagging_votes")
     assertEquals(Seq(handTagging).asJava, handTaggingVotes, "Expect to be able to see all hand tagging votes for this newsitem")
 
-    val otherTaggingVotes = mv.getModel.get("other_tagging_votes")
+    val otherTaggingVotes = mv.get("other_tagging_votes")
     assertEquals(Seq.empty.asJava, otherTaggingVotes, "Expect to be see other tagging votes")
 
-    val geoTagVotes = mv.getModel.get("geotag_votes")
+    val geoTagVotes = mv.get("geotag_votes")
     assertEquals(geotagVotesForNewsitem.asJava, geoTagVotes,"Expect to be see geotagging votes")
   }
 
@@ -112,7 +112,7 @@ class NewsitemPageModelBuilderTest extends ReasonableWaits {
 
     val mv = Await.result(modelBuilder.populateContentModel(request), TenSeconds).get
 
-    val geotagged = mv.getModel.get("geocoded").asInstanceOf[java.util.List[FrontendNewsitem]]
+    val geotagged = mv.get("geocoded").asInstanceOf[java.util.List[FrontendNewsitem]]
     assertNotNull(geotagged)
     assertEquals(1, geotagged.size)
     assertEquals(geotaggedFrontendNewsitem, geotagged.get(0))
@@ -135,7 +135,7 @@ class NewsitemPageModelBuilderTest extends ReasonableWaits {
 
     val mv = Await.result(modelBuilder.populateContentModel(request), TenSeconds).get
 
-    assertNull(mv.getModel.get("geocoded"))
+    assertNull(mv.get("geocoded"))
   }
 
   @Test
@@ -156,7 +156,7 @@ class NewsitemPageModelBuilderTest extends ReasonableWaits {
 
     val mv = Await.result(modelBuilder.populateContentModel(request), TenSeconds).get
 
-    val geotaggedVotesOnModel = mv.getModel.get("geotag_votes").asInstanceOf[java.util.List[GeotaggingVote]]
+    val geotaggedVotesOnModel = mv.get("geotag_votes").asInstanceOf[java.util.List[GeotaggingVote]]
     assertEquals(1, geotaggedVotesOnModel.size)
     assertEquals(geotaggingVote, geotaggedVotesOnModel.get(0))
   }

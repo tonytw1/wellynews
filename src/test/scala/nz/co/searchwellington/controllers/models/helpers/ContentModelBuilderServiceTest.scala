@@ -29,7 +29,7 @@ class ContentModelBuilderServiceTest extends ReasonableWaits {
     request
   }
 
-  private val validModelAndView = new ModelAndView("").addObject("something", "abc")
+  private val validModel = new ModelMap("").addAttribute("something", "abc")
   private val validExtras = new ModelMap().addAttribute("somethingextra", "xyz")
 
   private val invalidModelBuilder = mock(classOf[ModelBuilder])
@@ -44,27 +44,30 @@ class ContentModelBuilderServiceTest extends ReasonableWaits {
   def shouldDelegateModelBuildingToTheFirstBuildWhoSaysTheyAreValid(): Unit = {
     when(invalidModelBuilder.isValid(request)).thenReturn(false)
     when(validModelBuilder.isValid(request)).thenReturn(true)
-    when(validModelBuilder.populateContentModel(request, None)).thenReturn(Future.successful(Some(validModelAndView)))
+    when(validModelBuilder.populateContentModel(request, None)).thenReturn(Future.successful(Some(validModel)))
     when(validModelBuilder.populateExtraModelContent(request, None)).thenReturn(Future.successful(validExtras))
+    when(validModelBuilder.getViewName(validModel, None)).thenReturn("a-view")
 
     when(contentRetrievalService.getTopLevelTags).thenReturn(Future.successful(Seq.empty))
     when(contentRetrievalService.getFeaturedTags).thenReturn(Future.successful(Seq.empty))
 
-    val result = Await.result(contentModelBuilderService.populateContentModel(request), TenSeconds)
+    val result = Await.result(contentModelBuilderService.buildModelAndView(request), TenSeconds)
 
-    assertEquals(Some(validModelAndView), result)
+    val expectedModelAndView = new ModelAndView("a-view").addAllObjects(validModel).addAllObjects(validExtras)
+    assertEquals(expectedModelAndView.getModel, result.get.getModel)
+    assertEquals("a-view", result.get.getViewName)
   }
 
   @Test
   def shouldMergeExtrasOntoTheModelAndViewForHtmlPages(): Unit = {
     when(validModelBuilder.isValid(request)).thenReturn(true)
-    when(validModelBuilder.populateContentModel(request, None)).thenReturn(Future.successful(Some(validModelAndView)))
+    when(validModelBuilder.populateContentModel(request, None)).thenReturn(Future.successful(Some(validModel)))
     when(validModelBuilder.populateExtraModelContent(request, None)).thenReturn(Future.successful(validExtras))
 
     when(contentRetrievalService.getTopLevelTags).thenReturn(Future.successful(Seq.empty))
     when(contentRetrievalService.getFeaturedTags).thenReturn(Future.successful(Seq.empty))
 
-    val result = Await.result(contentModelBuilderService.populateContentModel(request), TenSeconds)
+    val result = Await.result(contentModelBuilderService.buildModelAndView(request), TenSeconds)
 
     val model = result.get.getModel
     assertEquals("abc", model.get("something"))
@@ -76,13 +79,13 @@ class ContentModelBuilderServiceTest extends ReasonableWaits {
     val loggedInUser = User(name = Some("A user"))
     when(invalidModelBuilder.isValid(request)).thenReturn(false)
     when(validModelBuilder.isValid(request)).thenReturn(true)
-    when(validModelBuilder.populateContentModel(request, Some(loggedInUser))).thenReturn(Future.successful(Some(validModelAndView)))
+    when(validModelBuilder.populateContentModel(request, Some(loggedInUser))).thenReturn(Future.successful(Some(validModel)))
     when(validModelBuilder.populateExtraModelContent(request, Some(loggedInUser))).thenReturn(Future.successful(validExtras))
 
     when(contentRetrievalService.getTopLevelTags).thenReturn(Future.successful(Seq.empty))
     when(contentRetrievalService.getFeaturedTags).thenReturn(Future.successful(Seq.empty))
 
-    val result = Await.result(contentModelBuilderService.populateContentModel(request, Some(loggedInUser)), TenSeconds)
+    val result = Await.result(contentModelBuilderService.buildModelAndView(request, Some(loggedInUser)), TenSeconds)
 
     assertEquals(loggedInUser, result.get.getModel.get("loggedInUser"))
   }
@@ -92,7 +95,7 @@ class ContentModelBuilderServiceTest extends ReasonableWaits {
     when(validModelBuilder.isValid(request)).thenReturn(false)
     when(invalidModelBuilder.isValid(request)).thenReturn(false)
 
-    val result = Await.result(contentModelBuilderService.populateContentModel(request), TenSeconds)
+    val result = Await.result(contentModelBuilderService.buildModelAndView(request), TenSeconds)
 
     assertEquals(None, result)
   }
@@ -101,24 +104,24 @@ class ContentModelBuilderServiceTest extends ReasonableWaits {
   def rssSuffixedRequestsShouldBeGivenTheRssView(): Unit = {
     when(invalidModelBuilder.isValid(request)).thenReturn(false)
     when(validModelBuilder.isValid(request)).thenReturn(true)
-    when(validModelBuilder.populateContentModel(request, None)).thenReturn(Future.successful(Some(validModelAndView)))
+    when(validModelBuilder.populateContentModel(request, None)).thenReturn(Future.successful(Some(validModel)))
 
     val rssView = mock(classOf[RssView])
     when(viewFactory.getRssView(any, any, any)).thenReturn(rssView)
     request.setRequestURI("/something/rss")
-    assertEquals(rssView, Await.result(contentModelBuilderService.populateContentModel(request), TenSeconds).get.getView)
+    assertEquals(rssView, Await.result(contentModelBuilderService.buildModelAndView(request), TenSeconds).get.getView)
   }
 
   @Test
   def jsonSuffixedRequestsShouldBeGivenTheRssView(): Unit = {
     when(invalidModelBuilder.isValid(request)).thenReturn(false)
     when(validModelBuilder.isValid(request)).thenReturn(true)
-    when(validModelBuilder.populateContentModel(request, None)).thenReturn(Future.successful(Some(validModelAndView)))
+    when(validModelBuilder.populateContentModel(request, None)).thenReturn(Future.successful(Some(validModel)))
 
     val jsonView = mock(classOf[JsonView])
     when(viewFactory.getJsonView).thenReturn(jsonView)
     request.setRequestURI("/something/json")
-    assertEquals(jsonView, Await.result(contentModelBuilderService.populateContentModel(request), TenSeconds).get.getView)
+    assertEquals(jsonView, Await.result(contentModelBuilderService.buildModelAndView(request), TenSeconds).get.getView)
   }
 
 }

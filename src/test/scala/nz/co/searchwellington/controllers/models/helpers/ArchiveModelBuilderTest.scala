@@ -46,9 +46,9 @@ class ArchiveModelBuilderTest extends ReasonableWaits with ContentFields with Te
 
     val mv = Await.result(modelBuilder.populateContentModel(request), TenSeconds).get
 
-    assertEquals(monthNewsitems.asJava, mv.getModel.get(MAIN_CONTENT))
-    assertEquals("July 2020", mv.getModel.get("heading"))
-    assertEquals("/rss", mv.getModel.get("rss_url"))
+    assertEquals(monthNewsitems.asJava, mv.get(MAIN_CONTENT))
+    assertEquals("July 2020", mv.get("heading"))
+    assertEquals("/rss", mv.get("rss_url"))
   }
 
   @Test

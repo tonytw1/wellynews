@@ -49,7 +49,7 @@ class FeedsModelBuilderTest extends ReasonableWaits with ContentFields {
 
     val mv = Await.result(modelBuilder.populateContentModel(request), TenSeconds).get
 
-    assertEquals(feeds.asJava, mv.getModel.get(MAIN_CONTENT))
+    assertEquals(feeds.asJava, mv.get(MAIN_CONTENT))
   }
 
   @Test

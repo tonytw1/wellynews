@@ -8,7 +8,6 @@ import org.joda.time.Interval
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
 import org.springframework.ui.ModelMap
-import org.springframework.web.servlet.ModelAndView
 import uk.co.eelpieconsulting.common.dates.DateFormatter
 
 import javax.servlet.http.HttpServletRequest
@@ -33,7 +32,7 @@ import scala.jdk.CollectionConverters._
     }
   }
 
-  override def populateContentModel(request: HttpServletRequest, loggedInUser: Option[User]): Future[Option[ModelAndView]] = {
+  override def populateContentModel(request: HttpServletRequest, loggedInUser: Option[User]): Future[Option[ModelMap]] = {
     val tags = request.getAttribute(TAGS).asInstanceOf[Seq[Tag]]
 
     tags.headOption.map { tag =>
@@ -41,12 +40,12 @@ import scala.jdk.CollectionConverters._
         for {
           newsitemsForMonth <- contentRetrievalService.getNewsitemsForTagInterval(tag, month, loggedInUser)
         } yield {
-          Some(new ModelAndView().
-            addObject("tag", tag).
-            addObject(MAIN_CONTENT, newsitemsForMonth.asJava).
-            addObject("heading", tag.getDisplayName + " - " + dateFormatter.fullMonthYear(month.getStart.toDate)).
-            addObject("month", month).
-            addObject("rss_url", rssUrlBuilder.getRssUrlForTag(tag)))
+          Some(new ModelMap().
+            addAttribute("tag", tag).
+            addAttribute(MAIN_CONTENT, newsitemsForMonth.asJava).
+            addAttribute("heading", tag.getDisplayName + " - " + dateFormatter.fullMonthYear(month.getStart.toDate)).
+            addAttribute("month", month).
+            addAttribute("rss_url", rssUrlBuilder.getRssUrlForTag(tag)))
         }
 
       }.getOrElse {
@@ -79,7 +78,7 @@ import scala.jdk.CollectionConverters._
     )
   }
 
-  override def getViewName(mv: ModelAndView, loggedInUser: Option[User]): String = "tagMonth"
+  override def getViewName(mv: ModelMap, loggedInUser: Option[User]): String = "tagMonth"
 
   private def parseMonth(tag: Tag, path: String): Option[Interval] = {
     val tagPrefix = "/" + tag.name + "/"

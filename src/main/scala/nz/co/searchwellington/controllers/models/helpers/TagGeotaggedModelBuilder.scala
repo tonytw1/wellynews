@@ -10,7 +10,6 @@ import org.apache.commons.logging.LogFactory
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
 import org.springframework.ui.ModelMap
-import org.springframework.web.servlet.ModelAndView
 
 import javax.servlet.http.HttpServletRequest
 import scala.concurrent.ExecutionContext.Implicits.global
@@ -31,17 +30,17 @@ import scala.jdk.CollectionConverters._
     isSingleTagPage && hasCommentPath
   }
 
-  def populateContentModel(request: HttpServletRequest, loggedInUser: Option[User]): Future[Option[ModelAndView]] = {
-    def populateTagCommentPageModelAndView(tag: Tag): Future[Some[ModelAndView]] = {
+  def populateContentModel(request: HttpServletRequest, loggedInUser: Option[User]): Future[Option[ModelMap]] = {
+    def populateTagCommentPageModelAndView(tag: Tag): Future[Some[ModelMap]] = {
       for {
         newsitems <- contentRetrievalService.getGeotaggedNewsitemsForTag(tag, MAX_NUMBER_OF_GEOTAGGED_TO_SHOW, loggedInUser = loggedInUser)
       } yield {
-        val mv = new ModelAndView().
-          addObject("tag", tag).
-          addObject("heading", tag.getDisplayName + " geotagged").
-          addObject("description", "Geotagged " + tag.getDisplayName + " newsitems").
-          addObject("link", urlBuilder.fullyQualified(urlBuilder.getTagGeocodedUrl(tag))).
-          addObject(MAIN_CONTENT, newsitems.asJava)
+        val mv = new ModelMap().
+          addAttribute("tag", tag).
+          addAttribute("heading", tag.getDisplayName + " geotagged").
+          addAttribute("description", "Geotagged " + tag.getDisplayName + " newsitems").
+          addAttribute("link", urlBuilder.fullyQualified(urlBuilder.getTagGeocodedUrl(tag))).
+          addAttribute(MAIN_CONTENT, newsitems.asJava)
 
         if (newsitems.nonEmpty) {
           commonAttributesModelBuilder.setRss(mv, rssUrlBuilder.getRssTitleForTagGeotagged(tag), rssUrlBuilder.getRssUrlForTagGeotagged(tag))
@@ -60,6 +59,6 @@ import scala.jdk.CollectionConverters._
     latestNewsitems(loggedInUser)
   }
 
-  def getViewName(mv: ModelAndView, loggedInUser: Option[User]): String = "tagGeotagged"
+  def getViewName(mv: ModelMap, loggedInUser: Option[User]): String = "tagGeotagged"
 
 }

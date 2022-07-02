@@ -12,9 +12,9 @@ import scala.jdk.CollectionConverters._
 @Component class CommonAttributesModelBuilder @Autowired()() extends CommonSizes
   with ReasonableWaits {
 
-  def setRss(mv: ModelAndView, title: String, url: String): Unit = {
-    mv.addObject("rss_title", title)
-    mv.addObject("rss_url", url)
+  def setRss(mv: ModelMap, title: String, url: String): Unit = {
+    mv.addAttribute("rss_title", title)
+    mv.addAttribute("rss_url", url)
   }
 
   def secondaryFeeds(feeds: Seq[FrontendResource], heading: String = "Updated Feeds",

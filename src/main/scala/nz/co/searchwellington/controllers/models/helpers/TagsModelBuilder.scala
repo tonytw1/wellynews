@@ -7,7 +7,6 @@ import nz.co.searchwellington.repositories.{ContentRetrievalService, TagDAO}
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
 import org.springframework.ui.ModelMap
-import org.springframework.web.servlet.ModelAndView
 
 import javax.servlet.http.HttpServletRequest
 import scala.concurrent.ExecutionContext.Implicits.global
@@ -21,13 +20,13 @@ import scala.jdk.CollectionConverters._
     RequestPath.getPathFrom(request).matches("^/tags$") || RequestPath.getPathFrom(request).matches("^/tags/json$")
   }
 
-  def populateContentModel(request: HttpServletRequest, loggedInUser: Option[User]): Future[Option[ModelAndView]] = {
+  def populateContentModel(request: HttpServletRequest, loggedInUser: Option[User]): Future[Option[ModelMap]] = {
     for {
       tags <- tagDAO.getAllTags
     } yield {
-      Some(new ModelAndView().
-        addObject(MAIN_CONTENT, tags.asJava).
-        addObject("heading", "All tags"))
+      Some(new ModelMap().
+        addAttribute(MAIN_CONTENT, tags.asJava).
+        addAttribute("heading", "All tags"))
     }
   }
 
@@ -35,6 +34,6 @@ import scala.jdk.CollectionConverters._
     latestNewsitems(loggedInUser)
   }
 
-  def getViewName(mv: ModelAndView, loggedInUser: Option[User]): String = "tags"
+  def getViewName(mv: ModelMap, loggedInUser: Option[User]): String = "tags"
 
 }

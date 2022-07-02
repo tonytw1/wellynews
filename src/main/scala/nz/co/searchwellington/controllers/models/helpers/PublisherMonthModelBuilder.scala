@@ -28,19 +28,19 @@ import scala.jdk.CollectionConverters._
     }.nonEmpty
   }
 
-  override def populateContentModel(request: HttpServletRequest, loggedInUser: Option[User]): Future[Option[ModelAndView]] = {
+  override def populateContentModel(request: HttpServletRequest, loggedInUser: Option[User]): Future[Option[ModelMap]] = {
     Option(request.getAttribute("publisher").asInstanceOf[Website]).map { publisher =>
       parseMonth(publisher, RequestPath.getPathFrom(request)).map { month =>
         for {
           eventualFrontendWebsite <- frontendResourceMapper.createFrontendResourceFrom(publisher, loggedInUser)
           newsitemsForMonth <- contentRetrievalService.getNewsitemsForPublisherInterval(publisher, month, loggedInUser)
         } yield {
-          Some(new ModelAndView().
-            addObject("publisher", eventualFrontendWebsite).
-            addObject(MAIN_CONTENT, newsitemsForMonth.asJava).
-            addObject("heading", publisher.getTitle + " - " + dateFormatter.fullMonthYear(month.getStart.toDate)).
-            addObject("month", month).
-            addObject("rss_url", rssUrlBuilder.getRssUrlForPublisher(publisher)))
+          Some(new ModelMap().
+            addAttribute("publisher", eventualFrontendWebsite).
+            addAttribute(MAIN_CONTENT, newsitemsForMonth.asJava).
+            addAttribute("heading", publisher.getTitle + " - " + dateFormatter.fullMonthYear(month.getStart.toDate)).
+            addAttribute("month", month).
+            addAttribute("rss_url", rssUrlBuilder.getRssUrlForPublisher(publisher)))
         }
 
       }.getOrElse {
@@ -74,7 +74,7 @@ import scala.jdk.CollectionConverters._
     }.getOrElse(Future.successful(new ModelMap()))
   }
 
-  override def getViewName(mv: ModelAndView, loggedInUser: Option[User]): String = "publisherMonth"
+  override def getViewName(mv: ModelMap, loggedInUser: Option[User]): String = "publisherMonth"
 
   private def parseMonth(publisher: Website, path: String): Option[Interval] = {
     publisher.url_words.flatMap { publisherUrlWords =>

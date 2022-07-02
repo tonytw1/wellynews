@@ -82,9 +82,9 @@ class PublisherMonthModelBuilderTest extends ReasonableWaits with ContentFields 
 
     val mv = Await.result(modelBuilder.populateContentModel(request), TenSeconds).get
 
-    assertEquals(monthNewsitems.asJava, mv.getModel.get(MAIN_CONTENT))
-    assertEquals("A publisher - July 2020", mv.getModel.get("heading"))
-    assertEquals(frontendPubisher, mv.getModel.get("publisher"))
+    assertEquals(monthNewsitems.asJava, mv.get(MAIN_CONTENT))
+    assertEquals("A publisher - July 2020", mv.get("heading"))
+    assertEquals(frontendPubisher, mv.get("publisher"))
   }
 
   @Test

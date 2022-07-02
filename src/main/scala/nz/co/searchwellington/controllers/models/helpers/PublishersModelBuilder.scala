@@ -8,7 +8,6 @@ import nz.co.searchwellington.repositories.ContentRetrievalService
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
 import org.springframework.ui.ModelMap
-import org.springframework.web.servlet.ModelAndView
 
 import javax.servlet.http.HttpServletRequest
 import scala.concurrent.ExecutionContext.Implicits.global
@@ -23,7 +22,7 @@ import scala.jdk.CollectionConverters._
     RequestPath.getPathFrom(request).matches("^/publishers$") || RequestPath.getPathFrom(request).matches("^/publishers/json$")
   }
 
-  def populateContentModel(request: HttpServletRequest, loggedInUser: Option[User]): Future[Option[ModelAndView]] = {
+  def populateContentModel(request: HttpServletRequest, loggedInUser: Option[User]): Future[Option[ModelMap]] = {
     val q = Option(request.getParameter("q"))
 
     val eventualPublishers = q.map { q =>
@@ -40,10 +39,9 @@ import scala.jdk.CollectionConverters._
           map(r => frontendResourceMapper.createFrontendResourceFrom(r, loggedInUser))
       }
     } yield {
-      val mv = new ModelAndView().
-        addObject(MAIN_CONTENT, frontendPublishers.asJava).
-        addObject("heading", "All publishers")
-      Some(mv)
+      Some(new ModelMap().
+        addAttribute(MAIN_CONTENT, frontendPublishers.asJava).
+        addAttribute("heading", "All publishers"))
     }
   }
 
@@ -51,6 +49,6 @@ import scala.jdk.CollectionConverters._
     latestNewsitems(loggedInUser)
   }
 
-  def getViewName(mv: ModelAndView, loggedInUser: Option[User]): String = "publishers"
+  def getViewName(mv: ModelMap, loggedInUser: Option[User]): String = "publishers"
 
 }

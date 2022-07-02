@@ -29,7 +29,7 @@ import scala.jdk.CollectionConverters._
     RequestPath.getPathFrom(request).matches(profilePageRegex)
   }
 
-  def populateContentModel(request: HttpServletRequest, loggedInUser: Option[User]): Future[Option[ModelAndView]] = {
+  def populateContentModel(request: HttpServletRequest, loggedInUser: Option[User]): Future[Option[ModelMap]] = {
     val path = RequestPath.getPathFrom(request)
 
     def userByPath(path: String): Future[Option[User]] = {
@@ -54,12 +54,12 @@ import scala.jdk.CollectionConverters._
           tagged <- contentRetrievalService.getTaggedBy(user, loggedInUser)
           latestNewsitems <- latestNewsitems(loggedInUser)
         } yield {
-          val mv = new ModelAndView().
-            addObject("heading", "User profile").
-            addObject("profileuser", user).
-            addObject(MAIN_CONTENT, submissions._1.asJava).
-            addObject("tagged", tagged.asJava).
-            addAllObjects(latestNewsitems)
+          val mv = new ModelMap().
+            addAttribute("heading", "User profile").
+            addAttribute("profileuser", user).
+            addAttribute(MAIN_CONTENT, submissions._1.asJava).
+            addAttribute("tagged", tagged.asJava).
+            addAllAttributes(latestNewsitems)
           Some(mv)
         }
 
@@ -73,9 +73,9 @@ import scala.jdk.CollectionConverters._
     Future.successful(new ModelMap())
   }
 
-  def getViewName(mv: ModelAndView, loggedInUser: Option[User]): String = {
+  def getViewName(mv: ModelMap, loggedInUser: Option[User]): String = {
     loggedInUser.flatMap { user =>
-      Option(mv.getModel.get("profileuser").asInstanceOf[User]).map { profileUser =>
+      Option(mv.get("profileuser").asInstanceOf[User]).map { profileUser =>
         if (user == profileUser) {
           "profile"
         } else {

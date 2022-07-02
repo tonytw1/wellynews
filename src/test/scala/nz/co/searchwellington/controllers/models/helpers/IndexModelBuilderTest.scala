@@ -60,7 +60,7 @@ class IndexModelBuilderTest extends ReasonableWaits with ContentFields {
 
     val mv = Await.result(modelBuilder.populateContentModel(request), TenSeconds).get
 
-    assertEquals(latestNewsitems.asJava, mv.getModel.get(MAIN_CONTENT))
+    assertEquals(latestNewsitems.asJava, mv.get(MAIN_CONTENT))
   }
 
 }

@@ -8,6 +8,7 @@ import nz.co.searchwellington.repositories.mongo.MongoRepository
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.core.annotation.Order
 import org.springframework.stereotype.Controller
+import org.springframework.ui.ModelMap
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.servlet.ModelAndView
 
@@ -89,16 +90,15 @@ import scala.jdk.CollectionConverters._
       latestNewsitems <- latestNewsitems(loggedInUser)
 
     } yield {
-        val mv = new ModelAndView("rssfeeds").
-          addObject("heading", "RSS feeds").
-          addObject("loggedInUser", loggedInUser.orNull).
-          addObject("feedable_publishers", exampleFeedablePublishers.asJava).
-          addObject("feedable_tags", exampleFeedableTags.asJava).
-          addAllObjects(commonLocal).
-          addAllObjects(latestNewsitems)
-
+        val mv = new ModelMap().
+          addAttribute("heading", "RSS feeds").
+          addAttribute("loggedInUser", loggedInUser.orNull).
+          addAttribute("feedable_publishers", exampleFeedablePublishers.asJava).
+          addAttribute("feedable_tags", exampleFeedableTags.asJava).
+          addAllAttributes(commonLocal).
+          addAllAttributes(latestNewsitems)
         commonAttributesModelBuilder.setRss(mv, rssUrlBuilder.getBaseRssTitle, rssUrlBuilder.getBaseRssUrl)
-        mv
+        new ModelAndView("rssfeeds").addAllObjects(mv)
     }
 
     Await.result(eventualModelAndView, TenSeconds)

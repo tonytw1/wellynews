@@ -26,17 +26,17 @@ import scala.jdk.CollectionConverters._
     RequestPath.getPathFrom(request).matches("^/accepted(/(rss|json))?$")
   }
 
-  def populateContentModel(request: HttpServletRequest, loggedInUser: Option[User]): Future[Option[ModelAndView]] = {
+  def populateContentModel(request: HttpServletRequest, loggedInUser: Option[User]): Future[Option[ModelMap]] = {
     val page = getPage(request)
 
     for {
       acceptedNewsitmes <- contentRetrievalService.getAcceptedNewsitems(MAX_NEWSITEMS, loggedInUser = loggedInUser, page = page)
     } yield {
-      val mv = new ModelAndView().
-        addObject("heading", "Accepted").
-        addObject("description", "The most recently accepted feed news items.").
-        addObject("link", urlBuilder.fullyQualified(urlBuilder.getAcceptedUrl)).
-        addObject(MAIN_CONTENT, acceptedNewsitmes._1.asJava)
+      val mv = new ModelMap().
+        addAttribute("heading", "Accepted").
+        addAttribute("description", "The most recently accepted feed news items.").
+        addAttribute("link", urlBuilder.fullyQualified(urlBuilder.getAcceptedUrl)).
+        addAttribute(MAIN_CONTENT, acceptedNewsitmes._1.asJava)
 
       val startIndex = getStartIndex(page, MAX_NEWSITEMS)
       def paginationLinks(page: Int): String = {
@@ -62,6 +62,6 @@ import scala.jdk.CollectionConverters._
     }
   }
 
-  def getViewName(mv: ModelAndView, loggedInUser: Option[User]): String = "accepted"
+  def getViewName(mv: ModelMap, loggedInUser: Option[User]): String = "accepted"
 
 }
