@@ -28,13 +28,13 @@ class InboxFeedsService @Autowired()(mongoRepository: MongoRepository, whakaokoS
         }.toMap
 
         val feedsWithSubscriptions = suggestOnlyFeeds.flatMap { feed =>
-          val mayBeSubscription = feed.whakaokoSubscription.map { subscriptionId =>
-            subscriptionsById(subscriptionId)
+          for {
+            subscriptionId <- feed.whakaokoSubscription
+            subscription <- subscriptionsById.get(subscriptionId)
+          }  yield {
+            (feed, subscription)
           }
-          mayBeSubscription.map { subscription =>
-            Some(feed, subscription)
-          }
-        }.flatten
+        }
 
         // Override the last change field with better information from the whakaoko subscription; TODO this field is really last accepted date or something
         val frontendFeedsWithAmendedLatestItemDates = feedsWithSubscriptions.map { feed =>
