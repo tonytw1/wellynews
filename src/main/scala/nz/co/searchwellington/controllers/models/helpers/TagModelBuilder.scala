@@ -2,6 +2,7 @@ package nz.co.searchwellington.controllers.models.helpers
 
 import nz.co.searchwellington.ReasonableWaits
 import nz.co.searchwellington.controllers.{CommonModelObjectsService, RssUrlBuilder}
+import nz.co.searchwellington.model.frontend.FrontendResource
 import nz.co.searchwellington.model.{Resource, Tag, TagArchiveLink, User}
 import nz.co.searchwellington.repositories.{ContentRetrievalService, TagDAO}
 import nz.co.searchwellington.tagging.RelatedTagsService
@@ -70,9 +71,7 @@ import scala.jdk.CollectionConverters._
           mv.addObject(MAIN_CONTENT, taggedNewsitems.asJava)
           mv.addObject("main_heading", tag.display_name + " related newsitems")
 
-          if (taggedNewsitems.nonEmpty) {
-            commonAttributesModelBuilder.setRss(mv, rssUrlBuilder.getRssTitleForTag(tag), rssUrlBuilder.getRssUrlForTag(tag))
-          }
+          setRss(mv)
 
           if (totalNewsitems > MAX_NEWSITEMS) {
             monthOfLastItem(taggedNewsitems).foreach { i =>
@@ -152,6 +151,15 @@ import scala.jdk.CollectionConverters._
     } else {
       "tag"
     }
+  }
+
+  def setRss(mv: ModelAndView): ModelAndView = {
+    val tag = mv.getModel.get(TAG).asInstanceOf[Tag]
+    val mainContent = mv.getModel.get(MAIN_CONTENT).asInstanceOf[util.List[FrontendResource]].asScala
+    if (mainContent.nonEmpty) {
+      commonAttributesModelBuilder.setRss(mv, rssUrlBuilder.getRssTitleForTag(tag), rssUrlBuilder.getRssUrlForTag(tag))
+    }
+    mv
   }
 
   private def tagFromRequest(request: HttpServletRequest): Tag = {

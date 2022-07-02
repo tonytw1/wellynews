@@ -21,13 +21,13 @@ import scala.jdk.CollectionConverters._
 
 class TagModelBuilderTest extends ReasonableWaits with ContentFields {
 
-  private val siteInformation = new SiteInformation("", "", "", "", "")
+  private val siteInformation = new SiteInformation("Area name", "", "", "", "", sitename = "Site name")
   private val urlBuilder = new UrlBuilder(siteInformation, new UrlWordsGenerator(new DateFormatter(DateTimeZone.UTC)))
   private val rssUrlBuilder = new RssUrlBuilder(siteInformation)
 
   private val contentRetrievalService = mock(classOf[ContentRetrievalService])
   private val relatedTagsService = mock(classOf[RelatedTagsService])
-  private val commonAttributesModelBuilder = mock(classOf[CommonAttributesModelBuilder])
+  private val commonAttributesModelBuilder = new CommonAttributesModelBuilder()
   private val tagDAO = mock(classOf[TagDAO])
 
   private val newsitem1 = mock(classOf[FrontendResource])
@@ -36,7 +36,7 @@ class TagModelBuilderTest extends ReasonableWaits with ContentFields {
   private val TAG_DISPLAY_NAME = "Penguins"
 
   private val parentTag = Tag(display_name = "Parent")
-  private val tag = Tag(parent = Some(parentTag._id), display_name = TAG_DISPLAY_NAME)
+  private val tag = Tag(parent = Some(parentTag._id), display_name = TAG_DISPLAY_NAME, name = "penguins")
 
   private val loggedInUser = None
 
@@ -166,6 +166,17 @@ class TagModelBuilderTest extends ReasonableWaits with ContentFields {
     val extras = Await.result(modelBuilder.populateExtraModelContent(request, None), TenSeconds)
 
     assertEquals(geotagged.asJava, extras.get("geocoded"))
+  }
+
+  @Test
+  def shouldSetTagRssFeed(): Unit = {
+    val newsitems = Seq(FrontendNewsitem(id = "123", place = Some(Geocode(address = Some("Somewhere")))))
+    val mv = new ModelAndView().addObject("tag", tag).addObject(MAIN_CONTENT, newsitems.asJava)
+
+    val withRss = modelBuilder.setRss(mv)
+
+    assertEquals("Site name - Penguins", withRss.getModel.get("rss_title"))
+    assertEquals("/penguins/rss", withRss.getModel.get("rss_url"))
   }
 
 }
