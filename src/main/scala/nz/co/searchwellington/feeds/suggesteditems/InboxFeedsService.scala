@@ -1,4 +1,4 @@
-package nz.co.searchwellington.controllers.models.helpers
+package nz.co.searchwellington.feeds.suggesteditems
 
 import nz.co.searchwellington.ReasonableWaits
 import nz.co.searchwellington.feeds.whakaoko.WhakaokoService
