@@ -11,16 +11,19 @@ import org.springframework.stereotype.Component
 
 import scala.concurrent.{Await, ExecutionContext, Future}
 
+// TODO How is this different to SuggestedFeeditemsService?
 @Component
 class InboxFeedsService @Autowired()(mongoRepository: MongoRepository, whakaokoService: WhakaokoService, frontendResourceMapper: FrontendResourceMapper)
   extends ReasonableWaits {
 
+  // TODO what is special about this list of feeds?
   def getInboxFeeds()(implicit ec: ExecutionContext): Future[Seq[FrontendFeed]] = {
-    val eventualWhakaokoSubscriptions = whakaokoService.getSubscriptions
+    val eventualMaybeWhakaokoSubscriptions = whakaokoService.getSubscriptions
     for {
       allFeeds <- mongoRepository.getAllFeeds
       suggestOnlyFeeds = allFeeds.filter(_.getAcceptancePolicy == FeedAcceptancePolicy.SUGGEST)
-      whakaokoSubscriptions <- eventualWhakaokoSubscriptions
+      maybeWhakaokoSubscriptions <- eventualMaybeWhakaokoSubscriptions
+      whakaokoSubscriptions = maybeWhakaokoSubscriptions.toOption.getOrElse(Seq.empty)
       inboxFeeds <- {
         val subscriptionsById = whakaokoSubscriptions.map { subscription =>
           (subscription.id, subscription)
@@ -36,7 +39,7 @@ class InboxFeedsService @Autowired()(mongoRepository: MongoRepository, whakaokoS
         }.flatten
 
         // Override the last change field with better information from the whakaoko subscription; TODO this field is really last accepted date or something
-        val frontendFeedsWithAmmendedLatestItemDates = feedsWithSubscriptions.map { feed =>
+        val frontendFeedsWithAmendedLatestItemDates = feedsWithSubscriptions.map { feed =>
           frontendResourceMapper.createFrontendResourceFrom(feed._1).map {
             case frontendFeed: FrontendFeed =>
               val subscription = feed._2
@@ -46,7 +49,7 @@ class InboxFeedsService @Autowired()(mongoRepository: MongoRepository, whakaokoS
           }
         }
 
-        Future.sequence(frontendFeedsWithAmmendedLatestItemDates).map { maybeFrontendFeeds =>
+        Future.sequence(frontendFeedsWithAmendedLatestItemDates).map { maybeFrontendFeeds =>
           maybeFrontendFeeds.flatten.filter(_.latestItemDate != null).sortBy(_.latestItemDate).reverse
         }
       }
