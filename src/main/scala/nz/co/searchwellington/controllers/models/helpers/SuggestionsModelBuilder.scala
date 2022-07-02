@@ -47,7 +47,7 @@ import scala.jdk.CollectionConverters._
 
   def populateExtraModelContent(request: HttpServletRequest, loggedInUser: Option[User]): Future[ModelMap] = {
     for {
-      inboxFeeds <- inboxFeedsService.getInboxFeeds()
+      inboxFeeds <- inboxFeedsService.getSuggestedFeedsOrderedByLatestFeeditemDate()
     } yield {
       new ModelMap().addAttribute("righthand_heading", "Suggest only feeds")
         .addAttribute("righthand_description", "Newsitems from these feeds are not automatically accepted.")

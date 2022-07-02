@@ -2,22 +2,20 @@ package nz.co.searchwellington.controllers.models.helpers
 
 import nz.co.searchwellington.ReasonableWaits
 import nz.co.searchwellington.feeds.whakaoko.WhakaokoService
-import nz.co.searchwellington.model.{Feed, FeedAcceptancePolicy}
+import nz.co.searchwellington.model.FeedAcceptancePolicy
 import nz.co.searchwellington.model.frontend.FrontendFeed
 import nz.co.searchwellington.model.mappers.FrontendResourceMapper
 import nz.co.searchwellington.repositories.mongo.MongoRepository
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
 
-import scala.concurrent.{Await, ExecutionContext, Future}
+import scala.concurrent.{ExecutionContext, Future}
 
-// TODO How is this different to SuggestedFeeditemsService?
 @Component
 class InboxFeedsService @Autowired()(mongoRepository: MongoRepository, whakaokoService: WhakaokoService, frontendResourceMapper: FrontendResourceMapper)
   extends ReasonableWaits {
 
-  // TODO what is special about this list of feeds?
-  def getInboxFeeds()(implicit ec: ExecutionContext): Future[Seq[FrontendFeed]] = {
+  def getSuggestedFeedsOrderedByLatestFeeditemDate()(implicit ec: ExecutionContext): Future[Seq[FrontendFeed]] = {
     val eventualMaybeWhakaokoSubscriptions = whakaokoService.getSubscriptions
     for {
       allFeeds <- mongoRepository.getAllFeeds

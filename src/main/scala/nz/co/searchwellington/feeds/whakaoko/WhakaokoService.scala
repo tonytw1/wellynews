@@ -27,35 +27,31 @@ import scala.concurrent.{ExecutionContext, Future}
   }
 
   def getSubscriptions()(implicit ec: ExecutionContext): Future[Either[String, Seq[Subscription]]] = {
-    client.getChannelSubscriptions().map(Right(_))   // TODO catch errors
+    client.getChannelSubscriptions().map(Right(_)).recover {
+      case e: Throwable => Left(s"Failed to fetch subscriptions: ${e.getMessage}")
+    }
   }
 
   def getSubscription(subscriptionID: String)(implicit ec: ExecutionContext): Future[Either[String, Option[Subscription]]] = {
-    client.getSubscription(subscriptionID).map { r =>
-      Right(r)
-    }.recover{
+    client.getSubscription(subscriptionID).map(Right(_)).recover {
       case e: Throwable => Left(s"Failed to fetch subscription: ${e.getMessage}")
     }
   }
 
   def getSubscriptionFeedItems(subscriptionId: String)(implicit ec: ExecutionContext): Future[Either[String, (Seq[FeedItem], Long)]] = {
-    client.getSubscriptionFeedItems(subscriptionId).map { r =>
-      Right(r)
-    }.recover {
+    client.getSubscriptionFeedItems(subscriptionId).map(Right(_)).recover {
       case e: Throwable => Left(s"Failed to fetch feed items: ${e.getMessage}")
     }
   }
 
   def getChannelFeedItems(page: Int, subscriptions: Option[Seq[String]])(implicit ec: ExecutionContext): Future[Either[String, Seq[FeedItem]]] = {
-    client.getChannelFeedItems(page, subscriptions).map { r =>
-      Right(r)
-    }.recover{
-      case e: Throwable =>Left(s"Failed to fetch channel feed items: ${e.getLocalizedMessage}")
+    client.getChannelFeedItems(page, subscriptions).map(Right(_)).recover {
+      case e: Throwable => Left(s"Failed to fetch channel feed items: ${e.getLocalizedMessage}")
     }
   }
 
   def updateSubscriptionName(subscriptionId: String, title: String)(implicit ec: ExecutionContext): Future[Unit] = {
-      client.updateSubscriptionName(subscriptionId, title)
+    client.updateSubscriptionName(subscriptionId, title)
   }
 
 }
