@@ -53,10 +53,10 @@ import scala.concurrent.{Await, ExecutionContext, Future}
                 log.info("Proposed fixed to incorrect OSM id: " + osmId + " -> " + fixed)
                 val fixedGeocode = geocode.copy(osmId = Some(fixed))
                 val fixedResource = r match {
-                  case w: Website => w.copy(geocode = Some(geocode))
-                  case f: Feed => f.copy(geocode = Some(geocode))
-                  case n: Newsitem => n.copy(geocode = Some(geocode))
-                  case l: Watchlist => l.copy(geocode = Some(geocode))
+                  case w: Website => w.copy(geocode = Some(fixedGeocode))
+                  case f: Feed => f.copy(geocode = Some(fixedGeocode))
+                  case n: Newsitem => n.copy(geocode = Some(fixedGeocode))
+                  case l: Watchlist => l.copy(geocode = Some(fixedGeocode))
                   case _ => r
                 }
                 log.info("Fixed resource: " + r + " -> " + fixedResource)
