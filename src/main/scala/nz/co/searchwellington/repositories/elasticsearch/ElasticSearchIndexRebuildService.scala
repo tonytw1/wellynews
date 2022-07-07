@@ -60,7 +60,7 @@ import scala.concurrent.{Await, ExecutionContext, Future}
                   case _ => r
                 }
                 log.info("Fixed resource: " + r + " -> " + fixedResource)
-                //Await.result(mongoRepository.saveResource(fixedResource), TenSeconds)
+                Await.result(mongoRepository.saveResource(fixedResource), TenSeconds)
               }
             }
           }
