@@ -1,7 +1,7 @@
 package nz.co.searchwellington.repositories.elasticsearch
 
 import nz.co.searchwellington.ReasonableWaits
-import nz.co.searchwellington.model.Resource
+import nz.co.searchwellington.model.{Feed, Newsitem, Resource, Watchlist, Website}
 import nz.co.searchwellington.repositories.mongo.MongoRepository
 import nz.co.searchwellington.tagging.IndexTagsService
 import nz.co.searchwellington.urls.UrlParser
@@ -10,7 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
 import reactivemongo.api.bson.BSONObjectID
 
-import scala.concurrent.{ExecutionContext, Future}
+import scala.concurrent.{Await, ExecutionContext, Future}
 
 @Component class ElasticSearchIndexRebuildService @Autowired()(mongoRepository: MongoRepository,
                                                                elasticSearchIndexer: ElasticSearchIndexer,
@@ -51,6 +51,16 @@ import scala.concurrent.{ExecutionContext, Future}
               }
               if (fixed != osmId) {
                 log.info("Proposed fixed to incorrect OSM id: " + osmId + " -> " + fixed)
+                val fixedGeocode = geocode.copy(osmId = Some(fixed))
+                val fixedResource = r match {
+                  case w: Website => w.copy(geocode = Some(geocode))
+                  case f: Feed => f.copy(geocode = Some(geocode))
+                  case n: Newsitem => n.copy(geocode = Some(geocode))
+                  case l: Watchlist => l.copy(geocode = Some(geocode))
+                  case _ => r
+                }
+                log.info("Fixed resource: " + r + " -> " + fixedResource)
+                //Await.result(mongoRepository.saveResource(fixedResource), TenSeconds)
               }
             }
           }
