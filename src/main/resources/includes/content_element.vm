@@ -10,11 +10,11 @@
 							
 		<ul>
 			#if ($item.date && ($item.type == "N" || $item.type == "FNI" || $item.type == "S") && $dateFormatter)
-				<li class="date">$dateFormatter.dayMonthYear($item.date)</li>
+				<li class="date"><time datetime="$dateFormatter.isoDate($item.date)">$dateFormatter.dayMonthYear($item.date)</time></li>
 			#end
 
 			#if ($item.publisherName)
-				<li class="publisher"><a href="/$item.publisherUrlWords">$item.publisherName</a></li>
+				<li class="publisher" itemprop="publisher" itemscope itemtype="https://schema.org/Organization"><a href="/$item.publisherUrlWords">$item.publisherName</a></li>
 			#end
 						
 			#if ($item.latestItemDate)
