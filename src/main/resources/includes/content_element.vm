@@ -1,12 +1,12 @@
 	
-	<li #if ($item.type == "N" || $item.type == "FNI") itemscope itemtype="https://schema.org/Newsitem" #end >
+	<li #if ($item.type == "N" || $item.type == "FNI") itemscope itemtype="https://schema.org/NewsArticle" #end >
 
 		#set($itemUrl = $item.url) 				
 		#if ($item.type == ('F'))
             #set($itemUrl = $urlBuilder.getFeedUrl($item))
 		#end
 		
-		<h5><a href="$itemUrl">$item.name</a></h5>
+		<h5 #if ($item.type == "N" || $item.type == "FNI") itemprop="headline" #end><a href="$itemUrl">$item.name</a></h5>
 							
 		<ul>
 			#if ($item.date && ($item.type == "N" || $item.type == "FNI" || $item.type == "S") && $dateFormatter)
