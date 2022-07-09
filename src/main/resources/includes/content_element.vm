@@ -14,7 +14,7 @@
 			#end
 
 			#if ($item.publisherName)
-				<li class="publisher" itemprop="publisher" itemscope itemtype="https://schema.org/Organization"><a href="/$item.publisherUrlWords" itemprop="name">$item.publisherName</a></li>
+				<li class="publisher" itemprop="publisher" itemscope itemtype="https://schema.org/Organization"><a href="/$item.publisherUrlWords" itemprop="url"><span itemprop="name">$item.publisherName</span></a></li>
 			#end
 						
 			#if ($item.latestItemDate)
