@@ -1,5 +1,7 @@
 	
-	<li>
+	<li #if ($item.date && ($item.type == "N" || $item.type == "FNI")
+	         itemscope itemtype="https://schema.org/Newsitem"
+	    #end >
 
 		#set($itemUrl = $item.url) 				
 		#if ($item.type == ('F'))
