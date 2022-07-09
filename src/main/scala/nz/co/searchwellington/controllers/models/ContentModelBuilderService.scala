@@ -1,5 +1,7 @@
 package nz.co.searchwellington.controllers.models
 
+import io.opentelemetry.api.trace.Span
+import io.opentelemetry.extension.annotations.WithSpan
 import nz.co.searchwellington.controllers.CommonModelObjectsService
 import nz.co.searchwellington.controllers.models.helpers.{ContentFields, ModelBuilder}
 import nz.co.searchwellington.filters.RequestPath
@@ -21,6 +23,9 @@ class ContentModelBuilderService(viewFactory: ViewFactory,
 
   private val log = LogFactory.getLog(classOf[ContentModelBuilderService])
 
+  private val viewType = "viewType"
+
+  @WithSpan
   def buildModelAndView(request: HttpServletRequest, loggedInUser: Option[User] = None): Future[Option[ModelAndView]] = {
     modelBuilders.find(mb => mb.isValid(request)).map { mb =>
       val path = RequestPath.getPathFrom(request)
@@ -77,11 +82,16 @@ class ContentModelBuilderService(viewFactory: ViewFactory,
           log.info("Created mv for " + path + " after " + duration + "ms using " +
             mb.getClass.getSimpleName +
             " (" + maybeMv._2 + "ms / " + maybeExtras._2 + "ms)")
+
+          val span: Span = Span.current()
           if (path.endsWith("/rss")) {
+            span.setAttribute(viewType, "rss")
             rssViewOf(mv)
           } else if (path.endsWith("/json")) {
+            span.setAttribute(viewType, "json")
             jsonViewOf(mv)
           } else {
+            span.setAttribute(viewType, "html")
             new ModelAndView(mb.getViewName(mv, loggedInUser)).addAllObjects(mv)
           }
         }
