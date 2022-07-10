@@ -2,16 +2,14 @@ package nz.co.searchwellington.controllers
 
 import nz.co.searchwellington.ReasonableWaits
 import nz.co.searchwellington.controllers.models.ContentModelBuilderServiceFactory
-import nz.co.searchwellington.filters.RequestPath
 import org.apache.commons.logging.LogFactory
-import org.joda.time.{DateTime, Duration}
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.core.annotation.Order
+import org.springframework.http.HttpStatus
 import org.springframework.stereotype.Controller
 import org.springframework.web.bind.annotation.GetMapping
-import org.springframework.web.servlet.ModelAndView
-import org.springframework.http.HttpStatus
 import org.springframework.web.server.ResponseStatusException
+import org.springframework.web.servlet.ModelAndView
 
 import javax.servlet.http.{HttpServletRequest, HttpServletResponse}
 import scala.concurrent.Await
@@ -32,7 +30,6 @@ class ContentController @Autowired()(contentModelBuilderServiceFactory: ContentM
     "/{\\w+}/{year:\\d+}-{month:\\w+}"
   ))
   def normal(request: HttpServletRequest, response: HttpServletResponse): ModelAndView = {
-    val start = new DateTime()
     val eventualMaybeView = contentModelBuilderService.buildModelAndView(request, loggedInUserFilter.getLoggedInUser)
     try {
       Await.result(eventualMaybeView, TenSeconds).fold {

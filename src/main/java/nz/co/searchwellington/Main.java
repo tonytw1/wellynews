@@ -137,6 +137,11 @@ public class Main {
         vp.setProperty(Velocity.EVENTHANDLER_REFERENCEINSERTION, "org.apache.velocity.app.event.implement.EscapeHtmlReference");
         vp.setProperty("resource.loader", "class");
         vp.setProperty("class.resource.loader.class", "org.apache.velocity.runtime.resource.loader.ClasspathResourceLoader");
+
+        vp.setProperty("resource.loader.class.cache", "true");
+        // When resource.manager.cache.default_size is set to 0, then the default implementation uses the standard Java ConcurrentHashMap.
+        vp.setProperty("resource.manager.cache.default_size", "0");
+
         vp.setProperty("velocimacro.library", "spring.vm");
         velocityEngineFactory.setVelocityProperties(vp);
         return velocityEngineFactory;
