@@ -87,16 +87,13 @@ class ContentModelBuilderService(viewFactory: ViewFactory,
             " (" + maybeMv._2 + "ms / " + maybeExtras._2 + "ms)")
 
           if (path.endsWith("/rss")) {
-            mv.addAttribute(viewType, "rss")
-            rssViewOf(mv)
+            rssViewOf(mv).addObject(viewType, "rss")
 
           } else if (path.endsWith("/json")) {
-            mv.addAttribute(viewType, "json")
-            jsonViewOf(mv)
+            jsonViewOf(mv).addObject(viewType, "json")
 
           } else {
-            mv.addAttribute(viewType, "html")
-            new ModelAndView(mb.getViewName(mv, loggedInUser)).addAllObjects(mv)
+            new ModelAndView(mb.getViewName(mv, loggedInUser)).addAllObjects(mv).addObject(viewType, "html")
           }
         }
       }
