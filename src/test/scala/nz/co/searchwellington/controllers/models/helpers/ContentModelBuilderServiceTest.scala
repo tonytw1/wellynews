@@ -53,7 +53,7 @@ class ContentModelBuilderServiceTest extends ReasonableWaits {
 
     val result = Await.result(contentModelBuilderService.buildModelAndView(request), TenSeconds)
 
-    val expectedModelAndView = new ModelAndView("a-view").addAllObjects(validModel).addAllObjects(validExtras)
+    val expectedModelAndView = new ModelAndView("a-view").addAllObjects(validModel).addAllObjects(validExtras).addObject("viewType", "html")
     assertEquals(expectedModelAndView.getModel, result.get.getModel)
     assertEquals("a-view", result.get.getViewName)
   }
