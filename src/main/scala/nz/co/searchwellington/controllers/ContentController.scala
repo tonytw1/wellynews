@@ -51,6 +51,10 @@ class ContentController @Autowired()(contentModelBuilderServiceFactory: ContentM
         if (isHtmlView(mv)) {
           urlStack.setUrlStack(request)
         }
+
+        val currentSpan = Span.current()
+        log.info("Current set span / trace: " + currentSpan.getSpanContext.getSpanId + " / " + currentSpan.getSpanContext.getTraceId)
+        currentSpan.setAttribute("viewType", mv.getModel.get("viewType").asInstanceOf[String])
         mv
       }
     } catch {

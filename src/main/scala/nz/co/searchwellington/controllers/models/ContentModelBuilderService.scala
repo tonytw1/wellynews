@@ -88,18 +88,14 @@ class ContentModelBuilderService(viewFactory: ViewFactory,
 
           if (path.endsWith("/rss")) {
             val currentSpan = Span.current()
-            log.info("Current view span / trace: " + currentSpan.getSpanContext.getSpanId + " / " + currentSpan.getSpanContext.getTraceId + " ec: " + ec.hashCode())
-            currentSpan.setAttribute(viewType, "rss")
+            mv.addAttribute(viewType, "rss")
             rssViewOf(mv)
+
           } else if (path.endsWith("/json")) {
-            val currentSpan = Span.current()
-            log.info("Current view span / trace: " + currentSpan.getSpanContext.getSpanId + " / " + currentSpan.getSpanContext.getTraceId + " ec: " + ec.hashCode())
-            currentSpan.setAttribute(viewType, "json")
+            mv.addAttribute(viewType, "json")
             jsonViewOf(mv)
           } else {
-            val currentSpan = Span.current()
-            log.info("Current view span / trace: " + currentSpan.getSpanContext.getSpanId + " / " + currentSpan.getSpanContext.getTraceId + " ec: " + ec.hashCode())
-            currentSpan.setAttribute(viewType, "html")
+            mv.addAttribute(viewType, "html")
             new ModelAndView(mb.getViewName(mv, loggedInUser)).addAllObjects(mv)
           }
         }
