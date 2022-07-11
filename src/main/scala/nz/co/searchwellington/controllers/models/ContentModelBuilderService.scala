@@ -25,9 +25,8 @@ class ContentModelBuilderService(viewFactory: ViewFactory,
   private val viewType = "viewType"
 
   @WithSpan
-  def buildModelAndView(request: HttpServletRequest, loggedInUser: Option[User] = None)(implicit ec: ExecutionContext): Future[Option[ModelAndView]] = {
+  def buildModelAndView(request: HttpServletRequest, loggedInUser: Option[User] = None)(implicit ec: ExecutionContext, currentSpan: Span): Future[Option[ModelAndView]] = {
     modelBuilders.find(mb => mb.isValid(request)).map { mb =>
-      val currentSpan = Span.current()
       log.info("Current span / trace: " + currentSpan.getSpanContext.getSpanId + " / " + currentSpan.getSpanContext.getTraceId + " ec: " + ec.hashCode())
       currentSpan.setAttribute("modelBuilder", mb.getClass.getSimpleName)
 
@@ -87,13 +86,16 @@ class ContentModelBuilderService(viewFactory: ViewFactory,
             " (" + maybeMv._2 + "ms / " + maybeExtras._2 + "ms)")
 
           if (path.endsWith("/rss")) {
-            rssViewOf(mv).addObject(viewType, "rss")
+            currentSpan.setAttribute(viewType, "rss")
+            rssViewOf(mv)
 
           } else if (path.endsWith("/json")) {
-            jsonViewOf(mv).addObject(viewType, "json")
+            currentSpan.setAttribute(viewType, "json")
+            jsonViewOf(mv)
 
           } else {
-            new ModelAndView(mb.getViewName(mv, loggedInUser)).addAllObjects(mv).addObject(viewType, "html")
+            currentSpan.setAttribute(viewType, "html")
+            new ModelAndView(mb.getViewName(mv, loggedInUser)).addAllObjects(mv)
           }
         }
       }

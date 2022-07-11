@@ -32,13 +32,12 @@ class ContentController @Autowired()(contentModelBuilderServiceFactory: ContentM
   ))
   def normal(request: HttpServletRequest, response: HttpServletResponse): ModelAndView = {
     import scala.concurrent.ExecutionContext.Implicits.global
-    val currentSpan = Span.current()
+    implicit val currentSpan = Span.current()
     log.info("Current span / trace: " + currentSpan.getSpanContext.getSpanId + " / " + currentSpan.getSpanContext.getTraceId)
     buildAndRender(request)
   }
 
-  private def buildAndRender(request: HttpServletRequest)(implicit ec: ExecutionContext): ModelAndView = {
-    val currentSpan = Span.current()
+  private def buildAndRender(request: HttpServletRequest)(implicit ec: ExecutionContext, currentSpan: Span): ModelAndView = {
     log.info("Current buildAndRender span / trace: " + currentSpan.getSpanContext.getSpanId + " / " + currentSpan.getSpanContext.getTraceId)
 
     val eventualMaybeView = contentModelBuilderService.buildModelAndView(request, loggedInUserFilter.getLoggedInUser)
@@ -51,10 +50,6 @@ class ContentController @Autowired()(contentModelBuilderServiceFactory: ContentM
         if (isHtmlView(mv)) {
           urlStack.setUrlStack(request)
         }
-        val currentSpan = Span.current()
-        val viewType = mv.getModel.get("viewType").asInstanceOf[String]
-        log.info("Current set span / trace: " + currentSpan.getSpanContext.getSpanId + " / " + currentSpan.getSpanContext.getTraceId + " / " + viewType)
-        currentSpan.setAttribute("viewType", viewType)
         mv
       }
     } catch {

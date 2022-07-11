@@ -1,5 +1,6 @@
 package nz.co.searchwellington.controllers
 
+import io.opentelemetry.api.trace.Span
 import nz.co.searchwellington.controllers.models.{ContentModelBuilderService, ContentModelBuilderServiceFactory}
 import org.junit.jupiter.api.Assertions.{assertEquals, assertFalse, assertTrue, fail}
 import org.junit.jupiter.api.Test
@@ -10,10 +11,10 @@ import org.springframework.web.server.ResponseStatusException
 import org.springframework.web.servlet.ModelAndView
 
 import javax.servlet.http.{HttpServletRequest, HttpServletResponse}
+import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 import scala.jdk.CollectionConverters._
 import scala.util.Try
-import scala.concurrent.ExecutionContext.Implicits.global
 
 class ContentControllerTest {
   private val contentModelBuilderServiceFactory = mock(classOf[ContentModelBuilderServiceFactory])
@@ -24,6 +25,8 @@ class ContentControllerTest {
   private val request = mock(classOf[HttpServletRequest])
   private val unknownPathRequest = mock(classOf[HttpServletRequest])
   private val response = mock(classOf[HttpServletResponse])
+
+  private implicit val currentSpan = Span.current()
 
   private def contentController = new ContentController(contentModelBuilderServiceFactory, urlStack, loggedInUserFilter)
 

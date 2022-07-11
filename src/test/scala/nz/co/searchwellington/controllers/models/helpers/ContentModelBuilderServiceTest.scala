@@ -1,5 +1,6 @@
 package nz.co.searchwellington.controllers.models.helpers
 
+import io.opentelemetry.api.trace.Span
 import nz.co.searchwellington.ReasonableWaits
 import nz.co.searchwellington.controllers.models.ContentModelBuilderService
 import nz.co.searchwellington.model.User
@@ -22,6 +23,8 @@ class ContentModelBuilderServiceTest extends ReasonableWaits {
 
   private val viewFactory = mock(classOf[ViewFactory])
   private val contentRetrievalService = mock(classOf[ContentRetrievalService])
+
+  private implicit val currentSpan = Span.current()
 
   private val request = {
     val request = new MockHttpServletRequest
@@ -53,7 +56,7 @@ class ContentModelBuilderServiceTest extends ReasonableWaits {
 
     val result = Await.result(contentModelBuilderService.buildModelAndView(request), TenSeconds)
 
-    val expectedModelAndView = new ModelAndView("a-view").addAllObjects(validModel).addAllObjects(validExtras).addObject("viewType", "html")
+    val expectedModelAndView = new ModelAndView("a-view").addAllObjects(validModel).addAllObjects(validExtras)
     assertEquals(expectedModelAndView.getModel, result.get.getModel)
     assertEquals("a-view", result.get.getViewName)
   }
