@@ -28,7 +28,7 @@ class ContentModelBuilderService(viewFactory: ViewFactory,
   def buildModelAndView(request: HttpServletRequest, loggedInUser: Option[User] = None)(implicit ec: ExecutionContext): Future[Option[ModelAndView]] = {
     modelBuilders.find(mb => mb.isValid(request)).map { mb =>
       val currentSpan = Span.current()
-      log.info("Current span / trace: " + currentSpan.getSpanContext.getSpanId + " / " + currentSpan.getSpanContext.getTraceId)
+      log.info("Current span / trace: " + currentSpan.getSpanContext.getSpanId + " / " + currentSpan.getSpanContext.getTraceId + " ec: " + ec.hashCode())
       currentSpan.setAttribute("modelBuilder", mb.getClass.getSimpleName)
 
       val path = RequestPath.getPathFrom(request)
@@ -88,17 +88,17 @@ class ContentModelBuilderService(viewFactory: ViewFactory,
 
           if (path.endsWith("/rss")) {
             val currentSpan = Span.current()
-            log.info("Current view span / trace: " + currentSpan.getSpanContext.getSpanId + " / " + currentSpan.getSpanContext.getTraceId)
+            log.info("Current view span / trace: " + currentSpan.getSpanContext.getSpanId + " / " + currentSpan.getSpanContext.getTraceId + " ec: " + ec.hashCode())
             currentSpan.setAttribute(viewType, "rss")
             rssViewOf(mv)
           } else if (path.endsWith("/json")) {
             val currentSpan = Span.current()
-            log.info("Current view span / trace: " + currentSpan.getSpanContext.getSpanId + " / " + currentSpan.getSpanContext.getTraceId)
+            log.info("Current view span / trace: " + currentSpan.getSpanContext.getSpanId + " / " + currentSpan.getSpanContext.getTraceId + " ec: " + ec.hashCode())
             currentSpan.setAttribute(viewType, "json")
             jsonViewOf(mv)
           } else {
             val currentSpan = Span.current()
-            log.info("Current view span / trace: " + currentSpan.getSpanContext.getSpanId + " / " + currentSpan.getSpanContext.getTraceId)
+            log.info("Current view span / trace: " + currentSpan.getSpanContext.getSpanId + " / " + currentSpan.getSpanContext.getTraceId + " ec: " + ec.hashCode())
             currentSpan.setAttribute(viewType, "html")
             new ModelAndView(mb.getViewName(mv, loggedInUser)).addAllObjects(mv)
           }
