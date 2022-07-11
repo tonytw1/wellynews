@@ -87,13 +87,13 @@ class ContentModelBuilderService(viewFactory: ViewFactory,
             " (" + maybeMv._2 + "ms / " + maybeExtras._2 + "ms)")
 
           if (path.endsWith("/rss")) {
-            val currentSpan = Span.current()
             mv.addAttribute(viewType, "rss")
             rssViewOf(mv)
 
           } else if (path.endsWith("/json")) {
             mv.addAttribute(viewType, "json")
             jsonViewOf(mv)
+
           } else {
             mv.addAttribute(viewType, "html")
             new ModelAndView(mb.getViewName(mv, loggedInUser)).addAllObjects(mv)
