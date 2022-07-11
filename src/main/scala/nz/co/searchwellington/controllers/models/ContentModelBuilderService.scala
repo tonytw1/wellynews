@@ -14,8 +14,7 @@ import org.springframework.web.servlet.ModelAndView
 import uk.co.eelpieconsulting.common.views.ViewFactory
 
 import javax.servlet.http.HttpServletRequest
-import scala.concurrent.ExecutionContext.Implicits.global
-import scala.concurrent.Future
+import scala.concurrent.{ExecutionContext, Future}
 
 class ContentModelBuilderService(viewFactory: ViewFactory,
                                  val contentRetrievalService: ContentRetrievalService,
@@ -26,9 +25,10 @@ class ContentModelBuilderService(viewFactory: ViewFactory,
   private val viewType = "viewType"
 
   @WithSpan
-  def buildModelAndView(request: HttpServletRequest, loggedInUser: Option[User] = None): Future[Option[ModelAndView]] = {
+  def buildModelAndView(request: HttpServletRequest, loggedInUser: Option[User] = None)(implicit ec: ExecutionContext): Future[Option[ModelAndView]] = {
     modelBuilders.find(mb => mb.isValid(request)).map { mb =>
       val currentSpan = Span.current()
+      log.info("Current span / trace: " + currentSpan.getSpanContext.getSpanId + " / " + currentSpan.getSpanContext.getTraceId)
       currentSpan.setAttribute("modelBuilder", mb.getClass.getSimpleName)
 
       val path = RequestPath.getPathFrom(request)

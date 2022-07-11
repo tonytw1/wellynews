@@ -1,5 +1,6 @@
 package nz.co.searchwellington.controllers
 
+import io.opentelemetry.api.trace.Span
 import nz.co.searchwellington.ReasonableWaits
 import nz.co.searchwellington.controllers.models.ContentModelBuilderServiceFactory
 import org.apache.commons.logging.LogFactory
@@ -30,6 +31,9 @@ class ContentController @Autowired()(contentModelBuilderServiceFactory: ContentM
     "/{\\w+}/{year:\\d+}-{month:\\w+}"
   ))
   def normal(request: HttpServletRequest, response: HttpServletResponse): ModelAndView = {
+    val currentSpan = Span.current()
+    log.info("Current span / trace: " + currentSpan.getSpanContext.getSpanId + " / " + currentSpan.getSpanContext.getTraceId)
+
     val eventualMaybeView = contentModelBuilderService.buildModelAndView(request, loggedInUserFilter.getLoggedInUser)
     try {
       Await.result(eventualMaybeView, TenSeconds).fold {
