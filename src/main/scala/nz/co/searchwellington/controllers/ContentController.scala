@@ -14,6 +14,7 @@ import org.springframework.web.servlet.ModelAndView
 
 import javax.servlet.http.{HttpServletRequest, HttpServletResponse}
 import scala.concurrent.Await
+import scala.concurrent.ExecutionContext.Implicits.global
 
 @Order(5)
 @Controller

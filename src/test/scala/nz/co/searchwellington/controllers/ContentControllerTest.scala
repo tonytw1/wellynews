@@ -13,6 +13,7 @@ import javax.servlet.http.{HttpServletRequest, HttpServletResponse}
 import scala.concurrent.Future
 import scala.jdk.CollectionConverters._
 import scala.util.Try
+import scala.concurrent.ExecutionContext.Implicits.global
 
 class ContentControllerTest {
   private val contentModelBuilderServiceFactory = mock(classOf[ContentModelBuilderServiceFactory])
