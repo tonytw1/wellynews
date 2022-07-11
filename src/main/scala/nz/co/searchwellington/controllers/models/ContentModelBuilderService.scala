@@ -28,6 +28,9 @@ class ContentModelBuilderService(viewFactory: ViewFactory,
   @WithSpan
   def buildModelAndView(request: HttpServletRequest, loggedInUser: Option[User] = None): Future[Option[ModelAndView]] = {
     modelBuilders.find(mb => mb.isValid(request)).map { mb =>
+      val currentSpan = Span.current()
+      currentSpan.setAttribute("modelBuilder", mb.getClass.getSimpleName)
+
       val path = RequestPath.getPathFrom(request)
       log.debug("Using " + mb.getClass.getSimpleName + " to serve path: " + path)
       val start = new DateTime()
@@ -83,15 +86,14 @@ class ContentModelBuilderService(viewFactory: ViewFactory,
             mb.getClass.getSimpleName +
             " (" + maybeMv._2 + "ms / " + maybeExtras._2 + "ms)")
 
-          val span: Span = Span.current()
           if (path.endsWith("/rss")) {
-            span.setAttribute(viewType, "rss")
+            currentSpan.setAttribute(viewType, "rss")
             rssViewOf(mv)
           } else if (path.endsWith("/json")) {
-            span.setAttribute(viewType, "json")
+            currentSpan.setAttribute(viewType, "json")
             jsonViewOf(mv)
           } else {
-            span.setAttribute(viewType, "html")
+            currentSpan.setAttribute(viewType, "html")
             new ModelAndView(mb.getViewName(mv, loggedInUser)).addAllObjects(mv)
           }
         }
