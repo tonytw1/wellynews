@@ -13,8 +13,7 @@ import org.springframework.web.server.ResponseStatusException
 import org.springframework.web.servlet.ModelAndView
 
 import javax.servlet.http.{HttpServletRequest, HttpServletResponse}
-import scala.concurrent.Await
-import scala.concurrent.ExecutionContext.Implicits.global
+import scala.concurrent.{Await, ExecutionContext}
 
 @Order(5)
 @Controller
@@ -32,8 +31,15 @@ class ContentController @Autowired()(contentModelBuilderServiceFactory: ContentM
     "/{\\w+}/{year:\\d+}-{month:\\w+}"
   ))
   def normal(request: HttpServletRequest, response: HttpServletResponse): ModelAndView = {
+    import scala.concurrent.ExecutionContext.Implicits.global
     val currentSpan = Span.current()
     log.info("Current span / trace: " + currentSpan.getSpanContext.getSpanId + " / " + currentSpan.getSpanContext.getTraceId)
+    buildAndRender(request)
+  }
+
+  private def buildAndRender(request: HttpServletRequest)(implicit ec: ExecutionContext): ModelAndView = {
+    val currentSpan = Span.current()
+    log.info("Current buildAndRender span / trace: " + currentSpan.getSpanContext.getSpanId + " / " + currentSpan.getSpanContext.getTraceId)
 
     val eventualMaybeView = contentModelBuilderService.buildModelAndView(request, loggedInUserFilter.getLoggedInUser)
     try {
