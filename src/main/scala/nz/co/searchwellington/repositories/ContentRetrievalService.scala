@@ -2,7 +2,9 @@ package nz.co.searchwellington.repositories
 
 import com.sksamuel.elastic4s.requests.searches.SearchRequest
 import com.sksamuel.elastic4s.requests.searches.sort.{ScoreSort, SortOrder}
+import io.opentelemetry.api.GlobalOpenTelemetry
 import io.opentelemetry.api.trace.Span
+import io.opentelemetry.context.Context
 import nz.co.searchwellington.ReasonableWaits
 import nz.co.searchwellington.controllers.models.helpers.CommonSizes
 import nz.co.searchwellington.model._
@@ -374,7 +376,7 @@ import scala.concurrent.{ExecutionContext, Future}
     elasticSearchIndexer.getResources(ResourceQuery(hostname = Some(hostname), `type` = Some(Set("W"))), loggedInUser = loggedInUser).flatMap(i => fetchResourcesByIds(i._1))
   }
 
-  private def buildFrontendResourcesFor(i: (Seq[BSONObjectID], Long), loggedInUser: Option[User])(implicit ec: ExecutionContext): Future[(Seq[FrontendResource], Long)] = {
+  private def buildFrontendResourcesFor(i: (Seq[BSONObjectID], Long), loggedInUser: Option[User])(implicit ec: ExecutionContext, currentSpan: Span): Future[(Seq[FrontendResource], Long)] = {
     fetchByIds(i._1 ,loggedInUser).map { rs =>
       (rs, i._2)
     }
@@ -384,7 +386,7 @@ import scala.concurrent.{ExecutionContext, Future}
 
   private def nearbyNewsitems(latLong: LatLong, radius: Double) = ResourceQuery(`type` = newsitems, circle = Some(Circle(latLong, radius)))
 
-  private def toFrontendResourcesWithTotalCount(elasticSearchResults: Future[(Seq[BSONObjectID], Long)], loggedInUser: Option[User])(implicit ec: ExecutionContext): Future[(Seq[FrontendResource], Long)] = {
+  private def toFrontendResourcesWithTotalCount(elasticSearchResults: Future[(Seq[BSONObjectID], Long)], loggedInUser: Option[User])(implicit ec: ExecutionContext, currentSpan: Span): Future[(Seq[FrontendResource], Long)] = {
     elasticSearchResults.flatMap { i =>
       fetchByIds(i._1, loggedInUser).map { rs =>
         (rs, i._2)
@@ -392,9 +394,19 @@ import scala.concurrent.{ExecutionContext, Future}
     }
   }
 
-  private def fetchByIds(ids: Seq[BSONObjectID], loggedInUser: Option[User])(implicit ec: ExecutionContext): Future[Seq[FrontendResource]] = {
+  private def fetchByIds(ids: Seq[BSONObjectID], loggedInUser: Option[User])(implicit ec: ExecutionContext, currentSpan: Span): Future[Seq[FrontendResource]] = {
+    val tracer = GlobalOpenTelemetry.getTracer("wellynews");
+    val span = tracer.spanBuilder("fetchByIds").
+      setParent(Context.current().`with`(currentSpan)).
+      startSpan()
+
     fetchResourcesByIds(ids).flatMap { rs =>
       Future.sequence(rs.map(r => frontendResourceMapper.createFrontendResourceFrom(r, loggedInUser)))
+    }.map { frs =>
+      log.info("Fetched " + frs.size + " resouces by id")
+      span.setAttribute("database", "mongo")
+      span.end()
+      frs
     }
   }
 
