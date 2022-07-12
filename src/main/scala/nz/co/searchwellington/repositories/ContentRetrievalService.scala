@@ -395,15 +395,16 @@ import scala.concurrent.{ExecutionContext, Future}
 
   private def fetchByIds(ids: Seq[BSONObjectID], loggedInUser: Option[User])(implicit ec: ExecutionContext, currentSpan: Span): Future[Seq[FrontendResource]] = {
     val tracer = GlobalOpenTelemetry.getTracer("wellynews")
-    val span = tracer.spanBuilder("fetchByIds").startSpan()
+    val mongoFetchSpan = tracer.spanBuilder("fetchByIds").startSpan()
 
-    fetchResourcesByIds(ids).flatMap { rs =>
+    fetchResourcesByIds(ids).map { rs =>
+      mongoFetchSpan.setAttribute("fetched", rs.size)
+      mongoFetchSpan.setAttribute("database", "mongo")
+      mongoFetchSpan.end()
+      rs
+
+    }.flatMap { rs =>
       Future.sequence(rs.map(r => frontendResourceMapper.createFrontendResourceFrom(r, loggedInUser)))
-    }.map { frs =>
-      span.setAttribute("fetched", frs.size)
-      span.setAttribute("database", "mongo")
-      span.end()
-      frs
     }
   }
 
