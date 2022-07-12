@@ -4,7 +4,6 @@ import com.sksamuel.elastic4s.requests.searches.SearchRequest
 import com.sksamuel.elastic4s.requests.searches.sort.{ScoreSort, SortOrder}
 import io.opentelemetry.api.GlobalOpenTelemetry
 import io.opentelemetry.api.trace.Span
-import io.opentelemetry.context.Context
 import nz.co.searchwellington.ReasonableWaits
 import nz.co.searchwellington.controllers.models.helpers.CommonSizes
 import nz.co.searchwellington.model._
@@ -395,7 +394,7 @@ import scala.concurrent.{ExecutionContext, Future}
   }
 
   private def fetchByIds(ids: Seq[BSONObjectID], loggedInUser: Option[User])(implicit ec: ExecutionContext, currentSpan: Span): Future[Seq[FrontendResource]] = {
-    val tracer = GlobalOpenTelemetry.getTracer("wellynews");
+    val tracer = GlobalOpenTelemetry.getTracer("wellynews")
     val span = tracer.spanBuilder("fetchByIds").startSpan()
     span.makeCurrent()
 
@@ -410,11 +409,7 @@ import scala.concurrent.{ExecutionContext, Future}
   }
 
   private def fetchResourcesByIds(ids: Seq[BSONObjectID])(implicit ec: ExecutionContext): Future[Seq[Resource]] = {
-    Future.sequence {
-      ids.map { id =>
-        mongoRepository.getResourceByObjectId(id)
-      }
-    }.map(_.flatten)
+     mongoRepository.getResourceByObjectIds(ids)
   }
 
   private def archiveLinksFromIntervals(intervals: Seq[(Interval, Long)])(implicit ec: ExecutionContext): Seq[ArchiveLink] = {
