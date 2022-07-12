@@ -46,9 +46,10 @@ import scala.concurrent.{ExecutionContext, Future}
 
     for {
       handTaggings <- handTaggingDAO.getHandTaggingsForResource(resource)
+      ancestorTagVotes <- eventualAncestorTagVotes(handTaggings)  // TODO test coverage for ancestor tag votes
       publisherVotes <- eventualPublisherVotes
       newsitemSpecificVotes <- eventualNewsitemSpecificVotes
-      ancestorTagVotes <- eventualAncestorTagVotes(handTaggings)  // TODO test coverage for ancestor tag votes
+
     } yield {
       handTaggings ++ ancestorTagVotes ++ publisherVotes ++ newsitemSpecificVotes
     }
