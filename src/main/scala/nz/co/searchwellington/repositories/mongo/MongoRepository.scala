@@ -138,26 +138,6 @@ class MongoRepository @Autowired()(@Value("${mongo.uri}") mongoUri: String) exte
     getResourceBy(BSONDocument("_id" -> id))
   }
 
-
-  def getResourceByObjectIds(ids: Seq[BSONObjectID])(implicit ec: ExecutionContext): Future[Seq[Resource]] = {
-    val byIds = BSONDocument("_id" -> BSONDocument("$in" -> ids))
-    val eventualDocuments = resourceCollection.find(byIds).cursor[BSONDocument]().collect[List](maxDocs = ids.size, err = Cursor.FailOnError[List[BSONDocument]]())
-    eventualDocuments.map { bs =>
-      bs.flatMap { b =>
-        val `type` = b.get("type").get
-        `type` match {
-          case BSONString("N") => b.asOpt[Newsitem]
-          case BSONString("W") => b.asOpt[Website]
-          case BSONString("F") => b.asOpt[Feed]
-          case BSONString("L") => b.asOpt[Watchlist]
-          case _ =>
-            log.warn("Resource had unexpected type: " + `type`)
-            None
-        }
-      }
-    }
-  }
-
   implicit object feedAcceptanceWriter extends BSONWriter[FeedAcceptancePolicy] {
     override def writeTry(t: FeedAcceptancePolicy): Try[BSONValue] = {
       scala.util.Success(BSONString(t.name()))
@@ -436,20 +416,32 @@ class MongoRepository @Autowired()(@Value("${mongo.uri}") mongoUri: String) exte
     userCollection.find(BSONDocument("twitterid" -> twitterId), noProjection).one[User]
   }
 
+  def getResourceByObjectIds(ids: Seq[BSONObjectID])(implicit ec: ExecutionContext): Future[Seq[Resource]] = {
+    val byIds = BSONDocument("_id" -> BSONDocument("$in" -> ids))
+    val eventualDocuments = resourceCollection.find(byIds).cursor[BSONDocument]().collect[List](maxDocs = ids.size, err = Cursor.FailOnError[List[BSONDocument]]())
+    eventualDocuments.map { bs =>
+      bs.flatMap(resourceFromBSONDocument)
+    }
+  }
+
   private def getResourceBy(selector: BSONDocument)(implicit ec: ExecutionContext): Future[Option[Resource]] = {
     resourceCollection.find(selector, noProjection).one[BSONDocument].map { bo =>
       bo.flatMap { b =>
-        val `type` = b.get("type").get
-        `type` match {
-          case BSONString("N") => b.asOpt[Newsitem]
-          case BSONString("W") => b.asOpt[Website]
-          case BSONString("F") => b.asOpt[Feed]
-          case BSONString("L") => b.asOpt[Watchlist]
-          case _ =>
-            log.warn("Resource had unexpected type: " + `type`)
-            None
-        }
+        resourceFromBSONDocument(b)
       }
+    }
+  }
+
+  private def resourceFromBSONDocument(b: BSONDocument) = {
+    val `type` = b.get("type").get
+    `type` match {
+      case BSONString("N") => b.asOpt[Newsitem]
+      case BSONString("W") => b.asOpt[Website]
+      case BSONString("F") => b.asOpt[Feed]
+      case BSONString("L") => b.asOpt[Watchlist]
+      case _ =>
+        log.warn("Resource had unexpected type: " + `type`)
+        None
     }
   }
 
