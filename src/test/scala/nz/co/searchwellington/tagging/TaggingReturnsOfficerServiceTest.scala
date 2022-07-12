@@ -38,7 +38,8 @@ class TaggingReturnsOfficerServiceTest extends ReasonableWaits {
   def compliedTagsShouldContainAtLeastOneCopyOfEachManuallyAppliedTag(): Unit = {
     val handTags = Seq(HandTagging(taggingUser = taggingUser, tag = aroValleyTag))
     when(handTaggingDAO.getHandTaggingsForResource(aroValleyNewsitem)).thenReturn(Future.successful(handTags))
-    when(handTaggingDAO.getHandTaggingsForResourceId(victoriaUniversity._id)).thenReturn(Future.successful(Seq(HandTagging(taggingUser = taggingUser, tag = educationTag))))
+    when(mongoRepository.getResourceByObjectId(victoriaUniversity._id)).thenReturn(Future.successful(Some(victoriaUniversity)))
+    when(handTaggingDAO.getHandTaggingsForResource(victoriaUniversity)).thenReturn(Future.successful(Seq(HandTagging(taggingUser = taggingUser, tag = educationTag))))
     when(mongoRepository.getTagByObjectId(placesTag._id)).thenReturn(Future.successful(Some(placesTag)))
 
     val votes = Await.result(taggingReturnsOfficerService.getTaggingsVotesForResource(aroValleyNewsitem), TenSeconds)

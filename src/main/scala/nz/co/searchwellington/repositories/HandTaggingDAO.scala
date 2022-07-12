@@ -33,14 +33,4 @@ import scala.concurrent.{ExecutionContext, Future}
     }.map(_.flatten)
   }
 
-  def getHandTaggingsForResourceId(id: BSONObjectID)(implicit ec: ExecutionContext): Future[Seq[HandTagging]] = {
-    mongoRepository.getResourceByObjectId(id).flatMap { maybeResource =>
-      maybeResource.map { resource =>
-        getHandTaggingsForResource(resource)
-      }.getOrElse {
-        Future.successful(Seq.empty)
-      }
-    }
-  }
-
 }

@@ -111,15 +111,21 @@ import scala.concurrent.{ExecutionContext, Future}
 
   private def generatePublisherDerivedTagVotes(p: PublishedResource)(implicit ec: ExecutionContext): Future[Seq[GeneratedTaggingVote]] = {
     p.publisher.map { pid =>
-      handTaggingDAO.getHandTaggingsForResourceId(pid).flatMap { handTaggings =>
-        Future.sequence(handTaggings.map { publishersTagging =>
-          for {
-            parentTags <- parentsOf(publishersTagging.tag)
-          } yield {
-            val publisherAncestorTagVotes = parentTags.map(pat => GeneratedTaggingVote(pat, "Ancestor of publisher tag " + publishersTagging.tag.name))
-             GeneratedTaggingVote(publishersTagging.tag, "Publisher tag") +: publisherAncestorTagVotes
+      mongoRepository.getResourceByObjectId(pid).flatMap { maybePublisher: Option[Resource] =>
+        maybePublisher.map { publisher =>
+          handTaggingDAO.getHandTaggingsForResource(publisher).flatMap { handTaggings =>
+            Future.sequence(handTaggings.map { publishersTagging =>
+              for {
+                parentTags <- parentsOf(publishersTagging.tag)
+              } yield {
+                val publisherAncestorTagVotes = parentTags.map(pat => GeneratedTaggingVote(pat, "Ancestor of publisher tag " + publishersTagging.tag.name))
+                GeneratedTaggingVote(publishersTagging.tag, "Publisher tag") +: publisherAncestorTagVotes
+              }
+            }).map(_.flatten)
           }
-        }).map(_.flatten)
+        }.getOrElse {
+          Future.successful(Seq.empty)
+        }
       }
     }.getOrElse {
       Future.successful(Seq.empty)
@@ -141,14 +147,19 @@ import scala.concurrent.{ExecutionContext, Future}
     }.map(_.flatten)
 
     n.feed.map { fid =>
-      for {
-        handTaggingForFeed <- handTaggingDAO.getHandTaggingsForResourceId(fid)
-        feedHandTags = handTaggingForFeed.map(_.tag)
-        acceptedFromFeedTags <- generateAcceptedFromFeedTags(feedHandTags)
-      } yield {
-        acceptedFromFeedTags
+      mongoRepository.getResourceByObjectId(fid).flatMap { maybeFeed =>
+        maybeFeed.map { feed =>
+          for {
+            handTaggingForFeed <- handTaggingDAO.getHandTaggingsForResource(feed)
+            feedHandTags = handTaggingForFeed.map(_.tag)
+            acceptedFromFeedTags <- generateAcceptedFromFeedTags(feedHandTags)
+          } yield {
+            acceptedFromFeedTags
+          }
+        }.getOrElse {
+          Future.successful(Seq.empty)
+        }
       }
-
     }.getOrElse {
       Future.successful(Seq.empty)
     }
