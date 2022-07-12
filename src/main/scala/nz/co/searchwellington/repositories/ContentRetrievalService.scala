@@ -399,11 +399,12 @@ import scala.concurrent.{ExecutionContext, Future}
     val span = tracer.spanBuilder("fetchByIds").
       setParent(Context.current().`with`(currentSpan)).
       startSpan()
+    span.makeCurrent()
 
     fetchResourcesByIds(ids).flatMap { rs =>
       Future.sequence(rs.map(r => frontendResourceMapper.createFrontendResourceFrom(r, loggedInUser)))
     }.map { frs =>
-      log.info("Fetched " + frs.size + " resouces by id")
+      span.setAttribute("fetched", frs.size)
       span.setAttribute("database", "mongo")
       span.end()
       frs

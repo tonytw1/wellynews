@@ -197,15 +197,11 @@ class ElasticSearchIndexer @Autowired()(val showBrokenDecisionService: ShowBroke
   private def executeResourceQuery(query: ResourceQuery, order: SearchRequest => SearchRequest, loggedInUser: Option[User])(implicit ec: ExecutionContext, currentSpan: Span): Future[(Seq[BSONObjectID], Long)] = {
     val request = order(search(Index) query composeQueryFor(query, loggedInUser)) start query.startIndex limit query.maxItems
 
-    currentSpan.getSpanContext
-    log.info("!!!!!! Current span: " + currentSpan)
-
     val tracer = GlobalOpenTelemetry.getTracer("wellynews");
     val span = tracer.spanBuilder("executeResourceQuery").
       setParent(Context.current().`with`(currentSpan)).
       startSpan()
-
-    log.info("!!!!!!! Span: " + span)
+    span.makeCurrent()
 
     val start = DateTime.now()
     val eventualTuples = client.execute(request).map { r =>
@@ -214,6 +210,7 @@ class ElasticSearchIndexer @Autowired()(val showBrokenDecisionService: ShowBroke
     }
     eventualTuples.map { r =>
       val duration = new org.joda.time.Duration(start, DateTime.now)
+      span.setAttribute("fetched", r._1.size)
       span.setAttribute("database", "elasticsearch")
       span.end()
       log.debug("Elastic query " + query + " took: " + duration.getMillis + " ms")
