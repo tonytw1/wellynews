@@ -404,7 +404,13 @@ import scala.concurrent.{ExecutionContext, Future}
       rs
 
     }.flatMap { rs =>
-      Future.sequence(rs.map(r => frontendResourceMapper.createFrontendResourceFrom(r, loggedInUser)))
+      val tracer = GlobalOpenTelemetry.getTracer("wellynews")
+      val frontendMapSpan = tracer.spanBuilder("createFrontendResources").startSpan()
+      Future.sequence(rs.map(r => frontendResourceMapper.createFrontendResourceFrom(r, loggedInUser))).map { frs =>
+        frontendMapSpan.setAttribute("mapped", frs.size)
+        frontendMapSpan.end()
+        frs
+      }
     }
   }
 
