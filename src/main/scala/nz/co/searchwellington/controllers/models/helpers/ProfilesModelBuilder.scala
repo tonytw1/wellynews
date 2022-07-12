@@ -1,5 +1,6 @@
 package nz.co.searchwellington.controllers.models.helpers
 
+import io.opentelemetry.api.trace.Span
 import nz.co.searchwellington.ReasonableWaits
 import nz.co.searchwellington.filters.RequestPath
 import nz.co.searchwellington.model.User
@@ -23,7 +24,7 @@ import scala.jdk.CollectionConverters._
     RequestPath.getPathFrom(request).matches(profilesPageRegex)
   }
 
-  def populateContentModel(request: HttpServletRequest, loggedInUser: Option[User])(implicit ec: ExecutionContext): Future[Option[ModelMap]] = {
+  def populateContentModel(request: HttpServletRequest, loggedInUser: Option[User])(implicit ec: ExecutionContext, currentSpan: Span): Future[Option[ModelMap]] = {
     for {
       users <- mongoRepository.getAllUsers
     } yield {
@@ -33,7 +34,7 @@ import scala.jdk.CollectionConverters._
     }
   }
 
-  def populateExtraModelContent(request: HttpServletRequest, loggedInUser: Option[User])(implicit ec: ExecutionContext): Future[ModelMap] = {
+  def populateExtraModelContent(request: HttpServletRequest, loggedInUser: Option[User])(implicit ec: ExecutionContext, currentSpan: Span): Future[ModelMap] = {
     Future.successful(new ModelMap())
   }
 

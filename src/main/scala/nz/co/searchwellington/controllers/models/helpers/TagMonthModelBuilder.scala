@@ -1,5 +1,6 @@
 package nz.co.searchwellington.controllers.models.helpers
 
+import io.opentelemetry.api.trace.Span
 import nz.co.searchwellington.controllers.RssUrlBuilder
 import nz.co.searchwellington.filters.RequestPath
 import nz.co.searchwellington.model.{Tag, TagArchiveLink, User}
@@ -31,7 +32,7 @@ import scala.jdk.CollectionConverters._
     }
   }
 
-  override def populateContentModel(request: HttpServletRequest, loggedInUser: Option[User])(implicit ec: ExecutionContext): Future[Option[ModelMap]] = {
+  override def populateContentModel(request: HttpServletRequest, loggedInUser: Option[User])(implicit ec: ExecutionContext, currentSpan: Span): Future[Option[ModelMap]] = {
     val tags = request.getAttribute(TAGS).asInstanceOf[Seq[Tag]]
 
     tags.headOption.map { tag =>
@@ -56,7 +57,7 @@ import scala.jdk.CollectionConverters._
     }
   }
 
-  override def populateExtraModelContent(request: HttpServletRequest, loggedInUser: Option[User])(implicit ec: ExecutionContext): Future[ModelMap] = {
+  override def populateExtraModelContent(request: HttpServletRequest, loggedInUser: Option[User])(implicit ec: ExecutionContext, currentSpan: Span): Future[ModelMap] = {
     val tags = request.getAttribute(TAGS).asInstanceOf[Seq[Tag]]
     val mv = new ModelMap()
     tags.headOption.map { tag =>

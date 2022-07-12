@@ -7,6 +7,7 @@ import org.springframework.ui.ModelMap
 
 import javax.servlet.http.HttpServletRequest
 import scala.concurrent.{ExecutionContext, Future}
+import io.opentelemetry.api.trace.Span
 
 trait ModelBuilder extends ContentFields with CommonModelObjectsService {
 
@@ -14,9 +15,9 @@ trait ModelBuilder extends ContentFields with CommonModelObjectsService {
 
   def isValid(request: HttpServletRequest): Boolean
 
-  def populateContentModel(request: HttpServletRequest, loggedInUser: Option[User] = None)(implicit ec: ExecutionContext): Future[Option[ModelMap]]
+  def populateContentModel(request: HttpServletRequest, loggedInUser: Option[User] = None)(implicit ec: ExecutionContext, currentSpan: Span): Future[Option[ModelMap]]
 
-  def populateExtraModelContent(request: HttpServletRequest, loggedInUser: Option[User])(implicit ec: ExecutionContext): Future[ModelMap]
+  def populateExtraModelContent(request: HttpServletRequest, loggedInUser: Option[User])(implicit ec: ExecutionContext, currentSpan: Span): Future[ModelMap]
 
   def getViewName(mv: ModelMap, loggedInUser: Option[User]): String
 

@@ -1,5 +1,6 @@
 package nz.co.searchwellington.controllers.models.helpers
 
+import io.opentelemetry.api.trace.Span
 import nz.co.searchwellington.ReasonableWaits
 import nz.co.searchwellington.controllers.RssUrlBuilder
 import nz.co.searchwellington.feeds.suggesteditems.{SuggestedFeeditemsService, SuggestedFeedsService}
@@ -27,7 +28,7 @@ import scala.jdk.CollectionConverters._
     RequestPath.getPathFrom(request).matches("^/feeds/inbox(/(rss|json))?$")
   }
 
-  def populateContentModel(request: HttpServletRequest, loggedInUser: Option[User])(implicit ec: ExecutionContext): Future[Option[ModelMap]] = {
+  def populateContentModel(request: HttpServletRequest, loggedInUser: Option[User])(implicit ec: ExecutionContext, currentSpan: Span): Future[Option[ModelMap]] = {
     for {
       suggestions <- suggestedFeeditemsService.getSuggestionFeednewsitems(MAX_SUGGESTIONS, loggedInUser)
     } yield {
@@ -41,7 +42,7 @@ import scala.jdk.CollectionConverters._
     }
   }
 
-  def populateExtraModelContent(request: HttpServletRequest, loggedInUser: Option[User])(implicit ec: ExecutionContext): Future[ModelMap] = {
+  def populateExtraModelContent(request: HttpServletRequest, loggedInUser: Option[User])(implicit ec: ExecutionContext, currentSpan: Span): Future[ModelMap] = {
     for {
       inboxFeeds <- suggestedFeedsService.getSuggestedFeedsOrderedByLatestFeeditemDate()
     } yield {

@@ -1,5 +1,6 @@
 package nz.co.searchwellington.controllers.models.helpers
 
+import io.opentelemetry.api.trace.Span
 import nz.co.searchwellington.ReasonableWaits
 import nz.co.searchwellington.controllers.RssUrlBuilder
 import nz.co.searchwellington.model.PaginationLink
@@ -21,6 +22,8 @@ class WatchlistModelBuilderTest extends ReasonableWaits with ContentFields {
   private val urlBuilder = mock(classOf[UrlBuilder])
   private val contentRetrievalService = mock(classOf[ContentRetrievalService])
   private val commonAttributesModelBuilder = mock(classOf[CommonAttributesModelBuilder])
+
+  private implicit val currentSpan = Span.current()
 
   private val modelBuilder = new WatchlistModelBuilder(contentRetrievalService, rssUrlBuilder, urlBuilder, commonAttributesModelBuilder)
 

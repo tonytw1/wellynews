@@ -1,5 +1,6 @@
 package nz.co.searchwellington.controllers.models.helpers
 
+import io.opentelemetry.api.trace.Span
 import nz.co.searchwellington.ReasonableWaits
 import nz.co.searchwellington.controllers.RssUrlBuilder
 import nz.co.searchwellington.model.mappers.FrontendResourceMapper
@@ -26,7 +27,7 @@ import scala.jdk.CollectionConverters._
     publisher != null && tag != null
   }
 
-  def populateContentModel(request: HttpServletRequest, loggedInUser: Option[User])(implicit ec: ExecutionContext): Future[Option[ModelMap]] = {
+  def populateContentModel(request: HttpServletRequest, loggedInUser: Option[User])(implicit ec: ExecutionContext, currentSpan: Span): Future[Option[ModelMap]] = {
     val tag = request.getAttribute("tag").asInstanceOf[Tag]
     val publisher = request.getAttribute("publisher").asInstanceOf[Website]
     val eventualFrontendPublisher = frontendResourceMapper.createFrontendResourceFrom(publisher)
@@ -51,7 +52,7 @@ import scala.jdk.CollectionConverters._
     }
   }
 
-  def populateExtraModelContent(request: HttpServletRequest, loggedInUser: Option[User])(implicit ec: ExecutionContext): Future[ModelMap] = {
+  def populateExtraModelContent(request: HttpServletRequest, loggedInUser: Option[User])(implicit ec: ExecutionContext, currentSpan: Span): Future[ModelMap] = {
     val publisher = request.getAttribute("publisher").asInstanceOf[Website]
     for {
       relatedTags <- relatedTagsService.getRelatedTagsForPublisher(publisher, loggedInUser)

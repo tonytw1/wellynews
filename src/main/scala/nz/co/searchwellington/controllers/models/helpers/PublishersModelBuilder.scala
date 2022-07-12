@@ -1,5 +1,6 @@
 package nz.co.searchwellington.controllers.models.helpers
 
+import io.opentelemetry.api.trace.Span
 import nz.co.searchwellington.ReasonableWaits
 import nz.co.searchwellington.filters.RequestPath
 import nz.co.searchwellington.model.User
@@ -21,7 +22,7 @@ import scala.jdk.CollectionConverters._
     RequestPath.getPathFrom(request).matches("^/publishers$") || RequestPath.getPathFrom(request).matches("^/publishers/json$")
   }
 
-  def populateContentModel(request: HttpServletRequest, loggedInUser: Option[User])(implicit ec: ExecutionContext): Future[Option[ModelMap]] = {
+  def populateContentModel(request: HttpServletRequest, loggedInUser: Option[User])(implicit ec: ExecutionContext, currentSpan: Span): Future[Option[ModelMap]] = {
     val q = Option(request.getParameter("q"))
 
     val eventualPublishers = q.map { q =>
@@ -44,7 +45,7 @@ import scala.jdk.CollectionConverters._
     }
   }
 
-  def populateExtraModelContent(request: HttpServletRequest, loggedInUser: Option[User])(implicit ec: ExecutionContext): Future[ModelMap] = {
+  def populateExtraModelContent(request: HttpServletRequest, loggedInUser: Option[User])(implicit ec: ExecutionContext, currentSpan: Span): Future[ModelMap] = {
     latestNewsitems(loggedInUser)
   }
 

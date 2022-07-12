@@ -1,5 +1,6 @@
 package nz.co.searchwellington.controllers.models.helpers
 
+import io.opentelemetry.api.trace.Span
 import nz.co.searchwellington.ReasonableWaits
 import nz.co.searchwellington.model.frontend.{FrontendNewsitem, FrontendWebsite}
 import nz.co.searchwellington.model.mappers.FrontendResourceMapper
@@ -30,6 +31,8 @@ class SearchModelBuilderTest extends ReasonableWaits with ContentFields {
   private val tagKeywordNewsitemResults = (Seq(tagNewsitem, anotherTagNewsitem), 2L)
   private val websitesMatchingTag = (Seq(FrontendWebsite(id = UUID.randomUUID().toString), FrontendWebsite(id = UUID.randomUUID().toString)), 2L)
   private val noLoggedInUser = None
+
+  private implicit val currentSpan = Span.current()
 
   private val modelBuilder = new SearchModelBuilder(contentRetrievalService, urlBuilder, frontendResourceMapper)
 

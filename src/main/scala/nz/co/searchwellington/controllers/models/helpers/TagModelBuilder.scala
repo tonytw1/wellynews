@@ -1,5 +1,6 @@
 package nz.co.searchwellington.controllers.models.helpers
 
+import io.opentelemetry.api.trace.Span
 import nz.co.searchwellington.ReasonableWaits
 import nz.co.searchwellington.controllers.{CommonModelObjectsService, RssUrlBuilder}
 import nz.co.searchwellington.model.frontend.FrontendResource
@@ -33,7 +34,7 @@ import scala.jdk.CollectionConverters._
     tags != null && tags.size == 1
   }
 
-  def populateContentModel(request: HttpServletRequest, loggedInUser: Option[User])(implicit ec: ExecutionContext): Future[Option[ModelMap]] = {
+  def populateContentModel(request: HttpServletRequest, loggedInUser: Option[User])(implicit ec: ExecutionContext, currentSpan: Span): Future[Option[ModelMap]] = {
 
     def populateTagPageModelAndView(tag: Tag, page: Int): Future[Option[ModelMap]] = {
       val startIndex = getStartIndex(page, MAX_NEWSITEMS)
@@ -89,7 +90,7 @@ import scala.jdk.CollectionConverters._
     populateTagPageModelAndView(tagFromRequest(request), getPage(request))
   }
 
-  def populateExtraModelContent(request: HttpServletRequest, loggedInUser: Option[User])(implicit ec: ExecutionContext): Future[ModelMap] = {
+  def populateExtraModelContent(request: HttpServletRequest, loggedInUser: Option[User])(implicit ec: ExecutionContext, currentSpan: Span): Future[ModelMap] = {
     val tag = tagFromRequest(request)
 
     val eventualGeotaggedNewsitems = contentRetrievalService.getGeotaggedNewsitemsForTag(tag, MAX_NUMBER_OF_GEOTAGGED_TO_SHOW, loggedInUser = loggedInUser)

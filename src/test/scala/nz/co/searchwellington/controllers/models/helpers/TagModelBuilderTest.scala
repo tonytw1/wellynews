@@ -1,5 +1,6 @@
 package nz.co.searchwellington.controllers.models.helpers
 
+import io.opentelemetry.api.trace.Span
 import nz.co.searchwellington.ReasonableWaits
 import nz.co.searchwellington.controllers.RssUrlBuilder
 import nz.co.searchwellington.model._
@@ -44,6 +45,8 @@ class TagModelBuilderTest extends ReasonableWaits with ContentFields {
   private val noNewsitems = (Seq.empty, 0L)
 
   val request = new MockHttpServletRequest()
+
+  private implicit val currentSpan = Span.current()
 
   private val modelBuilder = new TagModelBuilder(rssUrlBuilder, urlBuilder, relatedTagsService,
     contentRetrievalService, commonAttributesModelBuilder, tagDAO)

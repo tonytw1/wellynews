@@ -1,5 +1,6 @@
 package nz.co.searchwellington.controllers.models.helpers
 
+import io.opentelemetry.api.trace.Span
 import nz.co.searchwellington.ReasonableWaits
 import nz.co.searchwellington.controllers.RssUrlBuilder
 import nz.co.searchwellington.model.frontend.FrontendNewsitem
@@ -27,6 +28,8 @@ class ArchiveModelBuilderTest extends ReasonableWaits with ContentFields with Te
   private val monthNewsitems = Seq(newsitem, anotherNewsitem)
 
   private val loggedInUser = None
+
+  private implicit val currentSpan = Span.current()
 
   val modelBuilder =  new ArchiveModelBuilder(contentRetrievalService, new ArchiveLinksService(),
     new DateFormatter(DateTimeZone.UTC), new RssUrlBuilder(new SiteInformation()))

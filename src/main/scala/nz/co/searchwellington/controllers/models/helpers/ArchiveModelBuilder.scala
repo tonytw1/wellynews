@@ -1,5 +1,6 @@
 package nz.co.searchwellington.controllers.models.helpers
 
+import io.opentelemetry.api.trace.Span
 import nz.co.searchwellington.ReasonableWaits
 import nz.co.searchwellington.controllers.RssUrlBuilder
 import nz.co.searchwellington.filters.RequestPath
@@ -26,7 +27,7 @@ import scala.jdk.CollectionConverters._
     RequestPath.getPathFrom(request).matches(archiveMonthPath)
   }
 
-  def populateContentModel(request: HttpServletRequest, loggedInUser: Option[User])(implicit ec: ExecutionContext): Future[Option[ModelMap]] = {
+  def populateContentModel(request: HttpServletRequest, loggedInUser: Option[User])(implicit ec: ExecutionContext, currentSpan: Span): Future[Option[ModelMap]] = {
     getArchiveMonthFromPath(RequestPath.getPathFrom(request)).map { month =>
       for {
         newsitemsForMonth <- contentRetrievalService.getNewsitemsForInterval(month, loggedInUser)
@@ -43,7 +44,7 @@ import scala.jdk.CollectionConverters._
     }
   }
 
-  def populateExtraModelContent(request: HttpServletRequest, loggedInUser: Option[User])(implicit ec: ExecutionContext): Future[ModelMap] = {
+  def populateExtraModelContent(request: HttpServletRequest, loggedInUser: Option[User])(implicit ec: ExecutionContext, currentSpan: Span): Future[ModelMap] = {
     latestNewsitems(loggedInUser).flatMap { mv =>
       getArchiveMonthFromPath(RequestPath.getPathFrom(request)).map { month =>
         val eventualArchiveLinks = contentRetrievalService.getArchiveMonths(loggedInUser)

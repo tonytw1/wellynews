@@ -1,5 +1,6 @@
 package nz.co.searchwellington.controllers.models.helpers
 
+import io.opentelemetry.api.trace.Span
 import nz.co.searchwellington.ReasonableWaits
 import nz.co.searchwellington.feeds.suggesteditems.SuggestedFeeditemsService
 import nz.co.searchwellington.model.frontend.{FrontendFeed, FrontendNewsitem}
@@ -29,6 +30,8 @@ class FeedsModelBuilderTest extends ReasonableWaits with ContentFields {
   private val adminUser = User(admin = true)
 
   val request = new MockHttpServletRequest
+
+  private implicit val currentSpan = Span.current()
 
   val modelBuilder = new FeedsModelBuilder(contentRetrievalService, suggestedFeeditemsService, urlBuilder, commonAttributesModelBuilder)
 

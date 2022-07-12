@@ -1,5 +1,6 @@
 package nz.co.searchwellington.controllers.models.helpers
 
+import io.opentelemetry.api.trace.Span
 import nz.co.searchwellington.ReasonableWaits
 import nz.co.searchwellington.controllers.RssUrlBuilder
 import nz.co.searchwellington.model.frontend.{FrontendNewsitem, FrontendWebsite}
@@ -28,6 +29,8 @@ class PublisherTagCombinerModelBuilderTest extends ReasonableWaits with ContentF
 
   private val apublisher = Website(title = "A publisher", url_words = Some("a-publisher"))
   private val atag = Tag(name = "atag", display_name = "A tag")
+
+  private implicit val currentSpan: Span = Span.current()
 
   private val modelBuilder = new PublisherTagCombinerModelBuilder(contentRetrievalService, rssUrlBuilder, urlBuilder,
     relatedTagsService, commonAttributesModelBuilder, frontendResourceMapper)

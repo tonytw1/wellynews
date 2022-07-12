@@ -1,5 +1,6 @@
 package nz.co.searchwellington.controllers.models.helpers
 
+import io.opentelemetry.api.trace.Span
 import nz.co.searchwellington.ReasonableWaits
 import nz.co.searchwellington.controllers.RssUrlBuilder
 import nz.co.searchwellington.filters.LocationParameterFilter
@@ -36,6 +37,8 @@ class GeotaggedModelBuilderTest extends ReasonableWaits with ContentFields {
   private val LOCATION_RESULTS_COUNT= 33L
 
   private val loggedInUser = None
+
+  private implicit val currentSpan = Span.current()
 
   private val modelBuilder = new GeotaggedModelBuilder(contentRetrievalService, urlBuilder, rssUrlBuilder, relatedTagsService, commonAttributesModelBuilder)
 

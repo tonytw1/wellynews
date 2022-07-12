@@ -1,5 +1,6 @@
 package nz.co.searchwellington.controllers.models.helpers
 
+import io.opentelemetry.api.trace.Span
 import nz.co.searchwellington.ReasonableWaits
 import nz.co.searchwellington.controllers.RssUrlBuilder
 import nz.co.searchwellington.model.Tag
@@ -31,13 +32,11 @@ class TagCombinerModelBuilderTest extends ReasonableWaits with ContentFields {
   private val tag = Tag(_id = BSONObjectID.generate, id = UUID.randomUUID().toString, display_name = "Penguins")
   private val anotherTag = Tag(_id = BSONObjectID.generate, id = UUID.randomUUID().toString, display_name = "Airport")
 
-  val request = new MockHttpServletRequest()
+  private val request = new MockHttpServletRequest()
+
+  private implicit val currentSpan = Span.current()
 
   private val modelBuilder = new TagCombinerModelBuilder(contentRetrievalService, rssUrlBuilder, urlBuilder, relatedTagsService, commonAttributesModelBuilder)
-
-  @BeforeEach
-  def setup(): Unit = {
-  }
 
   @Test
   def isNotValidIfNotTagsAreOnTheRequest(): Unit = {

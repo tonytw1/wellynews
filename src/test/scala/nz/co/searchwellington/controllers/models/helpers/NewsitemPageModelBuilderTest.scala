@@ -1,5 +1,6 @@
 package nz.co.searchwellington.controllers.models.helpers
 
+import io.opentelemetry.api.trace.Span
 import nz.co.searchwellington.ReasonableWaits
 import nz.co.searchwellington.model.frontend.FrontendNewsitem
 import nz.co.searchwellington.model.mappers.FrontendResourceMapper
@@ -24,6 +25,8 @@ class NewsitemPageModelBuilderTest extends ReasonableWaits {
   private val taggingReturnsOfficerService = mock(classOf[TaggingReturnsOfficerService])
   private val mongoRepository = mock(classOf[MongoRepository])
   private val frontendResourceMapper = mock(classOf[FrontendResourceMapper])
+
+  private implicit val currentSpan = Span.current()
 
   private val modelBuilder = new NewsitemPageModelBuilder(contentRetrievalService, taggingReturnsOfficerService,
     mongoRepository, frontendResourceMapper)

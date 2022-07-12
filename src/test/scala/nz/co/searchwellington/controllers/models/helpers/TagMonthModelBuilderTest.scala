@@ -1,5 +1,6 @@
 package nz.co.searchwellington.controllers.models.helpers
 
+import io.opentelemetry.api.trace.Span
 import nz.co.searchwellington.ReasonableWaits
 import nz.co.searchwellington.controllers.RssUrlBuilder
 import nz.co.searchwellington.model._
@@ -22,6 +23,8 @@ class TagMonthModelBuilderTest extends ReasonableWaits with ContentFields with T
 
   private val parentTag = Tag(display_name = "Parent")
   private val tag = Tag(parent = Some(parentTag._id), display_name = "Penguins", name = "penguins")
+
+  private implicit val currentSpan = Span.current()
 
   private val modelBuilder = new TagMonthModelBuilder(contentRetrievalService, new DateFormatter("Europe/London"), rssUrlBuilder)
 

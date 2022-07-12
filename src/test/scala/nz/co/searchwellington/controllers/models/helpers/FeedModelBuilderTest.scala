@@ -1,5 +1,6 @@
 package nz.co.searchwellington.controllers.models.helpers
 
+import io.opentelemetry.api.trace.Span
 import nz.co.searchwellington.ReasonableWaits
 import nz.co.searchwellington.controllers.models.GeotaggedNewsitemExtractor
 import nz.co.searchwellington.feeds.whakaoko.model.{FeedItem, Subscription}
@@ -55,6 +56,8 @@ class FeedModelBuilderTest extends ReasonableWaits with ContentFields {
   private val loggedInUser = None
 
   private val request = new MockHttpServletRequest
+
+  private implicit val currentSpan = Span.current()
 
   val modelBuilder = new FeedModelBuilder(contentRetrievalService, geotaggedNewsitemExtractor,
     feedItemActionDecorator, frontendResourceMapper, commonAttributesModelBuilder, feeditemToNewsitemService,

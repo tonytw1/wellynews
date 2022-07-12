@@ -1,5 +1,6 @@
 package nz.co.searchwellington.controllers.models.helpers
 
+import io.opentelemetry.api.trace.Span
 import nz.co.searchwellington.controllers.RssUrlBuilder
 import nz.co.searchwellington.filters.RequestPath
 import nz.co.searchwellington.model.mappers.FrontendResourceMapper
@@ -26,7 +27,7 @@ import scala.jdk.CollectionConverters._
     }.nonEmpty
   }
 
-  override def populateContentModel(request: HttpServletRequest, loggedInUser: Option[User])(implicit ec: ExecutionContext): Future[Option[ModelMap]] = {
+  override def populateContentModel(request: HttpServletRequest, loggedInUser: Option[User])(implicit ec: ExecutionContext, currentSpan: Span): Future[Option[ModelMap]] = {
     Option(request.getAttribute("publisher").asInstanceOf[Website]).map { publisher =>
       parseMonth(publisher, RequestPath.getPathFrom(request)).map { month =>
         for {
@@ -50,7 +51,7 @@ import scala.jdk.CollectionConverters._
     }
   }
 
-  override def populateExtraModelContent(request: HttpServletRequest, loggedInUser: Option[User])(implicit ec: ExecutionContext): Future[ModelMap] = {
+  override def populateExtraModelContent(request: HttpServletRequest, loggedInUser: Option[User])(implicit ec: ExecutionContext, currentSpan: Span): Future[ModelMap] = {
     Option(request.getAttribute("publisher").asInstanceOf[Website]).flatMap { publisher =>
       parseMonth(publisher, RequestPath.getPathFrom(request)).map { month =>
         val eventualPublisherArchiveMonths = contentRetrievalService.getPublisherArchiveMonths(publisher, loggedInUser)

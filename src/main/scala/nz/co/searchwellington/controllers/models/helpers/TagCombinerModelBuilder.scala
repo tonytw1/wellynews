@@ -1,5 +1,6 @@
 package nz.co.searchwellington.controllers.models.helpers
 
+import io.opentelemetry.api.trace.Span
 import nz.co.searchwellington.ReasonableWaits
 import nz.co.searchwellington.controllers.RssUrlBuilder
 import nz.co.searchwellington.model.{Resource, Tag, User}
@@ -27,7 +28,7 @@ import scala.jdk.CollectionConverters._
     isTagCombinerPage
   }
 
-  def populateContentModel(request: HttpServletRequest, loggedInUser: Option[User])(implicit ec: ExecutionContext): Future[Option[ModelMap]] = {
+  def populateContentModel(request: HttpServletRequest, loggedInUser: Option[User])(implicit ec: ExecutionContext, currentSpan: Span): Future[Option[ModelMap]] = {
 
     def populateTagCombinerModelAndView(tags: Seq[Tag], page: Int): Future[Option[ModelMap]] = {
       val startIndex = getStartIndex(page, MAX_NEWSITEMS)
@@ -68,7 +69,7 @@ import scala.jdk.CollectionConverters._
     populateTagCombinerModelAndView(tags, page)
   }
 
-  def populateExtraModelContent(request: HttpServletRequest, loggedInUser: Option[User])(implicit ec: ExecutionContext): Future[ModelMap] = {
+  def populateExtraModelContent(request: HttpServletRequest, loggedInUser: Option[User])(implicit ec: ExecutionContext, currentSpan: Span): Future[ModelMap] = {
     val tags = request.getAttribute("tags").asInstanceOf[Seq[Tag]]
     if (tags.nonEmpty) {
       val tag = tags.head

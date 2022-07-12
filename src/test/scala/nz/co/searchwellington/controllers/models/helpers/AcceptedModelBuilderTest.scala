@@ -1,5 +1,6 @@
 package nz.co.searchwellington.controllers.models.helpers
 
+import io.opentelemetry.api.trace.Span
 import nz.co.searchwellington.ReasonableWaits
 import nz.co.searchwellington.controllers.RssUrlBuilder
 import nz.co.searchwellington.model.AcceptedDay
@@ -22,6 +23,8 @@ class AcceptedModelBuilderTest extends ReasonableWaits with CommonSizes {
   private val commonAttributesModelBuilder = mock(classOf[CommonAttributesModelBuilder])
 
   private val builder = new AcceptedModelBuilder(contentRetrievalService, rssUrlBuilder, urlBuilder, commonAttributesModelBuilder)
+
+  private implicit val currentSpan = Span.current()
 
   @Test
   def shouldIncludeLinkOfAcceptedCountsForRecentDays(): Unit = {

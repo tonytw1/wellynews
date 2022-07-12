@@ -1,5 +1,6 @@
 package nz.co.searchwellington.controllers.models.helpers
 
+import io.opentelemetry.api.trace.Span
 import nz.co.searchwellington.ReasonableWaits
 import nz.co.searchwellington.controllers.RssUrlBuilder
 import nz.co.searchwellington.model.{ArchiveLink, SiteInformation, Website}
@@ -28,6 +29,8 @@ class PublisherMonthModelBuilderTest extends ReasonableWaits with ContentFields 
   private val newsitem = mock(classOf[FrontendResource])
   private val anotherNewsitem = mock(classOf[FrontendResource])
   private val monthNewsitems = Seq(newsitem, anotherNewsitem)
+
+  private implicit val currentSpan = Span.current()
 
   private val modelBuilder = new PublisherMonthModelBuilder(contentRetrievalService, frontendResourceMapper,
     new DateFormatter(DateTimeZone.UTC), new RssUrlBuilder(new SiteInformation()))

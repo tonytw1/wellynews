@@ -1,5 +1,6 @@
 package nz.co.searchwellington.controllers.models.helpers
 
+import io.opentelemetry.api.trace.Span
 import nz.co.searchwellington.ReasonableWaits
 import nz.co.searchwellington.controllers.RssUrlBuilder
 import nz.co.searchwellington.model.frontend.FrontendResource
@@ -35,7 +36,9 @@ class IndexModelBuilderTest extends ReasonableWaits with ContentFields {
 
   private val loggedInUser = None
 
-  val modelBuilder =  new IndexModelBuilder(contentRetrievalService, rssUrlBuilder, urlBuilder, archiveLinksService, commonAttributesModelBuilder)
+  private implicit val currentSpan = Span.current()
+
+  private val modelBuilder =  new IndexModelBuilder(contentRetrievalService, rssUrlBuilder, urlBuilder, archiveLinksService, commonAttributesModelBuilder)
 
   @Test
   def isValidForHomePageUrl(): Unit = {
