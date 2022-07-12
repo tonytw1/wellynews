@@ -198,9 +198,7 @@ class ElasticSearchIndexer @Autowired()(val showBrokenDecisionService: ShowBroke
     val request = order(search(Index) query composeQueryFor(query, loggedInUser)) start query.startIndex limit query.maxItems
 
     val tracer = GlobalOpenTelemetry.getTracer("wellynews");
-    val span = tracer.spanBuilder("executeResourceQuery").
-      setParent(Context.current().`with`(currentSpan)).
-      startSpan()
+    val span = tracer.spanBuilder("executeResourceQuery").startSpan()
     span.makeCurrent()
 
     val start = DateTime.now()
