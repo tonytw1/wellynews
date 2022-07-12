@@ -33,13 +33,10 @@ class ContentController @Autowired()(contentModelBuilderServiceFactory: ContentM
   def normal(request: HttpServletRequest, response: HttpServletResponse): ModelAndView = {
     import scala.concurrent.ExecutionContext.Implicits.global
     implicit val currentSpan = Span.current()
-    log.info("Current span / trace: " + currentSpan.getSpanContext.getSpanId + " / " + currentSpan.getSpanContext.getTraceId)
     buildAndRender(request)
   }
 
   private def buildAndRender(request: HttpServletRequest)(implicit ec: ExecutionContext, currentSpan: Span): ModelAndView = {
-    log.info("Current buildAndRender span / trace: " + currentSpan.getSpanContext.getSpanId + " / " + currentSpan.getSpanContext.getTraceId)
-
     val eventualMaybeView = contentModelBuilderService.buildModelAndView(request, loggedInUserFilter.getLoggedInUser)
     try {
       Await.result(eventualMaybeView, TenSeconds).fold {

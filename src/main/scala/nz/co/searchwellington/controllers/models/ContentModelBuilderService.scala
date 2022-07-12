@@ -1,7 +1,6 @@
 package nz.co.searchwellington.controllers.models
 
 import io.opentelemetry.api.trace.Span
-import io.opentelemetry.extension.annotations.WithSpan
 import nz.co.searchwellington.controllers.CommonModelObjectsService
 import nz.co.searchwellington.controllers.models.helpers.{ContentFields, ModelBuilder}
 import nz.co.searchwellington.filters.RequestPath
@@ -24,10 +23,8 @@ class ContentModelBuilderService(viewFactory: ViewFactory,
 
   private val viewType = "viewType"
 
-  @WithSpan
   def buildModelAndView(request: HttpServletRequest, loggedInUser: Option[User] = None)(implicit ec: ExecutionContext, currentSpan: Span): Future[Option[ModelAndView]] = {
     modelBuilders.find(mb => mb.isValid(request)).map { mb =>
-      log.info("Current span / trace: " + currentSpan.getSpanContext.getSpanId + " / " + currentSpan.getSpanContext.getTraceId + " ec: " + ec.hashCode())
       currentSpan.setAttribute("modelBuilder", mb.getClass.getSimpleName)
 
       val path = RequestPath.getPathFrom(request)
