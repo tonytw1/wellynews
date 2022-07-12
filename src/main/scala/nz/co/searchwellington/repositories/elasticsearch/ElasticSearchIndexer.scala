@@ -199,7 +199,6 @@ class ElasticSearchIndexer @Autowired()(val showBrokenDecisionService: ShowBroke
 
     val tracer = GlobalOpenTelemetry.getTracer("wellynews");
     val span = tracer.spanBuilder("executeResourceQuery").startSpan()
-    span.makeCurrent()
 
     val start = DateTime.now()
     val eventualTuples = client.execute(request).map { r =>
