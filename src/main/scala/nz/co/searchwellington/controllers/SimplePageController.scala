@@ -1,5 +1,6 @@
 package nz.co.searchwellington.controllers
 
+import io.opentelemetry.api.trace.Span
 import nz.co.searchwellington.ReasonableWaits
 import nz.co.searchwellington.controllers.models.helpers.CommonAttributesModelBuilder
 import nz.co.searchwellington.model.SiteInformation
@@ -28,6 +29,7 @@ import scala.jdk.CollectionConverters._
   extends ReasonableWaits with CommonModelObjectsService {
 
   @GetMapping(value = Array("/about")) def about(request: HttpServletRequest): ModelAndView = {
+    implicit val currentSpan: Span = Span.current()
     urlStack.setUrlStack(request)
     val loggedInUser = loggedInUserFilter.getLoggedInUser
     val mv = new ModelAndView("about").
@@ -49,6 +51,7 @@ import scala.jdk.CollectionConverters._
 
   @GetMapping(Array("/archive"))
   def archive(request: HttpServletRequest): ModelAndView = {
+    implicit val currentSpan: Span = Span.current()
     urlStack.setUrlStack(request)
     val loggedInUser = loggedInUserFilter.getLoggedInUser
 
@@ -80,6 +83,7 @@ import scala.jdk.CollectionConverters._
 
   @GetMapping(Array("/rssfeeds"))
   def rssfeeds(request: HttpServletRequest): ModelAndView = {
+    implicit val currentSpan: Span = Span.current()
     urlStack.setUrlStack(request)
     val loggedInUser = loggedInUserFilter.getLoggedInUser
 
@@ -106,6 +110,7 @@ import scala.jdk.CollectionConverters._
 
   @GetMapping(Array("/feeds/discovered"))
   def discovered(request: HttpServletRequest): ModelAndView = {
+    implicit val currentSpan: Span = Span.current()
     urlStack.setUrlStack(request)
     val loggedInUser = loggedInUserFilter.getLoggedInUser
 

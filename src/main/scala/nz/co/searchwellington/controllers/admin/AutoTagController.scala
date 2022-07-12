@@ -1,5 +1,6 @@
 package nz.co.searchwellington.controllers.admin
 
+import io.opentelemetry.api.trace.Span
 import nz.co.searchwellington.ReasonableWaits
 import nz.co.searchwellington.controllers.{CommonModelObjectsService, LoggedInUserFilter, RequiringLoggedInUser}
 import nz.co.searchwellington.filters.AdminRequestFilter
@@ -34,6 +35,8 @@ import scala.jdk.CollectionConverters._
   private val log = LogFactory.getLog(classOf[AutoTagController])
 
   @RequestMapping(Array("/*/autotag")) def prompt(request: HttpServletRequest, response: HttpServletResponse): ModelAndView = {
+    implicit val currentSpan: Span = Span.current()
+
     def prompt(loggedInUser: User): ModelAndView = {
       Option(request.getAttribute("tag").asInstanceOf[Tag]).fold {
         response.setStatus(HttpServletResponse.SC_NOT_FOUND)
@@ -103,7 +106,7 @@ import scala.jdk.CollectionConverters._
     requiringAdminUser(apply)
   }
 
-  private def getPossibleAutotagResources(user: User, tag: Tag, loggedInUser: Option[User]): Future[Seq[FrontendResource]] = {
+  private def getPossibleAutotagResources(user: User, tag: Tag, loggedInUser: Option[User])(implicit currentSpan: Span): Future[Seq[FrontendResource]] = {
     val autotagHints = tag.hints.toSet
     contentRetrievalService.getNewsitemsMatchingKeywordsNotTaggedByUser(autotagHints + tag.display_name, user, tag, loggedInUser)
   }

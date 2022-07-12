@@ -1,5 +1,6 @@
 package nz.co.searchwellington.controllers.admin
 
+import io.opentelemetry.api.trace.Span
 import nz.co.searchwellington.controllers.LoggedInUserFilter
 import nz.co.searchwellington.model.frontend.FrontendWebsite
 import nz.co.searchwellington.model.mappers.FrontendResourceMapper
@@ -28,6 +29,8 @@ class GatherControllerTest {
   private val contentRetrievalService = mock(classOf[ContentRetrievalService])
   private val frontendResourceMapper = mock(classOf[FrontendResourceMapper])
   private val loggedInUserFilter = mock(classOf[LoggedInUserFilter])
+
+  private implicit val currentSpan: Span = Span.current()
 
   @Test
   def promptScreenShouldListsMatchesForPublisher(): Unit = {

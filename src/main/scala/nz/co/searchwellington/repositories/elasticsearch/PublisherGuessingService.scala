@@ -1,5 +1,6 @@
 package nz.co.searchwellington.repositories.elasticsearch
 
+import io.opentelemetry.api.trace.Span
 import nz.co.searchwellington.ReasonableWaits
 import nz.co.searchwellington.model.{User, Website}
 import nz.co.searchwellington.repositories.ContentRetrievalService
@@ -16,7 +17,7 @@ import scala.concurrent.{ExecutionContext, Future}
     Most newsitems have the same hostname as their publisher and publishers generally have a unique hostname.
     Given a newsitem then the publisher is likely to be one of the websites with the same hostname.
    */
-  def guessPublisherBasedOnUrl(url: String, loggedInUser: Option[User])(implicit ec: ExecutionContext): Future[Option[Website]] = {
+  def guessPublisherBasedOnUrl(url: String, loggedInUser: Option[User])(implicit ec: ExecutionContext, currentSpan: Span): Future[Option[Website]] = {
 
     def guessPossiblePublishersForUrl(url: String): Future[Seq[Website]] = {
       val eventualMatchingResources = urlParser.extractHostnameFrom(url).map { hostname =>

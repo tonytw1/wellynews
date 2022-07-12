@@ -1,5 +1,6 @@
 package nz.co.searchwellington.controllers.ajax
 
+import io.opentelemetry.api.trace.Span
 import nz.co.searchwellington.ReasonableWaits
 import nz.co.searchwellington.controllers.LoggedInUserFilter
 import nz.co.searchwellington.htmlparsing.TitleExtractor
@@ -29,6 +30,7 @@ class TitleAutocompleteAjaxController @Autowired()(viewFactory: ViewFactory, log
 
   @GetMapping(Array("/ajax/title-autofill"))
   def handleRequest(@RequestParam url: String): ModelAndView = {
+    implicit val currentSpan: Span = Span.current()
     val loggedInUser = loggedInUserFilter.getLoggedInUser
 
     val parsedUrl = Option(url).flatMap { urlString =>

@@ -1,5 +1,6 @@
 package nz.co.searchwellington.controllers.admin
 
+import io.opentelemetry.api.trace.Span
 import nz.co.searchwellington.ReasonableWaits
 import nz.co.searchwellington.controllers.{CommonModelObjectsService, LoggedInUserFilter, RequiringLoggedInUser}
 import nz.co.searchwellington.model._
@@ -31,6 +32,8 @@ import scala.jdk.CollectionConverters._
 
   @GetMapping(Array("/admin/gather/{id}"))
   def prompt(@PathVariable id: String): ModelAndView = {
+    implicit val currentSpan: Span = Span.current()
+
     def prompt(loggedInUser: User): ModelAndView = {
       val eventualModelAndView = mongoRepository.getResourceById(id).flatMap { maybeResource =>
         maybeResource.map {
@@ -88,7 +91,7 @@ import scala.jdk.CollectionConverters._
     requiringAdminUser(apply)
   }
 
-  private def getPossibleGatheredResources(publisher: Website, loggedInUser: User): Future[Seq[Resource]] = {
+  private def getPossibleGatheredResources(publisher: Website, loggedInUser: User)(implicit currentSpan: Span): Future[Seq[Resource]] = {
     urlParser.extractHostnameFrom(publisher.page).map { publishersHostname =>
       contentRetrievalService.getPublishedResourcesMatchingHostname(publisher,
         publishersHostname, Some(loggedInUser)).map { gathered =>

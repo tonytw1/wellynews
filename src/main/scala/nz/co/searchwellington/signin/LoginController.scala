@@ -1,5 +1,6 @@
 package nz.co.searchwellington.signin
 
+import io.opentelemetry.api.trace.Span
 import nz.co.searchwellington.controllers.{CommonModelObjectsService, LoggedInUserFilter, UrlStack}
 import nz.co.searchwellington.repositories.ContentRetrievalService
 import org.springframework.beans.factory.annotation.Autowired
@@ -17,6 +18,7 @@ import scala.concurrent.ExecutionContext.Implicits.global
                                                loggedInUserFilter: LoggedInUserFilter) extends CommonModelObjectsService {
 
   @RequestMapping(Array("/signin")) def signin(request: HttpServletRequest): ModelAndView = {
+    implicit val currentSpan: Span = Span.current()
     val loggedInUser = loggedInUserFilter.getLoggedInUser
     if (loggedInUser.isEmpty) {
       Await.result(for {

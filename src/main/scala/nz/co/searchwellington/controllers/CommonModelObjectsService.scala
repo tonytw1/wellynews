@@ -1,5 +1,6 @@
 package nz.co.searchwellington.controllers
 
+import io.opentelemetry.api.trace.Span
 import nz.co.searchwellington.ReasonableWaits
 import nz.co.searchwellington.model.User
 import nz.co.searchwellington.repositories.ContentRetrievalService
@@ -25,7 +26,7 @@ trait CommonModelObjectsService extends ReasonableWaits {
     }
   }
 
-  def latestNewsitems(loggedInUser: Option[User])(implicit ec: ExecutionContext): Future[ModelMap] = {
+  def latestNewsitems(loggedInUser: Option[User])(implicit ec: ExecutionContext, currentSpan: Span): Future[ModelMap] = {
     for {
       latestNewsitems <- contentRetrievalService.getLatestNewsitems(5, loggedInUser = loggedInUser)
     } yield {

@@ -1,5 +1,6 @@
 package nz.co.searchwellington.repositories.elasticsearch
 
+import io.opentelemetry.api.trace.Span
 import nz.co.searchwellington.ReasonableWaits
 import nz.co.searchwellington.model.{User, Website}
 import nz.co.searchwellington.repositories.ContentRetrievalService
@@ -17,6 +18,8 @@ class PublisherGuessingServiceTest extends ReasonableWaits {
   private val publisherGuessingService = new PublisherGuessingService(contentRetrievalService, new UrlParser)
 
   private val adminUser = User(admin = true)
+
+  private implicit val currentSpan: Span = Span.current()
 
   @Test
   def shouldNotMatchIfNoMatchingPublishers(): Unit = {

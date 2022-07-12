@@ -1,5 +1,6 @@
 package nz.co.searchwellington.controllers.ajax
 
+import io.opentelemetry.api.trace.Span
 import nz.co.searchwellington.ReasonableWaits
 import nz.co.searchwellington.controllers.LoggedInUserFilter
 import nz.co.searchwellington.repositories.elasticsearch.PublisherGuessingService
@@ -19,6 +20,7 @@ class PublisherGuessController @Autowired()(publisherGuessingService: PublisherG
 
   @GetMapping(Array("/ajax/publisher-guess"))
   def handleRequest(@RequestParam url: String): ModelAndView = {
+    implicit val currentSpan: Span = Span.current()
 
     val maybePublisher = Option(url).flatMap { url =>
       Await.result(publisherGuessingService.guessPublisherBasedOnUrl(url, loggedInUserFilter.getLoggedInUser), TenSeconds)

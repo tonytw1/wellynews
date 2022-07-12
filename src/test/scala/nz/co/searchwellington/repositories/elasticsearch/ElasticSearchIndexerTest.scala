@@ -1,5 +1,6 @@
 package nz.co.searchwellington.repositories.elasticsearch
 
+import io.opentelemetry.api.trace.Span
 import nz.co.searchwellington.ReasonableWaits
 import nz.co.searchwellington.controllers.ShowBrokenDecisionService
 import nz.co.searchwellington.model._
@@ -43,6 +44,8 @@ class ElasticSearchIndexerTest extends IndexableResource with ReasonableWaits {
 
   private val loggedInUser = User(admin = true)
   private val allNewsitems = ResourceQuery(`type` = Some(Set("N")))
+
+  private implicit val currentSpan: Span = Span.current()
 
   @Test
   def canFilterByType(): Unit = {
