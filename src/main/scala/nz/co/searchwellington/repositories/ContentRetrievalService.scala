@@ -4,6 +4,7 @@ import com.sksamuel.elastic4s.requests.searches.SearchRequest
 import com.sksamuel.elastic4s.requests.searches.sort.{ScoreSort, SortOrder}
 import io.opentelemetry.api.GlobalOpenTelemetry
 import io.opentelemetry.api.trace.Span
+import io.opentelemetry.context.Context
 import nz.co.searchwellington.ReasonableWaits
 import nz.co.searchwellington.controllers.models.helpers.CommonSizes
 import nz.co.searchwellington.model._
@@ -405,7 +406,8 @@ import scala.concurrent.{ExecutionContext, Future}
 
     }.flatMap { rs =>
       val tracer = GlobalOpenTelemetry.getTracer("wellynews")
-      val frontendMapSpan = tracer.spanBuilder("createFrontendResources").startSpan()
+      val frontendMapSpan = tracer.spanBuilder("createFrontendResources").
+        setParent(Context.current().`with`(currentSpan)).startSpan()
       Future.sequence(rs.map(r => frontendResourceMapper.createFrontendResourceFrom(r, loggedInUser))).map { frs =>
         frontendMapSpan.setAttribute("mapped", frs.size)
         frontendMapSpan.end()
