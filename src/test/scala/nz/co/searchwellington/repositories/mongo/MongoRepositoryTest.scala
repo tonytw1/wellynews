@@ -34,6 +34,23 @@ class MongoRepositoryTest extends ReasonableWaits {
   }
 
   @Test
+  def canFetchBatchOfResoucesById(): Unit = {
+    val newsitem = Newsitem(title = testName)
+    val anotherNewsitem = Newsitem(title = testName)
+    val yetAnotherNewsitem = Newsitem(title = testName)
+    val resources = Seq(newsitem, anotherNewsitem, yetAnotherNewsitem)
+
+    resources.foreach {resource =>
+        Await.result(mongoRepository.saveResource(resource), TenSeconds)
+    }
+    val ids = resources.map(_._id)
+
+    val reread = Await.result(mongoRepository.getResourceByObjectIds(ids), TenSeconds)
+
+    assertEquals(3, reread.size)
+  }
+
+  @Test
   def canPersistTags(): Unit = {
     val tag = Tag(name = "Test " + UUID.randomUUID().toString)
 
@@ -223,7 +240,7 @@ class MongoRepositoryTest extends ReasonableWaits {
   }
 
   @Test
-  def canReadListOfResourceIds(): Unit = {
+  def canObtainListOfAllResourceIds(): Unit = {
     val publisher = Website(title = testName)
     Await.result(mongoRepository.saveResource(publisher), TenSeconds)
     val newsitem = Newsitem(title = testName)
