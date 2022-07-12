@@ -209,6 +209,7 @@ class ElasticSearchIndexer @Autowired()(val showBrokenDecisionService: ShowBroke
     eventualTuples.map { r =>
       val duration = new org.joda.time.Duration(start, DateTime.now)
       span.setAttribute("fetched", r._1.size)
+      span.setAttribute("query", query.toString)  // TODO human readable
       span.setAttribute("database", "elasticsearch")
       span.end()
       log.debug("Elastic query " + query + " took: " + duration.getMillis + " ms")
