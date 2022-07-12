@@ -14,8 +14,7 @@ import org.springframework.stereotype.Component
 import org.springframework.ui.ModelMap
 
 import javax.servlet.http.HttpServletRequest
-import scala.concurrent.ExecutionContext.Implicits.global
-import scala.concurrent.Future
+import scala.concurrent.{ExecutionContext, Future}
 import scala.jdk.CollectionConverters._
 
 @Component class PublisherModelBuilder @Autowired()(rssUrlBuilder: RssUrlBuilder,
@@ -34,7 +33,7 @@ import scala.jdk.CollectionConverters._
     isPublisherPage
   }
 
-  def populateContentModel(request: HttpServletRequest, loggedInUser: Option[User]): Future[Option[ModelMap]] = {
+  def populateContentModel(request: HttpServletRequest, loggedInUser: Option[User])(implicit ec: ExecutionContext): Future[Option[ModelMap]] = {
 
     def populatePublisherPageModelAndView(publisher: Website): Future[Option[ModelMap]] = {
       val eventualPublisherNewsitems = contentRetrievalService.getPublisherNewsitems(publisher, MAX_NEWSITEMS, loggedInUser)
@@ -80,7 +79,7 @@ import scala.jdk.CollectionConverters._
     populatePublisherPageModelAndView(publisher)
   }
 
-  def populateExtraModelContent(request: HttpServletRequest, loggedInUser: Option[User]): Future[ModelMap] = {
+  def populateExtraModelContent(request: HttpServletRequest, loggedInUser: Option[User])(implicit ec: ExecutionContext): Future[ModelMap] = {
     val publisher = request.getAttribute("publisher").asInstanceOf[Website]
 
     val eventualPublisherWatchlist = contentRetrievalService.getPublisherWatchlist(publisher, loggedInUser)
@@ -118,7 +117,7 @@ import scala.jdk.CollectionConverters._
 
   def getViewName(mv: ModelMap, loggedInUser: Option[User]): String = "publisher"
 
-  private def populateGeotaggedItems(mv: ModelMap, mainContent: Seq[FrontendResource]): Unit = {
+  private def populateGeotaggedItems(mv: ModelMap, mainContent: Seq[FrontendResource])(implicit ec: ExecutionContext): Unit = {
     val geotaggedNewsitems = geotaggedNewsitemExtractor.extractGeotaggedItems(mainContent)
     if (geotaggedNewsitems.nonEmpty) {
       mv.addAttribute("geocoded", geotaggedNewsitems.asJava)

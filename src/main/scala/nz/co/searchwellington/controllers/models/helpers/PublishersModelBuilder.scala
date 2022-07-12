@@ -10,8 +10,7 @@ import org.springframework.stereotype.Component
 import org.springframework.ui.ModelMap
 
 import javax.servlet.http.HttpServletRequest
-import scala.concurrent.ExecutionContext.Implicits.global
-import scala.concurrent.Future
+import scala.concurrent.{ExecutionContext, Future}
 import scala.jdk.CollectionConverters._
 
 @Component class PublishersModelBuilder @Autowired()(val contentRetrievalService: ContentRetrievalService,
@@ -22,7 +21,7 @@ import scala.jdk.CollectionConverters._
     RequestPath.getPathFrom(request).matches("^/publishers$") || RequestPath.getPathFrom(request).matches("^/publishers/json$")
   }
 
-  def populateContentModel(request: HttpServletRequest, loggedInUser: Option[User]): Future[Option[ModelMap]] = {
+  def populateContentModel(request: HttpServletRequest, loggedInUser: Option[User])(implicit ec: ExecutionContext): Future[Option[ModelMap]] = {
     val q = Option(request.getParameter("q"))
 
     val eventualPublishers = q.map { q =>
@@ -45,7 +44,7 @@ import scala.jdk.CollectionConverters._
     }
   }
 
-  def populateExtraModelContent(request: HttpServletRequest, loggedInUser: Option[User]): Future[ModelMap] = {
+  def populateExtraModelContent(request: HttpServletRequest, loggedInUser: Option[User])(implicit ec: ExecutionContext): Future[ModelMap] = {
     latestNewsitems(loggedInUser)
   }
 

@@ -13,8 +13,7 @@ import org.springframework.ui.ModelMap
 import uk.co.eelpieconsulting.common.dates.DateFormatter
 
 import javax.servlet.http.HttpServletRequest
-import scala.concurrent.ExecutionContext.Implicits.global
-import scala.concurrent.Future
+import scala.concurrent.{ExecutionContext, Future}
 import scala.jdk.CollectionConverters._
 
 @Component class ArchiveModelBuilder @Autowired()(val contentRetrievalService: ContentRetrievalService, archiveLinksService: ArchiveLinksService,
@@ -27,7 +26,7 @@ import scala.jdk.CollectionConverters._
     RequestPath.getPathFrom(request).matches(archiveMonthPath)
   }
 
-  def populateContentModel(request: HttpServletRequest, loggedInUser: Option[User]): Future[Option[ModelMap]] = {
+  def populateContentModel(request: HttpServletRequest, loggedInUser: Option[User])(implicit ec: ExecutionContext): Future[Option[ModelMap]] = {
     getArchiveMonthFromPath(RequestPath.getPathFrom(request)).map { month =>
       for {
         newsitemsForMonth <- contentRetrievalService.getNewsitemsForInterval(month, loggedInUser)
@@ -44,7 +43,7 @@ import scala.jdk.CollectionConverters._
     }
   }
 
-  def populateExtraModelContent(request: HttpServletRequest, loggedInUser: Option[User]): Future[ModelMap] = {
+  def populateExtraModelContent(request: HttpServletRequest, loggedInUser: Option[User])(implicit ec: ExecutionContext): Future[ModelMap] = {
     latestNewsitems(loggedInUser).flatMap { mv =>
       getArchiveMonthFromPath(RequestPath.getPathFrom(request)).map { month =>
         val eventualArchiveLinks = contentRetrievalService.getArchiveMonths(loggedInUser)

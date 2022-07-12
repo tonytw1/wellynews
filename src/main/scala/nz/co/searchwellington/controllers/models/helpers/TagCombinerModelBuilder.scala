@@ -13,8 +13,7 @@ import org.springframework.web.servlet.ModelAndView
 
 import java.util
 import javax.servlet.http.HttpServletRequest
-import scala.concurrent.ExecutionContext.Implicits.global
-import scala.concurrent.Future
+import scala.concurrent.{ExecutionContext, Future}
 import scala.jdk.CollectionConverters._
 
 @Component class TagCombinerModelBuilder @Autowired()(val contentRetrievalService: ContentRetrievalService, rssUrlBuilder: RssUrlBuilder,
@@ -28,7 +27,7 @@ import scala.jdk.CollectionConverters._
     isTagCombinerPage
   }
 
-  def populateContentModel(request: HttpServletRequest, loggedInUser: Option[User]): Future[Option[ModelMap]] = {
+  def populateContentModel(request: HttpServletRequest, loggedInUser: Option[User])(implicit ec: ExecutionContext): Future[Option[ModelMap]] = {
 
     def populateTagCombinerModelAndView(tags: Seq[Tag], page: Int): Future[Option[ModelMap]] = {
       val startIndex = getStartIndex(page, MAX_NEWSITEMS)
@@ -69,7 +68,7 @@ import scala.jdk.CollectionConverters._
     populateTagCombinerModelAndView(tags, page)
   }
 
-  def populateExtraModelContent(request: HttpServletRequest, loggedInUser: Option[User]): Future[ModelMap] = {
+  def populateExtraModelContent(request: HttpServletRequest, loggedInUser: Option[User])(implicit ec: ExecutionContext): Future[ModelMap] = {
     val tags = request.getAttribute("tags").asInstanceOf[Seq[Tag]]
     if (tags.nonEmpty) {
       val tag = tags.head

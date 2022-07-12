@@ -10,11 +10,9 @@ import nz.co.searchwellington.urls.UrlBuilder
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
 import org.springframework.ui.ModelMap
-import org.springframework.web.servlet.ModelAndView
 
 import javax.servlet.http.HttpServletRequest
-import scala.concurrent.ExecutionContext.Implicits.global
-import scala.concurrent.Future
+import scala.concurrent.{ExecutionContext, Future}
 import scala.jdk.CollectionConverters._
 
 @Component class PublisherTagCombinerModelBuilder @Autowired()(val contentRetrievalService: ContentRetrievalService, rssUrlBuilder: RssUrlBuilder, urlBuilder: UrlBuilder,
@@ -28,7 +26,7 @@ import scala.jdk.CollectionConverters._
     publisher != null && tag != null
   }
 
-  def populateContentModel(request: HttpServletRequest, loggedInUser: Option[User]): Future[Option[ModelMap]] = {
+  def populateContentModel(request: HttpServletRequest, loggedInUser: Option[User])(implicit ec: ExecutionContext): Future[Option[ModelMap]] = {
     val tag = request.getAttribute("tag").asInstanceOf[Tag]
     val publisher = request.getAttribute("publisher").asInstanceOf[Website]
     val eventualFrontendPublisher = frontendResourceMapper.createFrontendResourceFrom(publisher)
@@ -53,7 +51,7 @@ import scala.jdk.CollectionConverters._
     }
   }
 
-  def populateExtraModelContent(request: HttpServletRequest, loggedInUser: Option[User]): Future[ModelMap] = {
+  def populateExtraModelContent(request: HttpServletRequest, loggedInUser: Option[User])(implicit ec: ExecutionContext): Future[ModelMap] = {
     val publisher = request.getAttribute("publisher").asInstanceOf[Website]
     for {
       relatedTags <- relatedTagsService.getRelatedTagsForPublisher(publisher, loggedInUser)

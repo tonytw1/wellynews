@@ -12,8 +12,7 @@ import org.springframework.stereotype.Component
 import org.springframework.ui.ModelMap
 
 import javax.servlet.http.HttpServletRequest
-import scala.concurrent.ExecutionContext.Implicits.global
-import scala.concurrent.Future
+import scala.concurrent.{ExecutionContext, Future}
 import scala.jdk.CollectionConverters._
 
 @Component class TagGeotaggedModelBuilder @Autowired()(val contentRetrievalService: ContentRetrievalService,
@@ -30,7 +29,7 @@ import scala.jdk.CollectionConverters._
     isSingleTagPage && hasCommentPath
   }
 
-  def populateContentModel(request: HttpServletRequest, loggedInUser: Option[User]): Future[Option[ModelMap]] = {
+  def populateContentModel(request: HttpServletRequest, loggedInUser: Option[User])(implicit ec: ExecutionContext): Future[Option[ModelMap]] = {
     def populateTagCommentPageModelAndView(tag: Tag): Future[Some[ModelMap]] = {
       for {
         newsitems <- contentRetrievalService.getGeotaggedNewsitemsForTag(tag, MAX_NUMBER_OF_GEOTAGGED_TO_SHOW, loggedInUser = loggedInUser)
@@ -55,7 +54,7 @@ import scala.jdk.CollectionConverters._
     populateTagCommentPageModelAndView(tag)
   }
 
-  def populateExtraModelContent(request: HttpServletRequest, loggedInUser: Option[User]): Future[ModelMap] = {
+  def populateExtraModelContent(request: HttpServletRequest, loggedInUser: Option[User])(implicit ec: ExecutionContext): Future[ModelMap] = {
     latestNewsitems(loggedInUser)
   }
 

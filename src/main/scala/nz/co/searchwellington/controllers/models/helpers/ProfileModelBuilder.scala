@@ -9,12 +9,10 @@ import org.apache.commons.logging.LogFactory
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
 import org.springframework.ui.ModelMap
-import org.springframework.web.servlet.ModelAndView
 
 import java.util.regex.Pattern
 import javax.servlet.http.HttpServletRequest
-import scala.concurrent.ExecutionContext.Implicits.global
-import scala.concurrent.Future
+import scala.concurrent.{ExecutionContext, Future}
 import scala.jdk.CollectionConverters._
 
 @Component class ProfileModelBuilder @Autowired()(val contentRetrievalService: ContentRetrievalService,
@@ -29,7 +27,7 @@ import scala.jdk.CollectionConverters._
     RequestPath.getPathFrom(request).matches(profilePageRegex)
   }
 
-  def populateContentModel(request: HttpServletRequest, loggedInUser: Option[User]): Future[Option[ModelMap]] = {
+  def populateContentModel(request: HttpServletRequest, loggedInUser: Option[User])(implicit ec: ExecutionContext): Future[Option[ModelMap]] = {
     val path = RequestPath.getPathFrom(request)
 
     def userByPath(path: String): Future[Option[User]] = {
@@ -69,7 +67,7 @@ import scala.jdk.CollectionConverters._
     }
   }
 
-  def populateExtraModelContent(request: HttpServletRequest, loggedInUser: Option[User]): Future[ModelMap] = {
+  def populateExtraModelContent(request: HttpServletRequest, loggedInUser: Option[User])(implicit ec: ExecutionContext): Future[ModelMap] = {
     Future.successful(new ModelMap())
   }
 

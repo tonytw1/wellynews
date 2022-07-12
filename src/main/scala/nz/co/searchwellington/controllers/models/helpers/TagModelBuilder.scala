@@ -10,12 +10,10 @@ import nz.co.searchwellington.urls.UrlBuilder
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
 import org.springframework.ui.ModelMap
-import org.springframework.web.servlet.ModelAndView
 
 import java.util
 import javax.servlet.http.HttpServletRequest
-import scala.concurrent.ExecutionContext.Implicits.global
-import scala.concurrent.Future
+import scala.concurrent.{ExecutionContext, Future}
 import scala.jdk.CollectionConverters._
 
 @Component class TagModelBuilder @Autowired()(rssUrlBuilder: RssUrlBuilder, val urlBuilder: UrlBuilder,
@@ -35,7 +33,7 @@ import scala.jdk.CollectionConverters._
     tags != null && tags.size == 1
   }
 
-  def populateContentModel(request: HttpServletRequest, loggedInUser: Option[User]): Future[Option[ModelMap]] = {
+  def populateContentModel(request: HttpServletRequest, loggedInUser: Option[User])(implicit ec: ExecutionContext): Future[Option[ModelMap]] = {
 
     def populateTagPageModelAndView(tag: Tag, page: Int): Future[Option[ModelMap]] = {
       val startIndex = getStartIndex(page, MAX_NEWSITEMS)
@@ -91,7 +89,7 @@ import scala.jdk.CollectionConverters._
     populateTagPageModelAndView(tagFromRequest(request), getPage(request))
   }
 
-  def populateExtraModelContent(request: HttpServletRequest, loggedInUser: Option[User]): Future[ModelMap] = {
+  def populateExtraModelContent(request: HttpServletRequest, loggedInUser: Option[User])(implicit ec: ExecutionContext): Future[ModelMap] = {
     val tag = tagFromRequest(request)
 
     val eventualGeotaggedNewsitems = contentRetrievalService.getGeotaggedNewsitemsForTag(tag, MAX_NUMBER_OF_GEOTAGGED_TO_SHOW, loggedInUser = loggedInUser)

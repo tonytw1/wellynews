@@ -13,8 +13,7 @@ import org.springframework.ui.ModelMap
 import uk.co.eelpieconsulting.common.geo.model.Place
 
 import javax.servlet.http.HttpServletRequest
-import scala.concurrent.ExecutionContext.Implicits.global
-import scala.concurrent.Future
+import scala.concurrent.{ExecutionContext, Future}
 import scala.jdk.CollectionConverters._
 
 @Component class GeotaggedModelBuilder @Autowired()(val contentRetrievalService: ContentRetrievalService,
@@ -30,7 +29,60 @@ import scala.jdk.CollectionConverters._
     RequestPath.getPathFrom(request).matches("^/geotagged(/(rss|json))?$")
   }
 
-  def populateContentModel(request: HttpServletRequest, loggedInUser: Option[User]): Future[Option[ModelMap]] = {
+  def populateContentModel(request: HttpServletRequest, loggedInUser: Option[User])(implicit ec: ExecutionContext): Future[Option[ModelMap]] = {
+    def processModel(loggedInUser: Option[User], mv: ModelMap, startIndex: Int): Future[Option[ModelMap]] = {
+      for {
+        geocodedNewsitems <- contentRetrievalService.getGeocodedNewsitems(startIndex, MAX_NEWSITEMS, loggedInUser)
+      } yield {
+        if (startIndex < geocodedNewsitems._2) {
+          populatePagination(mv, startIndex, geocodedNewsitems._2, MAX_NEWSITEMS, paginationLinks)
+          mv.addAttribute("heading", "Geotagged newsitems")
+          mv.addAttribute(MAIN_CONTENT, geocodedNewsitems._1.asJava)
+          commonAttributesModelBuilder.setRss(mv, rssUrlBuilder.getRssTitleForGeotagged, rssUrlBuilder.getRssUrlForGeotagged)
+          Some(mv)
+        } else {
+          None
+        }
+      }
+    }
+
+    def processLocationSuppliedModel(request: HttpServletRequest, loggedInUser: Option[User], mv: ModelMap, userSuppliedPlace: Place, startIndex: Int): Future[Option[ModelMap]] = {
+      val radius = getLocationSearchRadius(request)
+      val latLong = userSuppliedPlace.getLatLong
+
+      val eventualRelatedTagsForLocation = relatedTagsService.getRelatedTagsForLocation(userSuppliedPlace, radius, loggedInUser)
+      val eventualPublishersForLocation = relatedTagsService.getRelatedPublishersForLocation(userSuppliedPlace, radius, loggedInUser)
+      val eventualNewsitemsNear = contentRetrievalService.getNewsitemsNear(latLong, radius, startIndex, MAX_NEWSITEMS, loggedInUser)
+      for {
+        relatedTagLinks <- eventualRelatedTagsForLocation
+        relatedPublisherLinks <- eventualPublishersForLocation
+        newsitemsNear <- eventualNewsitemsNear
+
+      } yield {
+        if (startIndex < newsitemsNear._2) {
+          populatePagination(mv, startIndex, newsitemsNear._2, MAX_NEWSITEMS, paginationLinks)
+
+          mv.addAttribute("location", userSuppliedPlace)
+          mv.addAttribute("radius", radius)
+          mv.addAttribute(MAIN_CONTENT, newsitemsNear._1.asJava)
+
+          if (relatedTagLinks.nonEmpty) {
+            mv.addAttribute("related_tags", relatedTagLinks.asJava)
+          }
+          if (relatedPublisherLinks.nonEmpty) {
+            mv.addAttribute("related_publishers", relatedPublisherLinks.asJava)
+          }
+
+          mv.addAttribute("heading", rssUrlBuilder.getRssTitleForPlace(userSuppliedPlace, radius))
+          setRssUrlForLocation(mv, userSuppliedPlace, radius)
+          Some(mv)
+
+        } else {
+          None
+        }
+      }
+    }
+
     val mv = new ModelMap().
       addAttribute("description", "Geotagged newsitems").
       addAttribute("link", urlBuilder.fullyQualified(urlBuilder.getGeotaggedUrl))
@@ -49,60 +101,7 @@ import scala.jdk.CollectionConverters._
     }
   }
 
-  private def processModel(loggedInUser: Option[User], mv: ModelMap, startIndex: Int): Future[Option[ModelMap]] = {
-    for {
-      geocodedNewsitems <- contentRetrievalService.getGeocodedNewsitems(startIndex, MAX_NEWSITEMS, loggedInUser)
-    } yield {
-      if (startIndex < geocodedNewsitems._2) {
-        populatePagination(mv, startIndex, geocodedNewsitems._2, MAX_NEWSITEMS, paginationLinks)
-        mv.addAttribute("heading", "Geotagged newsitems")
-        mv.addAttribute(MAIN_CONTENT, geocodedNewsitems._1.asJava)
-        commonAttributesModelBuilder.setRss(mv, rssUrlBuilder.getRssTitleForGeotagged, rssUrlBuilder.getRssUrlForGeotagged)
-        Some(mv)
-      } else {
-        None
-      }
-    }
-  }
-
-  private def processLocationSuppliedModel(request: HttpServletRequest, loggedInUser: Option[User], mv: ModelMap, userSuppliedPlace: Place, startIndex: Int): Future[Option[ModelMap]] = {
-    val radius = getLocationSearchRadius(request)
-    val latLong = userSuppliedPlace.getLatLong
-
-    val eventualRelatedTagsForLocation = relatedTagsService.getRelatedTagsForLocation(userSuppliedPlace, radius, loggedInUser)
-    val eventualPublishersForLocation = relatedTagsService.getRelatedPublishersForLocation(userSuppliedPlace, radius, loggedInUser)
-    val eventualNewsitemsNear = contentRetrievalService.getNewsitemsNear(latLong, radius, startIndex, MAX_NEWSITEMS, loggedInUser)
-    for {
-      relatedTagLinks <- eventualRelatedTagsForLocation
-      relatedPublisherLinks <- eventualPublishersForLocation
-      newsitemsNear <- eventualNewsitemsNear
-
-    } yield {
-      if (startIndex < newsitemsNear._2) {
-        populatePagination(mv, startIndex, newsitemsNear._2, MAX_NEWSITEMS, paginationLinks)
-
-        mv.addAttribute("location", userSuppliedPlace)
-        mv.addAttribute("radius", radius)
-        mv.addAttribute(MAIN_CONTENT, newsitemsNear._1.asJava)
-
-        if (relatedTagLinks.nonEmpty) {
-          mv.addAttribute("related_tags", relatedTagLinks.asJava)
-        }
-        if (relatedPublisherLinks.nonEmpty) {
-          mv.addAttribute("related_publishers", relatedPublisherLinks.asJava)
-        }
-
-        mv.addAttribute("heading", rssUrlBuilder.getRssTitleForPlace(userSuppliedPlace, radius))
-        setRssUrlForLocation(mv, userSuppliedPlace, radius)
-        Some(mv)
-
-      } else {
-        None
-      }
-    }
-  }
-
-  def populateExtraModelContent(request: HttpServletRequest, loggedInUser: Option[User]): Future[ModelMap] = {
+  def populateExtraModelContent(request: HttpServletRequest, loggedInUser: Option[User])(implicit ec: ExecutionContext): Future[ModelMap] = {
     latestNewsitems(loggedInUser)
   }
 

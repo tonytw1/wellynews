@@ -13,8 +13,7 @@ import org.springframework.stereotype.Component
 import org.springframework.ui.ModelMap
 
 import javax.servlet.http.HttpServletRequest
-import scala.concurrent.ExecutionContext.Implicits.global
-import scala.concurrent.Future
+import scala.concurrent.{ExecutionContext, Future}
 import scala.jdk.CollectionConverters._
 
 @Component class IndexModelBuilder @Autowired()(val contentRetrievalService: ContentRetrievalService, rssUrlBuilder: RssUrlBuilder,
@@ -31,7 +30,7 @@ import scala.jdk.CollectionConverters._
       path.matches("^/rss$")
   }
 
-  def populateContentModel(request: HttpServletRequest, loggedInUser: Option[User]): Future[Option[ModelMap]] = {
+  def populateContentModel(request: HttpServletRequest, loggedInUser: Option[User])(implicit ec: ExecutionContext): Future[Option[ModelMap]] = {
     for {
       latestNewsitems <- contentRetrievalService.getLatestNewsitems(MAX_NEWSITEMS, getPage(request), loggedInUser = loggedInUser)
     } yield {
@@ -50,7 +49,7 @@ import scala.jdk.CollectionConverters._
     }
   }
 
-  def populateExtraModelContent(request: HttpServletRequest, loggedInUser: Option[User]): Future[ModelMap] = {
+  def populateExtraModelContent(request: HttpServletRequest, loggedInUser: Option[User])(implicit ec: ExecutionContext): Future[ModelMap] = {
     def populateUserOwnedResources(loggedInUser: Option[User]): Future[ModelMap] = {
       val mv = new ModelMap()
       loggedInUser.map { loggedInUser =>

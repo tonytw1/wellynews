@@ -11,8 +11,7 @@ import org.springframework.ui.ModelMap
 import uk.co.eelpieconsulting.common.dates.DateFormatter
 
 import javax.servlet.http.HttpServletRequest
-import scala.concurrent.ExecutionContext.Implicits.global
-import scala.concurrent.Future
+import scala.concurrent.{ExecutionContext, Future}
 import scala.jdk.CollectionConverters._
 
 @Component class TagMonthModelBuilder @Autowired()(val contentRetrievalService: ContentRetrievalService,
@@ -32,7 +31,7 @@ import scala.jdk.CollectionConverters._
     }
   }
 
-  override def populateContentModel(request: HttpServletRequest, loggedInUser: Option[User]): Future[Option[ModelMap]] = {
+  override def populateContentModel(request: HttpServletRequest, loggedInUser: Option[User])(implicit ec: ExecutionContext): Future[Option[ModelMap]] = {
     val tags = request.getAttribute(TAGS).asInstanceOf[Seq[Tag]]
 
     tags.headOption.map { tag =>
@@ -57,7 +56,7 @@ import scala.jdk.CollectionConverters._
     }
   }
 
-  override def populateExtraModelContent(request: HttpServletRequest, loggedInUser: Option[User]): Future[ModelMap] = {
+  override def populateExtraModelContent(request: HttpServletRequest, loggedInUser: Option[User])(implicit ec: ExecutionContext): Future[ModelMap] = {
     val tags = request.getAttribute(TAGS).asInstanceOf[Seq[Tag]]
     val mv = new ModelMap()
     tags.headOption.map { tag =>

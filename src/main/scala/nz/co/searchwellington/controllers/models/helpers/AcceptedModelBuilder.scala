@@ -9,12 +9,10 @@ import nz.co.searchwellington.urls.UrlBuilder
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
 import org.springframework.ui.ModelMap
-import org.springframework.web.servlet.ModelAndView
 
 import java.time.LocalDate
 import javax.servlet.http.HttpServletRequest
-import scala.concurrent.ExecutionContext.Implicits.global
-import scala.concurrent.Future
+import scala.concurrent.{ExecutionContext, Future}
 import scala.jdk.CollectionConverters._
 
 @Component class AcceptedModelBuilder @Autowired()(val contentRetrievalService: ContentRetrievalService,
@@ -26,7 +24,7 @@ import scala.jdk.CollectionConverters._
     RequestPath.getPathFrom(request).matches("^/accepted(/(rss|json))?$")
   }
 
-  def populateContentModel(request: HttpServletRequest, loggedInUser: Option[User]): Future[Option[ModelMap]] = {
+  def populateContentModel(request: HttpServletRequest, loggedInUser: Option[User])(implicit ec: ExecutionContext): Future[Option[ModelMap]] = {
     val page = getPage(request)
 
     for {
@@ -48,7 +46,7 @@ import scala.jdk.CollectionConverters._
     }
   }
 
-  def populateExtraModelContent(request: HttpServletRequest, loggedInUser: Option[User]): Future[ModelMap] = {
+  def populateExtraModelContent(request: HttpServletRequest, loggedInUser: Option[User])(implicit ec: ExecutionContext): Future[ModelMap] = {
     for {
       latestNewsitems <- latestNewsitems(loggedInUser)
       acceptedDatesAggregation <- contentRetrievalService.getAcceptedDates(loggedInUser)

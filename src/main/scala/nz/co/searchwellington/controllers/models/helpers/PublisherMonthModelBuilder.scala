@@ -9,12 +9,10 @@ import org.joda.time.Interval
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
 import org.springframework.ui.ModelMap
-import org.springframework.web.servlet.ModelAndView
 import uk.co.eelpieconsulting.common.dates.DateFormatter
 
 import javax.servlet.http.HttpServletRequest
-import scala.concurrent.ExecutionContext.Implicits.global
-import scala.concurrent.Future
+import scala.concurrent.{ExecutionContext, Future}
 import scala.jdk.CollectionConverters._
 
 @Component class PublisherMonthModelBuilder @Autowired()(val contentRetrievalService: ContentRetrievalService,
@@ -28,7 +26,7 @@ import scala.jdk.CollectionConverters._
     }.nonEmpty
   }
 
-  override def populateContentModel(request: HttpServletRequest, loggedInUser: Option[User]): Future[Option[ModelMap]] = {
+  override def populateContentModel(request: HttpServletRequest, loggedInUser: Option[User])(implicit ec: ExecutionContext): Future[Option[ModelMap]] = {
     Option(request.getAttribute("publisher").asInstanceOf[Website]).map { publisher =>
       parseMonth(publisher, RequestPath.getPathFrom(request)).map { month =>
         for {
@@ -52,7 +50,7 @@ import scala.jdk.CollectionConverters._
     }
   }
 
-  override def populateExtraModelContent(request: HttpServletRequest, loggedInUser: Option[User]): Future[ModelMap] = {
+  override def populateExtraModelContent(request: HttpServletRequest, loggedInUser: Option[User])(implicit ec: ExecutionContext): Future[ModelMap] = {
     Option(request.getAttribute("publisher").asInstanceOf[Website]).flatMap { publisher =>
       parseMonth(publisher, RequestPath.getPathFrom(request)).map { month =>
         val eventualPublisherArchiveMonths = contentRetrievalService.getPublisherArchiveMonths(publisher, loggedInUser)

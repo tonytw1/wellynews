@@ -6,7 +6,7 @@ import nz.co.searchwellington.repositories.ContentRetrievalService
 import org.springframework.ui.ModelMap
 
 import javax.servlet.http.HttpServletRequest
-import scala.concurrent.Future
+import scala.concurrent.{ExecutionContext, Future}
 
 trait ModelBuilder extends ContentFields with CommonModelObjectsService {
 
@@ -14,9 +14,9 @@ trait ModelBuilder extends ContentFields with CommonModelObjectsService {
 
   def isValid(request: HttpServletRequest): Boolean
 
-  def populateContentModel(request: HttpServletRequest, loggedInUser: Option[User] = None): Future[Option[ModelMap]]
+  def populateContentModel(request: HttpServletRequest, loggedInUser: Option[User] = None)(implicit ec: ExecutionContext): Future[Option[ModelMap]]
 
-  def populateExtraModelContent(request: HttpServletRequest, loggedInUser: Option[User]): Future[ModelMap]
+  def populateExtraModelContent(request: HttpServletRequest, loggedInUser: Option[User])(implicit ec: ExecutionContext): Future[ModelMap]
 
   def getViewName(mv: ModelMap, loggedInUser: Option[User]): String
 

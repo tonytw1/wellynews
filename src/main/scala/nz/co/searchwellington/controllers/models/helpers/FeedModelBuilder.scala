@@ -14,8 +14,7 @@ import org.springframework.stereotype.Component
 import org.springframework.ui.ModelMap
 
 import javax.servlet.http.HttpServletRequest
-import scala.concurrent.ExecutionContext.Implicits.global
-import scala.concurrent.Future
+import scala.concurrent.{ExecutionContext, Future}
 import scala.jdk.CollectionConverters._
 
 @Component class FeedModelBuilder @Autowired()(val contentRetrievalService: ContentRetrievalService,
@@ -34,7 +33,7 @@ import scala.jdk.CollectionConverters._
     request.getAttribute(FEED_ATTRIBUTE) != null
   }
 
-  def populateContentModel(request: HttpServletRequest, loggedInUser: Option[User]): Future[Option[ModelMap]] = {
+  def populateContentModel(request: HttpServletRequest, loggedInUser: Option[User])(implicit ec: ExecutionContext): Future[Option[ModelMap]] = {
 
     def populateGeotaggedFeedItems(mv: ModelMap, feedNewsitems: Seq[FrontendResource]): Unit = {
       val geotaggedItems = geotaggedNewsitemExtractor.extractGeotaggedItems(feedNewsitems)
@@ -118,7 +117,7 @@ import scala.jdk.CollectionConverters._
     }
   }
 
-  def populateExtraModelContent(request: HttpServletRequest, loggedInUser: Option[User]): Future[ModelMap] = {
+  def populateExtraModelContent(request: HttpServletRequest, loggedInUser: Option[User])(implicit ec: ExecutionContext): Future[ModelMap] = {
     for {
       feedsOrderedByLatestItemDate <- contentRetrievalService.getAllFeedsOrderedByLatestItemDate(loggedInUser)
     } yield {

@@ -14,8 +14,7 @@ import org.springframework.ui.ModelMap
 
 import java.util.regex.Pattern
 import javax.servlet.http.HttpServletRequest
-import scala.concurrent.ExecutionContext.Implicits.global
-import scala.concurrent.Future
+import scala.concurrent.{ExecutionContext, Future}
 import scala.jdk.CollectionConverters._
 
 @Component class NewsitemPageModelBuilder @Autowired()(val contentRetrievalService: ContentRetrievalService,
@@ -29,7 +28,7 @@ import scala.jdk.CollectionConverters._
     pattern.matcher(RequestPath.getPathFrom(request)).matches()
   }
 
-  def populateContentModel(request: HttpServletRequest, loggedInUser: Option[User]): Future[Option[ModelMap]] = {
+  def populateContentModel(request: HttpServletRequest, loggedInUser: Option[User])(implicit ec: ExecutionContext): Future[Option[ModelMap]] = {
     val matcher = pattern.matcher(RequestPath.getPathFrom(request))
     if (matcher.matches()) {
       val id = matcher.group(1)
@@ -78,7 +77,7 @@ import scala.jdk.CollectionConverters._
     }
   }
 
-  def populateExtraModelContent(request: HttpServletRequest, loggedInUser: Option[User]): Future[ModelMap] = {
+  def populateExtraModelContent(request: HttpServletRequest, loggedInUser: Option[User])(implicit ec: ExecutionContext): Future[ModelMap] = {
     latestNewsitems(loggedInUser)
   }
 
