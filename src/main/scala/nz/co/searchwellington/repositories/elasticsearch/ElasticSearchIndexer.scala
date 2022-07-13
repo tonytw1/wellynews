@@ -173,8 +173,11 @@ class ElasticSearchIndexer @Autowired()(val showBrokenDecisionService: ShowBroke
     val start = DateTime.now()
     val eventualTuple = client.execute(request).map { r =>
       val elasticResources = r.result.hits.hits.toSeq.flatMap { h =>
+        val map = h.sourceAsMap.get(Tags)
         BSONObjectID.parse(h.id).toOption.map { bid =>
-          ElasticResource(bid)
+          val tags = h.sourceAsMap.get(HandTags).asInstanceOf[Option[List[String]]].map(_.flatMap(tid => BSONObjectID.parse(tid).toOption)).getOrElse(Seq.empty)
+          val indexTags = h.sourceAsMap.get(Tags).asInstanceOf[Option[List[String]]].map(_.flatMap(tid => BSONObjectID.parse(tid).toOption)).getOrElse(Seq.empty)
+          ElasticResource(bid, tags, indexTags)
         }
       }
       (elasticResources, r.result.totalHits)
@@ -312,4 +315,4 @@ class ElasticSearchIndexer @Autowired()(val showBrokenDecisionService: ShowBroke
 
 }
 
-case class ElasticResource(_id: BSONObjectID)
+case class ElasticResource(_id: BSONObjectID, tags: Seq[BSONObjectID], handTags: Seq[BSONObjectID])

@@ -9,7 +9,7 @@ import nz.co.searchwellington.repositories.mongo.MongoRepository
 import nz.co.searchwellington.tagging.{IndexTagsService, TaggingReturnsOfficerService}
 import nz.co.searchwellington.urls.UrlParser
 import org.joda.time.{DateTime, Interval}
-import org.junit.jupiter.api.Assertions.{assertFalse, assertTrue}
+import org.junit.jupiter.api.Assertions.{assertEquals, assertFalse, assertTrue}
 import org.junit.jupiter.api.Test
 import org.scalatest.concurrent.Eventually.{eventually, interval, _}
 import org.scalatest.matchers.must.Matchers.convertToAnyMustWrapper
@@ -116,6 +116,10 @@ class ElasticSearchIndexerTest extends IndexableResource with ReasonableWaits {
 
     assertTrue(taggedNewsitems.forall(i => i.`type` == "N"))
     assertTrue(taggedNewsitems.forall(i => i.resource_tags.exists(t => t.tag_id == tag._id)))
+
+    val elasticResources = Await.result(elasticSearchIndexer.getResources(taggedNewsitemsQuery, loggedInUser = Some(loggedInUser)), TenSeconds)
+    val newsitemResource = elasticResources._1.find(_._id == taggedNewsitem._id).get
+    assertEquals(Seq(tag._id), newsitemResource.tags)
 
     val taggedWebsitesQuery = withTag.copy(`type` = Some(Set("W")))
 
