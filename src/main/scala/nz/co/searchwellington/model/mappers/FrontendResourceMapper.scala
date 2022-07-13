@@ -4,7 +4,7 @@ import nz.co.searchwellington.ReasonableWaits
 import nz.co.searchwellington.controllers.admin.AdminUrlBuilder
 import nz.co.searchwellington.model._
 import nz.co.searchwellington.model.frontend._
-import nz.co.searchwellington.model.taggingvotes.{HandTagging, TaggingVote}
+import nz.co.searchwellington.model.taggingvotes.HandTagging
 import nz.co.searchwellington.repositories.mongo.MongoRepository
 import nz.co.searchwellington.tagging.{IndexTagsService, TaggingReturnsOfficerService}
 import org.springframework.beans.factory.annotation.Autowired
@@ -19,7 +19,7 @@ import scala.concurrent.{ExecutionContext, Future}
   extends ReasonableWaits {
 
   def createFrontendResourceFrom(contentItem: Resource, loggedInUser: Option[User] = None)(implicit ec: ExecutionContext): Future[FrontendResource] = {
-    val eventualTaggingVotes: Future[Seq[TaggingVote]] = Future.successful(Seq.empty) // TODO timing taggingReturnsOfficerService.getTaggingsVotesForResource(contentItem)
+    val eventualTaggingVotes = taggingReturnsOfficerService.getTaggingsVotesForResource(contentItem)
     val eventualPlace = indexTagsService.getIndexGeocodeForResource(contentItem)
     (for {
       taggingVotes <- eventualTaggingVotes
