@@ -165,7 +165,29 @@ class ElasticSearchIndexer @Autowired()(val showBrokenDecisionService: ShowBroke
   }
 
   def getResources(query: ResourceQuery, order: SearchRequest => SearchRequest = byDateDescending, loggedInUser: Option[User])(implicit ec: ExecutionContext, currentSpan: Span): Future[(Seq[ElasticResource], Long)] = {
-    executeResourceQuery(query, order, loggedInUser)
+    val request = order(search(Index) query composeQueryFor(query, loggedInUser)) start query.startIndex limit query.maxItems
+
+    val tracer = GlobalOpenTelemetry.getTracer("wellynews")
+    val span = tracer.spanBuilder("executeResourceQuery").startSpan()
+
+    val start = DateTime.now()
+    val eventualTuple = client.execute(request).map { r =>
+      val elasticResources = r.result.hits.hits.toSeq.flatMap { h =>
+        BSONObjectID.parse(h.id).toOption.map { bid =>
+          ElasticResource(bid)
+        }
+      }
+      (elasticResources, r.result.totalHits)
+    }
+    eventualTuple.map { r =>
+      val duration = new org.joda.time.Duration(start, DateTime.now)
+      span.setAttribute("fetched", r._1.size)
+      span.setAttribute("query", query.toString) // TODO human readable
+      span.setAttribute("database", "elasticsearch")
+      span.end()
+      log.debug("Elastic query " + query + " took: " + duration.getMillis + " ms")
+      r
+    }
   }
 
   def getPublisherAggregationFor(query: ResourceQuery, loggedInUser: Option[User], size: Option[Int] = None)(implicit ec: ExecutionContext): Future[Seq[(String, Long)]] = {
@@ -190,32 +212,6 @@ class ElasticSearchIndexer @Autowired()(val showBrokenDecisionService: ShowBroke
       typeAgg.buckets.map { b =>
         (b.key, b.docCount)
       }.toMap
-    }
-  }
-
-  private def executeResourceQuery(query: ResourceQuery, order: SearchRequest => SearchRequest, loggedInUser: Option[User])(implicit ec: ExecutionContext, currentSpan: Span): Future[(Seq[ElasticResource], Long)] = {
-    val request = order(search(Index) query composeQueryFor(query, loggedInUser)) start query.startIndex limit query.maxItems
-
-    val tracer = GlobalOpenTelemetry.getTracer("wellynews")
-    val span = tracer.spanBuilder("executeResourceQuery").startSpan()
-
-    val start = DateTime.now()
-    val eventualTuple = client.execute(request).map { r =>
-      val elasticResources  = r.result.hits.hits.toSeq.flatMap{ h =>
-        BSONObjectID.parse(h.id).toOption.map { bid =>
-          ElasticResource(bid)
-        }
-      }
-      (elasticResources, r.result.totalHits)
-    }
-    eventualTuple.map { r =>
-      val duration = new org.joda.time.Duration(start, DateTime.now)
-      span.setAttribute("fetched", r._1.size)
-      span.setAttribute("query", query.toString)  // TODO human readable
-      span.setAttribute("database", "elasticsearch")
-      span.end()
-      log.debug("Elastic query " + query + " took: " + duration.getMillis + " ms")
-      r
     }
   }
 
