@@ -409,7 +409,7 @@ import scala.concurrent.{ExecutionContext, Future}
       val frontendMapSpan = tracer.spanBuilder("createFrontendResources").
         setParent(Context.current().`with`(currentSpan)).startSpan()
 
-      val elasticResourcesById = elasticResources.map { es =>
+      val elasticResourcesById: Map[BSONObjectID, ElasticResource] = elasticResources.map { es =>
         (es._id, es)
       }.toMap
 

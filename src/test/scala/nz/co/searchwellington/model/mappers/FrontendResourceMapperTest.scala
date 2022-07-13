@@ -48,6 +48,33 @@ class FrontendResourceMapperTest extends ReasonableWaits {
   }
 
   @Test
+  def shouldMapNewsitemAndSuppliedComponentsToFrontendNewsitem(): Unit = {
+    val owner = User(BSONObjectID.generate(), name = Some(UUID.randomUUID().toString), profilename = Some(UUID.randomUUID().toString))
+    val newsitem = Newsitem(id = "123", http_status = 200, title = "Something happened today",
+      date = Some(new DateTime(2020, 10, 7, 12, 0, 0, 0).toDate),
+      owner = Some(owner._id))
+
+    when(taggingReturnsOfficerService.getTaggingsVotesForResource(newsitem)).thenReturn(Future.successful(Seq.empty))
+    when(indexTagsService.getIndexGeocodeForResource(newsitem)).thenReturn(Future.successful(None))
+    when(mongoRepository.getUserByObjectId(owner._id)).thenReturn(Future.successful(Some(owner)))
+
+    val aTag = Tag()
+    val anotherTag = Tag()
+    val handTags = Seq(aTag)
+    val indexTags = Seq(anotherTag)
+
+    val frontendNewsitem = Await.result(frontendResourceMapper.createFrontendResourceFrom(newsitem, None, None, handTags, indexTags), TenSeconds)
+
+    assertEquals(newsitem.id, frontendNewsitem.id)
+    assertEquals(200, frontendNewsitem.httpStatus)
+    assertEquals(owner.profilename.get, frontendNewsitem.getOwner)
+
+    assertEquals(aTag, frontendNewsitem.handTags.get.head)
+    assertEquals(anotherTag, frontendNewsitem.tags.get.head)
+  }
+
+
+  @Test
   def handTaggingsShouldBeAppliedToFrontendResources(): Unit = {
     val owner = User(BSONObjectID.generate(), name = Some(UUID.randomUUID().toString), profilename = Some(UUID.randomUUID().toString))
     val tag = Tag(id = UUID.randomUUID().toString, name = "123", display_name = "123")

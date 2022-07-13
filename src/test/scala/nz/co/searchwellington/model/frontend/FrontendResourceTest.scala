@@ -32,7 +32,7 @@ class FrontendResourceTest {
   }
 
   @Test
-  def resourcesWithManualAndAutomaticTagsShowAManuallyTagged(): Unit = {
+  def resourcesWithManualAndAutomaticTagsShowAsManuallyTagged(): Unit = {
     val aTag = Tag()
     val anotherTag = Tag()
 
