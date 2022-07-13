@@ -315,4 +315,4 @@ class ElasticSearchIndexer @Autowired()(val showBrokenDecisionService: ShowBroke
 
 }
 
-case class ElasticResource(_id: BSONObjectID, tags: Seq[BSONObjectID], handTags: Seq[BSONObjectID])
+case class ElasticResource(_id: BSONObjectID, indexTags: Seq[BSONObjectID], handTags: Seq[BSONObjectID])

@@ -72,7 +72,7 @@ import scala.concurrent.{ExecutionContext, Future}
       elasticSearchIndexer.getResources(query, order = byRelevance, loggedInUser = Some(user))
     }
 
-    getNewsitemIdsMatchingKeywords(keywords, user).flatMap(i => fetchResourcesByIds(i._1)).map { resources =>
+    getNewsitemIdsMatchingKeywords(keywords, user).flatMap(i => fetchResourcesForElasticResources(i._1)).map { resources =>
       resources.filter { r =>
         val hasExistingTagging = r.resource_tags.exists{ tagging =>
           val bool = tagging.user_id == user._id && tagging.tag_id == tag._id
@@ -365,7 +365,7 @@ import scala.concurrent.{ExecutionContext, Future}
 
   def getPublishedResourcesMatchingHostname(publisher: Website, hostname: String, loggedInUser: Option[User])(implicit ec: ExecutionContext, currentSpan: Span): Future[Seq[Resource]] = {
     val publisherResourcesToGather = ResourceQuery(`type` = published, hostname = Some(hostname), notPublishedBy = Some(publisher))
-    elasticSearchIndexer.getResources(query = publisherResourcesToGather, loggedInUser = loggedInUser).flatMap(i => fetchResourcesByIds(i._1))
+    elasticSearchIndexer.getResources(query = publisherResourcesToGather, loggedInUser = loggedInUser).flatMap(i => fetchResourcesForElasticResources(i._1))
   }
 
   def getTagNamesStartingWith(q: String)(implicit ec: ExecutionContext): Future[Seq[String]] = tagDAO.getTagNamesStartingWith(q)
@@ -373,7 +373,7 @@ import scala.concurrent.{ExecutionContext, Future}
   def getFeaturedTags()(implicit ec: ExecutionContext): Future[Seq[Tag]] = tagDAO.getFeaturedTags
 
   def getWebsitesByHostname(hostname: String, loggedInUser: Option[User])(implicit ec: ExecutionContext, currentSpan: Span): Future[Seq[Resource]] = {
-    elasticSearchIndexer.getResources(ResourceQuery(hostname = Some(hostname), `type` = Some(Set("W"))), loggedInUser = loggedInUser).flatMap(i => fetchResourcesByIds(i._1))
+    elasticSearchIndexer.getResources(ResourceQuery(hostname = Some(hostname), `type` = Some(Set("W"))), loggedInUser = loggedInUser).flatMap(i => fetchResourcesForElasticResources(i._1))
   }
 
   private def buildFrontendResourcesFor(i: (Seq[ElasticResource], Long), loggedInUser: Option[User])(implicit ec: ExecutionContext, currentSpan: Span): Future[(Seq[FrontendResource], Long)] = {
@@ -394,27 +394,38 @@ import scala.concurrent.{ExecutionContext, Future}
     }
   }
 
-  private def fetchByIdsAndFrontendMap(ids: Seq[ElasticResource], loggedInUser: Option[User])(implicit ec: ExecutionContext, currentSpan: Span): Future[Seq[FrontendResource]] = {
+  private def fetchByIdsAndFrontendMap(elasticResources: Seq[ElasticResource], loggedInUser: Option[User])(implicit ec: ExecutionContext, currentSpan: Span): Future[Seq[FrontendResource]] = {
     val tracer = GlobalOpenTelemetry.getTracer("wellynews")
     val mongoFetchSpan = tracer.spanBuilder("fetchByIds").startSpan()
 
-    fetchResourcesByIds(ids).map { rs =>
+    fetchResourcesForElasticResources(elasticResources).map { rs =>
       mongoFetchSpan.setAttribute("fetched", rs.size)
       mongoFetchSpan.setAttribute("database", "mongo")
       mongoFetchSpan.end()
       rs
 
-    }.flatMap { rs =>
+    }.flatMap { rs: Seq[Resource] =>
       val tracer = GlobalOpenTelemetry.getTracer("wellynews")
       val frontendMapSpan = tracer.spanBuilder("createFrontendResources").
         setParent(Context.current().`with`(currentSpan)).startSpan()
 
+      val elasticResourcesById = elasticResources.map { es =>
+        (es._id, es)
+      }.toMap
+
       Future.sequence(rs.map(r => {
-        val eventualTags = Future.sequence(r.resource_tags.map(_.tag_id).distinct.map( tid => mongoRepository.getTagByObjectId(tid))).map(_.flatten)
-        val indexTags = Seq.empty // TODO
-        eventualTags.flatMap { tags =>
-          frontendResourceMapper.createFrontendResourceFrom(r, loggedInUser, None, tags, indexTags)
+        def loadTags(tagIds: Seq[BSONObjectID]) = {
+          Future.sequence(tagIds.map(tid => mongoRepository.getTagByObjectId(tid))).map(_.flatten)
         }
+
+        val eventualHandTags = loadTags(r.resource_tags.map(_.tag_id).distinct)
+        val eventualIndexTags = loadTags(elasticResourcesById.get(r._id).map(_.indexTags).getOrElse(Seq.empty))
+        eventualHandTags.flatMap { handTags =>
+          eventualIndexTags.flatMap { indexTags =>
+            frontendResourceMapper.createFrontendResourceFrom(r, loggedInUser, None, handTags, indexTags)
+          }
+        }
+
       })).map { frs =>
         frontendMapSpan.setAttribute("mapped", frs.size)
         frontendMapSpan.end()
@@ -423,8 +434,8 @@ import scala.concurrent.{ExecutionContext, Future}
     }
   }
 
-  private def fetchResourcesByIds(ids: Seq[ElasticResource])(implicit ec: ExecutionContext): Future[Seq[Resource]] = {
-     mongoRepository.getResourceByObjectIds(ids.map(_._id))
+  private def fetchResourcesForElasticResources(elasticResources: Seq[ElasticResource])(implicit ec: ExecutionContext): Future[Seq[Resource]] = {
+     mongoRepository.getResourceByObjectIds(elasticResources.map(_._id))
   }
 
   private def archiveLinksFromIntervals(intervals: Seq[(Interval, Long)])(implicit ec: ExecutionContext): Seq[ArchiveLink] = {

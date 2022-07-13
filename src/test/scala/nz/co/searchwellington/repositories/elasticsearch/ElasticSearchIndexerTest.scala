@@ -119,7 +119,7 @@ class ElasticSearchIndexerTest extends IndexableResource with ReasonableWaits {
 
     val elasticResources = Await.result(elasticSearchIndexer.getResources(taggedNewsitemsQuery, loggedInUser = Some(loggedInUser)), TenSeconds)
     val newsitemResource = elasticResources._1.find(_._id == taggedNewsitem._id).get
-    assertEquals(Seq(tag._id), newsitemResource.tags)
+    assertEquals(Seq(tag._id), newsitemResource.indexTags)
 
     val taggedWebsitesQuery = withTag.copy(`type` = Some(Set("W")))
 
