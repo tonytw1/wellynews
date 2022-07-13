@@ -422,6 +422,10 @@ class MongoRepository @Autowired()(@Value("${mongo.uri}") mongoUri: String) exte
     eventualDocuments.map { bs =>
       bs.flatMap(resourceFromBSONDocument)
     }
+    */
+    Future.sequence {
+      ids.map(getResourceByObjectId)
+    }.map(_.flatten)
   }
 
   private def getResourceBy(selector: BSONDocument)(implicit ec: ExecutionContext): Future[Option[Resource]] = {
