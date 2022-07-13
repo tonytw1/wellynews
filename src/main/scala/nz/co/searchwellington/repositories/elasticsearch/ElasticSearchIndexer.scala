@@ -12,7 +12,6 @@ import com.sksamuel.elastic4s.requests.{bulk => _, delete => _, searches => _}
 import com.sksamuel.elastic4s.{ElasticClient, ElasticProperties, Response}
 import io.opentelemetry.api.GlobalOpenTelemetry
 import io.opentelemetry.api.trace.Span
-import io.opentelemetry.context.Context
 import nz.co.searchwellington.ReasonableWaits
 import nz.co.searchwellington.controllers.ShowBrokenDecisionService
 import nz.co.searchwellington.model._
@@ -165,7 +164,7 @@ class ElasticSearchIndexer @Autowired()(val showBrokenDecisionService: ShowBroke
     }
   }
 
-  def getResources(query: ResourceQuery, order: SearchRequest => SearchRequest = byDateDescending, loggedInUser: Option[User])(implicit ec: ExecutionContext, currentSpan: Span): Future[(Seq[BSONObjectID], Long)] = {
+  def getResources(query: ResourceQuery, order: SearchRequest => SearchRequest = byDateDescending, loggedInUser: Option[User])(implicit ec: ExecutionContext, currentSpan: Span): Future[(Seq[ElasticResource], Long)] = {
     executeResourceQuery(query, order, loggedInUser)
   }
 
@@ -194,18 +193,22 @@ class ElasticSearchIndexer @Autowired()(val showBrokenDecisionService: ShowBroke
     }
   }
 
-  private def executeResourceQuery(query: ResourceQuery, order: SearchRequest => SearchRequest, loggedInUser: Option[User])(implicit ec: ExecutionContext, currentSpan: Span): Future[(Seq[BSONObjectID], Long)] = {
+  private def executeResourceQuery(query: ResourceQuery, order: SearchRequest => SearchRequest, loggedInUser: Option[User])(implicit ec: ExecutionContext, currentSpan: Span): Future[(Seq[ElasticResource], Long)] = {
     val request = order(search(Index) query composeQueryFor(query, loggedInUser)) start query.startIndex limit query.maxItems
 
-    val tracer = GlobalOpenTelemetry.getTracer("wellynews");
+    val tracer = GlobalOpenTelemetry.getTracer("wellynews")
     val span = tracer.spanBuilder("executeResourceQuery").startSpan()
 
     val start = DateTime.now()
-    val eventualTuples = client.execute(request).map { r =>
-      val ids  = r.result.hits.hits.toSeq.flatMap( h => BSONObjectID.parse(h.id).toOption)
-      (ids, r.result.totalHits)
+    val eventualTuple = client.execute(request).map { r =>
+      val elasticResources  = r.result.hits.hits.toSeq.flatMap{ h =>
+        BSONObjectID.parse(h.id).toOption.map { bid =>
+          ElasticResource(bid)
+        }
+      }
+      (elasticResources, r.result.totalHits)
     }
-    eventualTuples.map { r =>
+    eventualTuple.map { r =>
       val duration = new org.joda.time.Duration(start, DateTime.now)
       span.setAttribute("fetched", r._1.size)
       span.setAttribute("query", query.toString)  // TODO human readable
@@ -312,3 +315,5 @@ class ElasticSearchIndexer @Autowired()(val showBrokenDecisionService: ShowBroke
   }
 
 }
+
+case class ElasticResource(_id: BSONObjectID)

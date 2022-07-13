@@ -67,12 +67,12 @@ import scala.concurrent.{ExecutionContext, Future}
 
   def getNewsitemsMatchingKeywordsNotTaggedByUser(keywords: Set[String], user: User, tag: Tag, loggedInUser: Option[User])(implicit ec: ExecutionContext, currentSpan: Span): Future[Seq[FrontendResource]] = {
 
-    def getNewsitemIDsMatchingKeywords(keywords: Set[String], user: User): Future[(Seq[BSONObjectID], Long)] = {
+    def getNewsitemIdsMatchingKeywords(keywords: Set[String], user: User): Future[(Seq[ElasticResource], Long)] = {
       val query = ResourceQuery(`type` = newsitems, q = Some(keywords.mkString(" ")))
       elasticSearchIndexer.getResources(query, order = byRelevance, loggedInUser = Some(user))
     }
 
-    getNewsitemIDsMatchingKeywords(keywords, user).flatMap(i => fetchResourcesByIds(i._1)).map { resources =>
+    getNewsitemIdsMatchingKeywords(keywords, user).flatMap(i => fetchResourcesByIds(i._1)).map { resources =>
       resources.filter { r =>
         val hasExistingTagging = r.resource_tags.exists{ tagging =>
           val bool = tagging.user_id == user._id && tagging.tag_id == tag._id
@@ -376,7 +376,7 @@ import scala.concurrent.{ExecutionContext, Future}
     elasticSearchIndexer.getResources(ResourceQuery(hostname = Some(hostname), `type` = Some(Set("W"))), loggedInUser = loggedInUser).flatMap(i => fetchResourcesByIds(i._1))
   }
 
-  private def buildFrontendResourcesFor(i: (Seq[BSONObjectID], Long), loggedInUser: Option[User])(implicit ec: ExecutionContext, currentSpan: Span): Future[(Seq[FrontendResource], Long)] = {
+  private def buildFrontendResourcesFor(i: (Seq[ElasticResource], Long), loggedInUser: Option[User])(implicit ec: ExecutionContext, currentSpan: Span): Future[(Seq[FrontendResource], Long)] = {
     fetchByIds(i._1 ,loggedInUser).map { rs =>
       (rs, i._2)
     }
@@ -386,7 +386,7 @@ import scala.concurrent.{ExecutionContext, Future}
 
   private def nearbyNewsitems(latLong: LatLong, radius: Double) = ResourceQuery(`type` = newsitems, circle = Some(Circle(latLong, radius)))
 
-  private def toFrontendResourcesWithTotalCount(elasticSearchResults: Future[(Seq[BSONObjectID], Long)], loggedInUser: Option[User])(implicit ec: ExecutionContext, currentSpan: Span): Future[(Seq[FrontendResource], Long)] = {
+  private def toFrontendResourcesWithTotalCount(elasticSearchResults: Future[(Seq[ElasticResource], Long)], loggedInUser: Option[User])(implicit ec: ExecutionContext, currentSpan: Span): Future[(Seq[FrontendResource], Long)] = {
     elasticSearchResults.flatMap { i =>
       fetchByIds(i._1, loggedInUser).map { rs =>
         (rs, i._2)
@@ -394,7 +394,7 @@ import scala.concurrent.{ExecutionContext, Future}
     }
   }
 
-  private def fetchByIds(ids: Seq[BSONObjectID], loggedInUser: Option[User])(implicit ec: ExecutionContext, currentSpan: Span): Future[Seq[FrontendResource]] = {
+  private def fetchByIds(ids: Seq[ElasticResource], loggedInUser: Option[User])(implicit ec: ExecutionContext, currentSpan: Span): Future[Seq[FrontendResource]] = {
     val tracer = GlobalOpenTelemetry.getTracer("wellynews")
     val mongoFetchSpan = tracer.spanBuilder("fetchByIds").startSpan()
 
@@ -416,8 +416,8 @@ import scala.concurrent.{ExecutionContext, Future}
     }
   }
 
-  private def fetchResourcesByIds(ids: Seq[BSONObjectID])(implicit ec: ExecutionContext): Future[Seq[Resource]] = {
-     mongoRepository.getResourceByObjectIds(ids)
+  private def fetchResourcesByIds(ids: Seq[ElasticResource])(implicit ec: ExecutionContext): Future[Seq[Resource]] = {
+     mongoRepository.getResourceByObjectIds(ids.map(_._id))
   }
 
   private def archiveLinksFromIntervals(intervals: Seq[(Interval, Long)])(implicit ec: ExecutionContext): Seq[ArchiveLink] = {
