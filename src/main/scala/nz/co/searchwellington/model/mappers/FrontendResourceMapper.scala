@@ -25,26 +25,32 @@ import scala.concurrent.{ExecutionContext, Future}
       taggingVotes <- eventualTaggingVotes
       place <- eventualPlace
     } yield {
-      mapFrontendResource(contentItem, place).map { frontendResource =>
-        val handTags = taggingVotes.filter { _ match {
-          case HandTagging(_, _, _) => true
-          case _ => false
-        }
-        }.map(_.tag).distinct
-        val indexTags = indexTagsService.indexTagsForTaggingVotes(taggingVotes)
-        val actions = actionsFor(frontendResource, loggedInUser)
-        frontendResource match {
-          // TODO this match to call the same code on each class is a weird smell
-          case n: FrontendNewsitem => n.copy(tags = Some(indexTags), handTags = Some(handTags), actions = actions)
-          case f: FrontendFeed => f.copy(tags = Some(indexTags), handTags = Some(handTags), actions = actions)
-          case l: FrontendWatchlist => l.copy(tags = Some(indexTags), handTags = Some(handTags), actions = actions)
-          case w: FrontendWebsite => w.copy(tags = Some(indexTags), handTags = Some(handTags), actions = actions)
-        }
+
+      val handTags = taggingVotes.filter { _ match {
+        case HandTagging(_, _, _) => true
+        case _ => false
       }
+      }.map(_.tag).distinct
+      val indexTags = indexTagsService.indexTagsForTaggingVotes(taggingVotes)
+
+      createFrontendResourceFrom(contentItem, loggedInUser, place, handTags, indexTags)
     }).flatten
   }
 
-  def mapFrontendResource(contentItem: Resource, place: Option[Geocode])(implicit ec: ExecutionContext): Future[FrontendResource] = {
+  private def createFrontendResourceFrom(contentItem: Resource, loggedInUser: Option[User], place: Option[Geocode], handTags: Seq[Tag], indexTags: Seq[Tag])(implicit ec: ExecutionContext): Future[FrontendResource] = {
+    mapFrontendResource(contentItem, place, handTags, indexTags).map { frontendResource =>
+      val actions = actionsFor(frontendResource, loggedInUser)
+      frontendResource match {
+        // TODO this match to call the same code on each class is a weird smell
+        case n: FrontendNewsitem => n.copy(actions = actions)
+        case f: FrontendFeed => f.copy(actions = actions)
+        case l: FrontendWatchlist => l.copy(actions = actions)
+        case w: FrontendWebsite => w.copy(actions = actions)
+      }
+    }
+  }
+
+  def mapFrontendResource(contentItem: Resource, place: Option[Geocode], handTags: Seq[Tag], indexTags: Seq[Tag])(implicit ec: ExecutionContext): Future[FrontendResource] = {
     contentItem match {
       case n: Newsitem =>
         val eventualPublisher = n.publisher.map { pid =>
@@ -102,7 +108,9 @@ import scala.concurrent.{ExecutionContext, Future}
             httpStatus = n.http_status,
             lastScanned = n.last_scanned,
             lastChanged = n.last_changed,
-            owner = owner.map(user => user.profilename.getOrElse(user._id.stringify)).orNull
+            owner = owner.map(user => user.profilename.getOrElse(user._id.stringify)).orNull,
+            tags = Some(indexTags),
+            handTags = Some(handTags)
           )
         }
 
@@ -138,7 +146,9 @@ import scala.concurrent.{ExecutionContext, Future}
             httpStatus = f.http_status,
             lastScanned = f.last_scanned,
             lastChanged = f.last_changed,
-            owner = owner.map(user => user.profilename.getOrElse(user._id.stringify)).orNull
+            owner = owner.map(user => user.profilename.getOrElse(user._id.stringify)).orNull,
+            tags = Some(indexTags),
+            handTags = Some(handTags)
           )
         }
 
@@ -171,7 +181,9 @@ import scala.concurrent.{ExecutionContext, Future}
             httpStatus = l.http_status,
             lastScanned = l.last_scanned,
             lastChanged = l.last_changed,
-            owner = owner.map(user => user.profilename.getOrElse(user._id.stringify)).orNull
+            owner = owner.map(user => user.profilename.getOrElse(user._id.stringify)).orNull,
+            tags = Some(indexTags),
+            handTags = Some(handTags)
           )
         }
 
@@ -197,7 +209,9 @@ import scala.concurrent.{ExecutionContext, Future}
             date = w.date.orNull,
             lastScanned = w.last_scanned,
             lastChanged = w.last_changed,
-            owner = owner.map(user => user.profilename.getOrElse(user._id.stringify)).orNull
+            owner = owner.map(user => user.profilename.getOrElse(user._id.stringify)).orNull,
+            tags = Some(indexTags),
+            handTags = Some(handTags)
           )
         }
 

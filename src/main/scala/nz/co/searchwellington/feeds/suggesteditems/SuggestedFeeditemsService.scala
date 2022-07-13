@@ -74,7 +74,7 @@ import scala.concurrent.{ExecutionContext, Future}
       feeds <- mongoRepository.getAllFeeds()
       suggestedFeeds = feeds.filter(feed => feed.acceptance == FeedAcceptancePolicy.SUGGEST)
       suggestedFeedItems <- paginateChannelFeedItems(feeds = suggestedFeeds)
-      frontendResources <- Future.sequence(suggestedFeedItems.map(r => frontendResourceMapper.mapFrontendResource(r, r.geocode)))
+      frontendResources <- Future.sequence(suggestedFeedItems.map(r => frontendResourceMapper.mapFrontendResource(r, r.geocode, Seq.empty, Seq.empty)))
       withActions <- feedItemActionDecorator.withFeedItemSpecificActions(frontendResources, loggedInUser)
     } yield {
       withActions
