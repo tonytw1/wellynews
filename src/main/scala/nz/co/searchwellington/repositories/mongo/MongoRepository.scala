@@ -417,12 +417,14 @@ class MongoRepository @Autowired()(@Value("${mongo.uri}") mongoUri: String) exte
   }
 
   def getResourceByObjectIds(ids: Seq[BSONObjectID])(implicit ec: ExecutionContext): Future[Seq[Resource]] = {
+    /*
     val byIds = BSONDocument("_id" -> BSONDocument("$in" -> ids)) // TODO order is lost here
     val eventualDocuments = resourceCollection.find(byIds).cursor[BSONDocument]().collect[List](maxDocs = ids.size, err = Cursor.FailOnError[List[BSONDocument]]())
     eventualDocuments.map { bs =>
       bs.flatMap(resourceFromBSONDocument)
     }
     */
+
     Future.sequence {
       ids.map(getResourceByObjectId)
     }.map(_.flatten)
