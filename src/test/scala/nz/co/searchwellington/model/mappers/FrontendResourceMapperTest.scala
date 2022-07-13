@@ -8,7 +8,6 @@ import nz.co.searchwellington.repositories.mongo.MongoRepository
 import nz.co.searchwellington.tagging.{IndexTagsService, TaggingReturnsOfficerService}
 import nz.co.searchwellington.urls.UrlBuilder
 import org.joda.time.{DateTime, DateTimeZone}
-import org.junit.Ignore
 import org.junit.jupiter.api.Assertions.{assertEquals, assertFalse, assertTrue}
 import org.junit.jupiter.api.Test
 import org.mockito.Mockito.{mock, when}
@@ -48,7 +47,6 @@ class FrontendResourceMapperTest extends ReasonableWaits {
     assertEquals(owner.profilename.get, frontendNewsitem.getOwner)
   }
 
-  /*
   @Test
   def handTaggingsShouldBeAppliedToFrontendResources(): Unit = {
     val owner = User(BSONObjectID.generate(), name = Some(UUID.randomUUID().toString), profilename = Some(UUID.randomUUID().toString))
@@ -65,7 +63,6 @@ class FrontendResourceMapperTest extends ReasonableWaits {
     assertFalse(frontendWebsite.handTags.isEmpty)
     assertEquals(tag.id, frontendWebsite.handTags.get.head.id)
   }
-  */
 
   @Test
   def shouldApplyActionsToFrontendResourcesViewedByAdmins(): Unit = {
