@@ -213,7 +213,7 @@ import scala.concurrent.{ExecutionContext, Future}
     BSONObjectID.parse(t._1).map { bid =>
       mongoRepository.getResourceByObjectId(bid).flatMap { maybeResource =>
         maybeResource.map { resource: Resource =>
-          val eventualResource = frontendResourceMapper.createFrontendResourceFrom(resource)
+          val eventualResource = frontendResourceMapper.createFrontendResourceFrom(resource, None, None, Seq.empty, Seq.empty)
           eventualResource.map { frontendResource =>
             Some((frontendResource, t._2))
           }

@@ -37,7 +37,7 @@ import scala.concurrent.{ExecutionContext, Future}
     }).flatten
   }
 
-  private def createFrontendResourceFrom(contentItem: Resource, loggedInUser: Option[User], place: Option[Geocode], handTags: Seq[Tag], indexTags: Seq[Tag])(implicit ec: ExecutionContext): Future[FrontendResource] = {
+  def createFrontendResourceFrom(contentItem: Resource, loggedInUser: Option[User], place: Option[Geocode], handTags: Seq[Tag], indexTags: Seq[Tag])(implicit ec: ExecutionContext): Future[FrontendResource] = {
     mapFrontendResource(contentItem, place, handTags, indexTags).map { frontendResource =>
       val actions = actionsFor(frontendResource, loggedInUser)
       frontendResource match {
