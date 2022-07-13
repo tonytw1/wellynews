@@ -33,7 +33,6 @@ class ContentController @Autowired()(contentModelBuilderServiceFactory: ContentM
   def normal(request: HttpServletRequest, response: HttpServletResponse): ModelAndView = {
     import scala.concurrent.ExecutionContext.Implicits.global
     implicit val currentSpan = Span.current()
-    log.info("!!!!!! Current span: " + currentSpan)
     buildAndRender(request)
   }
 
