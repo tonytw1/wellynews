@@ -408,7 +408,14 @@ import scala.concurrent.{ExecutionContext, Future}
       val tracer = GlobalOpenTelemetry.getTracer("wellynews")
       val frontendMapSpan = tracer.spanBuilder("createFrontendResources").
         setParent(Context.current().`with`(currentSpan)).startSpan()
-      Future.sequence(rs.map(r => frontendResourceMapper.createFrontendResourceFrom(r, loggedInUser))).map { frs =>
+
+      Future.sequence(rs.map(r => {
+        val eventualTags = Future.sequence(r.resource_tags.map(_.tag_id).distinct.map( tid => mongoRepository.getTagByObjectId(tid))).map(_.flatten)
+        val indexTags = Seq.empty // TODO
+        eventualTags.flatMap { tags =>
+          frontendResourceMapper.createFrontendResourceFrom(r, loggedInUser, None, tags, indexTags)
+        }
+      })).map { frs =>
         frontendMapSpan.setAttribute("mapped", frs.size)
         frontendMapSpan.end()
         frs
