@@ -136,13 +136,13 @@ import scala.concurrent.{ExecutionContext, Future}
 
   def getTagWatchlist(tag: Tag, loggedInUser: Option[User])(implicit ec: ExecutionContext, currentSpan: Span): Future[Seq[FrontendResource]] = {
     val taggedWebsites = ResourceQuery(`type` = watchlists, tags = Some(Set(tag)))
-    elasticSearchIndexer.getResources(taggedWebsites, loggedInUser = loggedInUser).flatMap(i => fetchByIds(i._1, loggedInUser))
+    elasticSearchIndexer.getResources(taggedWebsites, loggedInUser = loggedInUser).flatMap(i => fetchByIdsAndFrontendMap(i._1, loggedInUser))
   }
 
 
   def getTaggedFeeds(tag: Tag, loggedInUser: Option[User])(implicit ec: ExecutionContext, currentSpan: Span): Future[Seq[FrontendResource]] = {
     val taggedWebsites = ResourceQuery(`type` = feeds, tags = Some(Set(tag)))
-    elasticSearchIndexer.getResources(taggedWebsites, loggedInUser = loggedInUser).flatMap(i => fetchByIds(i._1, loggedInUser))
+    elasticSearchIndexer.getResources(taggedWebsites, loggedInUser = loggedInUser).flatMap(i => fetchByIdsAndFrontendMap(i._1, loggedInUser))
   }
 
   def getGeocodedNewsitems(startIndex: Int, maxItems: Int, loggedInUser: Option[User])(implicit ec: ExecutionContext, currentSpan: Span): Future[(Seq[FrontendResource], Long)] = {
@@ -157,7 +157,7 @@ import scala.concurrent.{ExecutionContext, Future}
 
   def getGeotaggedNewsitemsForTag(tag: Tag, maxItems: Int, loggedInUser: Option[User])(implicit ec: ExecutionContext, currentSpan: Span): Future[Seq[FrontendResource]] = {
     val geotaggedNewsitemsForTag = ResourceQuery(`type` = newsitems, geocoded = Some(true), tags = Some(Set(tag)), maxItems = maxItems) // TODO page size
-    elasticSearchIndexer.getResources(geotaggedNewsitemsForTag, loggedInUser = loggedInUser).flatMap(i => fetchByIds(i._1, loggedInUser))
+    elasticSearchIndexer.getResources(geotaggedNewsitemsForTag, loggedInUser = loggedInUser).flatMap(i => fetchByIdsAndFrontendMap(i._1, loggedInUser))
   }
 
   def getLatestNewsitems(maxItems: Int = MAX_NEWSITEMS, page: Int = 1, loggedInUser: Option[User])(implicit ec: ExecutionContext, currentSpan: Span): Future[Seq[FrontendResource]] = {
@@ -165,22 +165,22 @@ import scala.concurrent.{ExecutionContext, Future}
       before = Some(DateTime.now().plusWeeks(1)),
       maxItems = maxItems,
       startIndex = maxItems * (page - 1)
-    ), loggedInUser = loggedInUser).flatMap(i => fetchByIds(i._1, loggedInUser))
+    ), loggedInUser = loggedInUser).flatMap(i => fetchByIdsAndFrontendMap(i._1, loggedInUser))
   }
 
   def getNewsitemsForInterval(interval: Interval, loggedInUser: Option[User])(implicit ec: ExecutionContext, currentSpan: Span): Future[Seq[FrontendResource]] = {
     val newsitemsForMonth = ResourceQuery(`type` = newsitems, interval = Some(interval), maxItems = ALL_ITEMS)
-    elasticSearchIndexer.getResources(newsitemsForMonth, loggedInUser = loggedInUser).flatMap(i => fetchByIds(i._1, loggedInUser))
+    elasticSearchIndexer.getResources(newsitemsForMonth, loggedInUser = loggedInUser).flatMap(i => fetchByIdsAndFrontendMap(i._1, loggedInUser))
   }
 
   def getNewsitemsForPublisherInterval(publisher: Website, interval: Interval, loggedInUser: Option[User])(implicit ec: ExecutionContext, currentSpan: Span): Future[Seq[FrontendResource]] = {
     val publisherNewsitemsForMonth = ResourceQuery(`type` = newsitems, publisher = Some(publisher), interval = Some(interval), maxItems = ALL_ITEMS)
-    elasticSearchIndexer.getResources(publisherNewsitemsForMonth, loggedInUser = loggedInUser).flatMap(i => fetchByIds(i._1, loggedInUser))
+    elasticSearchIndexer.getResources(publisherNewsitemsForMonth, loggedInUser = loggedInUser).flatMap(i => fetchByIdsAndFrontendMap(i._1, loggedInUser))
   }
 
   def getNewsitemsForTagInterval(tag: Tag, interval: Interval, loggedInUser: Option[User])(implicit ec: ExecutionContext, currentSpan: Span): Future[Seq[FrontendResource]] = {
     val tagNewsitemsForMonth = ResourceQuery(`type` = newsitems, tags = Some(Set(tag)), interval = Some(interval), maxItems = ALL_ITEMS)
-    elasticSearchIndexer.getResources(tagNewsitemsForMonth, loggedInUser = loggedInUser).flatMap(i => fetchByIds(i._1, loggedInUser))
+    elasticSearchIndexer.getResources(tagNewsitemsForMonth, loggedInUser = loggedInUser).flatMap(i => fetchByIdsAndFrontendMap(i._1, loggedInUser))
   }
 
   def getPublishersForInterval(interval: Interval, loggedInUser: Option[User])(implicit ec: ExecutionContext, currentSpan: Span): Future[Seq[(FrontendResource, Long)]] = {
@@ -250,7 +250,7 @@ import scala.concurrent.{ExecutionContext, Future}
     elasticSearchIndexer.getResources(
       taggedByUser,
       loggedInUser = loggedInUser
-    ).flatMap(i => fetchByIds(i._1, loggedInUser))
+    ).flatMap(i => fetchByIdsAndFrontendMap(i._1, loggedInUser))
   }
 
   def getWebsitesMatchingKeywords(keywords: String, tag: Option[Tag], startIndex: Int, maxItems: Int, loggedInUser: Option[User])(implicit ec: ExecutionContext, currentSpan: Span): Future[(Seq[FrontendResource], Long)] = {
@@ -301,18 +301,18 @@ import scala.concurrent.{ExecutionContext, Future}
       allFeeds.copy(feedAcceptancePolicy = Some(a))
     }.getOrElse(allFeeds)
 
-    elasticSearchIndexer.getResources(withAcceptancePolicy, elasticSearchIndexer.byTitleAscending, loggedInUser).flatMap(i => fetchByIds(i._1, loggedInUser))
+    elasticSearchIndexer.getResources(withAcceptancePolicy, elasticSearchIndexer.byTitleAscending, loggedInUser).flatMap(i => fetchByIdsAndFrontendMap(i._1, loggedInUser))
   }
 
   def getSuggestOnlyFeeds(loggedInUser: Option[User])(implicit ec: ExecutionContext, currentSpan: Span): Future[Seq[FrontendResource]] = {
     val suggestOnlyFeeds = ResourceQuery(`type` = feeds, maxItems = ALL_ITEMS, feedAcceptancePolicy = Some(FeedAcceptancePolicy.SUGGEST))
-    elasticSearchIndexer.getResources(suggestOnlyFeeds, elasticSearchIndexer.byFeedLatestFeedItemDate, loggedInUser).flatMap(i => fetchByIds(i._1, loggedInUser))
+    elasticSearchIndexer.getResources(suggestOnlyFeeds, elasticSearchIndexer.byFeedLatestFeedItemDate, loggedInUser).flatMap(i => fetchByIdsAndFrontendMap(i._1, loggedInUser))
   }
 
   def getAllFeedsOrderedByLatestItemDate(loggedInUser: Option[User])(implicit ec: ExecutionContext, currentSpan: Span): Future[Seq[FrontendResource]] = {
     val allFeeds = ResourceQuery(`type` = feeds)
     elasticSearchIndexer.getResources(allFeeds, elasticSearchIndexer.byFeedLatestFeedItemDate, loggedInUser = loggedInUser).
-      flatMap(i => fetchByIds(i._1, loggedInUser))
+      flatMap(i => fetchByIdsAndFrontendMap(i._1, loggedInUser))
   }
 
   def getTaggedNewsitems(tag: Tag, startIndex: Int = 0, maxItems: Int = MAX_NEWSITEMS, loggedInUser: Option[User])(implicit ec: ExecutionContext, currentSpan: Span): Future[(Seq[FrontendResource], Long)] = {
@@ -331,7 +331,7 @@ import scala.concurrent.{ExecutionContext, Future}
 
   def getTaggedWebsites(tag: Tag, maxItems: Int, loggedInUser: Option[User])(implicit ec: ExecutionContext, currentSpan: Span): Future[Seq[FrontendResource]] = {
     val taggedWebsites = ResourceQuery(`type` = websites, tags = Some(Set(tag)), maxItems = maxItems)
-    elasticSearchIndexer.getResources(taggedWebsites, elasticSearchIndexer.byTitleAscending, loggedInUser = loggedInUser).flatMap(i => fetchByIds(i._1, loggedInUser))
+    elasticSearchIndexer.getResources(taggedWebsites, elasticSearchIndexer.byTitleAscending, loggedInUser = loggedInUser).flatMap(i => fetchByIdsAndFrontendMap(i._1, loggedInUser))
   }
 
   def getPublisherNewsitems(publisher: Website, maxItems: Int, loggedInUser: Option[User])(implicit ec: ExecutionContext, currentSpan: Span): Future[(Seq[FrontendResource], Long)] = {
@@ -341,18 +341,18 @@ import scala.concurrent.{ExecutionContext, Future}
 
   def getPublisherFeeds(publisher: Website, loggedInUser: Option[User])(implicit ec: ExecutionContext, currentSpan: Span): Future[Seq[FrontendResource]] = {
     val publisherFeeds = ResourceQuery(`type` = feeds, publisher = Some(publisher))
-    elasticSearchIndexer.getResources(publisherFeeds, elasticSearchIndexer.byTitleAscending, loggedInUser = loggedInUser).flatMap(i => fetchByIds(i._1, loggedInUser))
+    elasticSearchIndexer.getResources(publisherFeeds, elasticSearchIndexer.byTitleAscending, loggedInUser = loggedInUser).flatMap(i => fetchByIdsAndFrontendMap(i._1, loggedInUser))
   }
 
   def getPublisherWatchlist(publisher: Website, loggedInUser: Option[User])(implicit ec: ExecutionContext, currentSpan: Span): Future[Seq[FrontendResource]] = {
     val publisherWatchlist = ResourceQuery(`type` = watchlists, publisher = Some(publisher))
-    elasticSearchIndexer.getResources(publisherWatchlist, loggedInUser = loggedInUser).flatMap(i => fetchByIds(i._1, loggedInUser))
+    elasticSearchIndexer.getResources(publisherWatchlist, loggedInUser = loggedInUser).flatMap(i => fetchByIdsAndFrontendMap(i._1, loggedInUser))
   }
 
   def getPublisherTagCombinerNewsitems(publisher: Website, tag: Tag, startIndex: Int, maxItems: Int, loggedInUser: Option[User])(implicit ec: ExecutionContext, currentSpan: Span): Future[Seq[FrontendResource]] = {
     val publisherTagCombiner = ResourceQuery(`type` = newsitems, publisher = Some(publisher), tags = Some(Set(tag)))
     val withPagination = publisherTagCombiner.copy(startIndex = startIndex, maxItems = maxItems)
-    elasticSearchIndexer.getResources(withPagination, loggedInUser = loggedInUser).flatMap(i => fetchByIds(i._1, loggedInUser))
+    elasticSearchIndexer.getResources(withPagination, loggedInUser = loggedInUser).flatMap(i => fetchByIdsAndFrontendMap(i._1, loggedInUser))
   }
 
   def getDiscoveredFeeds(maxNumber: Int)(implicit ec: ExecutionContext): Future[Seq[DiscoveredFeed]] = {
@@ -377,7 +377,7 @@ import scala.concurrent.{ExecutionContext, Future}
   }
 
   private def buildFrontendResourcesFor(i: (Seq[ElasticResource], Long), loggedInUser: Option[User])(implicit ec: ExecutionContext, currentSpan: Span): Future[(Seq[FrontendResource], Long)] = {
-    fetchByIds(i._1 ,loggedInUser).map { rs =>
+    fetchByIdsAndFrontendMap(i._1 ,loggedInUser).map { rs =>
       (rs, i._2)
     }
   }
@@ -388,13 +388,13 @@ import scala.concurrent.{ExecutionContext, Future}
 
   private def toFrontendResourcesWithTotalCount(elasticSearchResults: Future[(Seq[ElasticResource], Long)], loggedInUser: Option[User])(implicit ec: ExecutionContext, currentSpan: Span): Future[(Seq[FrontendResource], Long)] = {
     elasticSearchResults.flatMap { i =>
-      fetchByIds(i._1, loggedInUser).map { rs =>
+      fetchByIdsAndFrontendMap(i._1, loggedInUser).map { rs =>
         (rs, i._2)
       }
     }
   }
 
-  private def fetchByIds(ids: Seq[ElasticResource], loggedInUser: Option[User])(implicit ec: ExecutionContext, currentSpan: Span): Future[Seq[FrontendResource]] = {
+  private def fetchByIdsAndFrontendMap(ids: Seq[ElasticResource], loggedInUser: Option[User])(implicit ec: ExecutionContext, currentSpan: Span): Future[Seq[FrontendResource]] = {
     val tracer = GlobalOpenTelemetry.getTracer("wellynews")
     val mongoFetchSpan = tracer.spanBuilder("fetchByIds").startSpan()
 
