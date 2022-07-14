@@ -196,6 +196,10 @@ class ElasticSearchIndexer @Autowired()(val showBrokenDecisionService: ShowBroke
     getAggregationFor(query, Publisher, loggedInUser, size)
   }
 
+  def getTagAggregationFor(query: ResourceQuery, loggedInUser: Option[User], size: Option[Int] = None)(implicit ec: ExecutionContext, currentSpan: Span): Future[Seq[(String, Long)]] = {
+    getAggregationFor(query, Tags, loggedInUser, size)
+  }
+
   def getTypeCounts(loggedInUser: Option[User])(implicit ec: ExecutionContext, currentSpan: Span): Future[Seq[(String, Long)]] = {
     val allResources = ResourceQuery()
     getAggregationFor(allResources, "type", loggedInUser)
@@ -233,7 +237,7 @@ class ElasticSearchIndexer @Autowired()(val showBrokenDecisionService: ShowBroke
     }
   }
 
-  def getAggregationFor(query: ResourceQuery, aggName: String, loggedInUser: Option[User], size: Option[Int] = None)(implicit ec: ExecutionContext, currentSpan: Span): Future[Seq[(String, Long)]] = {
+  private def getAggregationFor(query: ResourceQuery, aggName: String, loggedInUser: Option[User], size: Option[Int] = None)(implicit ec: ExecutionContext, currentSpan: Span): Future[Seq[(String, Long)]] = {
     val span = SpanFactory.childOf(currentSpan, "getAggregationFor").
       setAttribute("database", "elasticsearch").
       setAttribute("query", query.toString).
