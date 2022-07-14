@@ -43,6 +43,8 @@ class WhakaokoClient @Autowired()(@Value("${whakaoko.url}") whakaokoUrl: String,
   private val pageSize = 30
 
   def createFeedSubscription(feedUrl: String)(implicit ec: ExecutionContext, currentSpan: Span): Future[Option[Subscription]] = {
+    val span = startSpan(currentSpan, "createFeedSubscription")
+
     val createFeedSubscriptionUrl = whakaokoUrl + "/subscriptions"
     log.debug("Posting new feed to: " + createFeedSubscriptionUrl)
     val createSubscriptionRequest = CreateSubscriptionRequest(
@@ -54,42 +56,37 @@ class WhakaokoClient @Autowired()(@Value("${whakaoko.url}") whakaokoUrl: String,
     withWhakaokoAuth(wsClient.url(createFeedSubscriptionUrl)).
       withRequestTimeout(TenSeconds).
       post(Json.toJson(createSubscriptionRequest)).map { r =>
-        r.status match {
-          case HttpStatus.SC_OK =>
-            Some(Json.parse(r.body).as[Subscription])
-          case _ =>
-            None
-        }
+      span.setAttribute("http.response.status", r.status)
+      span.end()
+      r.status match {
+        case HttpStatus.SC_OK =>
+          Some(Json.parse(r.body).as[Subscription])
+        case _ =>
+          None
+      }
     }
   }
 
   def getSubscription(subscriptionId: String)(implicit ec: ExecutionContext, currentSpan: Span): Future[Option[Subscription]] = {
-    val tracer = GlobalOpenTelemetry.getTracer("wellynews")
-    val span = tracer.spanBuilder("getSubscription").
-      setParent(Context.current().`with`(currentSpan)).
-      setAttribute("database", "whakaoko").
-      startSpan()
+    val span = startSpan(currentSpan, "getSubscription")
 
     withWhakaokoAuth(wsClient.url(subscriptionUrl(subscriptionId))).
       withRequestTimeout(TenSeconds).
       get.map { r =>
-        span.end()
-        r.status match {
-          case HttpStatus.SC_OK =>
-            Some(Json.parse(r.body).as[Subscription])
-          case _ =>
-            None
-        }
+      span.setAttribute("http.response.status", r.status)
+      span.end()
+      r.status match {
+        case HttpStatus.SC_OK =>
+          Some(Json.parse(r.body).as[Subscription])
+        case _ =>
+          None
+      }
     }
   }
 
   def getChannelFeedItems(page: Int, subscriptions: Option[Seq[String]])(implicit ec: ExecutionContext, currentSpan: Span): Future[Seq[FeedItem]] = {
+    val span = startSpan(currentSpan, "getChannelFeedItems")
     log.info("Fetching channel items page: " + page)
-    val tracer = GlobalOpenTelemetry.getTracer("wellynews")
-    val span = tracer.spanBuilder("getChannelFeedItems").
-      setParent(Context.current().`with`(currentSpan)).
-      setAttribute("database", "whakaoko").
-      startSpan()
 
     val channelItemsUrl = whakaokoUrl + "/" + "/channels/" + whakaokoChannel + "/items"
     val start = DateTime.now()
@@ -98,6 +95,7 @@ class WhakaokoClient @Autowired()(@Value("${whakaoko.url}") whakaokoUrl: String,
       addQueryStringParameters("subscriptions" -> subscriptions.getOrElse(Seq.empty).mkString(",")). // TODO This is an Option - decide
       withRequestTimeout(TenSeconds)
     request.get.map { r =>
+      span.setAttribute("http.response.status", r.status)
       span.end()
       log.info("Channel channel items returned after: " + new Duration(start, DateTime.now).getMillis)
       r.status match {
@@ -108,11 +106,7 @@ class WhakaokoClient @Autowired()(@Value("${whakaoko.url}") whakaokoUrl: String,
   }
 
   def getChannelSubscriptions()(implicit ec: ExecutionContext, currentSpan: Span): Future[Seq[Subscription]] = {
-    val tracer = GlobalOpenTelemetry.getTracer("wellynews")
-    val span = tracer.spanBuilder("getChannelSubscriptions").
-      setParent(Context.current().`with`(currentSpan)).
-      setAttribute("database", "whakaoko").
-      startSpan()
+    val span = startSpan(currentSpan, "getChannelSubscriptions")
 
     val channelSubscriptionsUrl = whakaokoUrl + "/" + "/channels/" + whakaokoChannel + "/subscriptions"
     log.info("Fetching channel subscriptions from: " + channelSubscriptionsUrl)
@@ -121,6 +115,7 @@ class WhakaokoClient @Autowired()(@Value("${whakaoko.url}") whakaokoUrl: String,
     withWhakaokoAuth(wsClient.url(channelSubscriptionsUrl).withQueryStringParameters("pageSize" -> pageSize.toString)).
       withRequestTimeout(TenSeconds).
       get.map { r =>
+      span.setAttribute("http.response.status", r.status)
       span.end()
       log.info("Channel subscriptions returned after: " + new Duration(start, DateTime.now).getMillis)
       r.status match {
@@ -134,15 +129,12 @@ class WhakaokoClient @Autowired()(@Value("${whakaoko.url}") whakaokoUrl: String,
 
   // Given a subscription id, return the first page of feed items and a total items count
   def getSubscriptionFeedItems(subscriptionId: String)(implicit ec: ExecutionContext, currentSpan: Span): Future[(Seq[FeedItem], Long)] = {
-    val tracer = GlobalOpenTelemetry.getTracer("wellynews")
-    val span = tracer.spanBuilder("getSubscriptionFeedItems").
-      setParent(Context.current().`with`(currentSpan)).
-      setAttribute("database", "whakaoko").
-      startSpan()
+    val span = startSpan(currentSpan, "getSubscriptionFeedItems")
 
     withWhakaokoAuth(wsClient.url(subscriptionUrl(subscriptionId) + "/items").withQueryStringParameters("pageSize" -> pageSize.toString)).
       withRequestTimeout(TenSeconds).
       get.map { r =>
+      span.setAttribute("http.response.status", r.status)
       span.end()
       r.status match {
         case HttpStatus.SC_OK =>
@@ -155,15 +147,19 @@ class WhakaokoClient @Autowired()(@Value("${whakaoko.url}") whakaokoUrl: String,
     }
   }
 
-  def updateSubscriptionName(subscriptionId: String, title: String)(implicit ec: ExecutionContext): Future[Unit] = {
+  def updateSubscriptionName(subscriptionId: String, title: String)(implicit ec: ExecutionContext, currentSpan: Span): Future[Unit] = {
+    val span = startSpan(currentSpan, "updateSubscriptionName")
+
     implicit val supw: OWrites[SubscriptionUpdateRequest] = Json.writes[SubscriptionUpdateRequest]
     val request = wsClient.url(subscriptionUrl(subscriptionId)).
       withHttpHeaders(ApplicationJsonHeader).
       withRequestTimeout(TenSeconds)
 
     withWhakaokoAuth(request).put(Json.toJson(SubscriptionUpdateRequest(name = title))).map { r =>
+      span.setAttribute("http.response.status", r.status)
+      span.end()
       r.status match {
-        case 200 =>
+        case HttpStatus.SC_OK =>
           log.debug("Update subscription name result: " + r.status + "/" + r.body)
         case _ =>
           log.warn("Update subscription call failed: " + r.status + "/" + r.body)
@@ -181,5 +177,13 @@ class WhakaokoClient @Autowired()(@Value("${whakaoko.url}") whakaokoUrl: String,
   case class CreateSubscriptionRequest(url: String, channel: String, name: Option[String] = None)
 
   case class SubscriptionUpdateRequest(name: String)
+
+  private def startSpan(currentSpan: Span, spanName: String): Span = {
+    val tracer = GlobalOpenTelemetry.getTracer("wellynews")
+    tracer.spanBuilder(spanName).
+      setParent(Context.current().`with`(currentSpan)).
+      setAttribute("database", "whakaoko").
+      startSpan()
+  }
 
 }

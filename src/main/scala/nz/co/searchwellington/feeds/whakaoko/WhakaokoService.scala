@@ -51,7 +51,7 @@ import scala.concurrent.{ExecutionContext, Future}
     }
   }
 
-  def updateSubscriptionName(subscriptionId: String, title: String)(implicit ec: ExecutionContext): Future[Unit] = {
+  def updateSubscriptionName(subscriptionId: String, title: String)(implicit ec: ExecutionContext, currentSpan: Span): Future[Unit] = {
     client.updateSubscriptionName(subscriptionId, title)
   }
 
