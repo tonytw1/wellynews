@@ -2,11 +2,10 @@ package nz.co.searchwellington.feeds.whakaoko
 
 import akka.actor.ActorSystem
 import akka.stream.ActorMaterializer
-import io.opentelemetry.api.GlobalOpenTelemetry
 import io.opentelemetry.api.trace.Span
-import io.opentelemetry.context.Context
 import nz.co.searchwellington.ReasonableWaits
 import nz.co.searchwellington.feeds.whakaoko.model._
+import nz.co.searchwellington.instrumentation.SpanFactory
 import org.apache.commons.logging.LogFactory
 import org.apache.http.HttpStatus
 import org.joda.time.DateTime
@@ -174,9 +173,7 @@ class WhakaokoClient @Autowired()(@Value("${whakaoko.url}") whakaokoUrl: String,
   case class SubscriptionUpdateRequest(name: String)
 
   private def startSpan(currentSpan: Span, spanName: String): Span = {
-    val tracer = GlobalOpenTelemetry.getTracer("wellynews")
-    tracer.spanBuilder(spanName).
-      setParent(Context.current().`with`(currentSpan)).
+    SpanFactory.childOf(currentSpan, spanName).
       setAttribute("database", "whakaoko").
       startSpan()
   }

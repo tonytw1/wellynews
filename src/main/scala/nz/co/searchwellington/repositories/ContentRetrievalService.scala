@@ -7,6 +7,7 @@ import io.opentelemetry.api.trace.Span
 import io.opentelemetry.context.Context
 import nz.co.searchwellington.ReasonableWaits
 import nz.co.searchwellington.controllers.models.helpers.CommonSizes
+import nz.co.searchwellington.instrumentation.SpanFactory
 import nz.co.searchwellington.model._
 import nz.co.searchwellington.model.frontend.FrontendResource
 import nz.co.searchwellington.model.mappers.FrontendResourceMapper
@@ -395,19 +396,15 @@ import scala.concurrent.{ExecutionContext, Future}
   }
 
   private def fetchByIdsAndFrontendMap(elasticResources: Seq[ElasticResource], loggedInUser: Option[User])(implicit ec: ExecutionContext, currentSpan: Span): Future[Seq[FrontendResource]] = {
-    val tracer = GlobalOpenTelemetry.getTracer("wellynews")
-    val mongoFetchSpan = tracer.spanBuilder("fetchByIds").startSpan()
+    val mongoFetchSpan = SpanFactory.childOf(currentSpan, "fetchByIds").setAttribute("database", "mongo").startSpan()
 
     fetchResourcesForElasticResources(elasticResources).map { rs =>
       mongoFetchSpan.setAttribute("fetched", rs.size)
-      mongoFetchSpan.setAttribute("database", "mongo")
       mongoFetchSpan.end()
       rs
 
     }.flatMap { rs: Seq[Resource] =>
-      val tracer = GlobalOpenTelemetry.getTracer("wellynews")
-      val frontendMapSpan = tracer.spanBuilder("createFrontendResources").
-        setParent(Context.current().`with`(currentSpan)).startSpan()
+      val frontendMapSpan = SpanFactory.childOf(currentSpan, "createFrontendResources").startSpan()
 
       val elasticResourcesById = elasticResources.map { es =>
         (es._id, es)
