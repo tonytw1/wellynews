@@ -13,6 +13,7 @@ import nz.co.searchwellington.model.frontend.FrontendResource
 import nz.co.searchwellington.model.mappers.FrontendResourceMapper
 import nz.co.searchwellington.repositories.elasticsearch._
 import nz.co.searchwellington.repositories.mongo.MongoRepository
+import nz.co.searchwellington.tagging.IndexTagsService
 import org.apache.commons.logging.LogFactory
 import org.joda.time.{DateTime, Interval}
 import org.springframework.beans.factory.annotation.Autowired
@@ -25,7 +26,8 @@ import scala.concurrent.{ExecutionContext, Future}
 @Component class ContentRetrievalService @Autowired()(tagDAO: TagDAO,
                                                       frontendResourceMapper: FrontendResourceMapper,
                                                       elasticSearchIndexer: ElasticSearchIndexer,
-                                                      mongoRepository: MongoRepository) extends ReasonableWaits with CommonSizes {
+                                                      mongoRepository: MongoRepository,
+                                                      indexTagsService: IndexTagsService) extends ReasonableWaits with CommonSizes {
 
   private val log = LogFactory.getLog(classOf[ContentRetrievalService])
 
@@ -418,9 +420,12 @@ import scala.concurrent.{ExecutionContext, Future}
 
         val eventualHandTags = loadTags(r.resource_tags.map(_.tag_id).distinct)
         val eventualIndexTags = loadTags(elasticResourcesById.get(r._id).map(_.indexTags).getOrElse(Seq.empty))
+        val eventualGeocode = indexTagsService.getIndexGeocodeForResource(r)  // TODO persist in index for faster rendering
         eventualHandTags.flatMap { handTags =>
           eventualIndexTags.flatMap { indexTags =>
-            frontendResourceMapper.createFrontendResourceFrom(r, loggedInUser, None, handTags, indexTags)
+            eventualGeocode.flatMap { geocode =>
+              frontendResourceMapper.createFrontendResourceFrom(r, loggedInUser, geocode, handTags, indexTags)
+            }
           }
         }
 
