@@ -192,19 +192,29 @@ class ElasticSearchIndexer @Autowired()(val showBrokenDecisionService: ShowBroke
     }
   }
 
-  def getPublisherAggregationFor(query: ResourceQuery, loggedInUser: Option[User], size: Option[Int] = None)(implicit ec: ExecutionContext): Future[Seq[(String, Long)]] = {
+  def getPublisherAggregationFor(query: ResourceQuery, loggedInUser: Option[User], size: Option[Int] = None)(implicit ec: ExecutionContext, currentSpan: Span): Future[Seq[(String, Long)]] = {
     getAggregationFor(query, Publisher, loggedInUser, size)
   }
 
-  def getAggregationFor(query: ResourceQuery, aggName: String, loggedInUser: Option[User], size: Option[Int] = None)(implicit ec: ExecutionContext): Future[Seq[(String, Long)]] = {
+  def getAggregationFor(query: ResourceQuery, aggName: String, loggedInUser: Option[User], size: Option[Int] = None)(implicit ec: ExecutionContext, currentSpan: Span): Future[Seq[(String, Long)]] = {
+    val span = SpanFactory.childOf(currentSpan, "getAggregationFor").
+      setAttribute("database", "elasticsearch").
+      setAttribute("query", query.toString).
+      setAttribute("aggregationName", aggName).
+      startSpan()
+
     val aggs = Seq(termsAgg(aggName, aggName) size size.getOrElse(Integer.MAX_VALUE))
     val request = (search(Index) query composeQueryFor(query, loggedInUser)) limit 0 aggregations aggs
     client.execute(request).map { r =>
-      r.result.aggs.result[Terms](aggName).buckets.map(b => (b.key, b.docCount))
+      val terms = r.result.aggs.result[Terms](aggName)
+      span.setAttribute("buckets", terms.buckets.size)
+      span.end()
+      terms.buckets.map(b => (b.key, b.docCount))
     }
   }
 
   def getTypeCounts(loggedInUser: Option[User])(implicit ec: ExecutionContext): Future[Map[String, Long]] = {
+    // TODO can this use getAggreationFor?
     val everyThing = matchAllQuery
     val aggs = Seq(termsAgg("type", "type"))
     val request = search(Index) query withModeration(everyThing, loggedInUser) limit 0 aggregations aggs

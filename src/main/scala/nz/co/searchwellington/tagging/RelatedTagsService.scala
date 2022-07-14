@@ -1,5 +1,6 @@
 package nz.co.searchwellington.tagging
 
+import io.opentelemetry.api.trace.Span
 import nz.co.searchwellington.ReasonableWaits
 import nz.co.searchwellington.model._
 import nz.co.searchwellington.repositories.elasticsearch.{Circle, ElasticSearchIndexer, ResourceQuery}
@@ -15,7 +16,7 @@ import scala.concurrent.{ExecutionContext, Future}
 
   private val newsitems = Some(Set("N"))
 
-  def getRelatedTagsForTag(tag: Tag, maxItems: Int, loggedInUser: Option[User])(implicit ec: ExecutionContext): Future[Seq[TagContentCount]] = {
+  def getRelatedTagsForTag(tag: Tag, maxItems: Int, loggedInUser: Option[User])(implicit ec: ExecutionContext, currentSpan: Span): Future[Seq[TagContentCount]] = {
     def getTagAggregation(tag: Tag, loggedInUser: Option[User]): Future[Seq[(String, Long)]] = {
       val newsitemsForTag = ResourceQuery(`type` = newsitems, tags = Some(Set(tag)))
       elasticSearchIndexer.getAggregationFor(newsitemsForTag, elasticSearchIndexer.Tags, loggedInUser)
@@ -50,7 +51,7 @@ import scala.concurrent.{ExecutionContext, Future}
     }
   }
 
-  def getRelatedPublishersForTag(tag: Tag, maxItems: Int, loggedInUser: Option[User])(implicit ec: ExecutionContext): Future[Seq[PublisherContentCount]] = {
+  def getRelatedPublishersForTag(tag: Tag, maxItems: Int, loggedInUser: Option[User])(implicit ec: ExecutionContext, currentSpan: Span): Future[Seq[PublisherContentCount]] = {
 
     def getPublishersForTag(tag: Tag, loggedInUser: Option[User]): Future[Seq[(String, Long)]] = {
       val newsitemsForTag = ResourceQuery(`type` = newsitems, tags = Some(Set(tag)))
@@ -64,7 +65,7 @@ import scala.concurrent.{ExecutionContext, Future}
     }
   }
 
-  def getRelatedPublishersForLocation(place: Place, radius: Double, loggedInUser: Option[User])(implicit ec: ExecutionContext): Future[Seq[PublisherContentCount]] = {
+  def getRelatedPublishersForLocation(place: Place, radius: Double, loggedInUser: Option[User])(implicit ec: ExecutionContext, currentSpan: Span): Future[Seq[PublisherContentCount]] = {
 
     def getPublishersNear(latLong: LatLong, radius: Double, loggedInUser: Option[User]): Future[Seq[(String, Long)]] = {
       elasticSearchIndexer.getPublisherAggregationFor(nearbyNewsitemsQuery(latLong, radius), loggedInUser)
@@ -77,7 +78,7 @@ import scala.concurrent.{ExecutionContext, Future}
     }
   }
 
-  def getRelatedTagsForPublisher(publisher: Website, loggedInUser: Option[User])(implicit ec: ExecutionContext): Future[Seq[TagContentCount]] = {
+  def getRelatedTagsForPublisher(publisher: Website, loggedInUser: Option[User])(implicit ec: ExecutionContext, currentSpan: Span): Future[Seq[TagContentCount]] = {
 
     def getPublisherTags(publisher: Website, loggedInUser: Option[User]): Future[Seq[(String, Long)]] = {
       val publishersNewsitems = ResourceQuery(`type` = newsitems, publisher = Some(publisher))
@@ -89,7 +90,7 @@ import scala.concurrent.{ExecutionContext, Future}
     }
   }
 
-  def getRelatedTagsForLocation(place: Place, radius: Double, loggedInUser: Option[User])(implicit ec: ExecutionContext): Future[Seq[TagContentCount]] = {
+  def getRelatedTagsForLocation(place: Place, radius: Double, loggedInUser: Option[User])(implicit ec: ExecutionContext, currentSpan: Span): Future[Seq[TagContentCount]] = {
 
     def getTagsNear(latLong: LatLong, radius: Double, loggedInUser: Option[User]): Future[Seq[(String, Long)]] = {
       elasticSearchIndexer.getAggregationFor(nearbyNewsitemsQuery(latLong, radius), elasticSearchIndexer.Tags, loggedInUser)

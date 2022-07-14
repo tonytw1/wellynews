@@ -75,8 +75,8 @@ class GeotaggedModelBuilderTest extends ReasonableWaits with ContentFields {
   def locationSearchesShouldHaveNearbyNewsitemsAsTheMainContent(): Unit = {
     when(contentRetrievalService.getNewsitemsNear(new LatLong(1.1, 2.2), 1.0, 0, 30, loggedInUser)).
       thenReturn(Future.successful((newsitemsNearPetoneStationFirstPage, LOCATION_RESULTS_COUNT)))
-    when(relatedTagsService.getRelatedTagsForLocation(any(), any(), any())(any())).thenReturn(Future.successful(Seq()))
-    when(relatedTagsService.getRelatedPublishersForLocation(any(), any(), any())(any())).thenReturn(Future.successful(Seq()))
+    when(relatedTagsService.getRelatedTagsForLocation(any(), any(), any())(any(), any())).thenReturn(Future.successful(Seq()))
+    when(relatedTagsService.getRelatedPublishersForLocation(any(), any(), any())(any(),any())).thenReturn(Future.successful(Seq()))
     request.setRequestURI("/geotagged")
     request.setAttribute(LocationParameterFilter.LOCATION, validLocation)
 
@@ -93,8 +93,8 @@ class GeotaggedModelBuilderTest extends ReasonableWaits with ContentFields {
   def locationSearchRadiusShouldBeTweakableFromTheRequestParameters(): Unit = {
     when(contentRetrievalService.getNewsitemsNear(new LatLong(1.1, 2.2), 3.0, 0, 30, loggedInUser)).
       thenReturn(Future.successful((newsitemsNearPetoneStationFirstPage, LOCATION_RESULTS_COUNT)))
-    when(relatedTagsService.getRelatedTagsForLocation(any(), any(), any())(any())).thenReturn(Future.successful(Seq()))
-    when(relatedTagsService.getRelatedPublishersForLocation(any(), any(), any())(any())).thenReturn(Future.successful(Seq()))
+    when(relatedTagsService.getRelatedTagsForLocation(any(), any(), any())(any(), any())).thenReturn(Future.successful(Seq()))
+    when(relatedTagsService.getRelatedPublishersForLocation(any(), any(), any())(any(), any())).thenReturn(Future.successful(Seq()))
     request.setRequestURI("/geotagged")
     request.setAttribute(LocationParameterFilter.LOCATION, validLocation)
     request.setAttribute(LocationParameterFilter.RADIUS, 3.0)
@@ -109,8 +109,8 @@ class GeotaggedModelBuilderTest extends ReasonableWaits with ContentFields {
     request.setRequestURI("/geotagged")
     when(contentRetrievalService.getNewsitemsNear(new LatLong(1.1, 2.2), 1.0, 0, 30, loggedInUser)).
       thenReturn(Future.successful((Seq.empty, LOCATION_RESULTS_COUNT)))
-    when(relatedTagsService.getRelatedTagsForLocation(any(), any(), any())(any())).thenReturn(Future.successful(Seq()))
-    when(relatedTagsService.getRelatedPublishersForLocation(any(), any(), any())(any())).thenReturn(Future.successful(Seq()))
+    when(relatedTagsService.getRelatedTagsForLocation(any(), any(), any())(any(), any())).thenReturn(Future.successful(Seq()))
+    when(relatedTagsService.getRelatedPublishersForLocation(any(), any(), any())(any(), any())).thenReturn(Future.successful(Seq()))
     request.setAttribute(LocationParameterFilter.LOCATION, validLocation)
 
     val modelAndView = Await.result(modelBuilder.populateContentModel(request), TenSeconds).get
@@ -126,8 +126,8 @@ class GeotaggedModelBuilderTest extends ReasonableWaits with ContentFields {
       thenReturn(Future.successful((newsitemsNearPetoneStationSecondPage, LOCATION_RESULTS_COUNT)))
     request.setAttribute(LocationParameterFilter.LOCATION, validLocation)
     request.setAttribute("page", 2)
-    when(relatedTagsService.getRelatedTagsForLocation(any(), any(), any())(any())).thenReturn(Future.successful(Seq()))
-    when(relatedTagsService.getRelatedPublishersForLocation(any(), any(), any())(any())).thenReturn(Future.successful(Seq()))
+    when(relatedTagsService.getRelatedTagsForLocation(any(), any(), any())(any(), any())).thenReturn(Future.successful(Seq()))
+    when(relatedTagsService.getRelatedPublishersForLocation(any(), any(), any())(any(), any())).thenReturn(Future.successful(Seq()))
 
     val modelAndView = Await.result(modelBuilder.populateContentModel(request), TenSeconds).get
 

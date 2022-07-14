@@ -43,7 +43,7 @@ import scala.concurrent.{ExecutionContext, Future}
     request sortBy ScoreSort(SortOrder.DESC)
   }
 
-  def getAllPublishers(loggedInUser: Option[User])(implicit ec: ExecutionContext): Future[Seq[Website]] = {
+  def getAllPublishers(loggedInUser: Option[User])(implicit ec: ExecutionContext, currentSpan: Span): Future[Seq[Website]] = {
 
     def getAllPublisherIds(loggedInUser: Option[User]): Future[Seq[(String, Long)]] = {
       val allPublishedTypes = ResourceQuery(`type` = Some(Set("N", "F", "L")))
@@ -93,7 +93,7 @@ import scala.concurrent.{ExecutionContext, Future}
     toFrontendResourcesWithTotalCount(elasticSearchIndexer.getResources(withPagination, order = byRelevance, loggedInUser = loggedInUser), loggedInUser)
   }
 
-  def getNewsitemKeywordSearchRelatedTags(keywords: String, loggedInUser: Option[User])(implicit ec: ExecutionContext): Future[Seq[TagContentCount]] = {
+  def getNewsitemKeywordSearchRelatedTags(keywords: String, loggedInUser: Option[User])(implicit ec: ExecutionContext, currentSpan: Span): Future[Seq[TagContentCount]] = {
     val newsitemsByKeywords = ResourceQuery(`type` = newsitems, q = Some(keywords), publisher = None, tags = None)
 
     val tagAggregation = elasticSearchIndexer.getAggregationFor(newsitemsByKeywords, elasticSearchIndexer.Tags, loggedInUser)
@@ -111,7 +111,8 @@ import scala.concurrent.{ExecutionContext, Future}
       Future.sequence(ts.map(toTagContentCount)).map(_.flatten)
     }
   }
-  def getNewsitemKeywordSearchRelatedPublishers(keywords: String, loggedInUser: Option[User])(implicit ec: ExecutionContext): Future[Seq[PublisherContentCount]] = {
+
+  def getNewsitemKeywordSearchRelatedPublishers(keywords: String, loggedInUser: Option[User])(implicit ec: ExecutionContext, currentSpan: Span): Future[Seq[PublisherContentCount]] = {
     val newsitemsByKeywords = ResourceQuery(`type` = newsitems, q = Some(keywords), publisher = None, tags = None)
 
     val publisherAggregation = elasticSearchIndexer.getAggregationFor(newsitemsByKeywords, elasticSearchIndexer.Publisher, loggedInUser)
