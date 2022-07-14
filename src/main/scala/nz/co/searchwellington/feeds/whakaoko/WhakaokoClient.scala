@@ -6,10 +6,10 @@ import io.opentelemetry.api.GlobalOpenTelemetry
 import io.opentelemetry.api.trace.Span
 import io.opentelemetry.context.Context
 import nz.co.searchwellington.ReasonableWaits
-import nz.co.searchwellington.feeds.whakaoko.model.{Category, FeedItem, LatLong, Place, Subscription}
-import org.apache.http.HttpStatus
+import nz.co.searchwellington.feeds.whakaoko.model._
 import org.apache.commons.logging.LogFactory
-import org.joda.time.{DateTime, Duration}
+import org.apache.http.HttpStatus
+import org.joda.time.DateTime
 import org.springframework.beans.factory.annotation.{Autowired, Value}
 import org.springframework.stereotype.Component
 import play.api.libs.json.{JodaReads, Json, OWrites, Reads}
@@ -89,7 +89,6 @@ class WhakaokoClient @Autowired()(@Value("${whakaoko.url}") whakaokoUrl: String,
     log.info("Fetching channel items page: " + page)
 
     val channelItemsUrl = whakaokoUrl + "/" + "/channels/" + whakaokoChannel + "/items"
-    val start = DateTime.now()
     val request = withWhakaokoAuth(wsClient.url(channelItemsUrl)).
       addQueryStringParameters("page" -> page.toString).
       addQueryStringParameters("subscriptions" -> subscriptions.getOrElse(Seq.empty).mkString(",")). // TODO This is an Option - decide
@@ -97,7 +96,6 @@ class WhakaokoClient @Autowired()(@Value("${whakaoko.url}") whakaokoUrl: String,
     request.get.map { r =>
       span.setAttribute("http.response.status", r.status)
       span.end()
-      log.info("Channel channel items returned after: " + new Duration(start, DateTime.now).getMillis)
       r.status match {
         case HttpStatus.SC_OK => Json.parse(r.body).as[Seq[FeedItem]]
         case _ => Seq.empty
@@ -110,14 +108,11 @@ class WhakaokoClient @Autowired()(@Value("${whakaoko.url}") whakaokoUrl: String,
 
     val channelSubscriptionsUrl = whakaokoUrl + "/" + "/channels/" + whakaokoChannel + "/subscriptions"
     log.info("Fetching channel subscriptions from: " + channelSubscriptionsUrl)
-    val start = DateTime.now()
-
     withWhakaokoAuth(wsClient.url(channelSubscriptionsUrl).withQueryStringParameters("pageSize" -> pageSize.toString)).
       withRequestTimeout(TenSeconds).
       get.map { r =>
       span.setAttribute("http.response.status", r.status)
       span.end()
-      log.info("Channel subscriptions returned after: " + new Duration(start, DateTime.now).getMillis)
       r.status match {
         case HttpStatus.SC_OK => Json.parse(r.body).as[Seq[Subscription]]
         case _ =>
