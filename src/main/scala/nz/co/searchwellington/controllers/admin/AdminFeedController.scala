@@ -1,5 +1,7 @@
 package nz.co.searchwellington.controllers.admin
 
+import io.opentelemetry.api.trace.Span
+
 import javax.servlet.http.HttpServletRequest
 import nz.co.searchwellington.controllers.{LoggedInUserFilter, RequiringLoggedInUser}
 import nz.co.searchwellington.feeds.FeedReader
@@ -24,6 +26,7 @@ import scala.concurrent.ExecutionContext.Implicits.global
 
   @RequestMapping(Array("/admin/feed/accept-all"))
   def acceptAllFrom(request: HttpServletRequest): ModelAndView = {
+    implicit val currentSpan: Span = Span.current()
     def accept(loggedInUser: User): ModelAndView = {
       requestFilter.loadAttributesOntoRequest(request)
       if (request.getAttribute("feedAttribute") == null) throw new RuntimeException("Not found") // TODO

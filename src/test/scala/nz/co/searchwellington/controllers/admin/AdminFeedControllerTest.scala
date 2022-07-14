@@ -1,5 +1,6 @@
 package nz.co.searchwellington.controllers.admin
 
+import io.opentelemetry.api.trace.Span
 import nz.co.searchwellington.controllers.LoggedInUserFilter
 import nz.co.searchwellington.feeds.FeedReader
 import nz.co.searchwellington.filters.AdminRequestFilter
@@ -27,6 +28,8 @@ class AdminFeedControllerTest {
   private val loggedInUserFilter = mock(classOf[LoggedInUserFilter])
   private val permissionService = new EditPermissionService(loggedInUserFilter)
   private val feedReader = mock(classOf[FeedReader])
+
+  private implicit val currentSpan = Span.current()
 
   val controller = new AdminFeedController(requestFilter, feedReader, urlBuilder, permissionService, loggedInUserFilter)
 

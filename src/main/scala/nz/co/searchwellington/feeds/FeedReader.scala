@@ -1,5 +1,6 @@
 package nz.co.searchwellington.feeds
 
+import io.opentelemetry.api.trace.Span
 import nz.co.searchwellington.ReasonableWaits
 import nz.co.searchwellington.feeds.whakaoko.WhakaokoFeedReader
 import nz.co.searchwellington.feeds.whakaoko.model.FeedItem
@@ -21,7 +22,7 @@ import scala.concurrent.{ExecutionContext, Future}
 
   private val log = LogFactory.getLog(classOf[FeedReader])
 
-  def processFeed(feed: Feed, readingUser: User, overriddenAcceptancePolicy: Option[FeedAcceptancePolicy] = None)(implicit ec: ExecutionContext): Future[Int] = {
+  def processFeed(feed: Feed, readingUser: User, overriddenAcceptancePolicy: Option[FeedAcceptancePolicy] = None)(implicit ec: ExecutionContext, currentSpan: Span): Future[Int] = {
     try {
       val acceptancePolicy = overriddenAcceptancePolicy.getOrElse(feed.acceptance)
       log.debug(s"Processing feed: ${feed.title} using acceptance policy $acceptancePolicy. Last read: " + feed.last_read.getOrElse(""))

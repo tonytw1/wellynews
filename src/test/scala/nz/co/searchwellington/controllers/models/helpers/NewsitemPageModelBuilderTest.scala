@@ -26,7 +26,7 @@ class NewsitemPageModelBuilderTest extends ReasonableWaits {
   private val mongoRepository = mock(classOf[MongoRepository])
   private val frontendResourceMapper = mock(classOf[FrontendResourceMapper])
 
-  private implicit val currentSpan = Span.current()
+  private implicit val currentSpan: Span = Span.current()
 
   private val modelBuilder = new NewsitemPageModelBuilder(contentRetrievalService, taggingReturnsOfficerService,
     mongoRepository, frontendResourceMapper)

@@ -1,5 +1,6 @@
 package nz.co.searchwellington.feeds.suggesteditems
 
+import io.opentelemetry.api.trace.Span
 import nz.co.searchwellington.ReasonableWaits
 import nz.co.searchwellington.feeds.whakaoko.WhakaokoService
 import nz.co.searchwellington.feeds.whakaoko.model.FeedItem
@@ -33,7 +34,7 @@ import scala.concurrent.{ExecutionContext, Future}
     Items which have already been accepted or have suppressed URLs should be excluded.
     This means we might need to paginate to fill our requested items count.
    */
-  def getSuggestionFeednewsitems(maxItems: Int, loggedInUser: Option[User])(implicit ec: ExecutionContext): Future[Seq[FrontendResource]] = {
+  def getSuggestionFeednewsitems(maxItems: Int, loggedInUser: Option[User])(implicit ec: ExecutionContext, currentSpan: Span): Future[Seq[FrontendResource]] = {
 
     def paginateChannelFeedItems(page: Int = 1, output: Seq[Newsitem] = Seq.empty, feeds: Seq[Feed]): Future[Seq[Newsitem]] = {
       log.info("Fetching filter page: " + page + "/" + output.size)
@@ -82,7 +83,7 @@ import scala.concurrent.{ExecutionContext, Future}
   }
 
   // Appears to be enhancing the getChannelFeedItems call by decorating the feed items with the feed
-  private def getChannelFeedItemsDecoratedWithFeeds(page: Int, feeds: Seq[Feed])(implicit ec: ExecutionContext): Future[Seq[(FeedItem, Feed)]] = {
+  private def getChannelFeedItemsDecoratedWithFeeds(page: Int, feeds: Seq[Feed])(implicit ec: ExecutionContext, currentSpan: Span): Future[Seq[(FeedItem, Feed)]] = {
     def decorateFeedItemsWithFeeds(feedItems: Seq[FeedItem], feeds: Seq[Feed]): Seq[(FeedItem, Feed)] = {
       val subscriptionsToFeeds = feeds.flatMap { feed =>
         feed.whakaokoSubscription.map { subscriptionId =>

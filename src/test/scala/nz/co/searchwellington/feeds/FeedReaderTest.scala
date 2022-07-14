@@ -1,5 +1,6 @@
 package nz.co.searchwellington.feeds
 
+import io.opentelemetry.api.trace.Span
 import nz.co.searchwellington.ReasonableWaits
 import nz.co.searchwellington.feeds.whakaoko.WhakaokoFeedReader
 import nz.co.searchwellington.feeds.whakaoko.model.FeedItem
@@ -30,6 +31,8 @@ class FeedReaderTest extends ReasonableWaits {
   private val firstFeedItem = FeedItem(id = UUID.randomUUID().toString, subscriptionId = UUID.randomUUID().toString,
     url = "http://localhost/1", date = Some(DateTime.now))
   private val feedItems = Seq(firstFeedItem)
+
+  private implicit val currentSpan = Span.current()
 
   private val feedReader = new FeedReader(feedItemAcceptanceDecider, contentUpdateService, feedReaderUpdateService, whakaokoFeedReader, feeditemToNewsItemService)
 

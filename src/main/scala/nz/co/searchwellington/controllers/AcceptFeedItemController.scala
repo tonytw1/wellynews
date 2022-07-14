@@ -1,5 +1,6 @@
 package nz.co.searchwellington.controllers
 
+import io.opentelemetry.api.trace.Span
 import nz.co.searchwellington.ReasonableWaits
 import nz.co.searchwellington.feeds.whakaoko.WhakaokoFeedReader
 import nz.co.searchwellington.feeds.{FeedReaderUpdateService, FeeditemToNewsitemService}
@@ -29,6 +30,7 @@ class AcceptFeedItemController @Autowired()(mongoRepository: MongoRepository,
 
   @GetMapping(value = Array("/accept-feed-item"))
   def accept(feed: String, url: String): ModelAndView = {
+    implicit val currentSpan: Span = Span.current()
     val eventualModelAndView = loggedInUserFilter.getLoggedInUser.map { loggedInUser =>
       mongoRepository.getFeedByUrlwords(feed).flatMap { fo =>
         fo.map { feed =>

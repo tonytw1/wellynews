@@ -1,6 +1,7 @@
 package nz.co.searchwellington.feeds.whakaoko
 
 import com.google.common.base.Strings
+import io.opentelemetry.api.trace.Span
 import nz.co.searchwellington.ReasonableWaits
 import nz.co.searchwellington.model.Feed
 import nz.co.searchwellington.repositories.mongo.MongoRepository
@@ -19,7 +20,7 @@ import scala.concurrent.{Await, ExecutionContext}
     //registerFeedsWithWhakaoko(Await.result(mongoReposity.getAllFeeds, TenSeconds))
   }
 
-  private def registerFeedsWithWhakaoko(feeds: Seq[Feed])(implicit ec: ExecutionContext): Unit = {
+  private def registerFeedsWithWhakaoko(feeds: Seq[Feed])(implicit ec: ExecutionContext, currentSpan: Span): Unit = {
     log.info("Registering feeds with whakaoko")
     feeds.map { feed =>
       if (!Strings.isNullOrEmpty(feed.page)) {

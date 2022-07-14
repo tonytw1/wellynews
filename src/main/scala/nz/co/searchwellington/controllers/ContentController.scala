@@ -32,7 +32,7 @@ class ContentController @Autowired()(contentModelBuilderServiceFactory: ContentM
   ))
   def normal(request: HttpServletRequest, response: HttpServletResponse): ModelAndView = {
     import scala.concurrent.ExecutionContext.Implicits.global
-    implicit val currentSpan = Span.current()
+    implicit val currentSpan: Span = Span.current()
     buildAndRender(request)
   }
 

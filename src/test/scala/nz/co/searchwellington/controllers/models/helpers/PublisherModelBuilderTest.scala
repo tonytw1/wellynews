@@ -35,7 +35,7 @@ class PublisherModelBuilderTest extends ReasonableWaits with ContentFields {
   private val publisher = Website(title = "A publisher", url_words = Some("a-publisher"))
   private val frontendPublisher = FrontendWebsite(id = UUID.randomUUID().toString)
 
-  private implicit val currentSpan = Span.current()
+  private implicit val currentSpan: Span = Span.current()
 
   private val modelBuilder = new PublisherModelBuilder(rssUrlBuilder, relatedTagsService, contentRetrievalService, urlBuilder,
     geotaggedNewsitemExtractor, commonAttributesModelBuilder, frontendResourceMapper)

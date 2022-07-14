@@ -2,6 +2,9 @@ package nz.co.searchwellington.feeds.whakaoko
 
 import akka.actor.ActorSystem
 import akka.stream.ActorMaterializer
+import io.opentelemetry.api.GlobalOpenTelemetry
+import io.opentelemetry.api.trace.Span
+import io.opentelemetry.context.Context
 import nz.co.searchwellington.ReasonableWaits
 import nz.co.searchwellington.feeds.whakaoko.model.{Category, FeedItem, LatLong, Place, Subscription}
 import org.apache.http.HttpStatus
@@ -39,7 +42,7 @@ class WhakaokoClient @Autowired()(@Value("${whakaoko.url}") whakaokoUrl: String,
 
   private val pageSize = 30
 
-  def createFeedSubscription(feedUrl: String)(implicit ec: ExecutionContext): Future[Option[Subscription]] = {
+  def createFeedSubscription(feedUrl: String)(implicit ec: ExecutionContext, currentSpan: Span): Future[Option[Subscription]] = {
     val createFeedSubscriptionUrl = whakaokoUrl + "/subscriptions"
     log.debug("Posting new feed to: " + createFeedSubscriptionUrl)
     val createSubscriptionRequest = CreateSubscriptionRequest(
@@ -60,10 +63,17 @@ class WhakaokoClient @Autowired()(@Value("${whakaoko.url}") whakaokoUrl: String,
     }
   }
 
-  def getSubscription(subscriptionId: String)(implicit ec: ExecutionContext): Future[Option[Subscription]] = {
+  def getSubscription(subscriptionId: String)(implicit ec: ExecutionContext, currentSpan: Span): Future[Option[Subscription]] = {
+    val tracer = GlobalOpenTelemetry.getTracer("wellynews")
+    val span = tracer.spanBuilder("getSubscription").
+      setParent(Context.current().`with`(currentSpan)).
+      setAttribute("database", "whakaoko").
+      startSpan()
+
     withWhakaokoAuth(wsClient.url(subscriptionUrl(subscriptionId))).
       withRequestTimeout(TenSeconds).
       get.map { r =>
+        span.end()
         r.status match {
           case HttpStatus.SC_OK =>
             Some(Json.parse(r.body).as[Subscription])
@@ -73,24 +83,37 @@ class WhakaokoClient @Autowired()(@Value("${whakaoko.url}") whakaokoUrl: String,
     }
   }
 
-  def getChannelFeedItems(page: Int, subscriptions: Option[Seq[String]])(implicit ec: ExecutionContext): Future[Seq[FeedItem]] = {
+  def getChannelFeedItems(page: Int, subscriptions: Option[Seq[String]])(implicit ec: ExecutionContext, currentSpan: Span): Future[Seq[FeedItem]] = {
     log.info("Fetching channel items page: " + page)
+    val tracer = GlobalOpenTelemetry.getTracer("wellynews")
+    val span = tracer.spanBuilder("getChannelFeedItems").
+      setParent(Context.current().`with`(currentSpan)).
+      setAttribute("database", "whakaoko").
+      startSpan()
+
     val channelItemsUrl = whakaokoUrl + "/" + "/channels/" + whakaokoChannel + "/items"
     val start = DateTime.now()
-    val self = withWhakaokoAuth(wsClient.url(channelItemsUrl)).
+    val request = withWhakaokoAuth(wsClient.url(channelItemsUrl)).
       addQueryStringParameters("page" -> page.toString).
       addQueryStringParameters("subscriptions" -> subscriptions.getOrElse(Seq.empty).mkString(",")). // TODO This is an Option - decide
       withRequestTimeout(TenSeconds)
-    self.get.map { r =>
-        log.info("Channel channel items returned after: " + new Duration(start, DateTime.now).getMillis)
-        r.status match {
-          case HttpStatus.SC_OK => Json.parse(r.body).as[Seq[FeedItem]]
-          case _ => Seq.empty
-        }
+    request.get.map { r =>
+      span.end()
+      log.info("Channel channel items returned after: " + new Duration(start, DateTime.now).getMillis)
+      r.status match {
+        case HttpStatus.SC_OK => Json.parse(r.body).as[Seq[FeedItem]]
+        case _ => Seq.empty
+      }
     }
   }
 
-  def getChannelSubscriptions()(implicit ec: ExecutionContext): Future[Seq[Subscription]] = {
+  def getChannelSubscriptions()(implicit ec: ExecutionContext, currentSpan: Span): Future[Seq[Subscription]] = {
+    val tracer = GlobalOpenTelemetry.getTracer("wellynews")
+    val span = tracer.spanBuilder("getChannelSubscriptions").
+      setParent(Context.current().`with`(currentSpan)).
+      setAttribute("database", "whakaoko").
+      startSpan()
+
     val channelSubscriptionsUrl = whakaokoUrl + "/" + "/channels/" + whakaokoChannel + "/subscriptions"
     log.info("Fetching channel subscriptions from: " + channelSubscriptionsUrl)
     val start = DateTime.now()
@@ -98,29 +121,37 @@ class WhakaokoClient @Autowired()(@Value("${whakaoko.url}") whakaokoUrl: String,
     withWhakaokoAuth(wsClient.url(channelSubscriptionsUrl).withQueryStringParameters("pageSize" -> pageSize.toString)).
       withRequestTimeout(TenSeconds).
       get.map { r =>
-        log.info("Channel subscriptions returned after: " + new Duration(start, DateTime.now).getMillis)
-        r.status match {
-          case HttpStatus.SC_OK => Json.parse(r.body).as[Seq[Subscription]]
-          case _ =>
-            log.warn("Get channel subscriptions failed (" + channelSubscriptionsUrl + "): " + r.status + " / " + r.body)
-            Seq.empty
-        }
+      span.end()
+      log.info("Channel subscriptions returned after: " + new Duration(start, DateTime.now).getMillis)
+      r.status match {
+        case HttpStatus.SC_OK => Json.parse(r.body).as[Seq[Subscription]]
+        case _ =>
+          log.warn("Get channel subscriptions failed (" + channelSubscriptionsUrl + "): " + r.status + " / " + r.body)
+          Seq.empty
+      }
     }
   }
 
   // Given a subscription id, return the first page of feed items and a total items count
-  def getSubscriptionFeedItems(subscriptionId: String)(implicit ec: ExecutionContext): Future[(Seq[FeedItem], Long)] = {
+  def getSubscriptionFeedItems(subscriptionId: String)(implicit ec: ExecutionContext, currentSpan: Span): Future[(Seq[FeedItem], Long)] = {
+    val tracer = GlobalOpenTelemetry.getTracer("wellynews")
+    val span = tracer.spanBuilder("getSubscriptionFeedItems").
+      setParent(Context.current().`with`(currentSpan)).
+      setAttribute("database", "whakaoko").
+      startSpan()
+
     withWhakaokoAuth(wsClient.url(subscriptionUrl(subscriptionId) + "/items").withQueryStringParameters("pageSize" -> pageSize.toString)).
       withRequestTimeout(TenSeconds).
       get.map { r =>
-        r.status match {
-          case HttpStatus.SC_OK =>
-            val feedItems = Json.parse(r.body).as[Seq[FeedItem]]
-            val totalCount = r.header("x-total-count").map(c => c.toLong).getOrElse(feedItems.size.toLong)
-            (feedItems, totalCount)
-          case _ =>
-            (Seq.empty, 0L)
-        }
+      span.end()
+      r.status match {
+        case HttpStatus.SC_OK =>
+          val feedItems = Json.parse(r.body).as[Seq[FeedItem]]
+          val totalCount = r.header("x-total-count").map(c => c.toLong).getOrElse(feedItems.size.toLong)
+          (feedItems, totalCount)
+        case _ =>
+          (Seq.empty, 0L)
+      }
     }
   }
 

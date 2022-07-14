@@ -26,7 +26,7 @@ class ContentControllerTest {
   private val unknownPathRequest = mock(classOf[HttpServletRequest])
   private val response = mock(classOf[HttpServletResponse])
 
-  private implicit val currentSpan = Span.current()
+  private implicit val currentSpan: Span = Span.current()
 
   private def contentController = new ContentController(contentModelBuilderServiceFactory, urlStack, loggedInUserFilter)
 

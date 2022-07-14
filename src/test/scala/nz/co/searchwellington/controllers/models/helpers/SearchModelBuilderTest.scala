@@ -32,7 +32,7 @@ class SearchModelBuilderTest extends ReasonableWaits with ContentFields {
   private val websitesMatchingTag = (Seq(FrontendWebsite(id = UUID.randomUUID().toString), FrontendWebsite(id = UUID.randomUUID().toString)), 2L)
   private val noLoggedInUser = None
 
-  private implicit val currentSpan = Span.current()
+  private implicit val currentSpan: Span = Span.current()
 
   private val modelBuilder = new SearchModelBuilder(contentRetrievalService, urlBuilder, frontendResourceMapper)
 

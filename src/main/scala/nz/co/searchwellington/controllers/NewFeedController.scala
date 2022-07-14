@@ -1,5 +1,6 @@
 package nz.co.searchwellington.controllers
 
+import io.opentelemetry.api.trace.Span
 import nz.co.searchwellington.ReasonableWaits
 import nz.co.searchwellington.controllers.submission.EndUserInputs
 import nz.co.searchwellington.feeds.whakaoko.WhakaokoService
@@ -61,6 +62,7 @@ class NewFeedController @Autowired()(contentUpdateService: ContentUpdateService,
 
   @PostMapping(Array("/new-feed"))
   def submit(@Valid @ModelAttribute("formObject") newFeed: NewFeed, result: BindingResult, request: HttpServletRequest): ModelAndView = {
+    implicit val currentSpan: Span = Span.current()
     val loggedInUser = loggedInUserFilter.getLoggedInUser
     if (!result.hasErrors) {
       log.info("Got valid new feed submission: " + newFeed)

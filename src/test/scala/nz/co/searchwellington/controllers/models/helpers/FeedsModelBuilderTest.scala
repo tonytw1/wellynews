@@ -31,7 +31,7 @@ class FeedsModelBuilderTest extends ReasonableWaits with ContentFields {
 
   val request = new MockHttpServletRequest
 
-  private implicit val currentSpan = Span.current()
+  private implicit val currentSpan: Span = Span.current()
 
   val modelBuilder = new FeedsModelBuilder(contentRetrievalService, suggestedFeeditemsService, urlBuilder, commonAttributesModelBuilder)
 

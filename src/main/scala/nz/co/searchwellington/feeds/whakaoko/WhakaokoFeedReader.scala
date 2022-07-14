@@ -1,5 +1,6 @@
 package nz.co.searchwellington.feeds.whakaoko
 
+import io.opentelemetry.api.trace.Span
 import nz.co.searchwellington.ReasonableWaits
 import nz.co.searchwellington.feeds.whakaoko.model.FeedItem
 import nz.co.searchwellington.model.Feed
@@ -13,7 +14,7 @@ import scala.concurrent.{ExecutionContext, Future}
 
   private val log = LogFactory.getLog(classOf[WhakaokoFeedReader])
 
-  def fetchFeedItems(feed: Feed)(implicit ec: ExecutionContext): Future[Either[String, (Seq[FeedItem], Long)]] = {
+  def fetchFeedItems(feed: Feed)(implicit ec: ExecutionContext, currentSpan: Span): Future[Either[String, (Seq[FeedItem], Long)]] = {
     feed.whakaokoSubscription.map { subscriptionId =>
       log.debug("Feed mapped to whakaoko subscription: " + subscriptionId)
       whakaokoService.getSubscriptionFeedItems(subscriptionId)

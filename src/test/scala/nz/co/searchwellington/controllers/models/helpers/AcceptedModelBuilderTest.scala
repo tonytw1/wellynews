@@ -24,7 +24,7 @@ class AcceptedModelBuilderTest extends ReasonableWaits with CommonSizes {
 
   private val builder = new AcceptedModelBuilder(contentRetrievalService, rssUrlBuilder, urlBuilder, commonAttributesModelBuilder)
 
-  private implicit val currentSpan = Span.current()
+  private implicit val currentSpan: Span = Span.current()
 
   @Test
   def shouldIncludeLinkOfAcceptedCountsForRecentDays(): Unit = {

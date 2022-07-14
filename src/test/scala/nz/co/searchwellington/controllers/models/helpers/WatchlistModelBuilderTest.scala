@@ -23,7 +23,7 @@ class WatchlistModelBuilderTest extends ReasonableWaits with ContentFields {
   private val contentRetrievalService = mock(classOf[ContentRetrievalService])
   private val commonAttributesModelBuilder = mock(classOf[CommonAttributesModelBuilder])
 
-  private implicit val currentSpan = Span.current()
+  private implicit val currentSpan: Span = Span.current()
 
   private val modelBuilder = new WatchlistModelBuilder(contentRetrievalService, rssUrlBuilder, urlBuilder, commonAttributesModelBuilder)
 

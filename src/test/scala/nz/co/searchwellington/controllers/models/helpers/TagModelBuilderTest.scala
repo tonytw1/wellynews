@@ -46,7 +46,7 @@ class TagModelBuilderTest extends ReasonableWaits with ContentFields {
 
   val request = new MockHttpServletRequest()
 
-  private implicit val currentSpan = Span.current()
+  private implicit val currentSpan: Span = Span.current()
 
   private val modelBuilder = new TagModelBuilder(rssUrlBuilder, urlBuilder, relatedTagsService,
     contentRetrievalService, commonAttributesModelBuilder, tagDAO)

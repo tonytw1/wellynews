@@ -29,7 +29,7 @@ class ArchiveModelBuilderTest extends ReasonableWaits with ContentFields with Te
 
   private val loggedInUser = None
 
-  private implicit val currentSpan = Span.current()
+  private implicit val currentSpan: Span = Span.current()
 
   val modelBuilder =  new ArchiveModelBuilder(contentRetrievalService, new ArchiveLinksService(),
     new DateFormatter(DateTimeZone.UTC), new RssUrlBuilder(new SiteInformation()))

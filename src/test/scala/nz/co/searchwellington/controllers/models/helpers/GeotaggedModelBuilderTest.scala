@@ -38,7 +38,7 @@ class GeotaggedModelBuilderTest extends ReasonableWaits with ContentFields {
 
   private val loggedInUser = None
 
-  private implicit val currentSpan = Span.current()
+  private implicit val currentSpan: Span = Span.current()
 
   private val modelBuilder = new GeotaggedModelBuilder(contentRetrievalService, urlBuilder, rssUrlBuilder, relatedTagsService, commonAttributesModelBuilder)
 

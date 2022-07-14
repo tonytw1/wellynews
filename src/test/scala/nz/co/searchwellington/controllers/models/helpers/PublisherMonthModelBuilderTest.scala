@@ -30,7 +30,7 @@ class PublisherMonthModelBuilderTest extends ReasonableWaits with ContentFields 
   private val anotherNewsitem = mock(classOf[FrontendResource])
   private val monthNewsitems = Seq(newsitem, anotherNewsitem)
 
-  private implicit val currentSpan = Span.current()
+  private implicit val currentSpan: Span = Span.current()
 
   private val modelBuilder = new PublisherMonthModelBuilder(contentRetrievalService, frontendResourceMapper,
     new DateFormatter(DateTimeZone.UTC), new RssUrlBuilder(new SiteInformation()))

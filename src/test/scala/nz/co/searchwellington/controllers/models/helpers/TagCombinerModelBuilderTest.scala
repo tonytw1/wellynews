@@ -34,7 +34,7 @@ class TagCombinerModelBuilderTest extends ReasonableWaits with ContentFields {
 
   private val request = new MockHttpServletRequest()
 
-  private implicit val currentSpan = Span.current()
+  private implicit val currentSpan: Span = Span.current()
 
   private val modelBuilder = new TagCombinerModelBuilder(contentRetrievalService, rssUrlBuilder, urlBuilder, relatedTagsService, commonAttributesModelBuilder)
 

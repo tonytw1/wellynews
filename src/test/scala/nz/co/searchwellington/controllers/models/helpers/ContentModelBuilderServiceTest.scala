@@ -24,7 +24,7 @@ class ContentModelBuilderServiceTest extends ReasonableWaits {
   private val viewFactory = mock(classOf[ViewFactory])
   private val contentRetrievalService = mock(classOf[ContentRetrievalService])
 
-  private implicit val currentSpan = Span.current()
+  private implicit val currentSpan: Span = Span.current()
 
   private val request = {
     val request = new MockHttpServletRequest

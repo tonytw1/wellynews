@@ -1,5 +1,6 @@
 package nz.co.searchwellington.feeds.suggesteditems
 
+import io.opentelemetry.api.trace.Span
 import nz.co.searchwellington.ReasonableWaits
 import nz.co.searchwellington.feeds.whakaoko.WhakaokoService
 import nz.co.searchwellington.model.FeedAcceptancePolicy
@@ -15,7 +16,7 @@ import scala.concurrent.{ExecutionContext, Future}
 class SuggestedFeedsService @Autowired()(mongoRepository: MongoRepository, whakaokoService: WhakaokoService, frontendResourceMapper: FrontendResourceMapper)
   extends ReasonableWaits {
 
-  def getSuggestedFeedsOrderedByLatestFeeditemDate()(implicit ec: ExecutionContext): Future[Seq[FrontendFeed]] = {
+  def getSuggestedFeedsOrderedByLatestFeeditemDate()(implicit ec: ExecutionContext, currentSpan: Span): Future[Seq[FrontendFeed]] = {
     val eventualMaybeWhakaokoSubscriptions = whakaokoService.getSubscriptions
     for {
       allFeeds <- mongoRepository.getAllFeeds

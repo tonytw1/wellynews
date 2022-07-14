@@ -24,7 +24,7 @@ class TagMonthModelBuilderTest extends ReasonableWaits with ContentFields with T
   private val parentTag = Tag(display_name = "Parent")
   private val tag = Tag(parent = Some(parentTag._id), display_name = "Penguins", name = "penguins")
 
-  private implicit val currentSpan = Span.current()
+  private implicit val currentSpan: Span = Span.current()
 
   private val modelBuilder = new TagMonthModelBuilder(contentRetrievalService, new DateFormatter("Europe/London"), rssUrlBuilder)
 

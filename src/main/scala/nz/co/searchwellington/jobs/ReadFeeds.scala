@@ -1,5 +1,6 @@
 package nz.co.searchwellington.jobs
 
+import io.opentelemetry.api.trace.Span
 import nz.co.searchwellington.ReasonableWaits
 import nz.co.searchwellington.feeds.FeedReader
 import nz.co.searchwellington.model.{Feed, User}
@@ -24,6 +25,7 @@ import scala.concurrent.{Await, ExecutionContext, ExecutionContextExecutor, Futu
   @Scheduled(cron = "0 */10 * * * *")
   def readFeeds(): Unit = {
     implicit val executionContext: ExecutionContextExecutor = ExecutionContext.fromExecutor(feedReaderTaskExecutor)
+    implicit val currentSpan: Span = Span.current()
 
     def getFeedReaderUser: Future[Option[User]] = mongoRepository.getUserByProfilename(FEED_READER_PROFILE_NAME)
 
