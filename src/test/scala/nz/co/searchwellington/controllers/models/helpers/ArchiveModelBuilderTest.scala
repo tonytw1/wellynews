@@ -63,7 +63,7 @@ class ArchiveModelBuilderTest extends ReasonableWaits with ContentFields with Te
     val archiveLinks = Seq(ArchiveLink(monthOfJuly, Some(3)))
 
     when(contentRetrievalService.getArchiveMonths(None)).thenReturn(Future.successful(archiveLinks))
-    when(contentRetrievalService.getArchiveTypeCounts(None)).thenReturn(Future.successful(Map[String, Long]()))
+    when(contentRetrievalService.getArchiveTypeCounts(None)).thenReturn(Future.successful(Seq.empty))
     when(contentRetrievalService.getPublishersForInterval(monthOfJuly, None)).thenReturn(Future.successful(Seq.empty))
     when(contentRetrievalService.getLatestNewsitems(maxItems = 5, loggedInUser = None)).thenReturn(Future.successful(Seq.empty))
 
@@ -79,7 +79,7 @@ class ArchiveModelBuilderTest extends ReasonableWaits with ContentFields with Te
     val monthOfFeb = new Interval(feb, feb.plusMonths(1))
 
     when(contentRetrievalService.getArchiveMonths(None)).thenReturn(Future.successful(someArchiveMonths))
-    when(contentRetrievalService.getArchiveTypeCounts(None)).thenReturn(Future.successful(Map[String, Long]()))
+    when(contentRetrievalService.getArchiveTypeCounts(None)).thenReturn(Future.successful(Seq.empty))
     when(contentRetrievalService.getPublishersForInterval(monthOfFeb, None)).thenReturn(Future.successful(Seq.empty))
     when(contentRetrievalService.getLatestNewsitems(maxItems = 5, loggedInUser = None)).thenReturn(Future.successful(Seq.empty))
 

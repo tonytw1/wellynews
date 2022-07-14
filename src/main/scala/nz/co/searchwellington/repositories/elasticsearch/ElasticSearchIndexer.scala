@@ -196,6 +196,11 @@ class ElasticSearchIndexer @Autowired()(val showBrokenDecisionService: ShowBroke
     getAggregationFor(query, Publisher, loggedInUser, size)
   }
 
+  def getTypeCounts(loggedInUser: Option[User])(implicit ec: ExecutionContext, currentSpan: Span): Future[Seq[(String, Long)]] = {
+    val allResources = ResourceQuery()
+    getAggregationFor(allResources, "type", loggedInUser)
+  }
+
   def getAggregationFor(query: ResourceQuery, aggName: String, loggedInUser: Option[User], size: Option[Int] = None)(implicit ec: ExecutionContext, currentSpan: Span): Future[Seq[(String, Long)]] = {
     val span = SpanFactory.childOf(currentSpan, "getAggregationFor").
       setAttribute("database", "elasticsearch").
@@ -210,20 +215,6 @@ class ElasticSearchIndexer @Autowired()(val showBrokenDecisionService: ShowBroke
       span.setAttribute("buckets", terms.buckets.size)
       span.end()
       terms.buckets.map(b => (b.key, b.docCount))
-    }
-  }
-
-  def getTypeCounts(loggedInUser: Option[User])(implicit ec: ExecutionContext): Future[Map[String, Long]] = {
-    // TODO can this use getAggreationFor?
-    val everyThing = matchAllQuery
-    val aggs = Seq(termsAgg("type", "type"))
-    val request = search(Index) query withModeration(everyThing, loggedInUser) limit 0 aggregations aggs
-
-    client.execute(request).map { r =>
-      val typeAgg = r.result.aggs.result[Terms]("type")
-      typeAgg.buckets.map { b =>
-        (b.key, b.docCount)
-      }.toMap
     }
   }
 

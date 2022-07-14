@@ -294,7 +294,7 @@ import scala.concurrent.{ExecutionContext, Future}
     getTagArchiveMonths(tag, loggedInUser).map(archiveLinksFromIntervals)
   }
 
-  def getArchiveTypeCounts(loggedInUser: Option[User])(implicit ec: ExecutionContext): Future[Map[String, Long]] = elasticSearchIndexer.getTypeCounts(loggedInUser)
+  def getArchiveTypeCounts(loggedInUser: Option[User])(implicit ec: ExecutionContext, currentSpan: Span): Future[Seq[(String, Long)]] = elasticSearchIndexer.getTypeCounts(loggedInUser)
 
   def getFeeds(acceptancePolicy: Option[FeedAcceptancePolicy] = None, loggedInUser: Option[User])(implicit ec: ExecutionContext, currentSpan: Span): Future[Seq[FrontendResource]] = {
     val allFeeds = ResourceQuery(`type` = feeds, maxItems = ALL_ITEMS)

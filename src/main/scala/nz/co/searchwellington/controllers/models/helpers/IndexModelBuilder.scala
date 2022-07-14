@@ -86,7 +86,7 @@ import scala.jdk.CollectionConverters._
       new ModelMap()
         .addAllAttributes(secondaryJustin(websites._1))
         .addAllAttributes(populateGeocoded(geocodedNewsitems._1))
-        .addAllAttributes(archiveLinksService.populateArchiveLinks(archiveMonths, archiveStatistics))
+        .addAllAttributes(archiveLinksService.populateArchiveLinks(archiveMonths, archiveStatistics.toMap))
         .addAllAttributes(userOwnedResources)
     }
   }

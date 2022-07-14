@@ -243,7 +243,7 @@ class ElasticSearchIndexerTest extends IndexableResource with ReasonableWaits {
 
     indexResources(Seq(website, newsitem, watchlist, feed))
 
-    def typeCounts = Await.result(elasticSearchIndexer.getTypeCounts(Some(loggedInUser)), TenSeconds)
+    def typeCounts = Await.result(elasticSearchIndexer.getTypeCounts(Some(loggedInUser)), TenSeconds).toMap
     def typesFound = typeCounts.keys.toSet
 
     eventually(timeout(TenSeconds), interval(TenMilliSeconds))(Set("W", "N", "F", "L").equals(typesFound) mustBe true)

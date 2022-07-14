@@ -57,7 +57,7 @@ import scala.jdk.CollectionConverters._
           monthPublishers <- eventualMonthPublishers
         } yield {
           mv.addAllAttributes(populateNextAndPreviousLinks(month, archiveLinks))
-          mv.addAllAttributes(archiveLinksService.populateArchiveLinks(archiveLinks, archiveStatistics))
+          mv.addAllAttributes(archiveLinksService.populateArchiveLinks(archiveLinks, archiveStatistics.toMap))
           val publisherArchiveLinks = monthPublishers.map { i =>
             PublisherArchiveLink(i._1, month, Some(i._2))
           }
