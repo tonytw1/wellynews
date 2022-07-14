@@ -117,7 +117,7 @@ import scala.concurrent.{ExecutionContext, Future}
   def getNewsitemKeywordSearchRelatedPublishers(keywords: String, loggedInUser: Option[User])(implicit ec: ExecutionContext, currentSpan: Span): Future[Seq[PublisherContentCount]] = {
     val newsitemsByKeywords = ResourceQuery(`type` = newsitems, q = Some(keywords), publisher = None, tags = None)
 
-    val publisherAggregation = elasticSearchIndexer.getAggregationFor(newsitemsByKeywords, elasticSearchIndexer.Publisher, loggedInUser)
+    val publisherAggregation = elasticSearchIndexer.getPublisherAggregationFor(newsitemsByKeywords, loggedInUser)
 
     // TODO duplication
     def toPublisherContentCount(facet: (String, Long)): Future[Option[PublisherContentCount]] = {

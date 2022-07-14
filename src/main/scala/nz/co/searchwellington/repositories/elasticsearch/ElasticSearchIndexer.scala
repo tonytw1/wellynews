@@ -201,6 +201,38 @@ class ElasticSearchIndexer @Autowired()(val showBrokenDecisionService: ShowBroke
     getAggregationFor(allResources, "type", loggedInUser)
   }
 
+  def createdAcceptedDateAggregationFor(query: ResourceQuery, loggedInUser: Option[User])(implicit ec: ExecutionContext): Future[Seq[(String, Long)]] = {
+    val dateDay = dateHistogramAgg(AcceptedDate, AcceptedDate).
+      calendarInterval(DateHistogramInterval.Day).format("YYYY-MM-dd").
+      order(HistogramOrder.KEY_DESC).
+      minDocCount(1)
+
+    val request = search(Index) query composeQueryFor(query, loggedInUser) limit 0 aggregations Seq(dateDay)
+
+    client.execute(request).map { r =>
+      val dateAgg = r.result.aggs.result[DateHistogram](AcceptedDate)
+      dateAgg.buckets.map { b =>
+        val day = b.date
+        (day, b.docCount)
+      } // TODO compared to month aggregation; who should do the date parsing?
+    }
+  }
+
+  def createdMonthAggregationFor(query: ResourceQuery, loggedInUser: Option[User])(implicit ec: ExecutionContext): Future[Seq[(Interval, Long)]] = {
+    val dateMonth = dateHistogramAgg(Date, Date).calendarInterval(DateHistogramInterval.Month).order(HistogramOrder.KEY_DESC).minDocCount(1)
+
+    val request = search(Index) query composeQueryFor(query, loggedInUser) limit 0 aggregations Seq(dateMonth)
+
+    client.execute(request).map { r =>
+      val dateAgg = r.result.aggs.result[DateHistogram](Date)
+      dateAgg.buckets.map { b =>
+        val startOfMonth = ISODateTimeFormat.dateTimeParser().parseDateTime(b.date)
+        val month = new Interval(startOfMonth, startOfMonth.plusMonths(1))
+        (month, b.docCount)
+      }
+    }
+  }
+
   def getAggregationFor(query: ResourceQuery, aggName: String, loggedInUser: Option[User], size: Option[Int] = None)(implicit ec: ExecutionContext, currentSpan: Span): Future[Seq[(String, Long)]] = {
     val span = SpanFactory.childOf(currentSpan, "getAggregationFor").
       setAttribute("database", "elasticsearch").
@@ -279,38 +311,6 @@ class ElasticSearchIndexer @Autowired()(val showBrokenDecisionService: ShowBroke
     ).flatten
 
     withModeration(must(conditions), loggedInUser)
-  }
-
-  def createdAcceptedDateAggregationFor(query: ResourceQuery, loggedInUser: Option[User])(implicit ec: ExecutionContext): Future[Seq[(String, Long)]] = {
-    val dateDay = dateHistogramAgg(AcceptedDate, AcceptedDate).
-      calendarInterval(DateHistogramInterval.Day).format("YYYY-MM-dd").
-      order(HistogramOrder.KEY_DESC).
-      minDocCount(1)
-
-    val request = search(Index) query composeQueryFor(query, loggedInUser) limit 0 aggregations Seq(dateDay)
-
-    client.execute(request).map { r =>
-      val dateAgg = r.result.aggs.result[DateHistogram](AcceptedDate)
-      dateAgg.buckets.map { b =>
-        val day = b.date
-        (day, b.docCount)
-      } // TODO compared to month aggregation; who should do the date parsing?
-    }
-  }
-
-  def createdMonthAggregationFor(query: ResourceQuery, loggedInUser: Option[User])(implicit ec: ExecutionContext): Future[Seq[(Interval, Long)]] = {
-    val dateMonth = dateHistogramAgg(Date, Date).calendarInterval(DateHistogramInterval.Month).order(HistogramOrder.KEY_DESC).minDocCount(1)
-
-    val request = search(Index) query composeQueryFor(query, loggedInUser) limit 0 aggregations Seq(dateMonth)
-
-    client.execute(request).map { r =>
-      val dateAgg = r.result.aggs.result[DateHistogram](Date)
-      dateAgg.buckets.map { b =>
-        val startOfMonth = ISODateTimeFormat.dateTimeParser().parseDateTime(b.date)
-        val month = new Interval(startOfMonth, startOfMonth.plusMonths(1))
-        (month, b.docCount)
-      }
-    }
   }
 
 }
