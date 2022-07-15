@@ -205,7 +205,13 @@ class ElasticSearchIndexer @Autowired()(val showBrokenDecisionService: ShowBroke
     getAggregationFor(allResources, "type", loggedInUser)
   }
 
-  def createdAcceptedDateAggregationFor(query: ResourceQuery, loggedInUser: Option[User])(implicit ec: ExecutionContext): Future[Seq[(String, Long)]] = {
+  def createdAcceptedDateAggregationFor(query: ResourceQuery, loggedInUser: Option[User])(implicit ec: ExecutionContext, currentSpan: Span): Future[Seq[(String, Long)]] = {
+    val span = SpanFactory.childOf(currentSpan, "createdAcceptedDateAggregationFor").
+      setAttribute("database", "elasticsearch").
+      setAttribute("query", query.toString).
+      setAttribute("aggregationName", AcceptedDate).
+      startSpan()
+
     val dateDay = dateHistogramAgg(AcceptedDate, AcceptedDate).
       calendarInterval(DateHistogramInterval.Day).format("YYYY-MM-dd").
       order(HistogramOrder.KEY_DESC).
@@ -215,6 +221,8 @@ class ElasticSearchIndexer @Autowired()(val showBrokenDecisionService: ShowBroke
 
     client.execute(request).map { r =>
       val dateAgg = r.result.aggs.result[DateHistogram](AcceptedDate)
+      span.setAttribute("buckets", dateAgg.buckets.size)
+      span.end()
       dateAgg.buckets.map { b =>
         val day = b.date
         (day, b.docCount)
@@ -222,13 +230,22 @@ class ElasticSearchIndexer @Autowired()(val showBrokenDecisionService: ShowBroke
     }
   }
 
-  def createdMonthAggregationFor(query: ResourceQuery, loggedInUser: Option[User])(implicit ec: ExecutionContext): Future[Seq[(Interval, Long)]] = {
+  def createdMonthAggregationFor(query: ResourceQuery, loggedInUser: Option[User])(implicit ec: ExecutionContext, currentSpan: Span): Future[Seq[(Interval, Long)]] = {
+    val span = SpanFactory.childOf(currentSpan, "createdMonthAggregationFor").
+      setAttribute("database", "elasticsearch").
+      setAttribute("query", query.toString).
+      setAttribute("aggregationName", Date).
+      startSpan()
+
     val dateMonth = dateHistogramAgg(Date, Date).calendarInterval(DateHistogramInterval.Month).order(HistogramOrder.KEY_DESC).minDocCount(1)
 
     val request = search(Index) query composeQueryFor(query, loggedInUser) limit 0 aggregations Seq(dateMonth)
 
     client.execute(request).map { r =>
       val dateAgg = r.result.aggs.result[DateHistogram](Date)
+      span.setAttribute("buckets", dateAgg.buckets.size)
+      span.end()
+
       dateAgg.buckets.map { b =>
         val startOfMonth = ISODateTimeFormat.dateTimeParser().parseDateTime(b.date)
         val month = new Interval(startOfMonth, startOfMonth.plusMonths(1))

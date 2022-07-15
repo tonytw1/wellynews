@@ -2,9 +2,7 @@ package nz.co.searchwellington.repositories
 
 import com.sksamuel.elastic4s.requests.searches.SearchRequest
 import com.sksamuel.elastic4s.requests.searches.sort.{ScoreSort, SortOrder}
-import io.opentelemetry.api.GlobalOpenTelemetry
 import io.opentelemetry.api.trace.Span
-import io.opentelemetry.context.Context
 import nz.co.searchwellington.ReasonableWaits
 import nz.co.searchwellington.controllers.models.helpers.CommonSizes
 import nz.co.searchwellington.instrumentation.SpanFactory
@@ -267,11 +265,11 @@ import scala.concurrent.{ExecutionContext, Future}
     toFrontendResourcesWithTotalCount(elasticSearchIndexer.getResources(websitesByKeyword, order = byRelevance, loggedInUser = loggedInUser), loggedInUser)
   }
 
-  def getAcceptedDates(loggedInUser: Option[User])(implicit ec: ExecutionContext): Future[Seq[(String, Long)]] = {
+  def getAcceptedDates(loggedInUser: Option[User])(implicit ec: ExecutionContext, currentSpan: Span): Future[Seq[(String, Long)]] = {
       elasticSearchIndexer.createdAcceptedDateAggregationFor(allNewsitems, loggedInUser)
   }
 
-  def getArchiveMonths(loggedInUser: Option[User])(implicit ec: ExecutionContext): Future[Seq[ArchiveLink]] = {
+  def getArchiveMonths(loggedInUser: Option[User])(implicit ec: ExecutionContext, currentSpan: Span): Future[Seq[ArchiveLink]] = {
     def getArchiveMonths(loggedInUser: Option[User]): Future[Seq[(Interval, Long)]] = {
       elasticSearchIndexer.createdMonthAggregationFor(allNewsitems, loggedInUser)
     }
@@ -279,7 +277,7 @@ import scala.concurrent.{ExecutionContext, Future}
     getArchiveMonths(loggedInUser).map(archiveLinksFromIntervals)
   }
 
-  def getPublisherArchiveMonths(publisher: Website, loggedInUser: Option[User])(implicit ec: ExecutionContext): Future[Seq[ArchiveLink]] = {
+  def getPublisherArchiveMonths(publisher: Website, loggedInUser: Option[User])(implicit ec: ExecutionContext, currentSpan: Span): Future[Seq[ArchiveLink]] = {
     def getPublisherArchiveMonths(publisher: Website, loggedInUser: Option[User]): Future[Seq[(Interval, Long)]] = {
       val publisherNewsitems = ResourceQuery(`type` = newsitems, publisher = Some(publisher))
       elasticSearchIndexer.createdMonthAggregationFor(publisherNewsitems, loggedInUser)
@@ -288,7 +286,7 @@ import scala.concurrent.{ExecutionContext, Future}
     getPublisherArchiveMonths(publisher, loggedInUser).map(archiveLinksFromIntervals)
   }
 
-  def getTagArchiveMonths(tag: Tag, loggedInUser: Option[User])(implicit ec: ExecutionContext): Future[Seq[ArchiveLink]] = {
+  def getTagArchiveMonths(tag: Tag, loggedInUser: Option[User])(implicit ec: ExecutionContext, currentSpan: Span): Future[Seq[ArchiveLink]] = {
     def getTagArchiveMonths(tag: Tag, loggedInUser: Option[User]): Future[Seq[(Interval, Long)]] = {
       val tagNewsitems = ResourceQuery(`type` = newsitems, tags = Some(Set(tag)))
       elasticSearchIndexer.createdMonthAggregationFor(tagNewsitems, loggedInUser)
