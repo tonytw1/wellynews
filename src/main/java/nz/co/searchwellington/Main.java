@@ -13,7 +13,6 @@ import nz.co.searchwellington.urls.UrlBuilder;
 import nz.co.searchwellington.utils.EscapeTools;
 import nz.co.searchwellington.views.ColumnSplitter;
 import nz.co.searchwellington.views.DateFormatter;
-import nz.co.searchwellington.views.VelocityViewResolver;
 import org.apache.log4j.Logger;
 import org.apache.velocity.app.Velocity;
 import org.apache.velocity.spring.VelocityEngineFactoryBean;
@@ -30,6 +29,7 @@ import org.springframework.core.task.TaskExecutor;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import uk.co.eelpieconsulting.common.caching.MemcachedCache;
+import uk.co.eelpieconsulting.spring.views.velocity.VelocityViewResolver;
 
 import java.io.IOException;
 import java.util.Map;
