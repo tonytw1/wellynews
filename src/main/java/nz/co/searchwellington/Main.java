@@ -13,7 +13,6 @@ import nz.co.searchwellington.urls.UrlBuilder;
 import nz.co.searchwellington.utils.EscapeTools;
 import nz.co.searchwellington.views.ColumnSplitter;
 import nz.co.searchwellington.views.DateFormatter;
-import org.apache.log4j.Logger;
 import org.apache.velocity.app.Velocity;
 import org.apache.velocity.spring.VelocityEngineFactoryBean;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -40,8 +39,6 @@ import java.util.Properties;
 @ComponentScan({"nz.co.searchwellington","uk.co.eelpieconsulting.common"})
 @Configuration
 public class Main {
-
-    private final static Logger log = Logger.getLogger(Main.class);
 
     private static ApplicationContext ctx;
 

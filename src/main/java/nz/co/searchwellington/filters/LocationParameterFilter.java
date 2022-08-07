@@ -4,7 +4,8 @@ import com.google.common.base.Strings;
 import nz.co.searchwellington.exceptions.UnresolvableLocationException;
 import nz.co.searchwellington.geocoding.osm.GeoCodeService;
 import nz.co.searchwellington.geocoding.osm.OsmIdParser;
-import org.apache.log4j.Logger;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
@@ -18,7 +19,7 @@ import javax.servlet.http.HttpServletRequest;
 @Scope(value = "request")
 public class LocationParameterFilter implements RequestAttributeFilter {
 
-	private static final Logger log = Logger.getLogger(LocationParameterFilter.class);
+	private static final Log log = LogFactory.getLog(LocationParameterFilter.class);
 
 	public static final String LOCATION = "location";
 	public static final String RADIUS = "radius";

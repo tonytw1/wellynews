@@ -1,30 +1,24 @@
 package nz.co.searchwellington.filters;
 
-import java.util.List;
-import java.util.Set;
-
-import javax.servlet.http.HttpServletRequest;
-
-import nz.co.searchwellington.filters.attributesetters.AttributeSetter;
-import nz.co.searchwellington.filters.attributesetters.CombinerPageAttributeSetter;
-import nz.co.searchwellington.filters.attributesetters.FeedAttributeSetter;
-import nz.co.searchwellington.filters.attributesetters.PublisherPageAttributeSetter;
-import nz.co.searchwellington.filters.attributesetters.TagPageAttributeSetter;
-
-import org.apache.log4j.Logger;
+import com.google.common.collect.Lists;
+import com.google.common.collect.Sets;
+import nz.co.searchwellington.filters.attributesetters.*;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.context.annotation.ScopedProxyMode;
 import org.springframework.stereotype.Component;
 
-import com.google.common.collect.Lists;
-import com.google.common.collect.Sets;
+import javax.servlet.http.HttpServletRequest;
+import java.util.List;
+import java.util.Set;
 
 @Component("requestFilter")
 @Scope(value = "request", proxyMode = ScopedProxyMode.TARGET_CLASS)
 public class RequestFilter {
 
-  private final static Logger log = Logger.getLogger(RequestFilter.class);
+  private final static Log log = LogFactory.getLog(RequestFilter.class);
 
   private final RequestAttributeFilter[] filters;
   private final List<AttributeSetter> attributeSetters;

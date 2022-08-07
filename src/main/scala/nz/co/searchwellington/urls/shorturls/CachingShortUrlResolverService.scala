@@ -2,7 +2,7 @@ package nz.co.searchwellington.urls.shorturls
 
 import io.micrometer.core.instrument.MeterRegistry
 import org.apache.commons.codec.digest.DigestUtils
-import org.apache.log4j.Logger
+import org.apache.commons.logging.LogFactory
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
 import uk.co.eelpieconsulting.common.caching.MemcachedCache
@@ -13,7 +13,8 @@ import java.net.URL
 @Component
 class CachingShortUrlResolverService @Autowired()(cache: MemcachedCache, registry: MeterRegistry) {
 
-  private val log = Logger.getLogger(classOf[CachingShortUrlResolverService])
+  private val log = LogFactory.getLog(classOf[CachingShortUrlResolverService])
+
   private val ONE_DAY = 3600 * 24
   private val KEY_PREFIX = "resolved-shorturls-urls::"
 

@@ -2,7 +2,8 @@ package nz.co.searchwellington.urls;
 
 import nz.co.searchwellington.urls.shorturls.CachingShortUrlResolverService;
 import nz.co.searchwellington.utils.UrlFilters;
-import org.apache.log4j.Logger;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -13,7 +14,7 @@ import java.net.URL;
 @Component
 public class UrlCleaner {
 
-    private final Logger log = Logger.getLogger(UrlCleaner.class);
+    private final Log log = LogFactory.getLog(UrlCleaner.class);
 
     private final CachingShortUrlResolverService shortUrlResolver;
 
