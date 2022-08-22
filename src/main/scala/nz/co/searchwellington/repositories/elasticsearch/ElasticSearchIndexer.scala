@@ -82,11 +82,17 @@ class ElasticSearchIndexer @Autowired()(val showBrokenDecisionService: ShowBroke
             dateField(LastChanged),
             keywordField(Hostname),
             dateField(AcceptedDate),
+            objectField(GeotagVote).copy(properties = Seq(
+              textField("address"),  // TODO doesn't need to be indexed; just round tripped
+              doubleField("latitude"),
+              doubleField("longitude"),
+              keywordField("osmId")
+            ))
           ))
         }
 
         val result = Await.result(eventualCreateIndexResult, OneMinute)
-        log.info("Create index result: " + result)
+        log.info("Create index " + Index + " result: " + result)
         if (!result.isSuccess) {
           log.info("Create index failed; throwing exception")
           throw new RuntimeException("Could not create elastic index: " + result.error.reason)
@@ -149,9 +155,16 @@ class ElasticSearchIndexer @Autowired()(val showBrokenDecisionService: ShowBroke
         feedLatestItemDate.map(fid => FeedLatestItemDate -> new DateTime(fid)),
         resource.last_changed.map(lc => LastChanged -> new DateTime(lc)),
         indexResource.hostname.map(u => Hostname -> u),
-        accepted.map(a => AcceptedDate -> new DateTime(a))
+        accepted.map(a => AcceptedDate -> new DateTime(a)),
+        resource.geocode.map ( g => {
+          GeotagVote -> Map(
+            "address" -> g.address.orNull,
+            "latitude" -> g.latitude,
+            "longitude" -> g.longitude,
+            "osmId" -> g.osmId.map( osm => osm.id + osm.`type`).orNull
+          )
+        })
       )
-
       indexInto(Index).fields(fields.flatten) id resource._id.stringify
     }
 
@@ -178,7 +191,12 @@ class ElasticSearchIndexer @Autowired()(val showBrokenDecisionService: ShowBroke
         BSONObjectID.parse(h.id).toOption.map { bid =>
           val handTags = h.sourceAsMap.get(HandTags).asInstanceOf[Option[List[String]]].map(_.flatMap(tid => BSONObjectID.parse(tid).toOption)).getOrElse(Seq.empty)
           val indexTags = h.sourceAsMap.get(Tags).asInstanceOf[Option[List[String]]].map(_.flatMap(tid => BSONObjectID.parse(tid).toOption)).getOrElse(Seq.empty)
-          ElasticResource(bid, handTags, indexTags)
+
+          val geotagVoteFields: Option[Map[String, Object]] = h.sourceAsMap.get(GeotagVote).asInstanceOf[Option[Map[String, Object]]]
+          val geocode: Option[Geocode] = geotagVoteFields.map { fields =>
+            Geocode(address = fields.get("address").map(_.asInstanceOf[String]))
+          }
+          ElasticResource(bid, handTags, indexTags, geocode)
         }
       }
       (elasticResources, r.result.totalHits)
@@ -336,4 +354,4 @@ class ElasticSearchIndexer @Autowired()(val showBrokenDecisionService: ShowBroke
 
 }
 
-case class ElasticResource(_id: BSONObjectID, handTags: Seq[BSONObjectID], indexTags: Seq[BSONObjectID])
+case class ElasticResource(_id: BSONObjectID, handTags: Seq[BSONObjectID], indexTags: Seq[BSONObjectID], geocode: Option[Geocode])

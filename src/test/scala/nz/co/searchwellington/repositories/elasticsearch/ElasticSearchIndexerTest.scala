@@ -231,6 +231,27 @@ class ElasticSearchIndexerTest extends IndexableResource with ReasonableWaits {
   }
 
   @Test
+  def canPersistTheGeotagVoteSoThatItDoesNotNeedToBeRecalcuatedOnRender(): Unit = {
+    val geocode = Geocode(address = Some("Somewhere"), latitude = Some(50.0), longitude = Some(-0.1))
+    val geotagged = Newsitem(
+      title = "Geotagged " + UUID.randomUUID().toString,
+      date = Some(new DateTime(2019, 3, 10, 0, 0, 0).toDate),
+      geocode  = Some(geocode)
+    )
+    Await.result(mongoRepository.saveResource(geotagged), TenSeconds)
+
+    val result = indexResources(Seq(geotagged))
+    assertFalse(result.result.errors)
+
+    def geocodedNewsitems = {
+      queryForResources(ResourceQuery(`type` = Some(Set("N"))))
+    }
+    eventually(timeout(TenSeconds), interval(TenMilliSeconds))(geocodedNewsitems.contains(geotagged) mustBe true)
+    val roundTrippedGeocode = geocodedNewsitems.head.geocode
+    assertEquals(Some(geocode), roundTrippedGeocode)
+  }
+
+  @Test
   def canCountArchiveTypes(): Unit = {
     val newsitem = Newsitem()
     Await.result(mongoRepository.saveResource(newsitem), TenSeconds)
@@ -280,8 +301,8 @@ class ElasticSearchIndexerTest extends IndexableResource with ReasonableWaits {
   }
 
   private def indexResources(resources: Seq[Resource]) = {
-    Await.result(Future.sequence(resources.map(toIndexable)).map { i =>
-      elasticSearchIndexer.updateMultipleContentItems(i)
+    Await.result(Future.sequence(resources.map(toIndexable)).flatMap { indexableResources =>
+      elasticSearchIndexer.updateMultipleContentItems(indexableResources)
     }, TenSeconds)
   }
 
