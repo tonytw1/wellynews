@@ -244,7 +244,7 @@ class ElasticSearchIndexerTest extends IndexableResource with ReasonableWaits {
     assertFalse(result.result.errors)
 
     def geocodedNewsitems = {
-      Await.result(elasticSearchIndexer.getResources(ResourceQuery(`type` = Some(Set("N"))), loggedInUser = Some(loggedInUser)), TenSeconds)
+      Await.result(elasticSearchIndexer.getResources(ResourceQuery(`type` = Some(Set("N")), geocoded = Some(true)), loggedInUser = Some(loggedInUser)), TenSeconds)
     }
     eventually(timeout(TenSeconds), interval(TenMilliSeconds))(geocodedNewsitems._1.map(_._id).contains(geotagged._id) mustBe true)
     val roundTrippedGeocode = geocodedNewsitems._1.head.geocode

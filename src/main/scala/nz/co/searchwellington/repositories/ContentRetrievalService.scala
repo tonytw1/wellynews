@@ -418,12 +418,11 @@ import scala.concurrent.{ExecutionContext, Future}
 
         val eventualHandTags = loadTags(r.resource_tags.map(_.tag_id).distinct)
         val eventualIndexTags = loadTags(elasticResourcesById.get(r._id).map(_.indexTags).getOrElse(Seq.empty))
-        val eventualGeocode = indexTagsService.getIndexGeocodeForResource(r)  // TODO persist in index for faster rendering
+        val maybeGeocode = elasticResourcesById.get(r._id).flatMap(er => er.geocode)
+
         eventualHandTags.flatMap { handTags =>
           eventualIndexTags.flatMap { indexTags =>
-            eventualGeocode.flatMap { geocode =>
-              frontendResourceMapper.createFrontendResourceFrom(r, loggedInUser, geocode, handTags, indexTags)
-            }
+            frontendResourceMapper.createFrontendResourceFrom(r, loggedInUser, maybeGeocode, handTags, indexTags)
           }
         }
 
