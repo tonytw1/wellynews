@@ -84,8 +84,7 @@ class ElasticSearchIndexer @Autowired()(val showBrokenDecisionService: ShowBroke
             dateField(AcceptedDate),
             objectField(GeotagVote).copy(properties = Seq(
               textField("address"),  // TODO doesn't need to be indexed; just round tripped
-              doubleField("latitude"),
-              doubleField("longitude"),
+              geopointField(LatLong),
               keywordField("osmId")
             ))
           ))
@@ -137,7 +136,7 @@ class ElasticSearchIndexer @Autowired()(val showBrokenDecisionService: ShowBroke
 
       val latLong = indexResource.geocode.flatMap(_.latLong)
 
-      val fields = Seq(
+      val fields: Seq[Option[(String, Any)]] = Seq(
         Some(Type -> resource.`type`),
         Some(Title -> resource.title),
         Some(TitleSort -> resource.title),
@@ -157,12 +156,11 @@ class ElasticSearchIndexer @Autowired()(val showBrokenDecisionService: ShowBroke
         indexResource.hostname.map(u => Hostname -> u),
         accepted.map(a => AcceptedDate -> new DateTime(a)),
         resource.geocode.map ( g => {
-          GeotagVote -> Map(
-            "address" -> g.address.orNull,
-            "latitude" -> g.latitude,
-            "longitude" -> g.longitude,
-            "osmId" -> g.osmId.map( osm => osm.id + osm.`type`).orNull
+          val geotagVoteFields = Seq(
+            g.address.map("address" -> _),
+            latLong.map(ll => LatLong -> Map("lat" -> ll.getLatitude, "lon" -> ll.getLongitude)),
           )
+          GeotagVote -> geotagVoteFields.flatten.toMap
         })
       )
       indexInto(Index).fields(fields.flatten) id resource._id.stringify
@@ -196,7 +194,20 @@ class ElasticSearchIndexer @Autowired()(val showBrokenDecisionService: ShowBroke
           val geotagVoteFields = h.sourceAsMap.get(GeotagVote).asInstanceOf[Option[Map[String, Object]]]
           val geocode = geotagVoteFields.map { fields =>
             val maybeAddress = fields.get("address")
-            Geocode(address = maybeAddress.map(_.asInstanceOf[String]))
+            val maybeLatLong = fields.get(LatLong).flatMap { ll: Object =>
+              val llMap = ll.asInstanceOf[Map[String, Double]]
+              llMap.get("lat").flatMap { lat =>
+                llMap.get("lon").map { lon =>
+                  (lat, lon)
+                }
+              }
+            }
+
+            val address = maybeAddress.map(_.asInstanceOf[String])
+            val latitude = maybeLatLong.map( ll => ll._1)
+            val longitude = maybeLatLong.map( ll => ll._2)
+
+            Geocode(address = address, latitude = latitude, longitude = longitude)
           }
 
           ElasticResource(bid, handTags, indexTags, geocode)
