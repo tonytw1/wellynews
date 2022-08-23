@@ -192,10 +192,13 @@ class ElasticSearchIndexer @Autowired()(val showBrokenDecisionService: ShowBroke
           val handTags = h.sourceAsMap.get(HandTags).asInstanceOf[Option[List[String]]].map(_.flatMap(tid => BSONObjectID.parse(tid).toOption)).getOrElse(Seq.empty)
           val indexTags = h.sourceAsMap.get(Tags).asInstanceOf[Option[List[String]]].map(_.flatMap(tid => BSONObjectID.parse(tid).toOption)).getOrElse(Seq.empty)
 
-          val geotagVoteFields: Option[Map[String, Object]] = h.sourceAsMap.get(GeotagVote).asInstanceOf[Option[Map[String, Object]]]
-          val geocode: Option[Geocode] = geotagVoteFields.map { fields =>
-            Geocode(address = fields.get("address").map(_.asInstanceOf[String]))
+          // Hydrate geotag from nested object fields; there must be a more direct way of doing this?
+          val geotagVoteFields = h.sourceAsMap.get(GeotagVote).asInstanceOf[Option[Map[String, Object]]]
+          val geocode = geotagVoteFields.map { fields =>
+            val maybeAddress = fields.get("address")
+            Geocode(address = maybeAddress.map(_.asInstanceOf[String]))
           }
+
           ElasticResource(bid, handTags, indexTags, geocode)
         }
       }
