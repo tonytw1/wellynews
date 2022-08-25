@@ -155,7 +155,7 @@ class ElasticSearchIndexer @Autowired()(val showBrokenDecisionService: ShowBroke
         resource.last_changed.map(lc => LastChanged -> new DateTime(lc)),
         indexResource.hostname.map(u => Hostname -> u),
         accepted.map(a => AcceptedDate -> new DateTime(a)),
-        resource.geocode.map ( g => {
+        indexResource.geocode.map ( g => {
           val geotagVoteFields = Seq(
             g.address.map("address" -> _),
             latLong.map(ll => LatLong -> Map("lat" -> ll.getLatitude, "lon" -> ll.getLongitude)),
