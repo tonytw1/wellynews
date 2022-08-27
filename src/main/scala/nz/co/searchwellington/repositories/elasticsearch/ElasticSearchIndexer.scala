@@ -83,7 +83,6 @@ class ElasticSearchIndexer @Autowired()(val showBrokenDecisionService: ShowBroke
             keywordField(Hostname),
             dateField(AcceptedDate),
             objectField(GeotagVote).copy(properties = Seq(
-              keywordField("address"),  // TODO doesn't need to be indexed; just round tripped
               geopointField(LatLong),
               keywordField("osmId")
             ))
