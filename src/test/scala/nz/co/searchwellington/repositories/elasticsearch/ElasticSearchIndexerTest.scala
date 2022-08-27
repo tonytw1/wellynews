@@ -3,6 +3,7 @@ package nz.co.searchwellington.repositories.elasticsearch
 import io.opentelemetry.api.trace.Span
 import nz.co.searchwellington.ReasonableWaits
 import nz.co.searchwellington.controllers.ShowBrokenDecisionService
+import nz.co.searchwellington.geocoding.osm.OsmIdParser
 import nz.co.searchwellington.model._
 import nz.co.searchwellington.repositories.HandTaggingDAO
 import nz.co.searchwellington.repositories.mongo.MongoRepository
@@ -27,11 +28,12 @@ object ElasticSearchIndexerTest {
   private val elasticHost = Option(System.getenv("ELASTIC_HOST")).getOrElse("localhost")
 
   private val showBrokenDecisionService = new ShowBrokenDecisionService
+  private val osmIdParser = new OsmIdParser
 
   val taggingReturnsOfficerService = new TaggingReturnsOfficerService(new HandTaggingDAO(mongoRepository), mongoRepository)
   val indexTagsService = new IndexTagsService(taggingReturnsOfficerService)
 
-  val elasticSearchIndexer = new ElasticSearchIndexer(showBrokenDecisionService, s"http://$elasticHost:9200",
+  val elasticSearchIndexer = new ElasticSearchIndexer(showBrokenDecisionService, osmIdParser, s"http://$elasticHost:9200",
     ElasticSearchIndexerTest.databaseAndIndexName)
 }
 
@@ -232,11 +234,14 @@ class ElasticSearchIndexerTest extends IndexableResource with ReasonableWaits {
 
   @Test
   def canPersistTheGeotagVoteSoThatItDoesNotNeedToBeRecalcuatedOnRender(): Unit = {
-    val geocode = Geocode(address = Some("Somewhere"), latitude = Some(50.0), longitude = Some(-0.1))
+    val wellingtonCentralLibrary = Geocode(address = Some("Wellington Central Library"),
+      latitude = Some(-41.2880726), longitude = Some(174.7764243),
+      osmId = Some(OsmId(48029222L, "RELATION"))
+    )
     val geotagged = Newsitem(
       title = "Geotagged " + UUID.randomUUID().toString,
       date = Some(new DateTime(2019, 3, 10, 0, 0, 0).toDate),
-      geocode  = Some(geocode)
+      geocode  = Some(wellingtonCentralLibrary)
     )
     Await.result(mongoRepository.saveResource(geotagged), TenSeconds)
 
@@ -248,7 +253,7 @@ class ElasticSearchIndexerTest extends IndexableResource with ReasonableWaits {
     }
     eventually(timeout(TenSeconds), interval(TenMilliSeconds))(geocodedNewsitems._1.map(_._id).contains(geotagged._id) mustBe true)
     val roundTrippedGeocode = geocodedNewsitems._1.head.geocode
-    assertEquals(Some(geocode), roundTrippedGeocode)
+    assertEquals(Some(wellingtonCentralLibrary), roundTrippedGeocode)
   }
 
   @Test

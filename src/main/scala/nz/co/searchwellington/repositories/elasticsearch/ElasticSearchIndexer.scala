@@ -13,6 +13,7 @@ import com.sksamuel.elastic4s.{ElasticClient, ElasticProperties, Response}
 import io.opentelemetry.api.trace.Span
 import nz.co.searchwellington.ReasonableWaits
 import nz.co.searchwellington.controllers.ShowBrokenDecisionService
+import nz.co.searchwellington.geocoding.osm.OsmIdParser
 import nz.co.searchwellington.instrumentation.SpanFactory
 import nz.co.searchwellington.model._
 import org.apache.commons.logging.LogFactory
@@ -26,6 +27,7 @@ import scala.concurrent.{Await, ExecutionContext, Future}
 
 @Component
 class ElasticSearchIndexer @Autowired()(val showBrokenDecisionService: ShowBrokenDecisionService,
+                                        val osmIdParser: OsmIdParser,
                                         @Value("${elasticsearch.url}") elasticsearchUrl: String,
                                         @Value("${elasticsearch.index}") elasticsearchIndex: String) extends ElasticFields with ModeratedQueries with ReasonableWaits {
 
@@ -84,7 +86,6 @@ class ElasticSearchIndexer @Autowired()(val showBrokenDecisionService: ShowBroke
             dateField(AcceptedDate),
             objectField(GeotagVote).copy(properties = Seq(
               geopointField(LatLong),
-              keywordField("osmId")
             ))
           ))
         }
@@ -158,6 +159,9 @@ class ElasticSearchIndexer @Autowired()(val showBrokenDecisionService: ShowBroke
           val geotagVoteFields = Seq(
             g.address.map("address" -> _),
             latLong.map(ll => LatLong -> Map("lat" -> ll.getLatitude, "lon" -> ll.getLongitude)),
+            g.osmId.map { osmId =>
+              "osmId" -> (osmId.id.toString + "/" + osmId.`type`)
+            }
           )
           GeotagVote -> geotagVoteFields.flatten.toMap
         })
@@ -201,12 +205,15 @@ class ElasticSearchIndexer @Autowired()(val showBrokenDecisionService: ShowBroke
                 }
               }
             }
-
+            val maybeOsmId = fields.get("osmId").map { asString =>
+              val parsed = osmIdParser.parseOsmId(asString.asInstanceOf[String]) // TODO use one Osm id class; even if it means working out enums in Mongo
+              OsmId(parsed.getId, parsed.getType.toString)
+            }
             val address = maybeAddress.map(_.asInstanceOf[String])
             val latitude = maybeLatLong.map( ll => ll._1)
             val longitude = maybeLatLong.map( ll => ll._2)
 
-            Geocode(address = address, latitude = latitude, longitude = longitude)
+            Geocode(address = address, latitude = latitude, longitude = longitude, osmId = maybeOsmId)
           }
 
           ElasticResource(bid, handTags, indexTags, geocode)
