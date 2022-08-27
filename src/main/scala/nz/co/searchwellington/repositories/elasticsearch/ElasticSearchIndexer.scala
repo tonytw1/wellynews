@@ -78,7 +78,6 @@ class ElasticSearchIndexer @Autowired()(val showBrokenDecisionService: ShowBroke
             keywordField(Publisher),
             booleanField(Held),
             keywordField(Owner),
-            geopointField(LatLong),
             keywordField(FeedAcceptancePolicy),
             dateField(FeedLatestItemDate),
             dateField(LastChanged),
@@ -150,7 +149,6 @@ class ElasticSearchIndexer @Autowired()(val showBrokenDecisionService: ShowBroke
         publisher.map(p => Publisher -> p.stringify),
         Some(Held -> resource.held),
         resource.owner.map(o => Owner -> o.stringify),
-        latLong.map(ll => LatLong -> Map("lat" -> ll.getLatitude, "lon" -> ll.getLongitude)),
         Some(TaggingUsers, resource.resource_tags.map(_.user_id.stringify)),
         feedAcceptancePolicy.map(ap => FeedAcceptancePolicy -> ap.toString),
         feedLatestItemDate.map(fid => FeedLatestItemDate -> new DateTime(fid)),
@@ -312,6 +310,8 @@ class ElasticSearchIndexer @Autowired()(val showBrokenDecisionService: ShowBroke
   }
 
   private def composeQueryFor(query: ResourceQuery, loggedInUser: Option[User]): Query = {
+    val latLongField = GeotagVote + "." + LatLong
+
     val conditions = Seq(
       query.`type`.map { `type` =>
         should {
@@ -346,13 +346,13 @@ class ElasticSearchIndexer @Autowired()(val showBrokenDecisionService: ShowBroke
       },
       query.geocoded.map { g =>
         if (g) {
-          existsQuery(LatLong)
+          existsQuery(latLongField)
         } else {
-          not(existsQuery(LatLong))
+          not(existsQuery(latLongField))
         }
       },
       query.circle.map { c =>
-        geoDistanceQuery(LatLong, c.centre.getLatitude, c.centre.getLongitude).distance(c.radius, DistanceUnit.KILOMETERS)
+        geoDistanceQuery(latLongField, c.centre.getLatitude, c.centre.getLongitude).distance(c.radius, DistanceUnit.KILOMETERS)
       },
       query.taggingUser.map { tu =>
         matchQuery(TaggingUsers, tu.stringify)
