@@ -85,7 +85,7 @@ class ElasticSearchIndexer @Autowired()(val showBrokenDecisionService: ShowBroke
             keywordField(Hostname),
             dateField(AcceptedDate),
             objectField(GeotagVote).copy(properties = Seq(
-              textField(Description).index(false),
+              textField("address").index(false),
               geopointField(LatLong),
               keywordField("osmId")
             ))
