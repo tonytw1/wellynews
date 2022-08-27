@@ -17,6 +17,7 @@ import org.scalatest.matchers.must.Matchers.convertToAnyMustWrapper
 
 import java.util.UUID
 import scala.concurrent.ExecutionContext.Implicits.global
+import scala.concurrent.duration.{Duration, SECONDS}
 import scala.concurrent.{Await, Future}
 
 object ElasticSearchIndexerTest {
@@ -46,6 +47,11 @@ class ElasticSearchIndexerTest extends IndexableResource with ReasonableWaits {
 
   private val loggedInUser = User(admin = true)
   private val allNewsitems = ResourceQuery(`type` = Some(Set("N")))
+
+  private val wellingtonCentralLibrary = Geocode(address = Some("Wellington Central Library"),
+    latitude = Some(-41.2880726), longitude = Some(174.7764243),
+    osmId = Some(OsmId(48029222L, "RELATION"))
+  )
 
   private implicit val currentSpan: Span = Span.current()
 
@@ -234,10 +240,6 @@ class ElasticSearchIndexerTest extends IndexableResource with ReasonableWaits {
 
   @Test
   def canPersistTheGeotagVoteSoThatItDoesNotNeedToBeRecalcuatedOnRender(): Unit = {
-    val wellingtonCentralLibrary = Geocode(address = Some("Wellington Central Library"),
-      latitude = Some(-41.2880726), longitude = Some(174.7764243),
-      osmId = Some(OsmId(48029222L, "RELATION"))
-    )
     val geotagged = Newsitem(
       title = "Geotagged " + UUID.randomUUID().toString,
       date = Some(new DateTime(2019, 3, 10, 0, 0, 0).toDate),
@@ -254,6 +256,47 @@ class ElasticSearchIndexerTest extends IndexableResource with ReasonableWaits {
     eventually(timeout(TenSeconds), interval(TenMilliSeconds))(geocodedNewsitems._1.map(_._id).contains(geotagged._id) mustBe true)
     val roundTrippedGeocode = geocodedNewsitems._1.head.geocode
     assertEquals(Some(wellingtonCentralLibrary), roundTrippedGeocode)
+  }
+
+  @Test
+  def canFilterForGecodedResources(): Unit = {
+    val tag = Tag()
+    Await.result(mongoRepository.saveTag(tag), TenSeconds)
+    val taggingUser = User()
+    Await.result(mongoRepository.saveUser(taggingUser), TenSeconds)
+
+    val geotaggedNewsitem = Newsitem(
+      title = "Geotagged " + UUID.randomUUID().toString,
+      date = Some(new DateTime(2019, 3, 10, 0, 0, 0).toDate),
+      geocode = Some(wellingtonCentralLibrary),
+      resource_tags = Seq(Tagging(tag_id = tag._id, user_id = taggingUser._id))
+    )
+    Await.result(mongoRepository.saveResource(geotaggedNewsitem), TenSeconds)
+
+    val nonGeotaggedNewsitem = Newsitem(
+      title = "Non geotagged " + UUID.randomUUID().toString,
+      date = Some(new DateTime(2019, 3, 10, 0, 0, 0).toDate),
+      resource_tags = Seq(Tagging(tag_id = tag._id, user_id = taggingUser._id))
+    )
+    Await.result(mongoRepository.saveResource(nonGeotaggedNewsitem), TenSeconds)
+
+    val result = indexResources(Seq(geotaggedNewsitem, nonGeotaggedNewsitem))
+    assertTrue(result.isSuccess)
+
+    val withTag = ResourceQuery(tags = Some(Set(tag)))
+
+    def taggedItems = {
+      Await.result(elasticSearchIndexer.getResources(withTag, loggedInUser = Some(loggedInUser)), TenSeconds)
+    }
+
+    eventually(timeout(Duration(1, SECONDS)), interval(TenMilliSeconds))(taggedItems._2 mustBe 2)
+
+    def geoTaggedItems = {
+      Await.result(elasticSearchIndexer.getResources(withTag.copy(geocoded = Some(true)), loggedInUser = Some(loggedInUser)), TenSeconds)
+    }
+
+    eventually(timeout(Duration(1, SECONDS)), interval(TenMilliSeconds))(geoTaggedItems._2 mustBe 1)
+    geoTaggedItems._1.head._id mustBe geotaggedNewsitem._id
   }
 
   @Test
