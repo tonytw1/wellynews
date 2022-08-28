@@ -1,6 +1,7 @@
 package nz.co.searchwellington.repositories.elasticsearch
 
 import nz.co.searchwellington.ReasonableWaits
+import nz.co.searchwellington.model.geo.LatLong
 import nz.co.searchwellington.model.{Feed, Newsitem, Resource, Watchlist, Website}
 import nz.co.searchwellington.repositories.mongo.MongoRepository
 import nz.co.searchwellington.tagging.IndexTagsService
@@ -38,6 +39,27 @@ import scala.concurrent.{Await, ExecutionContext, Future}
 
       val eventualResources = Future.sequence(batch.map(i => mongoRepository.getResourceByObjectId(i))).map(_.flatten)
       val eventualWithIndexTags = eventualResources.flatMap { rs =>
+
+        // Migrate latlong
+        rs.foreach { r =>
+          r.geocode.foreach { geocode =>
+            val fix = geocode.latitude.nonEmpty && geocode.longitude.nonEmpty && geocode.latLong.isEmpty
+            if (fix) {
+              val latLong = LatLong(geocode.latitude.get, geocode.longitude.get)
+              val fixedGeocode = geocode.copy(latLong = Some(latLong))
+              val fixedResource = r match {
+                case w: Website => w.copy(geocode = Some(fixedGeocode))
+                case f: Feed => f.copy(geocode = Some(fixedGeocode))
+                case n: Newsitem => n.copy(geocode = Some(fixedGeocode))
+                case l: Watchlist => l.copy(geocode = Some(fixedGeocode))
+                case _ => r
+              }
+              log.info("Fixed resource: " + r + " -> " + fixedResource)
+              Await.result(mongoRepository.saveResource(fixedResource), TenSeconds)
+            }
+          }
+        }
+
         Future.sequence(rs.map(toIndexable))
       }
 

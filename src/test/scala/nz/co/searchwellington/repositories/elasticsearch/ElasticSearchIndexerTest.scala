@@ -5,7 +5,7 @@ import nz.co.searchwellington.ReasonableWaits
 import nz.co.searchwellington.controllers.ShowBrokenDecisionService
 import nz.co.searchwellington.geocoding.osm.OsmIdParser
 import nz.co.searchwellington.model._
-import nz.co.searchwellington.model.geo.{Geocode, OsmId}
+import nz.co.searchwellington.model.geo.{Geocode, LatLong, OsmId}
 import nz.co.searchwellington.repositories.HandTaggingDAO
 import nz.co.searchwellington.repositories.mongo.MongoRepository
 import nz.co.searchwellington.tagging.{IndexTagsService, TaggingReturnsOfficerService}
@@ -51,6 +51,7 @@ class ElasticSearchIndexerTest extends IndexableResource with ReasonableWaits {
 
   private val wellingtonCentralLibrary = Geocode(address = Some("Wellington Central Library"),
     latitude = Some(-41.2880726), longitude = Some(174.7764243),
+    latLong = Some(LatLong(-41.2880726, 174.7764243)),
     osmId = Some(OsmId(48029222L, "RELATION"))
   )
 

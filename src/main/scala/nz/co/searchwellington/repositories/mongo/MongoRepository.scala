@@ -2,7 +2,7 @@ package nz.co.searchwellington.repositories.mongo
 
 import nz.co.searchwellington.ReasonableWaits
 import nz.co.searchwellington.model._
-import nz.co.searchwellington.model.geo.{Geocode, OsmId}
+import nz.co.searchwellington.model.geo.{Geocode, LatLong, OsmId}
 import org.apache.commons.logging.LogFactory
 import org.joda.time.DateTime
 import org.springframework.beans.factory.annotation.{Autowired, Value}
@@ -111,6 +111,7 @@ class MongoRepository @Autowired()(@Value("${mongo.uri}") mongoUri: String) exte
 
   implicit def taggingReader: BSONDocumentReader[Tagging] = Macros.reader[Tagging]
 
+  implicit def latLongReader: BSONDocumentReader[LatLong] = Macros.reader[LatLong]
   implicit def osmIdReader: BSONDocumentReader[OsmId] = Macros.reader[OsmId]
   implicit def geocodeReader: BSONDocumentReader[Geocode] = Macros.reader[Geocode]
 
@@ -147,6 +148,7 @@ class MongoRepository @Autowired()(@Value("${mongo.uri}") mongoUri: String) exte
 
   implicit def taggingWriter: BSONDocumentWriter[Tagging] = Macros.writer[Tagging]
 
+  implicit def latLongWriter: BSONDocumentWriter[LatLong] = Macros.writer[LatLong]
   implicit def osmIdWriter: BSONDocumentWriter[OsmId] = Macros.writer[OsmId]
   implicit def geocodeWriter: BSONDocumentWriter[Geocode] = Macros.writer[Geocode]
 

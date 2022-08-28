@@ -202,19 +202,20 @@ class ElasticSearchIndexer @Autowired()(val showBrokenDecisionService: ShowBroke
               val llMap = ll.asInstanceOf[Map[String, Double]]
               llMap.get("lat").flatMap { lat =>
                 llMap.get("lon").map { lon =>
-                  (lat, lon)
+                  geo.LatLong(lat, lon)
                 }
               }
             }
+            val latitude = maybeLatLong.map( ll => ll.latitude)
+            val longitude = maybeLatLong.map( ll => ll.longitude)
+
             val maybeOsmId = fields.get("osmId").map { asString =>
               val parsed = osmIdParser.parseOsmId(asString.asInstanceOf[String]) // TODO use one Osm id class; even if it means working out enums in Mongo
               OsmId(parsed.getId, parsed.getType.toString)
             }
             val address = maybeAddress.map(_.asInstanceOf[String])
-            val latitude = maybeLatLong.map( ll => ll._1)
-            val longitude = maybeLatLong.map( ll => ll._2)
 
-            Geocode(address = address, latitude = latitude, longitude = longitude, osmId = maybeOsmId)
+            Geocode(address = address, latLong = maybeLatLong, latitude = latitude, longitude = longitude, osmId = maybeOsmId)
           }
 
           ElasticResource(bid, handTags, indexTags, geocode)

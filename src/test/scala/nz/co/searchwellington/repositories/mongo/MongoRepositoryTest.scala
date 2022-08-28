@@ -3,7 +3,7 @@ package nz.co.searchwellington.repositories.mongo
 import java.util.UUID
 import nz.co.searchwellington.ReasonableWaits
 import nz.co.searchwellington.model._
-import nz.co.searchwellington.model.geo.{Geocode, OsmId}
+import nz.co.searchwellington.model.geo.{Geocode, LatLong, OsmId}
 import org.junit.jupiter.api.Assertions.{assertEquals, assertFalse, assertTrue}
 import org.junit.jupiter.api.Test
 
@@ -114,7 +114,7 @@ class MongoRepositoryTest extends ReasonableWaits {
   @Test
   def canPersistTagGeocode(): Unit = {
     val osmId = OsmId(id = 123L, `type` = "N")
-    val geocode = Geocode(osmId = Some(osmId))
+    val geocode = Geocode(osmId = Some(osmId), latLong = Some(LatLong(latitude = 50.0, longitude = -0.1)))
     val tagWithGeocode = Tag(name = "Test " + UUID.randomUUID().toString, geocode = Some(geocode))
     Await.result(mongoRepository.saveTag(tagWithGeocode), TenSeconds)
 
