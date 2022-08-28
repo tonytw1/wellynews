@@ -3,6 +3,7 @@ package nz.co.searchwellington.tagging
 import com.google.common.truth.Truth._
 import nz.co.searchwellington.ReasonableWaits
 import nz.co.searchwellington.model._
+import nz.co.searchwellington.model.geo.Geocode
 import nz.co.searchwellington.model.taggingvotes.HandTagging
 import nz.co.searchwellington.repositories.HandTaggingDAO
 import nz.co.searchwellington.repositories.mongo.MongoRepository

@@ -2,6 +2,7 @@ package nz.co.searchwellington.repositories.mongo
 
 import nz.co.searchwellington.ReasonableWaits
 import nz.co.searchwellington.model._
+import nz.co.searchwellington.model.geo.{Geocode, OsmId}
 import org.apache.commons.logging.LogFactory
 import org.joda.time.DateTime
 import org.springframework.beans.factory.annotation.{Autowired, Value}

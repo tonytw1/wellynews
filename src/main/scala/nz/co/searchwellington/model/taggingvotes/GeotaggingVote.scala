@@ -1,6 +1,6 @@
 package nz.co.searchwellington.model.taggingvotes
 
-import nz.co.searchwellington.model.Geocode
+import nz.co.searchwellington.model.geo.Geocode
 
 case class GeotaggingVote(geocode: Geocode, explanation: String, weight: Int) {
   def getGeocode: Geocode = geocode

@@ -3,9 +3,10 @@ package nz.co.searchwellington.controllers.models.helpers
 import io.opentelemetry.api.trace.Span
 import nz.co.searchwellington.ReasonableWaits
 import nz.co.searchwellington.model.frontend.FrontendNewsitem
+import nz.co.searchwellington.model.geo.Geocode
 import nz.co.searchwellington.model.mappers.FrontendResourceMapper
 import nz.co.searchwellington.model.taggingvotes.{GeotaggingVote, HandTagging}
-import nz.co.searchwellington.model.{Geocode, Newsitem, Tag, User}
+import nz.co.searchwellington.model.{Newsitem, Tag, User}
 import nz.co.searchwellington.repositories.ContentRetrievalService
 import nz.co.searchwellington.repositories.mongo.MongoRepository
 import nz.co.searchwellington.tagging.TaggingReturnsOfficerService

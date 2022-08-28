@@ -2,7 +2,8 @@ package nz.co.searchwellington.model.frontend
 
 import com.fasterxml.jackson.annotation.JsonInclude.Include
 import com.fasterxml.jackson.annotation.{JsonFormat, JsonInclude}
-import nz.co.searchwellington.model.{Geocode, Tag}
+import nz.co.searchwellington.model.Tag
+import nz.co.searchwellington.model.geo.Geocode
 import reactivemongo.api.bson.BSONObjectID
 import uk.co.eelpieconsulting.common.views.rss.RssFeedable
 

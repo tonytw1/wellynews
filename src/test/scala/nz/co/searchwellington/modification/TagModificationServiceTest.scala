@@ -1,6 +1,7 @@
 package nz.co.searchwellington.modification
 
-import nz.co.searchwellington.model.{Geocode, Newsitem, Tag}
+import nz.co.searchwellington.model.geo.Geocode
+import nz.co.searchwellington.model.{Newsitem, Tag}
 import nz.co.searchwellington.repositories.elasticsearch.ElasticSearchIndexRebuildService
 import nz.co.searchwellington.repositories.mongo.MongoRepository
 import nz.co.searchwellington.repositories.{HandTaggingService, TagDAO}

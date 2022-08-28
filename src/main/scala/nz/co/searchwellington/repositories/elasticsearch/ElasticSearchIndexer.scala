@@ -16,6 +16,7 @@ import nz.co.searchwellington.controllers.ShowBrokenDecisionService
 import nz.co.searchwellington.geocoding.osm.OsmIdParser
 import nz.co.searchwellington.instrumentation.SpanFactory
 import nz.co.searchwellington.model._
+import nz.co.searchwellington.model.geo.{Geocode, OsmId}
 import org.apache.commons.logging.LogFactory
 import org.joda.time.format.ISODateTimeFormat
 import org.joda.time.{DateTime, Interval}

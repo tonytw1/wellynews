@@ -1,7 +1,7 @@
 package nz.co.searchwellington.controllers.submission
 
 import nz.co.searchwellington.geocoding.osm.GeoCodeService
-import nz.co.searchwellington.model.{Geocode, OsmId}
+import nz.co.searchwellington.model.geo.{Geocode, OsmId}
 import uk.co.eelpieconsulting.common.geo.model.OsmType
 
 trait GeotagParsing {

@@ -1,7 +1,8 @@
 package nz.co.searchwellington.model
 
-import java.util.Date
+import nz.co.searchwellington.model.geo.Geocode
 
+import java.util.Date
 import reactivemongo.api.bson.BSONObjectID
 
 trait Resource extends Tagged {

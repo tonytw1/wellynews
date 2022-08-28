@@ -1,5 +1,6 @@
 package nz.co.searchwellington.model
 
+import nz.co.searchwellington.model.geo.Geocode
 import nz.co.searchwellington.utils.StringWrangling
 import reactivemongo.api.bson.BSONObjectID
 

@@ -1,7 +1,7 @@
 package nz.co.searchwellington.feeds
 
 import nz.co.searchwellington.feeds.whakaoko.model.Place
-import nz.co.searchwellington.model.Geocode
+import nz.co.searchwellington.model.geo.Geocode
 import org.springframework.stereotype.Component
 
 @Component class PlaceToGeocodeMapper {

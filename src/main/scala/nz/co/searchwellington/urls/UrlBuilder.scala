@@ -3,6 +3,7 @@ package nz.co.searchwellington.urls
 import nz.co.searchwellington.controllers.models.helpers.ArchiveMonth
 import nz.co.searchwellington.model._
 import nz.co.searchwellington.model.frontend.{FrontendFeed, FrontendNewsitem, FrontendResource, FrontendWebsite}
+import nz.co.searchwellington.model.geo.OsmId
 import org.joda.time.Interval
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component

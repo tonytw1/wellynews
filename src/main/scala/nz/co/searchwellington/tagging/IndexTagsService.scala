@@ -1,7 +1,8 @@
 package nz.co.searchwellington.tagging
 
+import nz.co.searchwellington.model.geo.Geocode
 import nz.co.searchwellington.model.taggingvotes.TaggingVote
-import nz.co.searchwellington.model.{Geocode, Resource, Tag}
+import nz.co.searchwellington.model.{Resource, Tag}
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
 

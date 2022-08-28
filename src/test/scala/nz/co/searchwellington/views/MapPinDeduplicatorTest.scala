@@ -1,6 +1,7 @@
 package nz.co.searchwellington.views
 
-import nz.co.searchwellington.model.{Geocode, Newsitem}
+import nz.co.searchwellington.model.Newsitem
+import nz.co.searchwellington.model.geo.Geocode
 import org.junit.jupiter.api.Assertions.{assertEquals, assertFalse, assertTrue}
 import org.junit.jupiter.api.Test
 

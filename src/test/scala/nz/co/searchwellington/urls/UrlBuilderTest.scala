@@ -3,6 +3,7 @@ package nz.co.searchwellington.urls
 import java.util.UUID
 import nz.co.searchwellington.model.frontend.{FrontendFeed, FrontendNewsitem, FrontendWebsite}
 import nz.co.searchwellington.model._
+import nz.co.searchwellington.model.geo.OsmId
 import org.joda.time.{DateTime, DateTimeZone, Interval}
 import org.junit.jupiter.api.Assertions.{assertEquals, assertNull}
 import org.junit.jupiter.api.Test

@@ -1,4 +1,4 @@
-package nz.co.searchwellington.model
+package nz.co.searchwellington.model.geo
 
 case class Geocode(address: Option[String] = None,
                    latitude: Option[Double] = None,

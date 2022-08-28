@@ -1,6 +1,7 @@
 package nz.co.searchwellington.repositories.elasticsearch
 
-import nz.co.searchwellington.model.{Geocode, Resource}
+import nz.co.searchwellington.model.Resource
+import nz.co.searchwellington.model.geo.Geocode
 import nz.co.searchwellington.tagging.IndexTagsService
 import nz.co.searchwellington.urls.UrlParser
 

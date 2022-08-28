@@ -1,9 +1,10 @@
 package nz.co.searchwellington.model.frontend
 
 import com.fasterxml.jackson.annotation.JsonFormat
+import nz.co.searchwellington.model.geo.Geocode
 
 import java.util.Date
-import nz.co.searchwellington.model.{FeedAcceptancePolicy, Geocode, Tag}
+import nz.co.searchwellington.model.{FeedAcceptancePolicy, Tag}
 
 case class FrontendFeed(id: String,
                         urlWords: String = null,

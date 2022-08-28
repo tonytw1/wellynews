@@ -1,8 +1,8 @@
 package nz.co.searchwellington.model.frontend
 
 import java.util.Date
-
-import nz.co.searchwellington.model.{Geocode, Tag}
+import nz.co.searchwellington.model.Tag
+import nz.co.searchwellington.model.geo.Geocode
 
 case class FrontendWatchlist(id: String,
                              urlWords: String = null,

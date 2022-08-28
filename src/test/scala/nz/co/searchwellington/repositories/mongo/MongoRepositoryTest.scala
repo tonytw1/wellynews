@@ -1,9 +1,9 @@
 package nz.co.searchwellington.repositories.mongo
 
 import java.util.UUID
-
 import nz.co.searchwellington.ReasonableWaits
 import nz.co.searchwellington.model._
+import nz.co.searchwellington.model.geo.{Geocode, OsmId}
 import org.junit.jupiter.api.Assertions.{assertEquals, assertFalse, assertTrue}
 import org.junit.jupiter.api.Test
 

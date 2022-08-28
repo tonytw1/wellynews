@@ -1,7 +1,8 @@
 package nz.co.searchwellington.model
 
-import java.util.{Date, UUID}
+import nz.co.searchwellington.model.geo.Geocode
 
+import java.util.{Date, UUID}
 import reactivemongo.api.bson.BSONObjectID
 
 case class Feed(override val _id: BSONObjectID = BSONObjectID.generate,
