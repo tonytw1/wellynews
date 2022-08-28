@@ -37,35 +37,7 @@ import scala.concurrent.{Await, ExecutionContext, Future}
       log.info("Processing batch: " + batch.size + " - " + i + " / " + remaining)
 
       val eventualResources = Future.sequence(batch.map(i => mongoRepository.getResourceByObjectId(i))).map(_.flatten)
-      val eventualWithIndexTags = eventualResources.flatMap { rs: Seq[Resource] =>
-
-        // Hack location to fix data while iterating
-        rs.foreach{ r =>
-          r.geocode.foreach{ geocode =>
-            geocode.osmId.foreach { osmId =>
-              val fixed = osmId.`type` match {
-                case "N" => osmId.copy(`type` = "NODE")
-                case "W" => osmId.copy(`type` = "WAY")
-                case "R" => osmId.copy(`type` = "RELATION")
-                case _ => osmId
-              }
-              if (fixed != osmId) {
-                log.info("Proposed fixed to incorrect OSM id: " + osmId + " -> " + fixed)
-                val fixedGeocode = geocode.copy(osmId = Some(fixed))
-                val fixedResource = r match {
-                  case w: Website => w.copy(geocode = Some(fixedGeocode))
-                  case f: Feed => f.copy(geocode = Some(fixedGeocode))
-                  case n: Newsitem => n.copy(geocode = Some(fixedGeocode))
-                  case l: Watchlist => l.copy(geocode = Some(fixedGeocode))
-                  case _ => r
-                }
-                log.info("Fixed resource: " + r + " -> " + fixedResource)
-                Await.result(mongoRepository.saveResource(fixedResource), TenSeconds)
-              }
-            }
-          }
-        }
-
+      val eventualWithIndexTags = eventualResources.flatMap { rs =>
         Future.sequence(rs.map(toIndexable))
       }
 
