@@ -61,7 +61,7 @@ import scala.jdk.CollectionConverters._
             mv.addAttribute("other_tagging_votes", otherTaggingVotes.asJava)
             mv.addAttribute("geotag_votes", geotagVotes.asJava)
 
-            if (frontendResource.getPlace != null) {
+            frontendResource.geocode.foreach { _ =>
               mv.addAttribute("geocoded", List(frontendResource).asJava)
             }
 

@@ -3,7 +3,7 @@ package nz.co.searchwellington.tagging
 import com.google.common.truth.Truth._
 import nz.co.searchwellington.ReasonableWaits
 import nz.co.searchwellington.model._
-import nz.co.searchwellington.model.geo.Geocode
+import nz.co.searchwellington.model.geo.{Geocode, LatLong}
 import nz.co.searchwellington.model.taggingvotes.HandTagging
 import nz.co.searchwellington.repositories.HandTaggingDAO
 import nz.co.searchwellington.repositories.mongo.MongoRepository
@@ -17,7 +17,7 @@ import scala.jdk.CollectionConverters._
 
 class IndexTagsServiceTest extends ReasonableWaits {
 
-  private val aroValley = Geocode(address = Some("Aro Valley"), latitude = Some(-41.2954), longitude = Some(174.7662))
+  private val aroValley = Geocode(address = Some("Aro Valley"), latLong = Some(LatLong(-41.2954, 174.7662)))
   private val placesTag = Tag(name = "places", display_name = "Places")
   private val aroValleyTag = Tag(name = "arovalley", display_name = "Aro Valley", parent = Some(placesTag._id), geocode = Some(aroValley))
   private val educationTag = Tag(name = "education", display_name = "Education")

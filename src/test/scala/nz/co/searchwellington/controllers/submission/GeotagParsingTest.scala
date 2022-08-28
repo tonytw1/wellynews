@@ -1,12 +1,12 @@
 package nz.co.searchwellington.controllers.submission
 
 import nz.co.searchwellington.geocoding.osm.GeoCodeService
-import nz.co.searchwellington.model.geo.{Geocode, OsmId}
+import nz.co.searchwellington.model.geo.{Geocode, LatLong, OsmId}
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
 import org.mockito.Mockito.{mock, when}
 import uk.co.eelpieconsulting.common.geo.model
-import uk.co.eelpieconsulting.common.geo.model.{LatLong, OsmType, Place}
+import uk.co.eelpieconsulting.common.geo.model.{OsmType, Place}
 
 class GeotagParsingTest extends GeotagParsing {
 
@@ -22,10 +22,10 @@ class GeotagParsingTest extends GeotagParsing {
 
   @Test
   def shouldParseUserInputToPlace(): Unit = {
-    when(geocodeService.resolveOsmId(new model.OsmId(456L, OsmType.RELATION))).thenReturn(new Place(null, new LatLong(51.0, -0.3), null))
+    when(geocodeService.resolveOsmId(new model.OsmId(456L, OsmType.RELATION))).thenReturn(new Place(null, new uk.co.eelpieconsulting.common.geo.model.LatLong(51.0, -0.3), null))
 
     val result = parseGeotag("Somewhere", "456/RELATION")
 
-    assertEquals(Some(Geocode(address = Some("Somewhere"), Some(51.0), Some(-0.3), osmId = Some(OsmId(456L, "RELATION")))), result)
+    assertEquals(Some(Geocode(address = Some("Somewhere"), Some(LatLong(51.0, -0.3)), osmId = Some(OsmId(456L, "RELATION")))), result)
   }
 }

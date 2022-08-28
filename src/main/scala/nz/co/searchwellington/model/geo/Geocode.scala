@@ -1,19 +1,13 @@
 package nz.co.searchwellington.model.geo
 
 case class Geocode(address: Option[String] = None,
-                   latitude: Option[Double] = None,
-                   longitude: Option[Double] = None,
                    latLong: Option[LatLong] = None,
                    osmId: Option[OsmId] = None
                   ) {
 
   def getAddress: String = address.orNull
 
-  def getLatitude: Double = latitude.getOrElse(0)
-
-  def getLongitude: Double = longitude.getOrElse(0)
-
-  def isValid: Boolean = latitude.nonEmpty && longitude.nonEmpty
+  def isValid: Boolean = latLong.nonEmpty
 
   def getOsmId: OsmId = osmId.orNull
 
@@ -24,14 +18,13 @@ case class Geocode(address: Option[String] = None,
   }
 
   def getDisplayName: String = {
-    val positionLabel = for {
-      lat <- latitude
-      lon <- longitude
-    } yield {
-      lat + ", " + lon
+    val positionLabel = latLong.map { ll =>
+      ll.latitude + ", " + ll.longitude
     }
     val availableDisplayNames = Seq(address, positionLabel).flatten
     availableDisplayNames.headOption.orNull
   }
+
+  def getLatLong: LatLong = latLong.orNull
 
 }

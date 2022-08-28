@@ -26,7 +26,7 @@ trait FrontendResource extends RssFeedable with Serializable {
   val tags: Option[Seq[Tag]]
   val handTags: Option[Seq[Tag]]
   val owner: String
-  val place: Option[Geocode]
+  val geocode: Option[Geocode]
   val held: Boolean
   val lastChanged: Option[Date]
   val lastScanned: Option[Date]
@@ -62,7 +62,7 @@ trait FrontendResource extends RssFeedable with Serializable {
 
   def getUrlWords: String = urlWords
 
-  def getPlace: Geocode = place.orNull
+  def getGeocode: Geocode = geocode.orNull
 
   def isHeld: Boolean = held
 
@@ -72,7 +72,7 @@ trait FrontendResource extends RssFeedable with Serializable {
 
   def getAuthor: String = null
 
-  def getLatLong: uk.co.eelpieconsulting.common.geo.model.LatLong = place.flatMap { p =>
+  def getLatLong: uk.co.eelpieconsulting.common.geo.model.LatLong = geocode.flatMap { p =>
     p.latLong.map { ll =>
       new model.LatLong(ll.latitude, ll.longitude)
     }
@@ -139,7 +139,7 @@ trait FrontendResource extends RssFeedable with Serializable {
   case class TagWithChildren(tag: Tag, children: Set[BSONObjectID])
 
   override def getFeatureName: String = {
-    place.flatMap { place =>
+    geocode.flatMap { place =>
       place.address
     }.orNull
   }

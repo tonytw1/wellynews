@@ -99,9 +99,9 @@
 				<li class="firstseen">First noticed $dateFormatter.timeSince($item.suggestion.firstSeen)</li>				
 			#end
 					
-			#if ($item.place)
-                #set($geocode = $item.place)
-                #parse("includes/place.vm")
+			#if ($item.geocode)
+                #set($geocode = $item.geocode)
+                #parse("includes/geocode.vm")
             #end
 
 			#if ($item.owner && $item.owner.profilename && !$item.owner.isAdmin()) 	

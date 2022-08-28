@@ -36,16 +36,12 @@ import uk.co.eelpieconsulting.common.geo.model.LatLong
     }
   }
 
-  private def areSameOrOverlappingLocations(here: Geocode, there: Geocode) = {
+  private def areSameOrOverlappingLocations(here: Geocode, there: Geocode): Boolean = {
     def latLongFor(geocode: Geocode): Option[LatLong] = {
-      for {
-        lat <- geocode.latitude
-        lon <- geocode.longitude
-      } yield {
-        new LatLong(lat, lon)
+      geocode.latLong.map { ll =>
+        new uk.co.eelpieconsulting.common.geo.model.LatLong(ll.latitude, ll.longitude)
       }
     }
-
     for {
       hereLatLong <- latLongFor(here)
       thereLatLong <- latLongFor(there)

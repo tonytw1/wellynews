@@ -47,10 +47,10 @@ class FeedModelBuilderTest extends ReasonableWaits with ContentFields {
   private val anotherNewsitem = Newsitem()
 
   private val frontendNewsitem = FrontendNewsitem(id = UUID.randomUUID().toString)
-  private val anotherFrontendNewsitem = FrontendNewsitem(id = UUID.randomUUID().toString, place = somePlace)
+  private val anotherFrontendNewsitem = FrontendNewsitem(id = UUID.randomUUID().toString, geocode = somePlace)
 
   private val frontendNewsitemWithActions = FrontendNewsitem(id = UUID.randomUUID().toString, tags = None, handTags = None) // TODO better example with actions
-  private val anotherFrontendNewsitemWithActions = FrontendNewsitem(id = UUID.randomUUID().toString, place = somePlace, tags = None, handTags = None)
+  private val anotherFrontendNewsitemWithActions = FrontendNewsitem(id = UUID.randomUUID().toString, geocode = somePlace, tags = None, handTags = None)
 
   private val frontendFeed = mock(classOf[FrontendFeed])
 

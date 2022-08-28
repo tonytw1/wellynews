@@ -1,14 +1,14 @@
 package nz.co.searchwellington.views
 
 import nz.co.searchwellington.model.Newsitem
-import nz.co.searchwellington.model.geo.Geocode
+import nz.co.searchwellington.model.geo.{Geocode, LatLong}
 import org.junit.jupiter.api.Assertions.{assertEquals, assertFalse, assertTrue}
 import org.junit.jupiter.api.Test
 
 class MapPinDeduplicatorTest {
-  private val here = Geocode(Some("here"), Some(1.1), Some(1.1))
-  private val there = Geocode(Some("there"), Some(2.2), Some(2.2))
-  private val alsoHere = Geocode(Some("here"), Some(1.1), Some(1.1))
+  private val here = Geocode(Some("here"), Some(LatLong(1.1, 1.1)))
+  private val there = Geocode(Some("there"), Some(LatLong(2.2, 2.2)))
+  private val alsoHere = Geocode(Some("here"), Some(LatLong(1.1, 1.1)))
   private val firstNewsitem = Newsitem(title = "First", geocode = Some(here))
   private val secondNewsitem = Newsitem(title = "Second", geocode = Some(there))
   private val thirdNewsitem = Newsitem(title = "Third", geocode = Some(alsoHere))

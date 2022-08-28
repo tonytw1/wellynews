@@ -51,8 +51,8 @@ class FeeditemToNewsitemServiceTest {
 
     assertTrue(newsitem.geocode.nonEmpty)
     assertEquals(None, newsitem.geocode.get.address)
-    assertEquals(feedItemLatLong.latitude, newsitem.geocode.get.latitude.get, 0)
-    assertEquals(feedItemLatLong.longitude, newsitem.geocode.get.longitude.get, 0)
+    assertEquals(feedItemLatLong.latitude, newsitem.geocode.get.latLong.get.latitude, 0)
+    assertEquals(feedItemLatLong.longitude, newsitem.geocode.get.latLong.get.longitude, 0)
   }
 
   @Test

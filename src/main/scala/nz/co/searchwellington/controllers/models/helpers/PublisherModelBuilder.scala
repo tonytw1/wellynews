@@ -52,7 +52,7 @@ import scala.jdk.CollectionConverters._
           addAttribute("heading", publisher.title).
           addAttribute("description", publisher.title + " newsitems").
           addAttribute("publisher", frontendWebsite).
-          addAttribute("location", frontendWebsite.getPlace).
+          addAttribute("location", frontendWebsite.getGeocode).
           addAttribute("link", urlBuilder.fullyQualified(urlBuilder.getPublisherUrl(publisher)))
 
         if (newsitems.nonEmpty) {

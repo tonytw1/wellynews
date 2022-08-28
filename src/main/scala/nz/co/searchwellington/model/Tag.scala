@@ -39,6 +39,6 @@ case class Tag(_id: BSONObjectID = BSONObjectID.generate,
 
   def isFeatured: Boolean = featured
 
-  def getPlace: Geocode = geocode.orNull
+  def getGeocode: Geocode = geocode.orNull
 
 }

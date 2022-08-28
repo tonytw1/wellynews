@@ -158,7 +158,7 @@ class TagModelBuilderTest extends ReasonableWaits with ContentFields {
   @Test
   def tagPageExtras(): Unit = {
     request.setAttribute("tags", Seq(tag))
-    val geotagged = Seq(FrontendNewsitem(id = "123", place = Some(Geocode(address = Some("Somewhere")))))
+    val geotagged = Seq(FrontendNewsitem(id = "123", geocode = Some(Geocode(address = Some("Somewhere")))))
     when(contentRetrievalService.getGeotaggedNewsitemsForTag(tag, 30, loggedInUser = None)).thenReturn(Future.successful(geotagged))
     when(contentRetrievalService.getTaggedWebsites(tag, 500, loggedInUser = None)).thenReturn(Future.successful(Seq.empty))
     when(relatedTagsService.getRelatedTagsForTag(tag, 8, None)).thenReturn(Future.successful(Seq.empty))
@@ -175,7 +175,7 @@ class TagModelBuilderTest extends ReasonableWaits with ContentFields {
 
   @Test
   def shouldSetTagRssFeed(): Unit = {
-    val newsitems = Seq(FrontendNewsitem(id = "123", place = Some(Geocode(address = Some("Somewhere")))))
+    val newsitems = Seq(FrontendNewsitem(id = "123", geocode = Some(Geocode(address = Some("Somewhere")))))
     val mv = new ModelMap().addAttribute("tag", tag).addAttribute(MAIN_CONTENT, newsitems.asJava)
 
     val withRss = modelBuilder.setRss(mv)

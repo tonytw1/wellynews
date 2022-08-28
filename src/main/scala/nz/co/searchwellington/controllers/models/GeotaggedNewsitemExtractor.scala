@@ -6,7 +6,7 @@ import org.springframework.stereotype.Component
 @Component class GeotaggedNewsitemExtractor {
 
   def extractGeotaggedItems(feedNewsitems: Seq[FrontendResource]): Seq[FrontendResource] = {
-    feedNewsitems.filter(_.place.nonEmpty)
+    feedNewsitems.filter(_.geocode.nonEmpty)
   }
 
 }

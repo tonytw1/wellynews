@@ -51,7 +51,7 @@ class NewsitemPageModelBuilderTest extends ReasonableWaits {
     request.setRequestURI(validPath)
 
     val place = Geocode(address = Some("Somewhere"))
-    val frontendNewsitem = FrontendNewsitem(id = newsitem.id, place = Some(place))
+    val frontendNewsitem = FrontendNewsitem(id = newsitem.id, geocode = Some(place))
 
     when(mongoRepository.getResourceById(newsitem.id)).thenReturn(Future.successful(Some(newsitem)))
     when(frontendResourceMapper.createFrontendResourceFrom(newsitem, None)).thenReturn(Future.successful(frontendNewsitem))
@@ -72,7 +72,7 @@ class NewsitemPageModelBuilderTest extends ReasonableWaits {
     request.setRequestURI(validPath)
 
     val place = Geocode(address = Some("Somewhere"))
-    val frontendNewsitem = FrontendNewsitem(id = newsitem.id, place = Some(place))
+    val frontendNewsitem = FrontendNewsitem(id = newsitem.id, geocode = Some(place))
 
     val handTagging = HandTagging(tag = Tag(id = "123"), taggingUser = User())
     val geotagVotesForNewsitem = Seq(GeotaggingVote(geocode = place, weight = 1, explanation = "Some tagging"))
@@ -105,7 +105,7 @@ class NewsitemPageModelBuilderTest extends ReasonableWaits {
     request.setRequestURI(validPath)
 
     val place = Geocode(address = Some("Somewhere"))
-    val geotaggedFrontendNewsitem = FrontendNewsitem(id = id.toString, place = Some(place))
+    val geotaggedFrontendNewsitem = FrontendNewsitem(id = id.toString, geocode = Some(place))
 
     when(mongoRepository.getResourceById(id.toString)).thenReturn(Future.successful(Some(geotaggedNewsitem))) // TODO properly exercise mapped option branch
     when(frontendResourceMapper.createFrontendResourceFrom(geotaggedNewsitem, None)).thenReturn(Future.successful(geotaggedFrontendNewsitem))

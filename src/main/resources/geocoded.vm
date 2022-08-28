@@ -18,7 +18,7 @@
 
 <h2>$heading</h2>
 
-#parse("includes/place.vm")
+#parse("includes/geocode.vm")
 <br clear="all" />
 
 #parse("includes/nearme.vm")

@@ -1,8 +1,8 @@
 <div class="tag_header">
     #parse("includes/tag_heading.vm")
 
-    #set($geocode = $tag.place)
-    #parse("includes/place.vm")
+    #set($geocode = $tag.geocode)
+    #parse("includes/geocode.vm")
 
     #parse("includes/tag_admin_links.vm")
 

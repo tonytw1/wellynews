@@ -1,6 +1,6 @@
 <script>
 	#foreach($item in $geocoded)
-		showAddress($item.place.latitude, $item.place.longitude,
+		showAddress($item.geocode.latLong.latitude, $item.geocode.latLong.longitude,
 			"$escape.javascript($item.name)",
 			"$escape.javascript($item.url)",
 			"$escape.javascript($item.description)");

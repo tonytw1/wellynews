@@ -23,20 +23,6 @@ import scala.concurrent.ExecutionContext.Implicits.global
   @GetMapping(Array("/admin"))
   def acceptAllFrom(request: HttpServletRequest): ModelAndView = {
     def show(loggedInUser: User): ModelAndView = {
-      val allTags = Await.result(mongoRepository.getAllTags(), TenSeconds)
-      allTags.foreach{ tag =>
-        tag.geocode.foreach { geocode =>
-          val fix = geocode.latitude.nonEmpty && geocode.longitude.nonEmpty && geocode.latLong.isEmpty
-          if (fix) {
-            val latLong = LatLong(geocode.latitude.get, geocode.longitude.get)
-            val fixedGeocode = geocode.copy(latLong = Some(latLong))
-            val fixedTag = tag.copy(geocode = Some(fixedGeocode))
-            log.info("Fixed tag: " + tag + " -> " + tag)
-            Await.result(mongoRepository.saveTag(fixedTag), TenSeconds)
-          }
-        }
-      }
-
       new ModelAndView("adminindex").addObject("heading", "Admin index")
     }
     requiringAdminUser(show)

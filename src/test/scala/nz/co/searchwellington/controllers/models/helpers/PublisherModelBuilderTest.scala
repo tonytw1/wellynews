@@ -88,7 +88,7 @@ class PublisherModelBuilderTest extends ReasonableWaits with ContentFields {
     val loggedInUser = None
 
     val newsitem = FrontendNewsitem(id = UUID.randomUUID().toString)
-    val geotaggedNewsitem = FrontendNewsitem(id = UUID.randomUUID().toString, place = Some(Geocode(address = Some("Somewhere"))))
+    val geotaggedNewsitem = FrontendNewsitem(id = UUID.randomUUID().toString, geocode = Some(Geocode(address = Some("Somewhere"))))
 
     val publisherNewsitems = Seq(newsitem, geotaggedNewsitem)
 

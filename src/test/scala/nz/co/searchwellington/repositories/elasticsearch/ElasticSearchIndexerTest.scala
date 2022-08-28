@@ -50,7 +50,6 @@ class ElasticSearchIndexerTest extends IndexableResource with ReasonableWaits {
   private val allNewsitems = ResourceQuery(`type` = Some(Set("N")))
 
   private val wellingtonCentralLibrary = Geocode(address = Some("Wellington Central Library"),
-    latitude = Some(-41.2880726), longitude = Some(174.7764243),
     latLong = Some(LatLong(-41.2880726, 174.7764243)),
     osmId = Some(OsmId(48029222L, "RELATION"))
   )
