@@ -20,5 +20,6 @@ trait ElasticFields {
   val LastChanged = "last_changed"
   val Hostname = "hostname"
   val AcceptedDate = "accepted"
+  val GeotagVote = "geotagVote"
 
 }

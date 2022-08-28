@@ -3,6 +3,7 @@ package nz.co.searchwellington.repositories.elasticsearch
 import io.opentelemetry.api.trace.Span
 import nz.co.searchwellington.ReasonableWaits
 import nz.co.searchwellington.controllers.ShowBrokenDecisionService
+import nz.co.searchwellington.geocoding.osm.OsmIdParser
 import nz.co.searchwellington.model._
 import nz.co.searchwellington.repositories.HandTaggingDAO
 import nz.co.searchwellington.repositories.mongo.MongoRepository
@@ -16,6 +17,7 @@ import org.scalatest.matchers.must.Matchers.convertToAnyMustWrapper
 
 import java.util.UUID
 import scala.concurrent.ExecutionContext.Implicits.global
+import scala.concurrent.duration.{Duration, SECONDS}
 import scala.concurrent.{Await, Future}
 
 object ElasticSearchIndexerTest {
@@ -27,11 +29,12 @@ object ElasticSearchIndexerTest {
   private val elasticHost = Option(System.getenv("ELASTIC_HOST")).getOrElse("localhost")
 
   private val showBrokenDecisionService = new ShowBrokenDecisionService
+  private val osmIdParser = new OsmIdParser
 
   val taggingReturnsOfficerService = new TaggingReturnsOfficerService(new HandTaggingDAO(mongoRepository), mongoRepository)
   val indexTagsService = new IndexTagsService(taggingReturnsOfficerService)
 
-  val elasticSearchIndexer = new ElasticSearchIndexer(showBrokenDecisionService, s"http://$elasticHost:9200",
+  val elasticSearchIndexer = new ElasticSearchIndexer(showBrokenDecisionService, osmIdParser, s"http://$elasticHost:9200",
     ElasticSearchIndexerTest.databaseAndIndexName)
 }
 
@@ -44,6 +47,11 @@ class ElasticSearchIndexerTest extends IndexableResource with ReasonableWaits {
 
   private val loggedInUser = User(admin = true)
   private val allNewsitems = ResourceQuery(`type` = Some(Set("N")))
+
+  private val wellingtonCentralLibrary = Geocode(address = Some("Wellington Central Library"),
+    latitude = Some(-41.2880726), longitude = Some(174.7764243),
+    osmId = Some(OsmId(48029222L, "RELATION"))
+  )
 
   private implicit val currentSpan: Span = Span.current()
 
@@ -231,6 +239,67 @@ class ElasticSearchIndexerTest extends IndexableResource with ReasonableWaits {
   }
 
   @Test
+  def canPersistTheGeotagVoteSoThatItDoesNotNeedToBeRecalcuatedOnRender(): Unit = {
+    val geotagged = Newsitem(
+      title = "Geotagged " + UUID.randomUUID().toString,
+      date = Some(new DateTime(2019, 3, 10, 0, 0, 0).toDate),
+      geocode  = Some(wellingtonCentralLibrary)
+    )
+    Await.result(mongoRepository.saveResource(geotagged), TenSeconds)
+
+    val result = indexResources(Seq(geotagged))
+    assertFalse(result.result.errors)
+
+    def geocodedNewsitems = {
+      Await.result(elasticSearchIndexer.getResources(ResourceQuery(`type` = Some(Set("N")), geocoded = Some(true)), loggedInUser = Some(loggedInUser)), TenSeconds)
+    }
+    eventually(timeout(TenSeconds), interval(TenMilliSeconds))(geocodedNewsitems._1.map(_._id).contains(geotagged._id) mustBe true)
+    val roundTrippedGeocode = geocodedNewsitems._1.head.geocode
+    assertEquals(Some(wellingtonCentralLibrary), roundTrippedGeocode)
+  }
+
+  @Test
+  def canFilterForGecodedResources(): Unit = {
+    val tag = Tag()
+    Await.result(mongoRepository.saveTag(tag), TenSeconds)
+    val taggingUser = User()
+    Await.result(mongoRepository.saveUser(taggingUser), TenSeconds)
+
+    val geotaggedNewsitem = Newsitem(
+      title = "Geotagged " + UUID.randomUUID().toString,
+      date = Some(new DateTime(2019, 3, 10, 0, 0, 0).toDate),
+      geocode = Some(wellingtonCentralLibrary),
+      resource_tags = Seq(Tagging(tag_id = tag._id, user_id = taggingUser._id))
+    )
+    Await.result(mongoRepository.saveResource(geotaggedNewsitem), TenSeconds)
+
+    val nonGeotaggedNewsitem = Newsitem(
+      title = "Non geotagged " + UUID.randomUUID().toString,
+      date = Some(new DateTime(2019, 3, 10, 0, 0, 0).toDate),
+      resource_tags = Seq(Tagging(tag_id = tag._id, user_id = taggingUser._id))
+    )
+    Await.result(mongoRepository.saveResource(nonGeotaggedNewsitem), TenSeconds)
+
+    val result = indexResources(Seq(geotaggedNewsitem, nonGeotaggedNewsitem))
+    assertTrue(result.isSuccess)
+
+    val withTag = ResourceQuery(tags = Some(Set(tag)))
+
+    def taggedItems = {
+      Await.result(elasticSearchIndexer.getResources(withTag, loggedInUser = Some(loggedInUser)), TenSeconds)
+    }
+
+    eventually(timeout(Duration(1, SECONDS)), interval(TenMilliSeconds))(taggedItems._2 mustBe 2)
+
+    def geoTaggedItems = {
+      Await.result(elasticSearchIndexer.getResources(withTag.copy(geocoded = Some(true)), loggedInUser = Some(loggedInUser)), TenSeconds)
+    }
+
+    eventually(timeout(Duration(1, SECONDS)), interval(TenMilliSeconds))(geoTaggedItems._2 mustBe 1)
+    geoTaggedItems._1.head._id mustBe geotaggedNewsitem._id
+  }
+
+  @Test
   def canCountArchiveTypes(): Unit = {
     val newsitem = Newsitem()
     Await.result(mongoRepository.saveResource(newsitem), TenSeconds)
@@ -280,8 +349,8 @@ class ElasticSearchIndexerTest extends IndexableResource with ReasonableWaits {
   }
 
   private def indexResources(resources: Seq[Resource]) = {
-    Await.result(Future.sequence(resources.map(toIndexable)).map { i =>
-      elasticSearchIndexer.updateMultipleContentItems(i)
+    Await.result(Future.sequence(resources.map(toIndexable)).flatMap { indexableResources =>
+      elasticSearchIndexer.updateMultipleContentItems(indexableResources)
     }, TenSeconds)
   }
 
