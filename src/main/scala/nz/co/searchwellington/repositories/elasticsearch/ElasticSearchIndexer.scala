@@ -137,7 +137,7 @@ class ElasticSearchIndexer @Autowired()(val showBrokenDecisionService: ShowBroke
 
       val latLong = indexResource.geocode.flatMap(_.latLong)
 
-      val fields: Seq[Option[(String, Any)]] = Seq(
+      val fields = Seq(
         Some(Type -> resource.`type`),
         Some(Title -> resource.title),
         Some(TitleSort -> resource.title),
