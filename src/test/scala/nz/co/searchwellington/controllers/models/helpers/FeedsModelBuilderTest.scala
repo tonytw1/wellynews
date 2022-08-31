@@ -61,6 +61,9 @@ class FeedsModelBuilderTest extends ReasonableWaits with ContentFields {
     when(suggestedFeeditemsService.getSuggestionFeednewsitems(6, Some(adminUser))).thenReturn(Future.successful(suggestedFeeditems))
     val currentFeeds = Seq(FrontendFeed(id = UUID.randomUUID().toString))
     when(contentRetrievalService.getAllFeedsOrderedByLatestItemDate(Some(adminUser))).thenReturn(Future.successful(currentFeeds))
+    val acceptDaysAggregation = Seq(("2022-06-01", 12L),("2022-05-31", 7L))
+    when(contentRetrievalService.getAcceptedDates(loggedInUser = Some(adminUser))).thenReturn(Future.successful(acceptDaysAggregation))
+
     val discoveredFeeditems = Seq(
       DiscoveredFeed(
         url = "http://something",

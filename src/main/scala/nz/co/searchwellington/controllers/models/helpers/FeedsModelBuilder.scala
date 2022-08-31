@@ -4,7 +4,7 @@ import io.opentelemetry.api.trace.Span
 import nz.co.searchwellington.ReasonableWaits
 import nz.co.searchwellington.feeds.suggesteditems.SuggestedFeeditemsService
 import nz.co.searchwellington.filters.RequestPath
-import nz.co.searchwellington.model.{FeedAcceptancePolicy, User}
+import nz.co.searchwellington.model.{AcceptedDay, FeedAcceptancePolicy, User}
 import nz.co.searchwellington.repositories.ContentRetrievalService
 import nz.co.searchwellington.urls.UrlBuilder
 import org.apache.commons.logging.LogFactory
@@ -12,6 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
 import org.springframework.ui.ModelMap
 
+import java.time.LocalDate
 import javax.servlet.http.HttpServletRequest
 import scala.concurrent.{ExecutionContext, Future}
 import scala.jdk.CollectionConverters._
@@ -68,16 +69,29 @@ import scala.jdk.CollectionConverters._
       suggestedFeednewsitems <- eventualSuggestedFeedNewsitems
       discoveredFeedOccurrences <- eventualDiscoveredFeedOccurrences
       currentFeeds <- eventualCurrentFeeds
+      acceptedDays <- getAcceptedDays(loggedInUser)
 
     } yield {
-      mv.addAttribute("suggestions", suggestedFeednewsitems.asJava)
-      mv.addAttribute("discovered_feeds", discoveredFeedOccurrences.asJava)
+      mv.addAttribute("suggestions", suggestedFeednewsitems.asJava).addAttribute("discovered_feeds", discoveredFeedOccurrences.asJava)
       // TODO make conditional
       mv.addAttribute("discovered_feeds_moreurl", urlBuilder.getDiscoveredFeeds)
       mv.addAllAttributes(commonAttributesModelBuilder.secondaryFeeds(currentFeeds))
+      mv.addAttribute("acceptedDays", acceptedDays.asJava)
     }
   }
 
   def getViewName(mv: ModelMap, loggedInUser: Option[User]): String = "feeds"
+
+  private def getAcceptedDays(loggedInUser: Option[User])(implicit ec: ExecutionContext, currentSpan: Span) = { // TODO duplication
+    for {
+      acceptedDatesAggregation <- contentRetrievalService.getAcceptedDates(loggedInUser)
+    } yield {
+      acceptedDatesAggregation.take(14).map {
+        case (dateString, count) =>
+          val day = LocalDate.parse(dateString)
+          AcceptedDay(day, count)
+      }
+    }
+  }
 
 }
