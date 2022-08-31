@@ -50,17 +50,24 @@ import scala.jdk.CollectionConverters._
   def populateExtraModelContent(request: HttpServletRequest, loggedInUser: Option[User])(implicit ec: ExecutionContext, currentSpan: Span): Future[ModelMap] = {
     for {
       latestNewsitems <- latestNewsitems(loggedInUser)
-      acceptedDatesAggregation <- contentRetrievalService.getAcceptedDates(loggedInUser)
+      acceptedDays <- getAcceptedDays(loggedInUser)
     } yield {
-      val acceptedDays = acceptedDatesAggregation.take(14).map {
-        case (dateString, count) =>
-          val day = LocalDate.parse(dateString)
-          AcceptedDay(day, count)
-      }
       new ModelMap().addAllAttributes(latestNewsitems).addAttribute("acceptedDays", acceptedDays.asJava)
     }
   }
 
   def getViewName(mv: ModelMap, loggedInUser: Option[User]): String = "accepted"
+
+  private def getAcceptedDays(loggedInUser: Option[User])(implicit ec: ExecutionContext, currentSpan: Span) = {
+    for {
+      acceptedDatesAggregation <- contentRetrievalService.getAcceptedDates(loggedInUser)
+    } yield {
+      acceptedDatesAggregation.take(14).map {
+        case (dateString, count) =>
+          val day = LocalDate.parse(dateString)
+          AcceptedDay(day, count)
+      }
+    }
+  }
 
 }
