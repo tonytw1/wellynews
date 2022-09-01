@@ -5,6 +5,7 @@ import nz.co.searchwellington.controllers.submission.EndUserInputs
 import nz.co.searchwellington.forms.NewWebsite
 import nz.co.searchwellington.model.{UrlWordsGenerator, Website}
 import nz.co.searchwellington.modification.ContentUpdateService
+import nz.co.searchwellington.repositories.TagDAO
 import nz.co.searchwellington.repositories.mongo.MongoRepository
 import nz.co.searchwellington.urls.{UrlBuilder, UrlCleaner}
 import org.apache.commons.logging.LogFactory
@@ -20,6 +21,7 @@ import javax.servlet.http.HttpServletRequest
 import javax.validation.Valid
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.{Await, Future}
+import scala.jdk.CollectionConverters._
 
 @Controller
 class NewWebsiteController @Autowired()(contentUpdateService: ContentUpdateService,
@@ -27,6 +29,7 @@ class NewWebsiteController @Autowired()(contentUpdateService: ContentUpdateServi
                                         urlWordsGenerator: UrlWordsGenerator, urlBuilder: UrlBuilder,
                                         val anonUserService: AnonUserService,
                                         val urlCleaner: UrlCleaner,
+                                        tagDAO: TagDAO,
                                         loggedInUserFilter: LoggedInUserFilter) extends ReasonableWaits
   with EnsuredSubmitter with EndUserInputs {
 
@@ -78,7 +81,8 @@ class NewWebsiteController @Autowired()(contentUpdateService: ContentUpdateServi
   private def renderNewWebsiteForm(newWebsite: nz.co.searchwellington.forms.NewWebsite): ModelAndView = {
     new ModelAndView("newWebsite").
       addObject("heading", "Adding a website").
-      addObject("formObject", newWebsite)
+      addObject("formObject", newWebsite).
+      addObject("tags", Await.result(tagDAO.getAllTags, TenSeconds).asJava)
   }
 
 }

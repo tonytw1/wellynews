@@ -33,6 +33,17 @@
                     <div class="alert">$error</div>
                 #end
 
+                #springBind("formObject.tags")
+                <label for="${status.expression}">Tags:</label>
+                <select name="${status.expression}" id="tags" multiple >
+                    #foreach($tag in $tags)
+                        <option value="$tag.id" #if($status.actualValue.contains($tag.getBSONId())) SELECTED #end>$tag.displayName
+                    #end
+                </select>
+
+                <input id="tagName" name="tagName" class="title" value="" />
+                <input type="button" value="Add" id="addTag"/>
+
 				<input type="submit" value="Submit" />
 			</fieldset>
 		</form>

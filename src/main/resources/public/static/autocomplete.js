@@ -11,9 +11,11 @@ $(function() {
 	
 	if ($('#addTag').length) {
 		$("#addTag").click(function() {
-			var tagname = $('#tagName').val();
-			$('#tags').append('<option value="' + tagname + '">' + tagname + '</options>');
-			$('#tagName').val("");
+			var tagName = $('#tagName').val();
+            var selector = 'option:contains("' + tagName + '")';
+            var tagOption = $('#tags ' + selector);
+            tagOption[0].scrollIntoView();
+            tagOption.prop("selected", true);
 		});
 	}
 

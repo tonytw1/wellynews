@@ -370,7 +370,7 @@ import scala.concurrent.{ExecutionContext, Future}
     elasticSearchIndexer.getResources(query = publisherResourcesToGather, loggedInUser = loggedInUser).flatMap(i => fetchResourcesForElasticResources(i._1))
   }
 
-  def getTagNamesStartingWith(q: String)(implicit ec: ExecutionContext): Future[Seq[String]] = tagDAO.getTagNamesStartingWith(q)
+  def getTagDisplayNamesStartingWith(q: String)(implicit ec: ExecutionContext): Future[Seq[String]] = tagDAO.getTagDisplayNamesStartingWith(q)
 
   def getFeaturedTags()(implicit ec: ExecutionContext): Future[Seq[Tag]] = tagDAO.getFeaturedTags
 

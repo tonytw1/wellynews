@@ -15,11 +15,11 @@ import javax.servlet.http.{HttpServletRequest, HttpServletResponse}
 import scala.concurrent.Future
 import scala.concurrent.ExecutionContext.Implicits.global
 
-@Controller class TagAjaxController @Autowired()(val loggedInUserFilter: LoggedInUserFilter,
-                                                 val viewFactory: ViewFactory,
-                                                 contentRetrievalService: ContentRetrievalService) extends BaseAjaxController with ReasonableWaits {
+@Controller class TagAutocompleteController @Autowired()(val loggedInUserFilter: LoggedInUserFilter,
+                                                         val viewFactory: ViewFactory,
+                                                         contentRetrievalService: ContentRetrievalService) extends BaseAjaxController with ReasonableWaits {
 
-  private val log = LogFactory.getLog(classOf[TagAjaxController])
+  private val log = LogFactory.getLog(classOf[TagAutocompleteController])
 
   @GetMapping(Array("/ajax/tags"))
   override def handleRequest(request: HttpServletRequest, response: HttpServletResponse): ModelAndView = {
@@ -28,7 +28,7 @@ import scala.concurrent.ExecutionContext.Implicits.global
 
   override protected def getSuggestions(q: String, loggedInUser: Option[User]): Future[Seq[String]] = {
     log.debug("Looking up possible tags starting with: " + q)
-    contentRetrievalService.getTagNamesStartingWith(q)
+    contentRetrievalService.getTagDisplayNamesStartingWith(q)
   }
 
 }
