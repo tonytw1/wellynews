@@ -42,6 +42,6 @@ import scala.concurrent.{ExecutionContext, Future}
     }
   }
 
-  def getTagNamesStartingWith(q: String)(implicit ec: ExecutionContext): Future[Seq[String]] = getAllTags.map(ts => ts.filter(t => t.name.startsWith(q)).map(t => t.name))
+  def getTagDisplayNamesStartingWith(q: String)(implicit ec: ExecutionContext): Future[Seq[String]] = getAllTags.map(ts => ts.filter(t => t.display_name.startsWith(q)).map(t => t.display_name))
 
 }

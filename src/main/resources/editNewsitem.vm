@@ -62,6 +62,7 @@
                 </select>
 
                 <input id="tagName" name="tagName" class="title" value="" />
+                <input type="button" value="Add" id="addTag"/>
 
                 <br />
                 #foreach($error in $status.errorMessages)
