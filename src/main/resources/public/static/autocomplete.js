@@ -31,10 +31,6 @@ $(function() {
 
 	// Edit form behaviours
 	if ($('.editForm').length) {
-		$(".editForm").submit(function() {
-			$('#tags option').attr('selected', 'selected');
-		});
-
         // When a URL is entered we can potentially autofill the publisher and page title.
         $("[name='url']").change(function() {
             var url = $(this).val();
