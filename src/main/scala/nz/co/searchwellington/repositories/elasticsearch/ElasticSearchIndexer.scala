@@ -19,7 +19,7 @@ import nz.co.searchwellington.model._
 import nz.co.searchwellington.model.geo.{Geocode, OsmId}
 import org.apache.commons.logging.LogFactory
 import org.joda.time.format.ISODateTimeFormat
-import org.joda.time.{DateTime, Interval}
+import org.joda.time.{DateTime, Interval, LocalDate}
 import org.springframework.beans.factory.annotation.{Autowired, Value}
 import org.springframework.stereotype.Component
 import reactivemongo.api.bson.BSONObjectID
@@ -335,6 +335,10 @@ class ElasticSearchIndexer @Autowired()(val showBrokenDecisionService: ShowBroke
       },
       query.before.map { d =>
         rangeQuery(Date) lt d.getMillis
+      },
+      query.acceptedDate.map { a: LocalDate =>
+        val asInterval = a.toInterval() // TODO probably want to make this parameter an Interval to push the timezone decision up
+        rangeQuery(AcceptedDate) gte asInterval.getStartMillis lt asInterval.getEndMillis
       },
       query.q.map { qt =>
         val titleMatches = matchQuery(Title, qt).boost(5)

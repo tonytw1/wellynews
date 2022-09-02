@@ -11,9 +11,8 @@ import nz.co.searchwellington.model.frontend.FrontendResource
 import nz.co.searchwellington.model.mappers.FrontendResourceMapper
 import nz.co.searchwellington.repositories.elasticsearch._
 import nz.co.searchwellington.repositories.mongo.MongoRepository
-import nz.co.searchwellington.tagging.IndexTagsService
 import org.apache.commons.logging.LogFactory
-import org.joda.time.{DateTime, Interval}
+import org.joda.time.{DateTime, Interval, LocalDate}
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
 import reactivemongo.api.bson.BSONObjectID
@@ -24,8 +23,7 @@ import scala.concurrent.{ExecutionContext, Future}
 @Component class ContentRetrievalService @Autowired()(tagDAO: TagDAO,
                                                       frontendResourceMapper: FrontendResourceMapper,
                                                       elasticSearchIndexer: ElasticSearchIndexer,
-                                                      mongoRepository: MongoRepository,
-                                                      indexTagsService: IndexTagsService) extends ReasonableWaits with CommonSizes {
+                                                      mongoRepository: MongoRepository) extends ReasonableWaits with CommonSizes {
 
   private val log = LogFactory.getLog(classOf[ContentRetrievalService])
 
@@ -231,8 +229,8 @@ import scala.concurrent.{ExecutionContext, Future}
     elasticSearchIndexer.getResources(latestWebsites, loggedInUser = loggedInUser).flatMap(r => buildFrontendResourcesFor(r, loggedInUser))
   }
 
-  def getAcceptedNewsitems(maxItems: Int, page: Int = 1, loggedInUser: Option[User])(implicit ec: ExecutionContext, currentSpan: Span): Future[(Seq[FrontendResource], Long)] = {
-    val acceptNewsitems = ResourceQuery(`type` = newsitems, maxItems = maxItems, startIndex = maxItems * (page - 1)) // TODO needs not null clause
+  def getAcceptedNewsitems(maxItems: Int, loggedInUser: Option[User], acceptedDate: Option[LocalDate] = None)(implicit ec: ExecutionContext, currentSpan: Span): Future[(Seq[FrontendResource], Long)] = {
+    val acceptNewsitems = ResourceQuery(`type` = newsitems, maxItems = maxItems, acceptedDate = acceptedDate) // TODO needs not null clause
     elasticSearchIndexer.getResources(acceptNewsitems, elasticSearchIndexer.byAcceptedDate, loggedInUser = loggedInUser).flatMap(r => buildFrontendResourcesFor(r, loggedInUser))
   }
 

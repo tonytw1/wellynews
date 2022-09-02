@@ -19,7 +19,6 @@
 
 #parse("includes/main_content.vm")
 
-#parse("includes/page_links.vm")
 </div>
 
 
@@ -32,7 +31,7 @@
         #set ($first = 1)
         #foreach($acceptedDay in $acceptedDays)
              <li class="archive_link">
-                $dateFormatter.formatLocalDate($acceptedDay.day)
+                <a href="$urlBuilder.getAcceptedUrl($acceptedDay.day)">$dateFormatter.formatLocalDate($acceptedDay.day)</a>
                 #if ($first == 1)
                     ($acceptedDay.count accepted)
                     #set ($first = 0)

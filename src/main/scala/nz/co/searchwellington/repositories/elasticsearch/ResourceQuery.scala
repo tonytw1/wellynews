@@ -1,7 +1,7 @@
 package nz.co.searchwellington.repositories.elasticsearch
 
 import nz.co.searchwellington.model.{FeedAcceptancePolicy, Tag, Website}
-import org.joda.time.{DateTime, Interval}
+import org.joda.time.{DateTime, Interval, LocalDate}
 import reactivemongo.api.bson.BSONObjectID
 import uk.co.eelpieconsulting.common.geo.model.LatLong
 
@@ -20,7 +20,8 @@ case class ResourceQuery(`type`: Option[Set[String]] = None,
                          held: Option[Boolean] = None,
                          hostname: Option[String] = None,
                          before: Option[DateTime] = None,
-                         notPublishedBy: Option[Website] = None
+                         notPublishedBy: Option[Website] = None,
+                         acceptedDate: Option[LocalDate] = None
                         )
 
 case class Circle(centre: LatLong, radius: Double)

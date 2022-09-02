@@ -4,16 +4,19 @@ import io.opentelemetry.api.trace.Span
 import nz.co.searchwellington.ReasonableWaits
 import nz.co.searchwellington.controllers.RssUrlBuilder
 import nz.co.searchwellington.model.AcceptedDay
+import nz.co.searchwellington.model.frontend.FrontendNewsitem
 import nz.co.searchwellington.repositories.ContentRetrievalService
 import nz.co.searchwellington.urls.UrlBuilder
+import org.joda.time.{DateTime, LocalDate}
 import org.junit.jupiter.api.Assertions.{assertEquals, assertTrue}
 import org.junit.jupiter.api.Test
 import org.mockito.Mockito.{mock, when}
 import org.springframework.mock.web.MockHttpServletRequest
 
-import java.time.LocalDate
+import java.util.UUID
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.{Await, Future}
+import scala.jdk.CollectionConverters._
 
 class AcceptedModelBuilderTest extends ReasonableWaits with CommonSizes {
 
@@ -36,7 +39,20 @@ class AcceptedModelBuilderTest extends ReasonableWaits with CommonSizes {
 
     val acceptedDays = extras.get("acceptedDays").asInstanceOf[java.util.List[AcceptedDay]]
     assertTrue(Option(acceptedDays).nonEmpty)
-    assertEquals(AcceptedDay(LocalDate.of(2022, 6, 1), 12), acceptedDays.get(0))
+    assertEquals(AcceptedDay(java.time.LocalDate.of(2022, 6, 1), 12), acceptedDays.get(0))
+  }
+
+  @Test
+  def shouldPaginateByAcceptedDat(): Unit = {
+    val request = new MockHttpServletRequest
+    val secondOfSeptember = new LocalDate(2022, 9, 2)
+    request.setParameter("date", secondOfSeptember.toString)
+    val acceptedOnThe2nd = Seq(FrontendNewsitem(id = UUID.randomUUID().toString, accepted = new DateTime(2022, 9, 2, 12, 23, 0).toDate))
+    when(contentRetrievalService.getAcceptedNewsitems(maxItems = MAX_NEWSITEMS, loggedInUser = None, acceptedDate = Some(secondOfSeptember))).thenReturn(Future.successful(acceptedOnThe2nd, acceptedOnThe2nd.size))
+
+    val model = Await.result(builder.populateContentModel(request, loggedInUser = None), TenSeconds).get
+
+    assertEquals(acceptedOnThe2nd.asJava, model.get("main_content"));
   }
 
 }

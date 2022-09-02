@@ -9,6 +9,8 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
 import uk.co.eelpieconsulting.common.geo.model.Place
 
+import java.time.LocalDate
+
 @Component
 class UrlBuilder @Autowired()(siteInformation: SiteInformation, urlWordsGenerator: UrlWordsGenerator) extends ArchiveMonth {
 
@@ -134,6 +136,8 @@ class UrlBuilder @Autowired()(siteInformation: SiteInformation, urlWordsGenerato
   }
 
   def getAcceptedUrl: String = "/accepted"
+
+  def getAcceptedUrl(date: LocalDate): String = "/accepted?date=" + date.toString
 
   def getJustinUrl: String = {
     "/justin"

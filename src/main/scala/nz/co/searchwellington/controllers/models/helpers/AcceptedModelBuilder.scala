@@ -7,11 +7,11 @@ import nz.co.searchwellington.filters.RequestPath
 import nz.co.searchwellington.model.{AcceptedDay, User}
 import nz.co.searchwellington.repositories.ContentRetrievalService
 import nz.co.searchwellington.urls.UrlBuilder
+import org.joda.time.LocalDate
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
 import org.springframework.ui.ModelMap
 
-import java.time.LocalDate
 import javax.servlet.http.HttpServletRequest
 import scala.concurrent.{ExecutionContext, Future}
 import scala.jdk.CollectionConverters._
@@ -26,10 +26,11 @@ import scala.jdk.CollectionConverters._
   }
 
   def populateContentModel(request: HttpServletRequest, loggedInUser: Option[User])(implicit ec: ExecutionContext, currentSpan: Span): Future[Option[ModelMap]] = {
-    val page = getPage(request)
-
+    val date = Option(request.getParameter("date")).map { dateString =>
+      new LocalDate(dateString)
+    }
     for {
-      acceptedNewsitmes <- contentRetrievalService.getAcceptedNewsitems(MAX_NEWSITEMS, loggedInUser = loggedInUser, page = page)
+      acceptedNewsitmes <- contentRetrievalService.getAcceptedNewsitems(MAX_NEWSITEMS, loggedInUser = loggedInUser, acceptedDate = date)
     } yield {
       val mv = new ModelMap().
         addAttribute("heading", "Accepted").
@@ -37,11 +38,6 @@ import scala.jdk.CollectionConverters._
         addAttribute("link", urlBuilder.fullyQualified(urlBuilder.getAcceptedUrl)).
         addAttribute(MAIN_CONTENT, acceptedNewsitmes._1.asJava)
 
-      val startIndex = getStartIndex(page, MAX_NEWSITEMS)
-      def paginationLinks(page: Int): String = {
-        urlBuilder.getAcceptedUrl + "?page=" + page
-      }
-      populatePagination(mv, startIndex, acceptedNewsitmes._2, MAX_NEWSITEMS, paginationLinks)
       commonAttributesModelBuilder.setRss(mv, rssUrlBuilder.getRssTitleForAccepted, rssUrlBuilder.getRssUrlForAccepted)
       Some(mv)
     }
@@ -64,7 +60,7 @@ import scala.jdk.CollectionConverters._
     } yield {
       acceptedDatesAggregation.take(14).map {
         case (dateString, count) =>
-          val day = LocalDate.parse(dateString)
+          val day = java.time.LocalDate.parse(dateString)
           AcceptedDay(day, count)
       }
     }
