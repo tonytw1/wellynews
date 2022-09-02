@@ -4,7 +4,7 @@
 <input type="button" value="Add" id="addTag"/>
 <select name="${status.expression}" id="tags" multiple >
     #foreach($tag in $tags)
-        <option value="$tag.id" #if($status.actualValue.contains($tag.getBSONId())) SELECTED #end>$tag.displayName
+        <option value="$tag.id" #if($status.actualValue.contains($tag.getBSONId())) SELECTED #end>$tag.displayName</option>
     #end
 </select>
 #foreach($error in $status.errorMessages)

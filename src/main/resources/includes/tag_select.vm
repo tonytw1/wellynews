@@ -1,6 +1,0 @@
-#if ($tag_select) 
-			<p>Please select two or three tags which best describe your listing.</p>
-			<p><label for="tags">Tags: </label>
-	    	$tag_select	
-			</p>
-#end
