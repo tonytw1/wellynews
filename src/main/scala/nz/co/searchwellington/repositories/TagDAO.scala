@@ -42,6 +42,9 @@ import scala.concurrent.{ExecutionContext, Future}
     }
   }
 
-  def getTagDisplayNamesStartingWith(q: String)(implicit ec: ExecutionContext): Future[Seq[String]] = getAllTags.map(ts => ts.filter(t => t.display_name.startsWith(q)).map(t => t.display_name))
+  def getTagDisplayNamesStartingWith(q: String)(implicit ec: ExecutionContext): Future[Seq[String]] = {
+    val asLowercase = q.toLowerCase()
+    getAllTags.map(ts => ts.filter(t => t.display_name.toLowerCase.startsWith(asLowercase)).map(t => t.display_name))
+  }
 
 }
