@@ -19,8 +19,11 @@
 
 #parse("includes/main_content.vm")
 
-</div>
+#if($more_accepted)
+        <li><a href="$urlBuilder.getAcceptedUrl($more_accepted)">More...</a></li>
+#end
 
+</div>
 
 <div class="right">
 

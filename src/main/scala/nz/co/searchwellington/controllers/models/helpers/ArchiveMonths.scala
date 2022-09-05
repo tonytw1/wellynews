@@ -2,8 +2,10 @@ package nz.co.searchwellington.controllers.models.helpers
 
 import nz.co.searchwellington.model.IntervalLink
 import nz.co.searchwellington.model.frontend.FrontendResource
-import org.joda.time.{DateTime, Interval, YearMonth}
+import org.joda.time.{DateTime, DateTimeZone, Interval, YearMonth}
 import org.springframework.ui.ModelMap
+
+import java.time.{LocalDate, ZoneId, ZoneOffset}
 
 trait ArchiveMonths {
 
@@ -25,8 +27,12 @@ trait ArchiveMonths {
     mv
   }
 
-  def monthOfLastItem(newsitems: Seq[FrontendResource]): Option[Interval] = newsitems.lastOption.map { i =>
-    new YearMonth(new DateTime(i.date)).toInterval()
+  def monthOfLastItem(resources: Seq[FrontendResource]): Option[Interval] = resources.lastOption.map { r =>
+    new YearMonth(new DateTime(r.date)).toInterval()
+  }
+
+  def dayOfLastItem(resources: Seq[FrontendResource]): Option[LocalDate] = resources.lastOption.map { r =>
+    LocalDate.ofInstant(r.date.toInstant, ZoneOffset.UTC) // TODO timezone
   }
 
 }

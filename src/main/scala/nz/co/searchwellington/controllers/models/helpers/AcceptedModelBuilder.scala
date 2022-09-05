@@ -19,7 +19,7 @@ import scala.jdk.CollectionConverters._
 @Component class AcceptedModelBuilder @Autowired()(val contentRetrievalService: ContentRetrievalService,
                                                    rssUrlBuilder: RssUrlBuilder, val urlBuilder: UrlBuilder,
                                                    commonAttributesModelBuilder: CommonAttributesModelBuilder)
-  extends ModelBuilder with CommonSizes with ReasonableWaits with Pagination {
+  extends ModelBuilder with CommonSizes with ReasonableWaits with Pagination with ArchiveMonths {
 
   def isValid(request: HttpServletRequest): Boolean = {
     RequestPath.getPathFrom(request).matches("^/accepted(/(rss|json))?$")
@@ -30,14 +30,22 @@ import scala.jdk.CollectionConverters._
       new LocalDate(dateString)
     }
     for {
-      acceptedNewsitmes <- contentRetrievalService.getAcceptedNewsitems(MAX_NEWSITEMS, loggedInUser = loggedInUser, acceptedDate = date)
+      acceptedNewsitemsAndTotalCount <- contentRetrievalService.getAcceptedNewsitems(MAX_NEWSITEMS, loggedInUser = loggedInUser, acceptedDate = date)
     } yield {
+      val acceptedNewsitems = acceptedNewsitemsAndTotalCount._1
+      val totalItems = acceptedNewsitemsAndTotalCount._2
+
       val mv = new ModelMap().
         addAttribute("heading", "Accepted").
         addAttribute("description", "The most recently accepted feed news items.").
         addAttribute("link", urlBuilder.fullyQualified(urlBuilder.getAcceptedUrl)).
-        addAttribute(MAIN_CONTENT, acceptedNewsitmes._1.asJava)
+        addAttribute(MAIN_CONTENT, acceptedNewsitems.asJava)
 
+      if (totalItems > MAX_NEWSITEMS) {
+        dayOfLastItem(acceptedNewsitems).foreach { i =>
+          mv.addAttribute("more_accepted", AcceptedDay(day = i, count = 0L))  // TODO merge with more
+        }
+      }
       commonAttributesModelBuilder.setRss(mv, rssUrlBuilder.getRssTitleForAccepted, rssUrlBuilder.getRssUrlForAccepted)
       Some(mv)
     }
