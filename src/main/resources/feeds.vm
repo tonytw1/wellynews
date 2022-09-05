@@ -16,9 +16,7 @@
     </ul>
 #end
 
-<p>$siteInformation.sitename aggregates links from these $siteInformation.areaname related feeds.</p>
-
-<p><a href="$urlBuilder.getAcceptedUrl()">Recently accepted newsitems</a> can be viewed.</p>
+<p>$siteInformation.sitename <a href="$urlBuilder.getAcceptedUrl()">accepts newsitems</a> from these $siteInformation.areaname related feeds.</p>
 
 <p><a href="rssfeeds">RSS feeds</a> produced by $siteInformation.sitename are summarised <a href="rssfeeds">here</a>.</p>
 
@@ -47,7 +45,7 @@
 <div class="right">
 
 <div class="box">
-    <h2>Accepted counts</h2>
+    <h2>Accepted newsitems</h2>
     <p>How many newsitems were accepted on each day.</p>
     <ul>
         #set ($first = 1)
