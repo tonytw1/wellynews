@@ -11,12 +11,13 @@ import nz.co.searchwellington.model.mappers.FrontendResourceMapper
 import nz.co.searchwellington.repositories.ContentRetrievalService
 import nz.co.searchwellington.tagging.RelatedTagsService
 import nz.co.searchwellington.urls.UrlBuilder
-import org.joda.time.{DateTime, Interval}
+import org.joda.time.{DateTime, DateTimeZone, Interval}
 import org.junit.jupiter.api.Assertions.{assertEquals, assertNotNull}
 import org.junit.jupiter.api.Test
 import org.mockito.Mockito.{mock, when}
 import org.springframework.mock.web.MockHttpServletRequest
 import reactivemongo.api.bson.BSONObjectID
+import uk.co.eelpieconsulting.common.dates.DateFormatter
 
 import java.util.UUID
 import scala.concurrent.ExecutionContext.Implicits.global
@@ -26,7 +27,7 @@ import scala.jdk.CollectionConverters._
 class PublisherModelBuilderTest extends ReasonableWaits with ContentFields {
 
   private val rssUrlBuilder = new RssUrlBuilder(new SiteInformation())
-  private val urlBuilder = mock(classOf[UrlBuilder])
+  private val urlBuilder = new UrlBuilder(new SiteInformation(url = "https://wellynews.local"), new UrlWordsGenerator(new DateFormatter(DateTimeZone.UTC)))
   private val relatedTagsService = mock(classOf[RelatedTagsService])
   private val contentRetrievalService = mock(classOf[ContentRetrievalService])
   private val geotaggedNewsitemExtractor = new GeotaggedNewsitemExtractor
@@ -34,7 +35,7 @@ class PublisherModelBuilderTest extends ReasonableWaits with ContentFields {
   private val frontendResourceMapper = mock(classOf[FrontendResourceMapper])
 
   private val publisher = Website(title = "A publisher", url_words = Some("a-publisher"))
-  private val frontendPublisher = FrontendWebsite(id = UUID.randomUUID().toString)
+  private val frontendPublisher = FrontendWebsite(id = UUID.randomUUID().toString, urlWords = "a-publisher", name = "A publisher")
 
   private implicit val currentSpan: Span = Span.current()
 
@@ -78,9 +79,8 @@ class PublisherModelBuilderTest extends ReasonableWaits with ContentFields {
     val mv = Await.result(modelBuilder.populateContentModel(request), TenSeconds).get
 
     assertNotNull(mv.get("more"))
-    val moreLink = mv.get("more").asInstanceOf[PublisherArchiveLink]
-    assertEquals(frontendPublisher, moreLink.getPublisher)
-    assertEquals(new DateTime(2022, 1, 1, 0, 0, 0).toDate, moreLink.getMonth)
+    val moreLink = mv.get("more").asInstanceOf[String]
+    assertEquals("/a-publisher/2022-jan", moreLink)
   }
 
   @Test

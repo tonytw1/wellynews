@@ -17,9 +17,7 @@
 			</li>
 		#end
 		#if($more)
-    		<li><a href="$urlBuilder.getArchiveLinkUrl($more)">More...</a></li>
+    		<li><a href="$more">More...</a></li>
 		#end
 	</ul>
 </div>
-
-

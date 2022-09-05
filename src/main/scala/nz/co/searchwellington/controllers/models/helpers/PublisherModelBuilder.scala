@@ -63,7 +63,7 @@ import scala.jdk.CollectionConverters._
             val monthToLinkToForMore = monthOfLastItem(newsitems) // TODO this is a slight off by one.
             monthToLinkToForMore.foreach { i =>
               val moreLink = PublisherArchiveLink(publisher = frontendWebsite, interval = i, count = None)
-              mv.addAttribute("more", moreLink)
+              mv.addAttribute("more", urlBuilder.getArchiveLinkUrl(moreLink))
             }
           }
 

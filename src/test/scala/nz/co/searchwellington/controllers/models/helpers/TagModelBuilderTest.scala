@@ -122,9 +122,8 @@ class TagModelBuilderTest extends ReasonableWaits with ContentFields {
     val mv = Await.result(modelBuilder.populateContentModel(request), TenSeconds).get
 
     assertNotNull(mv.get("more"))
-    val moreLink = mv.get("more").asInstanceOf[TagArchiveLink]
-    assertEquals(tag, moreLink.getTag)
-    assertEquals(new DateTime(2022, 1, 1, 0, 0, 0).toDate, moreLink.getMonth)
+    val moreLink = mv.get("more").asInstanceOf[String]
+    assertEquals("/penguins/2022-jan", moreLink)
   }
 
   @Test

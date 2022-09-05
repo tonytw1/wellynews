@@ -74,7 +74,8 @@ import scala.jdk.CollectionConverters._
 
           if (totalNewsitems > MAX_NEWSITEMS) {
             monthOfLastItem(taggedNewsitems).foreach { i =>
-              mv.addAttribute("more", TagArchiveLink(tag = tag, interval = i, count = None))
+              val link = TagArchiveLink(tag = tag, interval = i, count = None)
+              mv.addAttribute("more", urlBuilder.getArchiveLinkUrl(link))
             }
           }
 

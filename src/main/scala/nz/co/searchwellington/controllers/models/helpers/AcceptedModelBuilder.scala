@@ -43,7 +43,7 @@ import scala.jdk.CollectionConverters._
 
       if (totalItems > MAX_NEWSITEMS) {
         dayOfLastItem(acceptedNewsitems).foreach { i =>
-          mv.addAttribute("more_accepted", AcceptedDay(day = i, count = 0L))  // TODO merge with more
+          mv.addAttribute("more", urlBuilder.getAcceptedUrl(i))
         }
       }
       commonAttributesModelBuilder.setRss(mv, rssUrlBuilder.getRssTitleForAccepted, rssUrlBuilder.getRssUrlForAccepted)
