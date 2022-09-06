@@ -120,12 +120,12 @@ import scala.util.Try
 
         }, { right =>
           resource.setHttpStatus(right._1)
-          val eventualProcesserOutcomes = processors.asScala.map { processor =>
+          val eventualProcessorOutcomes = processors.asScala.map { processor =>
             log.debug("Running processor: " + processor.getClass.toString)
             processor.process(resource, right._2, DateTime.now)
           }
 
-          Future.sequence(eventualProcesserOutcomes).map { processorOutcomes =>
+          Future.sequence(eventualProcessorOutcomes).map { processorOutcomes =>
             processorOutcomes.forall(outcome => outcome)
           }
         })
