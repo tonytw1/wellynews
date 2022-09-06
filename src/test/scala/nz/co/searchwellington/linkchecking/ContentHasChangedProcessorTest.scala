@@ -2,9 +2,9 @@ package nz.co.searchwellington.linkchecking
 
 import nz.co.searchwellington.model.Watchlist
 import org.joda.time.DateTime
-import org.junit.jupiter.api.Assertions.fail
+import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
-import org.mockito.Mockito.mock
+import org.mockito.Mockito.{mock, verify, when}
 
 import scala.concurrent.ExecutionContext.Implicits.global
 
@@ -16,14 +16,14 @@ class ContentHasChangedProcessorTest {
 
   @Test
   def shouldUpdateResourceLastChangedDateWhenChangeIsDetected() {
-    val checkResource = Watchlist()
+    val checkResource = Watchlist(page = "http://localhost/a-page")
+    when(snapshotArchive.getLatestFor(checkResource.page)).thenReturn(Some("Some content"))
+    val now = DateTime.now.withMillis(0)
 
-    processor.process(checkResource, Some("SOME CONTENT"), DateTime.now)
+    processor.process(checkResource, Some("Updated content"), now)
 
-    // TODO assert that
-    // records snapshot for the current content
-    // updates the resource last change is a change is detected
-    fail()
+    verify(snapshotArchive).storeSnapshot(checkResource.page, "Updated content")
+    assertEquals(Some(now.toDate), checkResource.last_changed)
   }
 
 }

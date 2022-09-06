@@ -14,18 +14,18 @@ import scala.concurrent.{ExecutionContext, Future}
   private val log = LogFactory.getLog(classOf[ContentHasChangedProcesser])
 
   override def process(checkResource: Resource, pageContent: Option[String], seen: DateTime)(implicit ec: ExecutionContext): Future[Boolean] = {
-    checkForChangeUsingSnapshots(checkResource, pageContent)
+    checkForChangeUsingSnapshots(checkResource, pageContent, seen)
     Future.successful(false)
   }
 
   // TODO cleaning and filtering?
-  private def checkForChangeUsingSnapshots(checkResource: Resource, pageContent: Option[String]) = {
+  private def checkForChangeUsingSnapshots(checkResource: Resource, pageContent: Option[String], seen: DateTime) = {
     log.debug("Comparing content before and after snapshots from content change.")
-    val snapshotBeforeHttpCheck: Option[String] = snapshotArchive.getLatestFor(checkResource.page)
+    val snapshotBeforeHttpCheck = snapshotArchive.getLatestFor(checkResource.page)
 
     if (contentHasChanged(snapshotBeforeHttpCheck, pageContent)) {
       log.info("Change in content checksum detected. Setting last changed and storing a snapshot.")
-      checkResource.setLastChanged(new DateTime().toDate)
+      checkResource.setLastChanged(seen.toDate)
       snapshotArchive.storeSnapshot(checkResource.page, pageContent.get)
     }
   }
