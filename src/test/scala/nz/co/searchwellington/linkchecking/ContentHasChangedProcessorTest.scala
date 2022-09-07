@@ -2,7 +2,7 @@ package nz.co.searchwellington.linkchecking
 
 import nz.co.searchwellington.model.Watchlist
 import org.joda.time.DateTime
-import org.junit.jupiter.api.Assertions.assertEquals
+import org.junit.jupiter.api.Assertions.{assertEquals, fail}
 import org.junit.jupiter.api.Test
 import org.mockito.Mockito.{mock, verify, verifyNoMoreInteractions, when}
 
@@ -38,6 +38,11 @@ class ContentHasChangedProcessorTest {
     assertEquals(Some(agesAgo.toDate), checkResource.last_changed)
     verify(snapshotArchive).getLatestFor(checkResource.page)
     verifyNoMoreInteractions(snapshotArchive)
+  }
+
+  @Test
+  def notHavingAPreviousSnapshotToCompareDoesNotMeanContentHasChanged(): Unit = {
+    fail()
   }
 
 }
