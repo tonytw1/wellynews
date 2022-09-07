@@ -52,6 +52,7 @@ class MongoRepository @Autowired()(@Value("${mongo.uri}") mongoUri: String) exte
   val tagCollection: BSONCollection = db.collection("tag")
   val userCollection: BSONCollection = db.collection("user")
   val discoveredFeedCollection: BSONCollection = db.collection("discovered_feed")
+  val snapshotCollection: BSONCollection = db.collection("snapshots")
 
   {
     import scala.concurrent.ExecutionContext.Implicits.global
@@ -62,12 +63,12 @@ class MongoRepository @Autowired()(@Value("${mongo.uri}") mongoUri: String) exte
     tagCollection.create(failsIfExists = false)
     userCollection.create(failsIfExists = false)
     discoveredFeedCollection.create(failsIfExists = false)
+    snapshotCollection.create(failsIfExists = false)
 
     log.info("Ensuring mongo indexes")
     val resourceByTypeAndUrlWords = Index(Seq("type" -> IndexType.Ascending, "url_words" -> IndexType.Ascending), name = Some("type_with_url_words"), unique = false)
     val resourceByUrl = Index(Seq("page" -> IndexType.Ascending), name = Some("page"), unique = false)
     val resourceById = Index(Seq("id" -> IndexType.Ascending), name = Some("id"), unique = true)
-
     val requiredResourceIndexes = Seq(resourceByTypeAndUrlWords, resourceByUrl, resourceById)
 
     requiredResourceIndexes.foreach { requiredIndex =>
@@ -85,6 +86,10 @@ class MongoRepository @Autowired()(@Value("${mongo.uri}") mongoUri: String) exte
     val discoveredFeedsSeen = Index(Seq("seen" -> IndexType.Descending), name = Some("seen"), unique = false)
     val discoveredFeedsSeenResult = Await.result(discoveredFeedCollection.indexesManager.ensure(discoveredFeedsSeen), OneMinute)
     log.info("Ensured index result for " + suppressedUrls.name + ": " + discoveredFeedsSeenResult)
+
+    val snapshotByUrl = Index(Seq("url" -> IndexType.Ascending), name = Some("url"), unique = true)
+    val snapshotByUrlResult = Await.result(snapshotCollection.indexesManager.ensure(snapshotByUrl), OneMinute)
+    log.info("Ensured index result for " + snapshotByUrl.name + ": " + snapshotByUrlResult)
   }
 
   // TODO This feels wrong; why is the reactive mongo supplied one private?
@@ -129,8 +134,10 @@ class MongoRepository @Autowired()(@Value("${mongo.uri}") mongoUri: String) exte
 
   implicit def websiteReader: BSONDocumentReader[Website] = Macros.reader[Website]
 
-  implicit def discoveredFeedOccurenceReader: BSONDocumentReader[DiscoveredFeedOccurrence] = Macros.reader[DiscoveredFeedOccurrence]
+  implicit def discoveredFeedOccurrenceReader: BSONDocumentReader[DiscoveredFeedOccurrence] = Macros.reader[DiscoveredFeedOccurrence]
   implicit def discoveredFeedReader: BSONDocumentReader[DiscoveredFeed] = Macros.reader[DiscoveredFeed]
+
+  implicit def snapshotReader: BSONDocumentReader[Snapshot] = Macros.reader[Snapshot]
 
   def getResourceById(id: String)(implicit ec: ExecutionContext): Future[Option[Resource]] = {
     getResourceBy(BSONDocument("id" -> id))
@@ -168,6 +175,8 @@ class MongoRepository @Autowired()(@Value("${mongo.uri}") mongoUri: String) exte
 
   implicit def discoveredFeedOccurrenceWriter: BSONDocumentWriter[DiscoveredFeedOccurrence] = Macros.writer[DiscoveredFeedOccurrence]
   implicit def discoveredFeedWriter: BSONDocumentWriter[DiscoveredFeed] = Macros.writer[DiscoveredFeed]
+
+  implicit def snapshotWriter: BSONDocumentWriter[Snapshot] = Macros.writer[Snapshot]
 
   def saveResource(resource: Resource)(implicit ec: ExecutionContext): Future[WriteResult] = {
     log.debug("Updating resource: " + resource._id + " / " + resource.last_scanned + " / " + resource.resource_tags)
@@ -215,6 +224,16 @@ class MongoRepository @Autowired()(@Value("${mongo.uri}") mongoUri: String) exte
   def saveUser(user: User)(implicit ec: ExecutionContext): Future[WriteResult] = {
     val byId = BSONDocument("_id" -> user._id)
     userCollection.update.one(byId, user, upsert = true)
+  }
+
+  def getSnapshotByUrl(url: String)(implicit ec: ExecutionContext): Future[Option[Snapshot]] = {
+    val byUrl = BSONDocument("url" -> url)
+    snapshotCollection.find(byUrl, noProjection).one[Snapshot]
+  }
+
+  def saveSnapshot(snapshot: Snapshot)(implicit ec: ExecutionContext): Future[WriteResult] = {
+    val byUrl = BSONDocument("url" -> snapshot.url)
+    snapshotCollection.update.one(byUrl, snapshot, upsert = true)
   }
 
   def getSupressionByUrl(url: String)(implicit ec: ExecutionContext): Future[Option[Supression]] = {

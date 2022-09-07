@@ -10,9 +10,9 @@ import scala.concurrent.ExecutionContext.Implicits.global
 
 class ContentHasChangedProcessorTest {
 
-  private val snapshotArchive = mock(classOf[InMemorySnapshotArchive])
+  private val snapshotArchive = mock(classOf[SnapshotArchive])
 
-  private val processor = new ContentHasChangedProcesser(snapshotArchive)
+  private val processor = new ContentHasChangedProcessor(snapshotArchive)
 
   @Test
   def shouldUpdateResourceLastChangedDateWhenChangeIsDetected() {

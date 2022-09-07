@@ -4,6 +4,7 @@ import java.util.UUID
 import nz.co.searchwellington.ReasonableWaits
 import nz.co.searchwellington.model._
 import nz.co.searchwellington.model.geo.{Geocode, LatLong, OsmId}
+import org.joda.time.DateTime
 import org.junit.jupiter.api.Assertions.{assertEquals, assertFalse, assertTrue}
 import org.junit.jupiter.api.Test
 
@@ -265,6 +266,17 @@ class MongoRepositoryTest extends ReasonableWaits {
     val reloaded = Await.result(mongoRepository.getUserByTwitterId(twitterId), TenSeconds)
     assertTrue(reloaded.nonEmpty)
     assertEquals(user, reloaded.get)
+  }
+
+  @Test
+  def canPersistSnapshots(): Unit = {
+    val snapshot = Snapshot("https://localhost/a-page.html", "Some page content", DateTime.now.toDate)
+
+    Await.result(mongoRepository.saveSnapshot(snapshot), TenSeconds)
+
+    val reloaded = Await.result(mongoRepository.getSnapshotByUrl(snapshot.url), TenSeconds)
+    assertTrue(reloaded.nonEmpty)
+    assertEquals(snapshot, reloaded.get)
   }
 
   private def testName = "Test " + UUID.randomUUID.toString

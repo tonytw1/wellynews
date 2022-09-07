@@ -21,7 +21,7 @@ class LinkCheckerTest extends ReasonableWaits {
   private  val httpFetcher = mock(classOf[RobotsAwareHttpFetcher])
   private val feedAutodiscoveryProcessor = mock(classOf[FeedAutodiscoveryProcessor])
   private val twitterPhotoDetector = mock(classOf[TwitterPhotoDetector])
-  private val contentHasChangedProcesser = mock(classOf[ContentHasChangedProcesser])
+  private val contentHasChangedProcesser = mock(classOf[ContentHasChangedProcessor])
   private val meterRegistry = mock(classOf[MeterRegistry])
 
   @Test
