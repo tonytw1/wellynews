@@ -14,11 +14,13 @@ class ContentHasChangedProcessorTest {
 
   private val processor = new ContentHasChangedProcessor(snapshotArchive)
 
+  private val agesAgo = DateTime.now.minusMonths(1)
+
   @Test
   def shouldUpdateResourceLastChangedDateWhenChangeIsDetected() {
     val checkResource = Watchlist(page = "http://localhost/a-page")
     when(snapshotArchive.getLatestFor(checkResource.page)).thenReturn(Some("Some content"))
-    val now = DateTime.now.withMillis(0)
+    val now = DateTime.now
 
     processor.process(checkResource, Some("Updated content"), now)
 
@@ -28,10 +30,9 @@ class ContentHasChangedProcessorTest {
 
   @Test
   def shouldNotAlterResourcesIfContentHasNotChanged() {
-    val agesAgo = DateTime.now.minusMonths(1)
     val checkResource = Watchlist(page = "http://localhost/a-page", last_changed = Some(agesAgo.toDate))
     when(snapshotArchive.getLatestFor(checkResource.page)).thenReturn(Some("Same old content"))
-    val now = DateTime.now.withMillis(0)
+    val now = DateTime.now
 
     processor.process(checkResource, Some("Same old content"), now)
 
@@ -42,7 +43,14 @@ class ContentHasChangedProcessorTest {
 
   @Test
   def notHavingAPreviousSnapshotToCompareDoesNotMeanContentHasChanged(): Unit = {
-    fail()
+    val checkResource = Watchlist(page = "http://localhost/a-page", last_changed = Some(agesAgo.toDate))
+    when(snapshotArchive.getLatestFor(checkResource.page)).thenReturn(None)
+
+    processor.process(checkResource, Some("Same old content"), DateTime.now)
+
+    assertEquals(Some(agesAgo.toDate), checkResource.last_changed)
+    verify(snapshotArchive).getLatestFor(checkResource.page)
+    verifyNoMoreInteractions(snapshotArchive)
   }
 
 }
