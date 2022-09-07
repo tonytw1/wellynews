@@ -31,14 +31,9 @@ import scala.concurrent.{ExecutionContext, Future}
   }
 
   private def contentHasChanged(before: Option[String], after: Option[String]): Boolean = {
-    if (before.isEmpty && after.isEmpty) {  // TODO match statement
-      false
-    } else if (before.isEmpty && after.nonEmpty) {
-        false
-    } else if (before.nonEmpty && after.nonEmpty) {
-        !(UrlFilters.stripHtml(after.get) == UrlFilters.stripHtml(before.get))
-    } else {
-      false
+    (before, after) match {
+      case (Some(before), Some(after)) => !(UrlFilters.stripHtml(before) == UrlFilters.stripHtml(after))
+      case _ => false
     }
   }
 
