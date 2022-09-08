@@ -6,20 +6,23 @@ import nz.co.searchwellington.repositories.TagDAO
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
 
+import java.util.StringTokenizer
+import scala.collection.mutable
 import scala.concurrent.{ExecutionContext, Future}
 
 @Component
 class TagHintAutoTagger @Autowired()(tagDAO: TagDAO) {
 
   def suggestTags(resource: Resource)(implicit ec: ExecutionContext): Future[Set[Tag]] = {
+    val resourceContent = resource.title + " " + resource.description
+    val tokens = tokenise(resourceContent.toLowerCase())
 
-    def matches(resourceContent: String, tag: Tag): Boolean = {
-      tag.hints.exists(keyword => resourceContent.contains(keyword.toLowerCase))
+    def matches(tag: Tag): Boolean = {
+      tag.hints.exists(keyword => tokens.contains(keyword.toLowerCase))
     }
 
-    val resourceContent = (resource.title + " " + resource.description).toLowerCase
     tagDAO.getAllTags.map { allTags =>
-      allTags.filter(tag => matches(resourceContent, tag)).toSet
+      allTags.filter(tag => matches(tag)).toSet
     }
   }
 
@@ -36,6 +39,17 @@ class TagHintAutoTagger @Autowired()(tagDAO: TagDAO) {
     } else {
       Future.successful(Set.empty)
     }
+  }
+
+  private def tokenise(resourceContent: String): Set[String] = {
+    val standardTokenizer = new StringTokenizer(resourceContent)
+    val tokens: mutable.Set[String] = scala.collection.mutable.Set.empty
+    val iterator = standardTokenizer.asIterator()
+    while (iterator.hasNext) {
+      val value = iterator.next().asInstanceOf[String]
+      tokens.add(value)
+    }
+    tokens.toSet
   }
 
 }
