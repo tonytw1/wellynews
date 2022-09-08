@@ -22,10 +22,12 @@ import scala.concurrent.{ExecutionContext, Future}
     log.debug("Comparing content before and after snapshots from content change.")
     pageContent.foreach { pageContent =>
       val previousHash = snapshotArchive.getLatestHashFor(checkResource.page)
-      val currentHash = pageContentHasher.hashPageContent(pageContent)
+      val currentHash: String = pageContentHasher.hashPageContent(pageContent)
       if (contentHasChanged(previousHash, currentHash)) {
         log.info("Change in content checksum detected. Setting last changed and storing a snapshot.")
         checkResource.setLastChanged(seen.toDate)
+      }
+      if (!previousHash.contains(currentHash)) {
         snapshotArchive.storeHash(checkResource.page, currentHash)
       }
     }

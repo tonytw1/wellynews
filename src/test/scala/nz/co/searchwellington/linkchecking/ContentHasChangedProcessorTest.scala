@@ -48,11 +48,13 @@ class ContentHasChangedProcessorTest {
   def notHavingAPreviousSnapshotToCompareDoesNotMeanContentHasChanged(): Unit = {
     val checkResource = Watchlist(page = "http://localhost/a-page", last_changed = Some(agesAgo.toDate))
     when(snapshotArchive.getLatestHashFor(checkResource.page)).thenReturn(None)
+    when(pageContentHasher.hashPageContent("Some content")).thenReturn("SOME_CONTENT")
 
-    processor.process(checkResource, Some("Same old content"), DateTime.now)
+    processor.process(checkResource, Some("Some content"), DateTime.now)
 
     assertEquals(Some(agesAgo.toDate), checkResource.last_changed)
     verify(snapshotArchive).getLatestHashFor(checkResource.page)
+    verify(snapshotArchive).storeHash(checkResource.page, "SOME_CONTENT")
     verifyNoMoreInteractions(snapshotArchive)
   }
 
