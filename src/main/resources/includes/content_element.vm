@@ -21,7 +21,7 @@
 				<li>Latest Item: $dateFormatter.dayMonthYear($item.latestItemDate)</li>				
 			#end
 			#if (($item.type == 'L' || $item.type == 'F') && $item.lastChanged && !$item.latestItemDate)
-				<li>Last Changed: $dateFormatter.dayMonthYear($item.lastChanged)</li>
+				<li>Last Changed: $dateFormatter.timeSince($item.lastChanged)</li>
 			#end
 				
 			#if ($item.description) 
