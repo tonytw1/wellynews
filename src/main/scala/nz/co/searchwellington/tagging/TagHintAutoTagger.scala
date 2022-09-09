@@ -8,6 +8,7 @@ import org.springframework.stereotype.Component
 
 import java.util.StringTokenizer
 import scala.collection.mutable
+import scala.collection.mutable.ListBuffer
 import scala.concurrent.{ExecutionContext, Future}
 
 @Component
@@ -18,7 +19,11 @@ class TagHintAutoTagger @Autowired()(tagDAO: TagDAO) {
     val tokens = tokenise(resourceContent.toLowerCase())
 
     def matches(tag: Tag): Boolean = {
-      tag.hints.exists(keyword => tokens.contains(keyword.toLowerCase))
+      val hints = tag.hints
+      hints.exists { hint =>
+        val hintTokens = tokenise(hint.toLowerCase)
+        tokens.containsSlice(hintTokens)
+      }
     }
 
     tagDAO.getAllTags.map { allTags =>
@@ -41,15 +46,15 @@ class TagHintAutoTagger @Autowired()(tagDAO: TagDAO) {
     }
   }
 
-  private def tokenise(resourceContent: String): Set[String] = {
+  private def tokenise(resourceContent: String): Seq[String] = {
     val standardTokenizer = new StringTokenizer(resourceContent)
-    val tokens: mutable.Set[String] = scala.collection.mutable.Set.empty
+    val tokens: mutable.ListBuffer[String] = ListBuffer.empty
     val iterator = standardTokenizer.asIterator()
     while (iterator.hasNext) {
       val value = iterator.next().asInstanceOf[String]
-      tokens.add(value)
+      tokens += value
     }
-    tokens.toSet
+    tokens.toSeq
   }
 
 }
