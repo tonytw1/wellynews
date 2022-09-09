@@ -32,6 +32,17 @@ class TagHintAutoTaggerTest extends ReasonableWaits {
   }
 
   @Test
+  def shouldMatchForMultiwordHints(): Unit = {
+    val tag = Tag(hints = Seq("Central Library"))
+    when(tagDAO.getAllTags).thenReturn(Future.successful(Seq(tag)))
+    val resource = Newsitem(id = UUID.randomUUID().toString, title = "The facts about base isolation at the Central Library")
+
+    val suggestions = Await.result(tagHintAutoTagger.suggestTags(resource), TenSeconds)
+
+    assertTrue(suggestions.contains(tag))
+  }
+
+  @Test
   def autotaggingHintsShouldNotMatchSubstrings(): Unit = {
     val tag = Tag(display_name = "Art", hints = Seq("murals", "arty"))
     when(tagDAO.getAllTags).thenReturn(Future.successful(Seq(tag)))
