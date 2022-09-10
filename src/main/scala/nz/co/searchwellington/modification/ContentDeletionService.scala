@@ -2,9 +2,9 @@ package nz.co.searchwellington.modification
 
 import nz.co.searchwellington.ReasonableWaits
 import nz.co.searchwellington.model._
+import nz.co.searchwellington.repositories.SuppressionDAO
 import nz.co.searchwellington.repositories.elasticsearch.ElasticSearchIndexer
 import nz.co.searchwellington.repositories.mongo.MongoRepository
-import nz.co.searchwellington.repositories.{HandTaggingDAO, SuppressionDAO}
 import org.apache.commons.logging.LogFactory
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
@@ -32,7 +32,7 @@ import scala.concurrent.{Await, Future}
           Await.result(removeFeedFromFeedNewsitems(feed), OneMinute)
         case newsitem: Newsitem =>
           log.info("Suppressing deleted newsitem url to prevent it been reaccepted from a feed: " + newsitem.page)
-          suppressionDAO.addSuppression(newsitem.page)
+          Await.result(suppressionDAO.addSuppression(newsitem.page), TenSeconds)
         case _ =>
       }
 

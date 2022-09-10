@@ -44,6 +44,7 @@ class ContentDeletionServiceTest {
     val successfulWrite = mock(classOf[WriteResult])
     when(successfulWrite.writeErrors).thenReturn(Seq.empty)
     when(mongoRepository.removeResource(newsitem)).thenReturn(Future.successful(successfulWrite))
+    when(suppressionDAO.addSuppression("http://localhost/some-page")).thenReturn(Future.successful(true))
 
     val result = contentDeletionService.performDelete(newsitem)
 
