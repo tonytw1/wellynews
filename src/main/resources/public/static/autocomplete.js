@@ -20,6 +20,7 @@ $(function() {
                     $(option)[0].scrollIntoView();
                 }
             });
+            $("#tagName").val("");
 		});
 	}
 
