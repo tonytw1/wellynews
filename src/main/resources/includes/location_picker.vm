@@ -6,5 +6,5 @@
 
 #springBind("formObject.osm")
 <label for="${status.expression}">Selected geocode:</label>
-<input id="osm" name="${status.expression}" class="title" value="$!{status.value}" />
+<input id="osm" name="${status.expression}" class="title" value="$!{status.value}" type="hidden" />
 <br />
