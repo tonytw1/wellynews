@@ -4,10 +4,6 @@
 					<li>Held</li>
 				#end
 			#end
-									
-			#if ($editPermissionService.canEdit($item) && $item.commentFeed)
-				<li>Comment feed: <a href="$item.commentFeed.url">$item.commentFeed.url</li>
-			#end
 
 			#if ($editPermissionService.canEdit($item) && ($item.type == "FNI"))
 				<li>Http Status: $item.httpStatus</li>
