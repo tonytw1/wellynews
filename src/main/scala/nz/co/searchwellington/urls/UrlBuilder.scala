@@ -62,6 +62,8 @@ class UrlBuilder @Autowired()(siteInformation: SiteInformation, urlWordsGenerato
     "/new-feed?publisher=" + publisher.urlWords
   }
 
+  def getTagsUrl(): String = "/tags"
+
   def getTagUrl(tag: Tag): String = {
     "/" + tag.name
   }

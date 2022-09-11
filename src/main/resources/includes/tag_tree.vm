@@ -1,11 +1,5 @@
 <h2>Tags</h2>
 
-#if ($editPermissionService.canAddTag())
-<ul>
-	<li class="admin"><a href="$adminUrlBuilder.getAddTagUrl()">Add tag</a></li>
-</ul>
-#end
-
 #macro( showNode $tagToRender )
 	#set ($class = "selected")
 	#if ($tag) 
@@ -19,10 +13,10 @@
 		#if ($tag.id == $tagToRender.id) 
 			<b>$tagToRender.displayName</b>
 		#else
-			<a href="${siteInformation.url}/$tagToRender.name">$tagToRender.displayName</a>
+			<a href="$urlBuilder.getTagUrl($tagToRender)">$tagToRender.displayName</a>
 		#end		
 	#else
-		<a href="${siteInformation.url}/$tagToRender.name">$tagToRender.displayName</a>
+		<a href="$urlBuilder.getTagUrl($tagToRender)">$tagToRender.displayName</a>
 	#end
 	</li>
 #end
@@ -34,5 +28,5 @@
 	#end
 #end
 
-<li><a href="${siteInformation.url}/tags">All Tags...</a></li>
+<li><a href="$urlBuilder.tagsUrl">All Tags...</a></li>
 </ul>
