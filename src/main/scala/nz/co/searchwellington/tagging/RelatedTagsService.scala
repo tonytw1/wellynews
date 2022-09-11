@@ -36,12 +36,11 @@ import scala.concurrent.{ExecutionContext, Future}
 
       def suitableRelatedTag(tagFacetsForTag: TagContentCount): Boolean = {
         def isTagSuitableRelatedTag(relatedTag: Tag): Boolean = {
-          val isNotHidden = !relatedTag.hidden
           val isNotParentOf = !tagsAncestors.contains(relatedTag)
           val isNotDescendantOf = !tagsDescendants.contains(relatedTag)
           val isNotBlogsOrPlaces = !Set("blogs", "places").contains(relatedTag.name)
 
-          tag != relatedTag && isNotHidden && isNotBlogsOrPlaces && isNotParentOf && isNotDescendantOf
+          tag != relatedTag && isNotBlogsOrPlaces && isNotParentOf && isNotDescendantOf
         }
 
         isTagSuitableRelatedTag(tagFacetsForTag.tag)

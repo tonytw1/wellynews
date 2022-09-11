@@ -23,9 +23,7 @@
 
 <ul class="tagtree" rel="noindex">
 #foreach($tree_tag in $top_level_tags)
-	#if (!$tree_tag.hidden2)
-		#showNode($tree_tag)
-	#end
+    #showNode($tree_tag)
 #end
 
 <li><a href="$urlBuilder.tagsUrl">All Tags...</a></li>

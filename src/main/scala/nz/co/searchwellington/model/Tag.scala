@@ -11,7 +11,6 @@ case class Tag(_id: BSONObjectID = BSONObjectID.generate,
                name: String = "",
                display_name: String = "",
                parent: Option[BSONObjectID] = None,
-               hidden: Boolean = false,
                featured: Boolean = false,
                geocode: Option[Geocode] = None,
                description: Option[String] = None,
@@ -32,8 +31,6 @@ case class Tag(_id: BSONObjectID = BSONObjectID.generate,
   def getMainImage: String = main_image.orNull
 
   def getSecondaryImage: String = secondary_image.orNull
-
-  def isHidden: Boolean = hidden
 
   def getDescription: String = description.orNull
 

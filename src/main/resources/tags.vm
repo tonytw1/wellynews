@@ -20,18 +20,16 @@
 #set($letter = "")
 #set($current = "")
 #foreach ($tag in $main_content)
-	#if (!$tag.hidden2)
-	    #if ($tag.displayName.length() > 0)
-    		#set($current = $tag.displayName.substring(0, 1).toUpperCase())
-    	#end
-		#if ($current != $letter)
-			#set($letter = $current)		
-			</ul>
-			<h4>$current.toUpperCase()</h4>
-			<ul>
-		#end
-		<li><a href="$urlBuilder.getTagUrl($tag)">$tag.displayName</a></li>
-	#end
+    #if ($tag.displayName.length() > 0)
+        #set($current = $tag.displayName.substring(0, 1).toUpperCase())
+    #end
+    #if ($current != $letter)
+        #set($letter = $current)
+        </ul>
+        <h4>$current.toUpperCase()</h4>
+        <ul>
+    #end
+    <li><a href="$urlBuilder.getTagUrl($tag)">$tag.displayName</a></li>
 #end
 </ul>
 

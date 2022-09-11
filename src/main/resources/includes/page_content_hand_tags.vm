@@ -2,9 +2,7 @@
     <ul>
         <li class="tagged" rel="noindex">Tagged as:</li>
         #foreach ($tag in $page_content.handTags)
-            #if (!$tag.hidden)
-                <li class="tagged"><a href="$urlBuilder.getTagUrl($tag)">$tag.name</a></li>
-            #end
+            <li class="tagged"><a href="$urlBuilder.getTagUrl($tag)">$tag.name</a></li>
         #end
     </ul>
 #end
