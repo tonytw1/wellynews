@@ -1,7 +1,7 @@
-#if ($editPermissionService.canEdit($tag))
-	<ul>
-		<li class="admin"><a href="$adminUrlBuilder.getEditTagUrl($tag)">edit</a></li>
-		#if ($editPermissionService.canEdit($tag)) <li class="admin"><a href="$siteInformation.url/edit/tag/delete?tag=$tag.name">delete</a></li> #end
-		<li class="admin"><a href="$urlBuilder.getAutoTagUrl($tag)">autotag</a></li>
-	</ul>
+#if ($actions.size() > 0)
+    <ul>
+        #foreach($action in $actions)
+            <li class="admin"><a href="$action.link">$action.label</a></li>
+        #end
+    </ul>
 #end

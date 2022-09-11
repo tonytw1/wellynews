@@ -50,8 +50,8 @@ class EditPermissionService @Autowired()(loggedInUserFilter: LoggedInUserFilter)
     isAdmin(loggedInUserFilter.getLoggedInUser)
   }
 
-  def canEdit(tag: Tag): Boolean = {
-    isAdmin(loggedInUserFilter.getLoggedInUser)
+  def canEdit(tag: Tag, loggedInUser: Option[User]): Boolean = {
+    isAdmin(loggedInUser)
   }
 
   def canAddWatchlistAndTag: Boolean = {

@@ -2,9 +2,11 @@ package nz.co.searchwellington.controllers.models.helpers
 
 import io.opentelemetry.api.trace.Span
 import nz.co.searchwellington.ReasonableWaits
+import nz.co.searchwellington.controllers.admin.AdminUrlBuilder
 import nz.co.searchwellington.controllers.{CommonModelObjectsService, RssUrlBuilder}
-import nz.co.searchwellington.model.frontend.FrontendResource
+import nz.co.searchwellington.model.frontend.{Action, FrontendResource}
 import nz.co.searchwellington.model.{Resource, Tag, TagArchiveLink, User}
+import nz.co.searchwellington.permissions.EditPermissionService
 import nz.co.searchwellington.repositories.{ContentRetrievalService, TagDAO}
 import nz.co.searchwellington.tagging.RelatedTagsService
 import nz.co.searchwellington.urls.UrlBuilder
@@ -20,7 +22,10 @@ import scala.jdk.CollectionConverters._
 @Component class TagModelBuilder @Autowired()(rssUrlBuilder: RssUrlBuilder, val urlBuilder: UrlBuilder,
                                               relatedTagsService: RelatedTagsService,
                                               val contentRetrievalService: ContentRetrievalService,
-                                              commonAttributesModelBuilder: CommonAttributesModelBuilder, tagDAO: TagDAO) extends ModelBuilder
+                                              commonAttributesModelBuilder: CommonAttributesModelBuilder,
+                                              tagDAO: TagDAO,
+                                              editPermissionService: EditPermissionService,
+                                              adminUrlBuilder: AdminUrlBuilder) extends ModelBuilder
   with CommonSizes with Pagination with ReasonableWaits with CommonModelObjectsService with ArchiveMonths {
 
   private val TAG = "tag"
@@ -47,7 +52,7 @@ import scala.jdk.CollectionConverters._
         Future.successful(None)
       }
 
-      for {
+      val eventualMaybeModel = for {
         taggedNewsitemsAndTotalCount <- eventualTaggedNewsitems
         children <- eventualChildTags
         maybeParent <- eventualMaybeParent
@@ -84,6 +89,21 @@ import scala.jdk.CollectionConverters._
           }
 
           Some(mv)
+        }
+      }
+
+      eventualMaybeModel.map { mvo =>
+        mvo.map { mv =>
+          val actions = if (editPermissionService.canEdit(tag, loggedInUser)) {
+            Seq(
+              Action("Edit", adminUrlBuilder.getEditTagUrl(tag)),
+              Action("Delete", adminUrlBuilder.deleteTagUrl(tag)),
+              Action("Autotag", urlBuilder.getAutoTagUrl(tag))
+            )
+          } else {
+            Seq.empty
+          }
+          mv.addAttribute("actions", actions.asJava)
         }
       }
     }

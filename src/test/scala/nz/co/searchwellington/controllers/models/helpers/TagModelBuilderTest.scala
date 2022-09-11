@@ -3,9 +3,11 @@ package nz.co.searchwellington.controllers.models.helpers
 import io.opentelemetry.api.trace.Span
 import nz.co.searchwellington.ReasonableWaits
 import nz.co.searchwellington.controllers.RssUrlBuilder
+import nz.co.searchwellington.controllers.admin.AdminUrlBuilder
 import nz.co.searchwellington.model._
 import nz.co.searchwellington.model.frontend.{FrontendNewsitem, FrontendResource}
 import nz.co.searchwellington.model.geo.Geocode
+import nz.co.searchwellington.permissions.EditPermissionService
 import nz.co.searchwellington.repositories.{ContentRetrievalService, TagDAO}
 import nz.co.searchwellington.tagging.RelatedTagsService
 import nz.co.searchwellington.urls.UrlBuilder
@@ -32,6 +34,8 @@ class TagModelBuilderTest extends ReasonableWaits with ContentFields {
   private val relatedTagsService = mock(classOf[RelatedTagsService])
   private val commonAttributesModelBuilder = new CommonAttributesModelBuilder()
   private val tagDAO = mock(classOf[TagDAO])
+  private val editPermissionService = mock(classOf[EditPermissionService])
+  private val adminUrlBuilder = mock(classOf[AdminUrlBuilder])
 
   private val newsitem1 = mock(classOf[FrontendResource])
   private val newsitem2 = mock(classOf[FrontendResource])
@@ -50,7 +54,7 @@ class TagModelBuilderTest extends ReasonableWaits with ContentFields {
   private implicit val currentSpan: Span = Span.current()
 
   private val modelBuilder = new TagModelBuilder(rssUrlBuilder, urlBuilder, relatedTagsService,
-    contentRetrievalService, commonAttributesModelBuilder, tagDAO)
+    contentRetrievalService, commonAttributesModelBuilder, tagDAO, editPermissionService, adminUrlBuilder)
 
   {
     when(tagDAO.loadTagsByParent(tag._id)).thenReturn(Future.successful(List.empty))
