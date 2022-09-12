@@ -19,7 +19,7 @@
             #foreach($action in $feed.actions)
                 <li class="admin"><a href="$action.link">$action.label</a></li>
             #end
-            #if ($editPermissionService.canEdit($feed))
+            #if ($feed.acceptancePolicy)
                 <p>$feed.acceptancePolicy</p>
                 <p>This feed is read by this <a href="$adminUrlBuilder.getWhakaokoPreviewUrl($subscription)">Whakaoko subscription</a></p>
             #end

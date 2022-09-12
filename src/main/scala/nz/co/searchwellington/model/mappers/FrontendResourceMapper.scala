@@ -134,6 +134,13 @@ import scala.concurrent.{ExecutionContext, Future}
         }.getOrElse {
           Future.successful(None)
         }
+
+        val acceptancePolicy = if (editPermissionService.canEdit(f)) {
+          Some(f.acceptance)
+        } else {
+          None
+        }
+
         for {
           publisher <- eventualPublisher
           owner <- eventualOwner
@@ -149,7 +156,7 @@ import scala.concurrent.{ExecutionContext, Future}
             geocode = place,
             latestItemDate = f.getLatestItemDate,
             lastRead = f.last_read,
-            acceptancePolicy = f.acceptance,
+            acceptancePolicy = acceptancePolicy,
             publisherName = publisher.map(_.title),
             publisherUrlWords = publisher.flatMap(_.url_words),
             httpStatus = httpStatus,

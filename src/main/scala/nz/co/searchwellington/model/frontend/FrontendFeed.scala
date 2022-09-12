@@ -21,7 +21,7 @@ case class FrontendFeed(id: String,
                         geocode: Option[Geocode] = None,
                         held: Boolean = false,
                         latestItemDate: Date = null,
-                        acceptancePolicy: FeedAcceptancePolicy = null,
+                        acceptancePolicy: Option[FeedAcceptancePolicy] = None,
                         lastRead: Option[Date] = None,
                         publisherName: Option[String] = None,
                         publisherUrlWords: Option[String] = None,
@@ -33,7 +33,7 @@ case class FrontendFeed(id: String,
   @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ssXXX")
   def getLatestItemDate: Date = latestItemDate
 
-  def getAcceptancePolicy: FeedAcceptancePolicy = acceptancePolicy
+  def getAcceptancePolicy: FeedAcceptancePolicy = acceptancePolicy.orNull
 
   @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ssXXX")
   def getLastRead: Date = lastRead.orNull
