@@ -54,7 +54,7 @@ import scala.jdk.CollectionConverters._
 
             val eventualFrontendFeedNewitems = Future.sequence {
               feedNewsitems.map { r =>
-                frontendResourceMapper.mapFrontendResource(r, r.geocode, Seq.empty, Seq.empty)
+                frontendResourceMapper.mapFrontendResource(r, r.geocode, Seq.empty, Seq.empty, loggedInUser)
               }
             }
 

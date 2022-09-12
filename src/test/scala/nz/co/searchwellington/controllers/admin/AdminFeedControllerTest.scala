@@ -26,7 +26,7 @@ class AdminFeedControllerTest {
   private val urlWordsGenerator = new UrlWordsGenerator(new DateFormatter(DateTimeZone.UTC))
   private val urlBuilder = new UrlBuilder(new SiteInformation("", "", "", "", ""), urlWordsGenerator)
   private val loggedInUserFilter = mock(classOf[LoggedInUserFilter])
-  private val permissionService = new EditPermissionService(loggedInUserFilter)
+  private val permissionService = new EditPermissionService()
   private val feedReader = mock(classOf[FeedReader])
 
   private implicit val currentSpan = Span.current()

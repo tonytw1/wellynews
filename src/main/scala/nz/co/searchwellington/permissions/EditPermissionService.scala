@@ -8,54 +8,50 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
 
 @Component
-class EditPermissionService @Autowired()(loggedInUserFilter: LoggedInUserFilter) {
+class EditPermissionService @Autowired()() {
 
-  def canEdit(resource: FrontendResource): Boolean = {
-    isAdminOrOwner(resource, loggedInUserFilter.getLoggedInUser)
+  def canEdit(resource: Resource, loggedInUser: Option[User]): Boolean = {
+    isAdminOrOwner(resource, loggedInUser)
   }
 
-  def canEdit(resource: Resource): Boolean = {
-    isAdminOrOwner(resource, loggedInUserFilter.getLoggedInUser)
+  def canDelete(resource: FrontendResource, loggedInUser: Option[User]): Boolean = {
+    isAdminOrOwner(resource, loggedInUser)
   }
 
-  def canDelete(resource: FrontendResource): Boolean = {
-    isAdminOrOwner(resource, loggedInUserFilter.getLoggedInUser)
+  def canDelete(resource: Resource, loggedInUser: Option[User]): Boolean = {
+    isAdminOrOwner(resource, loggedInUser)
   }
 
-  def canDelete(resource: Resource, loggedinUser: Option[User]): Boolean = {
-    isAdminOrOwner(resource, loggedinUser)
+  def canAcceptAll(loggedInUser: Option[User]): Boolean = {
+    isAdmin(loggedInUser)
   }
 
-  def canAcceptAll: Boolean = {
-    isAdmin(loggedInUserFilter.getLoggedInUser)
+  def canAcceptAllFrom(feed: Feed, loggedInUser: Option[User]): Boolean = {
+    canAcceptAll(loggedInUser)
   }
 
-  def canAcceptAllFrom(feed: Feed): Boolean = {
-    canAcceptAll
+  def canCheck(resource: FrontendResource, loggedInUser: Option[User]): Boolean = {
+    isAdmin(loggedInUser)
   }
 
-  def canCheck(resource: FrontendResource): Boolean = {
-    isAdmin(loggedInUserFilter.getLoggedInUser)
+  def canSeeLocalPage(newsitem: Newsitem, loggedInUser: Option[User]): Boolean = {
+    isAdmin(loggedInUser)
   }
 
-  def canSeeLocalPage(newsitem: Newsitem): Boolean = {
-    isAdmin(loggedInUserFilter.getLoggedInUser)
+  def canEditSuggestions(loggedInUser: Option[User]): Boolean = {
+    isAdmin(loggedInUser)
   }
 
-  def canEditSuggestions: Boolean = {
-    isAdmin(loggedInUserFilter.getLoggedInUser)
-  }
-
-  def canAddTag: Boolean = {
-    isAdmin(loggedInUserFilter.getLoggedInUser)
+  def canAddTag(loggedInUser: Option[User]): Boolean = {
+    isAdmin(loggedInUser)
   }
 
   def canEdit(tag: Tag, loggedInUser: Option[User]): Boolean = {
     isAdmin(loggedInUser)
   }
 
-  def canAddWatchlistAndTag: Boolean = {
-    isAdmin(loggedInUserFilter.getLoggedInUser)
+  def canAddWatchlistAndTag(loggedInUser: Option[User]): Boolean = {
+    isAdmin(loggedInUser)
   }
 
   def canAcceptFeedItems(loggedInUser: User): Boolean = {
@@ -64,10 +60,6 @@ class EditPermissionService @Autowired()(loggedInUserFilter: LoggedInUserFilter)
 
   def canDeleteTags(loggedInUser: Option[User]): Boolean = {
     isAdmin(loggedInUser)
-  }
-
-  def isAdmin: Boolean = {
-    isAdmin(loggedInUserFilter.getLoggedInUser)
   }
 
   private def isAdmin(loggedInUser: Option[User]): Boolean = {

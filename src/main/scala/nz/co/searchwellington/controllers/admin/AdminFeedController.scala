@@ -31,7 +31,7 @@ import scala.concurrent.ExecutionContext.Implicits.global
       requestFilter.loadAttributesOntoRequest(request)
       if (request.getAttribute("feedAttribute") == null) throw new RuntimeException("Not found") // TODO
       val feed = request.getAttribute("feedAttribute").asInstanceOf[Feed]
-      if (!editPermissionService.canAcceptAllFrom(feed)) {
+      if (!editPermissionService.canAcceptAllFrom(feed, Some(loggedInUser))) {
         log.warn("Not allowed to read this feed") // TODO return http auth error
         throw new RuntimeException("Not allowed")
       }

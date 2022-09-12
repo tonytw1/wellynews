@@ -76,7 +76,7 @@ import scala.jdk.CollectionConverters._
         }
         mv.addAttribute("feeds", publisherFeeds.asJava)
 
-        if (editPermissionService.canEdit(publisher)) {
+        if (editPermissionService.canEdit(publisher, loggedInUser)) {
           val actions = Seq(
             Action("Edit", adminUrlBuilder.getResourceEditUrl(publisher)),
             Action("Delete", adminUrlBuilder.getResourceDeleteUrl(frontendWebsite)),

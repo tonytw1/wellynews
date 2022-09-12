@@ -71,8 +71,8 @@ class FeedModelBuilderTest extends ReasonableWaits with ContentFields {
     when(feeditemToNewsitemService.makeNewsitemFromFeedItem(feedItem, feed)).thenReturn(Some(newsItem))
     when(feeditemToNewsitemService.makeNewsitemFromFeedItem(anotherFeedItem, feed)).thenReturn(Some(anotherNewsitem))
 
-    when(frontendResourceMapper.mapFrontendResource(newsItem, newsItem.geocode, Seq.empty, Seq.empty)).thenReturn(Future.successful(frontendNewsitem))
-    when(frontendResourceMapper.mapFrontendResource(anotherNewsitem, newsItem.geocode, Seq.empty, Seq.empty)).thenReturn(Future.successful(anotherFrontendNewsitem))
+    when(frontendResourceMapper.mapFrontendResource(newsItem, newsItem.geocode, Seq.empty, Seq.empty, loggedInUser)).thenReturn(Future.successful(frontendNewsitem))
+    when(frontendResourceMapper.mapFrontendResource(anotherNewsitem, newsItem.geocode, Seq.empty, Seq.empty, loggedInUser)).thenReturn(Future.successful(anotherFrontendNewsitem))
 
     when(feedItemActionDecorator.withFeedItemSpecificActions(Seq(frontendNewsitem, anotherFrontendNewsitem), None)).
       thenReturn(Future.successful(Seq(frontendNewsitemWithActions, anotherFrontendNewsitemWithActions)))

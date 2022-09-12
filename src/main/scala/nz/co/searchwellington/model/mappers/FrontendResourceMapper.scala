@@ -41,7 +41,7 @@ import scala.concurrent.{ExecutionContext, Future}
   }
 
   def createFrontendResourceFrom(contentItem: Resource, loggedInUser: Option[User], place: Option[Geocode], handTags: Seq[Tag], indexTags: Seq[Tag])(implicit ec: ExecutionContext): Future[FrontendResource] = {
-    mapFrontendResource(contentItem, place, handTags, indexTags).map { frontendResource =>
+    mapFrontendResource(contentItem, place, handTags, indexTags, loggedInUser).map { frontendResource =>
       val actions = actionsFor(frontendResource, loggedInUser)
       frontendResource match {
         // TODO this match to call the same code on each class is a weird smell
@@ -53,8 +53,8 @@ import scala.concurrent.{ExecutionContext, Future}
     }
   }
 
-  def mapFrontendResource(contentItem: Resource, place: Option[Geocode], handTags: Seq[Tag], indexTags: Seq[Tag])(implicit ec: ExecutionContext): Future[FrontendResource] = {
-    val httpStatus = if (editPermissionService.canEdit(contentItem)) {
+  def mapFrontendResource(contentItem: Resource, place: Option[Geocode], handTags: Seq[Tag], indexTags: Seq[Tag], loggedInUser: Option[User])(implicit ec: ExecutionContext): Future[FrontendResource] = {
+    val httpStatus = if (editPermissionService.canEdit(contentItem, loggedInUser)) {
       Some(contentItem.http_status)
     } else {
       None
@@ -135,7 +135,7 @@ import scala.concurrent.{ExecutionContext, Future}
           Future.successful(None)
         }
 
-        val acceptancePolicy = if (editPermissionService.canEdit(f)) {
+        val acceptancePolicy = if (editPermissionService.canEdit(f, loggedInUser)) {
           Some(f.acceptance)
         } else {
           None

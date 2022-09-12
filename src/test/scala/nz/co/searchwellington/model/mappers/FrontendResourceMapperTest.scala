@@ -41,7 +41,7 @@ class FrontendResourceMapperTest extends ReasonableWaits {
     when(taggingReturnsOfficerService.getTaggingsVotesForResource(newsitem)).thenReturn(Future.successful(Seq.empty))
     when(indexTagsService.getIndexGeocodeForResource(newsitem)).thenReturn(Future.successful(None))
     when(mongoRepository.getUserByObjectId(owner._id)).thenReturn(Future.successful(Some(owner)))
-    when(editPermissionService.canEdit(newsitem)).thenReturn(true)
+    when(editPermissionService.canEdit(newsitem, None)).thenReturn(true)
 
     val frontendNewsitem = Await.result(frontendResourceMapper.createFrontendResourceFrom(newsitem), TenSeconds)
 
@@ -60,7 +60,7 @@ class FrontendResourceMapperTest extends ReasonableWaits {
     when(taggingReturnsOfficerService.getTaggingsVotesForResource(newsitem)).thenReturn(Future.successful(Seq.empty))
     when(indexTagsService.getIndexGeocodeForResource(newsitem)).thenReturn(Future.successful(None))
     when(mongoRepository.getUserByObjectId(owner._id)).thenReturn(Future.successful(Some(owner)))
-    when(editPermissionService.canEdit(newsitem)).thenReturn(true)
+    when(editPermissionService.canEdit(newsitem, None)).thenReturn(true)
 
     val aTag = Tag()
     val anotherTag = Tag()
