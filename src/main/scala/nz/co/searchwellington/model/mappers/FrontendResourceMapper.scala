@@ -6,6 +6,7 @@ import nz.co.searchwellington.model._
 import nz.co.searchwellington.model.frontend._
 import nz.co.searchwellington.model.geo.Geocode
 import nz.co.searchwellington.model.taggingvotes.HandTagging
+import nz.co.searchwellington.permissions.EditPermissionService
 import nz.co.searchwellington.repositories.mongo.MongoRepository
 import nz.co.searchwellington.tagging.{IndexTagsService, TaggingReturnsOfficerService}
 import org.springframework.beans.factory.annotation.Autowired
@@ -16,7 +17,8 @@ import scala.concurrent.{ExecutionContext, Future}
 @Component class FrontendResourceMapper @Autowired()(indexTagsService: IndexTagsService,
                                                      val mongoRepository: MongoRepository,
                                                      adminUrlBuilder: AdminUrlBuilder,
-                                                     taggingReturnsOfficerService: TaggingReturnsOfficerService)
+                                                     taggingReturnsOfficerService: TaggingReturnsOfficerService,
+                                                     editPermissionService: EditPermissionService)
   extends ReasonableWaits {
 
   def createFrontendResourceFrom(contentItem: Resource, loggedInUser: Option[User] = None)(implicit ec: ExecutionContext): Future[FrontendResource] = {
@@ -52,6 +54,12 @@ import scala.concurrent.{ExecutionContext, Future}
   }
 
   def mapFrontendResource(contentItem: Resource, place: Option[Geocode], handTags: Seq[Tag], indexTags: Seq[Tag])(implicit ec: ExecutionContext): Future[FrontendResource] = {
+    val httpStatus = if (editPermissionService.canEdit(contentItem)) {
+      Some(contentItem.http_status)
+    } else {
+      None
+    }
+
     contentItem match {
       case n: Newsitem =>
         val eventualPublisher = n.publisher.map { pid =>
@@ -106,7 +114,7 @@ import scala.concurrent.{ExecutionContext, Future}
             urlWords = n.url_words.orNull,
             publisherName = publisher.map(_.title),
             publisherUrlWords = publisher.flatMap(_.url_words),
-            httpStatus = n.http_status,
+            httpStatus = httpStatus,
             lastScanned = n.last_scanned,
             lastChanged = n.last_changed,
             owner = owner.map(user => user.profilename.getOrElse(user._id.stringify)).orNull,
@@ -144,7 +152,7 @@ import scala.concurrent.{ExecutionContext, Future}
             acceptancePolicy = f.acceptance,
             publisherName = publisher.map(_.title),
             publisherUrlWords = publisher.flatMap(_.url_words),
-            httpStatus = f.http_status,
+            httpStatus = httpStatus,
             lastScanned = f.last_scanned,
             lastChanged = f.last_changed,
             owner = owner.map(user => user.profilename.getOrElse(user._id.stringify)).orNull,
@@ -179,7 +187,7 @@ import scala.concurrent.{ExecutionContext, Future}
             publisherUrlWords = publisher.flatMap(_.url_words),
             description = l.description.orNull,
             geocode = place,
-            httpStatus = l.http_status,
+            httpStatus = httpStatus,
             lastScanned = l.last_scanned,
             lastChanged = l.last_changed,
             owner = owner.map(user => user.profilename.getOrElse(user._id.stringify)).orNull,
@@ -206,7 +214,7 @@ import scala.concurrent.{ExecutionContext, Future}
             urlWords = w.url_words.orNull,
             description = w.description.getOrElse(""),
             geocode = w.geocode,
-            httpStatus = w.http_status,
+            httpStatus = httpStatus,
             date = w.date.orNull,
             lastScanned = w.last_scanned,
             lastChanged = w.last_changed,

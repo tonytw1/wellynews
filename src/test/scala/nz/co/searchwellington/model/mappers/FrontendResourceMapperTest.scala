@@ -4,6 +4,7 @@ import nz.co.searchwellington.ReasonableWaits
 import nz.co.searchwellington.controllers.admin.AdminUrlBuilder
 import nz.co.searchwellington.model._
 import nz.co.searchwellington.model.taggingvotes.HandTagging
+import nz.co.searchwellington.permissions.EditPermissionService
 import nz.co.searchwellington.repositories.mongo.MongoRepository
 import nz.co.searchwellington.tagging.{IndexTagsService, TaggingReturnsOfficerService}
 import nz.co.searchwellington.urls.UrlBuilder
@@ -23,11 +24,12 @@ class FrontendResourceMapperTest extends ReasonableWaits {
   private val indexTagsService = mock(classOf[IndexTagsService])
   private val mongoRepository = mock(classOf[MongoRepository])
   private val taggingReturnsOfficerService = mock(classOf[TaggingReturnsOfficerService])
+  private val editPermissionService: EditPermissionService = mock(classOf[EditPermissionService])
 
   private val urlBuilder = new UrlBuilder(new SiteInformation(), new UrlWordsGenerator(new DateFormatter(DateTimeZone.UTC)))
   private val adminUrlBuilder = new AdminUrlBuilder(urlBuilder, "")
 
-  private val frontendResourceMapper = new FrontendResourceMapper(indexTagsService, mongoRepository, adminUrlBuilder, taggingReturnsOfficerService)
+  private val frontendResourceMapper = new FrontendResourceMapper(indexTagsService, mongoRepository, adminUrlBuilder, taggingReturnsOfficerService, editPermissionService)
 
   @Test
   def shouldMapNewsitemsToFrontendNewsitems(): Unit = {
@@ -39,11 +41,12 @@ class FrontendResourceMapperTest extends ReasonableWaits {
     when(taggingReturnsOfficerService.getTaggingsVotesForResource(newsitem)).thenReturn(Future.successful(Seq.empty))
     when(indexTagsService.getIndexGeocodeForResource(newsitem)).thenReturn(Future.successful(None))
     when(mongoRepository.getUserByObjectId(owner._id)).thenReturn(Future.successful(Some(owner)))
+    when(editPermissionService.canEdit(newsitem)).thenReturn(true)
 
     val frontendNewsitem = Await.result(frontendResourceMapper.createFrontendResourceFrom(newsitem), TenSeconds)
 
     assertEquals(newsitem.id, frontendNewsitem.id)
-    assertEquals(200, frontendNewsitem.httpStatus)
+    assertEquals(Some(200), frontendNewsitem.httpStatus)
     assertEquals(owner.profilename.get, frontendNewsitem.getOwner)
   }
 
@@ -57,6 +60,7 @@ class FrontendResourceMapperTest extends ReasonableWaits {
     when(taggingReturnsOfficerService.getTaggingsVotesForResource(newsitem)).thenReturn(Future.successful(Seq.empty))
     when(indexTagsService.getIndexGeocodeForResource(newsitem)).thenReturn(Future.successful(None))
     when(mongoRepository.getUserByObjectId(owner._id)).thenReturn(Future.successful(Some(owner)))
+    when(editPermissionService.canEdit(newsitem)).thenReturn(true)
 
     val aTag = Tag()
     val anotherTag = Tag()
@@ -66,7 +70,7 @@ class FrontendResourceMapperTest extends ReasonableWaits {
     val frontendNewsitem = Await.result(frontendResourceMapper.createFrontendResourceFrom(newsitem, None, None, handTags, indexTags), TenSeconds)
 
     assertEquals(newsitem.id, frontendNewsitem.id)
-    assertEquals(200, frontendNewsitem.httpStatus)
+    assertEquals(Some(200), frontendNewsitem.httpStatus)
     assertEquals(owner.profilename.get, frontendNewsitem.getOwner)
 
     assertEquals(aTag, frontendNewsitem.handTags.get.head)

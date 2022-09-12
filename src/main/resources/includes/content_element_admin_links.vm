@@ -1,15 +1,9 @@
-#if ($editPermissionService.canCheck($item) && ($item.type != "FNI"))
-				<li>Http Status: $item.httpStatus</li>						
-				#if ($item.isHeld()) 
-					<li>Held</li>
-				#end
-			#end
+#if($item.httpStatus)
+    <li>Http Status: $item.httpStatus</li>
+#end
 
-			#if ($editPermissionService.canEdit($item) && ($item.type == "FNI"))
-				<li>Http Status: $item.httpStatus</li>
-			#end
-														
-			#if ($editPermissionService.canEdit($item) && ($item.type == "S"))					
-				<li class="admin"><a href="$adminUrlBuilder.getSuggestionAcceptUrl($item)">accept</a></li>
-				<li class="admin"><a href="$adminUrlBuilder.getSuggestionSuppressUrl($item)">ignore</a></li>
-			#end
+#if ($editPermissionService.canCheck($item) && ($item.type != "FNI"))
+    #if ($item.isHeld())
+        <li>Held</li>
+    #end
+#end
