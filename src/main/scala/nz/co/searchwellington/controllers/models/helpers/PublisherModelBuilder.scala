@@ -3,10 +3,12 @@ package nz.co.searchwellington.controllers.models.helpers
 import io.opentelemetry.api.trace.Span
 import nz.co.searchwellington.ReasonableWaits
 import nz.co.searchwellington.controllers.RssUrlBuilder
+import nz.co.searchwellington.controllers.admin.AdminUrlBuilder
 import nz.co.searchwellington.controllers.models.GeotaggedNewsitemExtractor
-import nz.co.searchwellington.model.frontend.FrontendResource
+import nz.co.searchwellington.model.frontend.{Action, FrontendResource, FrontendWebsite}
 import nz.co.searchwellington.model.mappers.FrontendResourceMapper
 import nz.co.searchwellington.model.{PublisherArchiveLink, Tag, User, Website}
+import nz.co.searchwellington.permissions.EditPermissionService
 import nz.co.searchwellington.repositories.ContentRetrievalService
 import nz.co.searchwellington.tagging.RelatedTagsService
 import nz.co.searchwellington.urls.UrlBuilder
@@ -24,7 +26,9 @@ import scala.jdk.CollectionConverters._
                                                     val urlBuilder: UrlBuilder,
                                                     geotaggedNewsitemExtractor: GeotaggedNewsitemExtractor,
                                                     commonAttributesModelBuilder: CommonAttributesModelBuilder,
-                                                    frontendResourceMapper: FrontendResourceMapper) extends ModelBuilder
+                                                    frontendResourceMapper: FrontendResourceMapper,
+                                                    editPermissionService: EditPermissionService,
+                                                    adminUrlBuilder: AdminUrlBuilder) extends ModelBuilder
   with CommonSizes with ReasonableWaits with ArchiveMonths {
 
   def isValid(request: HttpServletRequest): Boolean = {
@@ -72,6 +76,15 @@ import scala.jdk.CollectionConverters._
         }
         mv.addAttribute("feeds", publisherFeeds.asJava)
 
+        if (editPermissionService.canEdit(publisher)) {
+          val actions = Seq(
+            Action("Edit", adminUrlBuilder.getResourceEditUrl(publisher)),
+            Action("Delete", adminUrlBuilder.getResourceDeleteUrl(frontendWebsite)),
+            Action("Gather", adminUrlBuilder.getPublisherAutoGatherUrl(frontendWebsite.asInstanceOf[FrontendWebsite])),
+            Action("New feed", urlBuilder.getNewFeedForPublisherUrl(frontendWebsite.asInstanceOf[FrontendWebsite])),
+          )
+          mv.addAttribute("actions", actions.asJava)
+        }
         Some(mv)
       }
     }

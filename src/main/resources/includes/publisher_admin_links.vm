@@ -1,8 +1,0 @@
-#if ($editPermissionService.canEdit($publisher))
-	<ul>
-		<li class="admin"><a href="$adminUrlBuilder.getResourceEditUrl($publisher)">edit</a></li>
-		<li class="admin"><a href="$adminUrlBuilder.getResourceDeleteUrl($publisher)">delete</a></li>
-		<li class="admin"><a href="$adminUrlBuilder.getPublisherAutoGatherUrl($publisher)">gather</a></li>
-		<li class="admin"><a href="$urlBuilder.getNewFeedForPublisherUrl($publisher)">New feed</a></li>
-	</ul>
-#end

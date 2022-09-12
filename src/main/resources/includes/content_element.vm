@@ -46,17 +46,16 @@
 				#if ($item.lastRead)
 					<li class="lastread">Last Read: $dateFormatter.timeSince($item.lastRead)</li>
 				#end				
-					#if ($item.acceptancePolicy)
-						<li class="acceptance">$item.acceptancePolicy</li>
-						#if ($item.acceptanceErrors && $item.acceptanceErrors.size() > 0)
-                            <ul>
-                            #foreach($error in $item.acceptanceErrors)
-                                <li>$error</li>
-                            #end
-                            </ul>
+                #if ($item.acceptancePolicy)
+                    <li class="acceptance">$item.acceptancePolicy</li>
+                    #if ($item.acceptanceErrors && $item.acceptanceErrors.size() > 0)
+                        <ul>
+                        #foreach($error in $item.acceptanceErrors)
+                            <li>$error</li>
                         #end
-					#end
-				#end				
+                        </ul>
+                    #end
+				#end
 			#end
 									
 			#if ($item.type == 'W') 

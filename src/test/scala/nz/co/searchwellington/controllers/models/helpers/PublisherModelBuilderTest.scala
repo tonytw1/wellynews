@@ -3,11 +3,13 @@ package nz.co.searchwellington.controllers.models.helpers
 import io.opentelemetry.api.trace.Span
 import nz.co.searchwellington.ReasonableWaits
 import nz.co.searchwellington.controllers.RssUrlBuilder
+import nz.co.searchwellington.controllers.admin.AdminUrlBuilder
 import nz.co.searchwellington.controllers.models.GeotaggedNewsitemExtractor
 import nz.co.searchwellington.model._
 import nz.co.searchwellington.model.frontend.{FrontendFeed, FrontendNewsitem, FrontendResource, FrontendWebsite}
 import nz.co.searchwellington.model.geo.Geocode
 import nz.co.searchwellington.model.mappers.FrontendResourceMapper
+import nz.co.searchwellington.permissions.EditPermissionService
 import nz.co.searchwellington.repositories.ContentRetrievalService
 import nz.co.searchwellington.tagging.RelatedTagsService
 import nz.co.searchwellington.urls.UrlBuilder
@@ -28,11 +30,13 @@ class PublisherModelBuilderTest extends ReasonableWaits with ContentFields {
 
   private val rssUrlBuilder = new RssUrlBuilder(new SiteInformation())
   private val urlBuilder = new UrlBuilder(new SiteInformation(url = "https://wellynews.local"), new UrlWordsGenerator(new DateFormatter(DateTimeZone.UTC)))
+  private val adminUrlBuilder = new AdminUrlBuilder(urlBuilder, "")
   private val relatedTagsService = mock(classOf[RelatedTagsService])
   private val contentRetrievalService = mock(classOf[ContentRetrievalService])
   private val geotaggedNewsitemExtractor = new GeotaggedNewsitemExtractor
   private val commonAttributesModelBuilder = new CommonAttributesModelBuilder
   private val frontendResourceMapper = mock(classOf[FrontendResourceMapper])
+  private val editPermissionService = mock(classOf[EditPermissionService])
 
   private val publisher = Website(title = "A publisher", url_words = Some("a-publisher"))
   private val frontendPublisher = FrontendWebsite(id = UUID.randomUUID().toString, urlWords = "a-publisher", name = "A publisher")
@@ -40,7 +44,7 @@ class PublisherModelBuilderTest extends ReasonableWaits with ContentFields {
   private implicit val currentSpan: Span = Span.current()
 
   private val modelBuilder = new PublisherModelBuilder(rssUrlBuilder, relatedTagsService, contentRetrievalService, urlBuilder,
-    geotaggedNewsitemExtractor, commonAttributesModelBuilder, frontendResourceMapper)
+    geotaggedNewsitemExtractor, commonAttributesModelBuilder, frontendResourceMapper, editPermissionService, adminUrlBuilder)
 
   @Test
   def mainContentShouldBePublisherNewsitems(): Unit = {

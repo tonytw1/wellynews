@@ -24,7 +24,8 @@
     #end
     #parse("includes/page_content_hand_tags.vm")
 
-	#parse("includes/publisher_admin_links.vm")
+    #parse("includes/actions.vm")
+
 #else
 	<h2>$heading</h2>
 #end
