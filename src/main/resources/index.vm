@@ -51,18 +51,11 @@
 			<h2>Submit</h2>
 			<p>Enquiring minds want to know!</p>
 			<p>Submit your $siteInformation.areaname related listings.</p>
-			<ul>
-				<li><a href="$urlBuilder.getSubmitWebsiteUrl()">Submit Website</a></li>
-				<li><a href="$urlBuilder.getSubmitNewsitemUrl()">Submit Newsitem</a></li>
-				<li><a href="$urlBuilder.getSubmitFeedUrl()">Submit Feed</a></li>
-			</ul>
-			
-			#if ($editPermissionService.canAddWatchlistAndTag() ) 
-				<ul>
-					<li><a href="$urlBuilder.getSubmitWatchlistUrl()">Submit Watchlist item</a></li>
-					<li><a href="edit/tag/submit">Submit Tag</a></li>
-				</ul>
-			#end
+            <ul>
+                #foreach($action in $submitActions)
+                    <li><a href="$action.link">$action.label</a></li>
+                #end
+            </ul>
 		</div>
 		
 		#parse("includes/tag_related_feed.vm")

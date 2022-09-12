@@ -8,7 +8,6 @@ import nz.co.searchwellington.controllers.RssUrlBuilder;
 import nz.co.searchwellington.controllers.admin.AdminUrlBuilder;
 import nz.co.searchwellington.filters.RequestObjectLoadingFilter;
 import nz.co.searchwellington.model.SiteInformation;
-import nz.co.searchwellington.permissions.EditPermissionService;
 import nz.co.searchwellington.urls.UrlBuilder;
 import nz.co.searchwellington.utils.EscapeTools;
 import nz.co.searchwellington.views.ColumnSplitter;
@@ -105,7 +104,6 @@ public class Main {
             AdminUrlBuilder adminUrlBuilder,
             ColumnSplitter columnSplitter,
             DateFormatter dateFormatter,
-            EditPermissionService editPermissionService,
             RssUrlBuilder rssUrlBuilder,
             SiteInformation siteInformation,
             UrlBuilder urlBuilder) {
@@ -117,7 +115,6 @@ public class Main {
         attributes.put("adminUrlBuilder", adminUrlBuilder);
         attributes.put("columnSplitter", columnSplitter);
         attributes.put("dateFormatter", dateFormatter);
-        attributes.put("editPermissionService", editPermissionService);
         attributes.put("escape", new EscapeTools());
         attributes.put("rssUrlBuilder", rssUrlBuilder);
         attributes.put("siteInformation", siteInformation);

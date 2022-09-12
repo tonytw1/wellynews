@@ -5,6 +5,7 @@ import nz.co.searchwellington.ReasonableWaits
 import nz.co.searchwellington.controllers.RssUrlBuilder
 import nz.co.searchwellington.filters.RequestPath
 import nz.co.searchwellington.model.User
+import nz.co.searchwellington.model.frontend.Action
 import nz.co.searchwellington.model.frontend.FrontendResource
 import nz.co.searchwellington.model.helpers.ArchiveLinksService
 import nz.co.searchwellington.repositories.ContentRetrievalService
@@ -12,8 +13,8 @@ import nz.co.searchwellington.urls.UrlBuilder
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
 import org.springframework.ui.ModelMap
-
 import javax.servlet.http.HttpServletRequest
+import scala.collection.mutable.ListBuffer
 import scala.concurrent.{ExecutionContext, Future}
 import scala.jdk.CollectionConverters._
 
@@ -46,6 +47,17 @@ import scala.jdk.CollectionConverters._
       }
 
       commonAttributesModelBuilder.setRss(mv, rssUrlBuilder.getBaseRssTitle, rssUrlBuilder.getBaseRssUrl)
+
+      val submitActions = ListBuffer(
+        Action("Submit website", urlBuilder.getSubmitWebsiteUrl),
+        Action("Submit newsitem", urlBuilder.getSubmitNewsitemUrl),
+        Action("Submit feed", urlBuilder.getSubmitFeedUrl)
+      )
+      if (loggedInUser.exists(_.isAdmin)) {
+        submitActions :+ Action("Submit watchlist item", urlBuilder.getSubmitWatchlistUrl)
+      }
+      mv.addAttribute("submitActions", submitActions.asJava)
+
       Some(mv)
     }
   }
