@@ -10,11 +10,7 @@
 <div class="main">
 <h2>$heading</h2>
 
-#if($editPermissionService.admin)
-    <ul>
-        <li class="admin"><a href="$adminUrlBuilder.addTagUrl">Add new tag</a></li>
-    </ul>
-#end
+#parse("includes/actions.vm")
 
 <ul>
 #set($letter = "")

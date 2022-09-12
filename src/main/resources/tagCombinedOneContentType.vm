@@ -27,7 +27,7 @@
 	#end
 </h2>
 
-#parse("includes/tag_admin_links.vm")
+#parse("includes/actions.vm")
 
 #parse("includes/child_tags.vm")
 

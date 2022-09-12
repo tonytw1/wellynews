@@ -4,7 +4,7 @@
     #set($geocode = $tag.geocode)
     #parse("includes/geocode.vm")
 
-    #parse("includes/tag_admin_links.vm")
+    #parse("includes/actions.vm")
 
     #if($tag.description)
         <p>$tag.description</p>

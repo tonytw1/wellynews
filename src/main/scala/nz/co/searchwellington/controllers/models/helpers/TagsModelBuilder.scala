@@ -2,8 +2,10 @@ package nz.co.searchwellington.controllers.models.helpers
 
 import io.opentelemetry.api.trace.Span
 import nz.co.searchwellington.ReasonableWaits
+import nz.co.searchwellington.controllers.admin.AdminUrlBuilder
 import nz.co.searchwellington.filters.RequestPath
 import nz.co.searchwellington.model.User
+import nz.co.searchwellington.model.frontend.Action
 import nz.co.searchwellington.repositories.{ContentRetrievalService, TagDAO}
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
@@ -13,7 +15,8 @@ import javax.servlet.http.HttpServletRequest
 import scala.concurrent.{ExecutionContext, Future}
 import scala.jdk.CollectionConverters._
 
-@Component class TagsModelBuilder @Autowired()(tagDAO: TagDAO, val contentRetrievalService: ContentRetrievalService) extends ModelBuilder
+@Component class TagsModelBuilder @Autowired()(tagDAO: TagDAO, val contentRetrievalService: ContentRetrievalService,
+                                               adminUrlBuilder: AdminUrlBuilder) extends ModelBuilder
   with ReasonableWaits {
 
   def isValid(request: HttpServletRequest): Boolean = {
@@ -24,9 +27,13 @@ import scala.jdk.CollectionConverters._
     for {
       tags <- tagDAO.getAllTags
     } yield {
-      Some(new ModelMap().
+      val mv = new ModelMap().
         addAttribute(MAIN_CONTENT, tags.asJava).
-        addAttribute("heading", "All tags"))
+        addAttribute("heading", "All tags")
+      if (loggedInUser.exists(_.isAdmin)) {
+        mv.addAttribute("actions", Seq(Action("Add new tag", adminUrlBuilder.getAddTagUrl)).asJava)
+      }
+      Some(mv)
     }
   }
 
