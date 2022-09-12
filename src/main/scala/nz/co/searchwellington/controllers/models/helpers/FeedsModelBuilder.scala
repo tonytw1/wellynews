@@ -2,8 +2,10 @@ package nz.co.searchwellington.controllers.models.helpers
 
 import io.opentelemetry.api.trace.Span
 import nz.co.searchwellington.ReasonableWaits
+import nz.co.searchwellington.controllers.admin.AdminUrlBuilder
 import nz.co.searchwellington.feeds.suggesteditems.SuggestedFeeditemsService
 import nz.co.searchwellington.filters.RequestPath
+import nz.co.searchwellington.model.frontend.Action
 import nz.co.searchwellington.model.{AcceptedDay, FeedAcceptancePolicy, User}
 import nz.co.searchwellington.repositories.ContentRetrievalService
 import nz.co.searchwellington.urls.UrlBuilder
@@ -42,6 +44,10 @@ import scala.jdk.CollectionConverters._
         addAttribute("description", "Incoming feeds").
         addAttribute("link", urlBuilder.fullyQualified(urlBuilder.getFeedsUrl)).
         addAttribute(MAIN_CONTENT, feeds.asJava)
+
+      if (loggedInUser.exists(_.isAdmin)) {
+        mv.addAttribute("actions", Seq(Action("Add new feed", urlBuilder.getSubmitFeedUrl)).asJava)
+      }
       Some(mv)
     }
   }
