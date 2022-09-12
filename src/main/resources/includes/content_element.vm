@@ -46,16 +46,15 @@
 				#if ($item.lastRead)
 					<li class="lastread">Last Read: $dateFormatter.timeSince($item.lastRead)</li>
 				#end				
-				#if ($editPermissionService.canEdit($item))
 					#if ($item.acceptancePolicy)
 						<li class="acceptance">$item.acceptancePolicy</li>
-					#end
-					#if ($item.acceptanceErrors && $item.acceptanceErrors.size() > 0)				
-						<ul>
-						#foreach($error in $item.acceptanceErrors)
-							<li>$error</li>
-						#end
-						</ul>
+						#if ($item.acceptanceErrors && $item.acceptanceErrors.size() > 0)
+                            <ul>
+                            #foreach($error in $item.acceptanceErrors)
+                                <li>$error</li>
+                            #end
+                            </ul>
+                        #end
 					#end
 				#end				
 			#end
