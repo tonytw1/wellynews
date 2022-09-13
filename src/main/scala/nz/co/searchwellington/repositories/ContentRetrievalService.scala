@@ -145,14 +145,12 @@ import scala.concurrent.{ExecutionContext, Future}
     elasticSearchIndexer.getResources(taggedWebsites, loggedInUser = loggedInUser).flatMap(i => fetchByIdsAndFrontendMap(i._1, loggedInUser))
   }
 
-  def getGeocodedNewsitems(startIndex: Int, maxItems: Int, loggedInUser: Option[User])(implicit ec: ExecutionContext, currentSpan: Span): Future[(Seq[FrontendResource], Long)] = {
-    val withPagination = geocodedNewsitems.copy(startIndex = startIndex, maxItems = maxItems)
-    elasticSearchIndexer.getResources(withPagination, loggedInUser = loggedInUser).flatMap(r => buildFrontendResourcesFor(r, loggedInUser))
+  def getGeocodedNewsitems(maxItems: Int, loggedInUser: Option[User])(implicit ec: ExecutionContext, currentSpan: Span): Future[(Seq[FrontendResource], Long)] = {
+    elasticSearchIndexer.getResources(geocodedNewsitems.copy(maxItems = maxItems), loggedInUser = loggedInUser).flatMap(r => buildFrontendResourcesFor(r, loggedInUser))
   }
 
-  def getNewsitemsNear(latLong: LatLong, radius: Double, startIndex: Int, maxNewsitems: Int, loggedInUser: Option[User])(implicit ec: ExecutionContext, currentSpan: Span): Future[(Seq[FrontendResource], Long)] = {
-    val withPagination = nearbyNewsitems(latLong, radius).copy(startIndex = startIndex, maxItems = maxNewsitems)
-    elasticSearchIndexer.getResources(withPagination, loggedInUser = loggedInUser).flatMap(r => buildFrontendResourcesFor(r, loggedInUser))
+  def getNewsitemsNear(latLong: LatLong, radius: Double, maxNewsitems: Int, loggedInUser: Option[User])(implicit ec: ExecutionContext, currentSpan: Span): Future[(Seq[FrontendResource], Long)] = {
+    elasticSearchIndexer.getResources(nearbyNewsitems(latLong, radius).copy(maxItems = maxNewsitems), loggedInUser = loggedInUser).flatMap(r => buildFrontendResourcesFor(r, loggedInUser))
   }
 
   def getGeotaggedNewsitemsForTag(tag: Tag, maxItems: Int, loggedInUser: Option[User])(implicit ec: ExecutionContext, currentSpan: Span): Future[Seq[FrontendResource]] = {

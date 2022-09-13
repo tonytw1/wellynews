@@ -61,19 +61,8 @@ class GeotaggedModelBuilderTest extends ReasonableWaits with ContentFields {
   }
 
   @Test
-  def geotaggedNewsitemsPageShouldHavePaginationInformation(): Unit = {
-    request.setRequestURI("/geotagged")
-    when(contentRetrievalService.getGeocodedNewsitems(0, 30, loggedInUser)).thenReturn(Future.successful((Seq.empty, TOTAL_GEOTAGGED_COUNT)))
-
-    val modelAndView = Await.result(modelBuilder.populateContentModel(request), TenSeconds).get
-
-    assertEquals(1, modelAndView.get("page"))
-    assertEquals(TOTAL_GEOTAGGED_COUNT, modelAndView.get("main_content_total"))
-  }
-
-  @Test
   def locationSearchesShouldHaveNearbyNewsitemsAsTheMainContent(): Unit = {
-    when(contentRetrievalService.getNewsitemsNear(new LatLong(1.1, 2.2), 1.0, 0, 30, loggedInUser)).
+    when(contentRetrievalService.getNewsitemsNear(new LatLong(1.1, 2.2), 1.0, 30, loggedInUser)).
       thenReturn(Future.successful((newsitemsNearPetoneStationFirstPage, LOCATION_RESULTS_COUNT)))
     when(relatedTagsService.getRelatedTagsForLocation(any(), any(), any())(any(), any())).thenReturn(Future.successful(Seq()))
     when(relatedTagsService.getRelatedPublishersForLocation(any(), any(), any())(any(),any())).thenReturn(Future.successful(Seq()))
@@ -91,7 +80,7 @@ class GeotaggedModelBuilderTest extends ReasonableWaits with ContentFields {
 
   @Test
   def locationSearchRadiusShouldBeTweakableFromTheRequestParameters(): Unit = {
-    when(contentRetrievalService.getNewsitemsNear(new LatLong(1.1, 2.2), 3.0, 0, 30, loggedInUser)).
+    when(contentRetrievalService.getNewsitemsNear(new LatLong(1.1, 2.2), 3.0, 30, loggedInUser)).
       thenReturn(Future.successful((newsitemsNearPetoneStationFirstPage, LOCATION_RESULTS_COUNT)))
     when(relatedTagsService.getRelatedTagsForLocation(any(), any(), any())(any(), any())).thenReturn(Future.successful(Seq()))
     when(relatedTagsService.getRelatedPublishersForLocation(any(), any(), any())(any(), any())).thenReturn(Future.successful(Seq()))
@@ -105,41 +94,10 @@ class GeotaggedModelBuilderTest extends ReasonableWaits with ContentFields {
   }
 
   @Test
-  def locationSearchesShouldHavePagination(): Unit = {
-    request.setRequestURI("/geotagged")
-    when(contentRetrievalService.getNewsitemsNear(new LatLong(1.1, 2.2), 1.0, 0, 30, loggedInUser)).
-      thenReturn(Future.successful((Seq.empty, LOCATION_RESULTS_COUNT)))
-    when(relatedTagsService.getRelatedTagsForLocation(any(), any(), any())(any(), any())).thenReturn(Future.successful(Seq()))
-    when(relatedTagsService.getRelatedPublishersForLocation(any(), any(), any())(any(), any())).thenReturn(Future.successful(Seq()))
-    request.setAttribute(LocationParameterFilter.LOCATION, validLocation)
-
-    val modelAndView = Await.result(modelBuilder.populateContentModel(request), TenSeconds).get
-
-    assertEquals(1, modelAndView.get("page"))
-    assertEquals(LOCATION_RESULTS_COUNT, modelAndView.get("main_content_total"))
-  }
-
-  @Test
-  def locationSearchesShouldHaveCorrectContentOnSecondPaginationPage(): Unit = {
-    request.setRequestURI("/geotagged")
-    when(contentRetrievalService.getNewsitemsNear(new LatLong(1.1, 2.2), 1.0, 30, 30, loggedInUser)).
-      thenReturn(Future.successful((newsitemsNearPetoneStationSecondPage, LOCATION_RESULTS_COUNT)))
-    request.setAttribute(LocationParameterFilter.LOCATION, validLocation)
-    request.setAttribute("page", 2)
-    when(relatedTagsService.getRelatedTagsForLocation(any(), any(), any())(any(), any())).thenReturn(Future.successful(Seq()))
-    when(relatedTagsService.getRelatedPublishersForLocation(any(), any(), any())(any(), any())).thenReturn(Future.successful(Seq()))
-
-    val modelAndView = Await.result(modelBuilder.populateContentModel(request), TenSeconds).get
-
-    assertEquals(2, modelAndView.get("page"))
-    assertEquals(newsitemsNearPetoneStationSecondPage.asJava, modelAndView.get(MAIN_CONTENT))
-  }
-
-  @Test
   def locationSearchShouldNotSetLocationIfLocationWasInvalid(): Unit = {
     request.setRequestURI("/geotagged")
     request.setAttribute(LocationParameterFilter.LOCATION, invalidLocation)
-    when(contentRetrievalService.getGeocodedNewsitems(0, 30, loggedInUser)).thenReturn(Future.successful((Seq.empty, LOCATION_RESULTS_COUNT)))
+    when(contentRetrievalService.getGeocodedNewsitems(30, loggedInUser)).thenReturn(Future.successful((Seq.empty, LOCATION_RESULTS_COUNT)))
 
     val modelAndView = Await.result(modelBuilder.populateContentModel(request), TenSeconds).get
 

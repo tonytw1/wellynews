@@ -35,12 +35,6 @@
 #parse("includes/geocodedjs.vm")
 #parse("includes/main_content.vm")
 
-#if($location)
-	#parse("includes/location_page_links.vm")
-#else
-	#parse("includes/geotagged_page_links.vm")
-#end
-
 </div>
 
 <div class="right">
