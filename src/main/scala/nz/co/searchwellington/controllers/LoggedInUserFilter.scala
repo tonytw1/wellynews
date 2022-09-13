@@ -24,16 +24,6 @@ class LoggedInUserFilter @Autowired()(request: HttpServletRequest) {
     request.getSession.setAttribute("user", null)
   }
 
-  def isSignedIn: Boolean = getLoggedInUser.nonEmpty
-
-  def getLoggedinUserProfileName: String = {
-    getLoggedInUser.flatMap(_.profilename).orNull
-  }
-
-  def getLoggedInUserOrNull: User = {
-    getLoggedInUser.orNull
-  }
-
   private def getUserFromSession(request: HttpServletRequest): Option[User] = {
     val sessionUser = request.getSession.getAttribute("user").asInstanceOf[User]
     Option(sessionUser)
