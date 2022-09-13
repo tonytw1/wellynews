@@ -1,6 +1,5 @@
 package nz.co.searchwellington.filters;
 
-import nz.co.searchwellington.controllers.LoggedInUserFilter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -13,20 +12,17 @@ import java.io.IOException;
 public class RequestObjectLoadingFilter implements Filter {
 
     private RequestFilter requestFilter;
-    private LoggedInUserFilter loggedInUserFilter;
 
     public RequestObjectLoadingFilter() {
     }
 
     @Autowired
-    public RequestObjectLoadingFilter(RequestFilter requestFilter, LoggedInUserFilter loggedInUserFilter) {
+    public RequestObjectLoadingFilter(RequestFilter requestFilter) {
         this.requestFilter = requestFilter;
-        this.loggedInUserFilter = loggedInUserFilter;
     }
 
     public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException, ServletException {
         requestFilter.loadAttributesOntoRequest((HttpServletRequest) request);
-        loggedInUserFilter.loadLoggedInUser((HttpServletRequest) request);
 
         // TODO move to seperate filter
         HttpServletResponse httpServletResponse = (HttpServletResponse) response;
