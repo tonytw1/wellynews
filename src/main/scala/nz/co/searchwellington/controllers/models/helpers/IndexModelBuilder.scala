@@ -54,7 +54,7 @@ import scala.jdk.CollectionConverters._
         Action("Submit feed", urlBuilder.getSubmitFeedUrl)
       )
       if (loggedInUser.exists(_.isAdmin)) {
-        submitActions :+ Action("Submit watchlist item", urlBuilder.getSubmitWatchlistUrl)
+        submitActions.append(Action("Submit watchlist item", urlBuilder.getSubmitWatchlistUrl))
       }
       mv.addAttribute("submitActions", submitActions.asJava)
 
