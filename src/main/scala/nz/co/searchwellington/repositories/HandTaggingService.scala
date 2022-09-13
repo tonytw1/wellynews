@@ -9,8 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
 import reactivemongo.api.bson.BSONObjectID
 
-import scala.concurrent.ExecutionContext.Implicits.global
-import scala.concurrent.Future
+import scala.concurrent.{ExecutionContext, Future}
 
 @Component class HandTaggingService @Autowired()(contentUpdateService: ContentUpdateService,
                                                  mongoRepository: MongoRepository) extends ReasonableWaits {
@@ -29,7 +28,7 @@ import scala.concurrent.Future
     resource.withTaggings(otherUsersTaggings ++ usersNewsTaggings)
   }
 
-  def clearTaggingsForTag(tag: Tag): Future[Boolean] = {
+  def clearTaggingsForTag(tag: Tag)(implicit ec: ExecutionContext): Future[Boolean] = {
     def removeTaggingsForDeletedTag(resource: Resource): Resource = {
       val taggingsToRetain = resource.resource_tags.filterNot(t => t.tag_id == tag._id)
       resource.withTaggings(taggingsToRetain)
@@ -54,7 +53,7 @@ import scala.concurrent.Future
     eventualOutcomes.map(_.forall(_ == true))
   }
 
-  def transferVotes(previousOwner: User, newOwner: User): Future[Boolean] = {
+  def transferVotes(previousOwner: User, newOwner: User)(implicit ec: ExecutionContext): Future[Boolean] = {
     def transferTaggings(resource: Resource): Resource = {
       val updatedTaggings = resource.resource_tags.map { t =>
         if (t.user_id == previousOwner._id) {
@@ -86,7 +85,7 @@ import scala.concurrent.Future
     eventualTransferOutcomes.map(_.forall(_ == true))
   }
 
-  private def updateAndReindexResource(update: Resource => Resource, resource: Resource): Future[Boolean] = {
+  private def updateAndReindexResource(update: Resource => Resource, resource: Resource)(implicit ec: ExecutionContext): Future[Boolean] = {
     val updatedResource = update(resource)
     mongoRepository.saveResource(updatedResource).flatMap { saveWriteResult =>
       contentUpdateService.update(updatedResource)
