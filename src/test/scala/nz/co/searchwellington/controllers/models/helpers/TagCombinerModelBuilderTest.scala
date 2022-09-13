@@ -60,7 +60,7 @@ class TagCombinerModelBuilderTest extends ReasonableWaits with ContentFields {
     request.setAttribute("tags", Seq(tag, anotherTag))
     val tagCombinerNewsitems = (Seq[FrontendResource](FrontendNewsitem(id = "123"), FrontendNewsitem(id = "456")), 2L)
     val tags = Seq(tag, anotherTag)
-    when(contentRetrievalService.getTaggedNewsitems(tags.toSet, 0, 30, None)).thenReturn(Future.successful(tagCombinerNewsitems))
+    when(contentRetrievalService.getTaggedNewsitems(tags.toSet,30, None)).thenReturn(Future.successful(tagCombinerNewsitems))
 
     val mv = Await.result(modelBuilder.populateContentModel(request), TenSeconds).get
 

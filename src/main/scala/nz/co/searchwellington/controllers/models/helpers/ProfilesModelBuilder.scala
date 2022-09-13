@@ -16,7 +16,7 @@ import scala.jdk.CollectionConverters._
 
 @Component class ProfilesModelBuilder @Autowired()(val contentRetrievalService: ContentRetrievalService,
                                                    mongoRepository: MongoRepository) extends ModelBuilder
-  with CommonSizes with ReasonableWaits with Pagination with ContentFields {
+  with CommonSizes with ReasonableWaits with ContentFields {
 
   private val profilesPageRegex = "^/profiles$"
 

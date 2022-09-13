@@ -19,7 +19,7 @@ import scala.jdk.CollectionConverters._
 @Component class AcceptedModelBuilder @Autowired()(val contentRetrievalService: ContentRetrievalService,
                                                    rssUrlBuilder: RssUrlBuilder, val urlBuilder: UrlBuilder,
                                                    commonAttributesModelBuilder: CommonAttributesModelBuilder)
-  extends ModelBuilder with CommonSizes with ReasonableWaits with Pagination with ArchiveMonths {
+  extends ModelBuilder with CommonSizes with ReasonableWaits with ArchiveMonths {
 
   def isValid(request: HttpServletRequest): Boolean = {
     RequestPath.getPathFrom(request).matches("^/accepted(/(rss|json))?$")

@@ -26,7 +26,7 @@ import scala.jdk.CollectionConverters._
                                               tagDAO: TagDAO,
                                               editPermissionService: EditPermissionService,
                                               adminUrlBuilder: AdminUrlBuilder) extends ModelBuilder
-  with CommonSizes with Pagination with ReasonableWaits with CommonModelObjectsService with ArchiveMonths {
+  with CommonSizes with ReasonableWaits with CommonModelObjectsService with ArchiveMonths {
 
   private val TAG = "tag"
   private val TAGS = "tags"
@@ -41,10 +41,8 @@ import scala.jdk.CollectionConverters._
 
   def populateContentModel(request: HttpServletRequest, loggedInUser: Option[User])(implicit ec: ExecutionContext, currentSpan: Span): Future[Option[ModelMap]] = {
 
-    def populateTagPageModelAndView(tag: Tag, page: Int): Future[Option[ModelMap]] = {
-      val startIndex = getStartIndex(page, MAX_NEWSITEMS)
-
-      val eventualTaggedNewsitems = contentRetrievalService.getTaggedNewsitems(tag, startIndex, MAX_NEWSITEMS, loggedInUser)
+    def populateTagPageModelAndView(tag: Tag): Future[Option[ModelMap]] = {
+      val eventualTaggedNewsitems = contentRetrievalService.getTaggedNewsitems(tag, MAX_NEWSITEMS, loggedInUser)
       val eventualChildTags = tagDAO.loadTagsByParent(tag._id)
       val eventualMaybeParent = tag.parent.map { pid =>
         tagDAO.loadTagByObjectId(pid)
@@ -59,37 +57,34 @@ import scala.jdk.CollectionConverters._
 
       } yield {
         val totalNewsitems = taggedNewsitemsAndTotalCount._2
-        if (startIndex > totalNewsitems) {
-          None
 
-        } else {
-          val mv = new ModelMap().
-            addAttribute(TAG, tag).
-            addAttribute("heading", tag.display_name).
-            addAttribute("rss_feed_label", tag.display_name.toLowerCase).
-            addAttribute("description", rssUrlBuilder.getRssDescriptionForTag(tag)).
-            addAttribute("link", urlBuilder.fullyQualified(urlBuilder.getTagUrl(tag))).
-            addAttribute("parent", maybeParent.orNull)
+        val mv = new ModelMap().
+          addAttribute(TAG, tag).
+          addAttribute("heading", tag.display_name).
+          addAttribute("rss_feed_label", tag.display_name.toLowerCase).
+          addAttribute("description", rssUrlBuilder.getRssDescriptionForTag(tag)).
+          addAttribute("link", urlBuilder.fullyQualified(urlBuilder.getTagUrl(tag))).
+          addAttribute("parent", maybeParent.orNull)
 
-          val taggedNewsitems = taggedNewsitemsAndTotalCount._1
-          mv.addAttribute(MAIN_CONTENT, taggedNewsitems.asJava)
-          mv.addAttribute("main_heading", tag.display_name + " related newsitems")
+        val taggedNewsitems = taggedNewsitemsAndTotalCount._1
+        mv.addAttribute(MAIN_CONTENT, taggedNewsitems.asJava)
+        mv.addAttribute("main_heading", tag.display_name + " related newsitems")
 
-          setRss(mv)
+        setRss(mv)
 
-          if (totalNewsitems > MAX_NEWSITEMS) {
-            monthOfLastItem(taggedNewsitems).foreach { i =>
-              val link = TagArchiveLink(tag = tag, interval = i, count = None)
-              mv.addAttribute("more", urlBuilder.getArchiveLinkUrl(link))
-            }
+        if (totalNewsitems > MAX_NEWSITEMS) {
+          monthOfLastItem(taggedNewsitems).foreach { i =>
+            val link = TagArchiveLink(tag = tag, interval = i, count = None)
+            mv.addAttribute("more", urlBuilder.getArchiveLinkUrl(link))
           }
-
-          if (children.nonEmpty) {
-            mv.addAttribute("children", children.asJava)
-          }
-
-          Some(mv)
         }
+
+        if (children.nonEmpty) {
+          mv.addAttribute("children", children.asJava)
+        }
+
+        Some(mv)
+
       }
 
       eventualMaybeModel.map { mvo =>
@@ -108,7 +103,7 @@ import scala.jdk.CollectionConverters._
       }
     }
 
-    populateTagPageModelAndView(tagFromRequest(request), getPage(request))
+    populateTagPageModelAndView(tagFromRequest(request))
   }
 
   def populateExtraModelContent(request: HttpServletRequest, loggedInUser: Option[User])(implicit ec: ExecutionContext, currentSpan: Span): Future[ModelMap] = {

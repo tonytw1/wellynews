@@ -81,7 +81,7 @@ class TagModelBuilderTest extends ReasonableWaits with ContentFields {
   @Test
   def tagPageHeadingShouldBeTheTagDisplayName(): Unit = {
     request.setAttribute("tags", Seq(tag))
-    when(contentRetrievalService.getTaggedNewsitems(tag, 0, 30, loggedInUser)).thenReturn(Future.successful(noNewsitems))
+    when(contentRetrievalService.getTaggedNewsitems(tag, 30, loggedInUser)).thenReturn(Future.successful(noNewsitems))
 
     val mv = Await.result(modelBuilder.populateContentModel(request), TenSeconds).get
 
@@ -92,7 +92,7 @@ class TagModelBuilderTest extends ReasonableWaits with ContentFields {
   def mainContentShouldBeTagNewsitems(): Unit = {
     request.setAttribute("tags", Seq(tag))
     val tagNewsitems = Seq(newsitem1, newsitem2)
-    when(contentRetrievalService.getTaggedNewsitems(tag, 0, 30, loggedInUser)).thenReturn(Future.successful((tagNewsitems, tagNewsitems.size.toLong)))
+    when(contentRetrievalService.getTaggedNewsitems(tag, 30, loggedInUser)).thenReturn(Future.successful((tagNewsitems, tagNewsitems.size.toLong)))
 
     val mv = Await.result(modelBuilder.populateContentModel(request), TenSeconds).get
 
@@ -103,7 +103,7 @@ class TagModelBuilderTest extends ReasonableWaits with ContentFields {
   @Test
   def shouldIncludeTagParent(): Unit = {
     request.setAttribute("tags", Seq(tag))
-    when(contentRetrievalService.getTaggedNewsitems(tag, 0, 30, loggedInUser)).thenReturn(Future.successful(noNewsitems))
+    when(contentRetrievalService.getTaggedNewsitems(tag, 30, loggedInUser)).thenReturn(Future.successful(noNewsitems))
 
     val mv = Await.result(modelBuilder.populateContentModel(request), TenSeconds).get
 
@@ -120,7 +120,7 @@ class TagModelBuilderTest extends ReasonableWaits with ContentFields {
       FrontendNewsitem(id = i.toString, date = d.minusDays(i).toDate)
     }
 
-    when(contentRetrievalService.getTaggedNewsitems(tag, 0, 30, loggedInUser)).
+    when(contentRetrievalService.getTaggedNewsitems(tag, 30, loggedInUser)).
       thenReturn(Future.successful((maxedOutTagNewsitems, 400L)))
 
     val mv = Await.result(modelBuilder.populateContentModel(request), TenSeconds).get

@@ -21,7 +21,7 @@ import scala.jdk.CollectionConverters._
 @Component class IndexModelBuilder @Autowired()(val contentRetrievalService: ContentRetrievalService, rssUrlBuilder: RssUrlBuilder,
                                                 val urlBuilder: UrlBuilder, archiveLinksService: ArchiveLinksService,
                                                 commonAttributesModelBuilder: CommonAttributesModelBuilder) extends ModelBuilder
-  with CommonSizes with Pagination with ReasonableWaits with ArchiveMonths {
+  with CommonSizes with ReasonableWaits with ArchiveMonths {
 
   private val MAX_OWNED_TO_SHOW_IN_RHS = 4
 
@@ -34,7 +34,7 @@ import scala.jdk.CollectionConverters._
 
   def populateContentModel(request: HttpServletRequest, loggedInUser: Option[User])(implicit ec: ExecutionContext, currentSpan: Span): Future[Option[ModelMap]] = {
     for {
-      latestNewsitems <- contentRetrievalService.getLatestNewsitems(MAX_NEWSITEMS, getPage(request), loggedInUser = loggedInUser)
+      latestNewsitems <- contentRetrievalService.getLatestNewsitems(MAX_NEWSITEMS, loggedInUser = loggedInUser)
     } yield {
       val mv = new ModelMap().
         addAttribute("heading", "Wellynews").

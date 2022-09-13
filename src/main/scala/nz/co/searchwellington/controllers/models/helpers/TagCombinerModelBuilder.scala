@@ -10,7 +10,6 @@ import nz.co.searchwellington.urls.UrlBuilder
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
 import org.springframework.ui.ModelMap
-import org.springframework.web.servlet.ModelAndView
 
 import java.util
 import javax.servlet.http.HttpServletRequest
@@ -20,7 +19,7 @@ import scala.jdk.CollectionConverters._
 @Component class TagCombinerModelBuilder @Autowired()(val contentRetrievalService: ContentRetrievalService, rssUrlBuilder: RssUrlBuilder,
                                                       val urlBuilder: UrlBuilder,
                                                       relatedTagsService: RelatedTagsService, commonAttributesModelBuilder: CommonAttributesModelBuilder)
-  extends ModelBuilder with CommonSizes with Pagination with ReasonableWaits {
+  extends ModelBuilder with CommonSizes with ReasonableWaits {
 
   def isValid(request: HttpServletRequest): Boolean = {
     val tags = request.getAttribute("tags").asInstanceOf[Seq[Tag]]
@@ -30,43 +29,35 @@ import scala.jdk.CollectionConverters._
 
   def populateContentModel(request: HttpServletRequest, loggedInUser: Option[User])(implicit ec: ExecutionContext, currentSpan: Span): Future[Option[ModelMap]] = {
 
-    def populateTagCombinerModelAndView(tags: Seq[Tag], page: Int): Future[Option[ModelMap]] = {
-      val startIndex = getStartIndex(page, MAX_NEWSITEMS)
+    def populateTagCombinerModelAndView(tags: Seq[Tag]): Future[Option[ModelMap]] = {
       for {
-        taggedNewsitemsAndCount <- contentRetrievalService.getTaggedNewsitems(tags.toSet, startIndex, MAX_NEWSITEMS, loggedInUser)
+        taggedNewsitemsAndCount <- contentRetrievalService.getTaggedNewsitems(tags.toSet, MAX_NEWSITEMS, loggedInUser)
       } yield {
         val totalNewsitemCount = taggedNewsitemsAndCount._2
-        if (startIndex > totalNewsitemCount) {
-          None
+
+        val firstTag = tags.head
+        val secondTag = tags(1)
+
+        if (totalNewsitemCount > 0) {
+          val mv = new ModelMap().
+            addAttribute("tag", firstTag).
+            addAttribute("tags", tags.asJava).
+            addAttribute("heading", firstTag.getDisplayName + " and " + secondTag.getDisplayName).
+            addAttribute("description", "Items tagged with " + firstTag.getDisplayName + " and " + secondTag.getDisplayName + ".").
+            addAttribute("link", urlBuilder.fullyQualified(urlBuilder.getTagCombinerUrl(firstTag, secondTag))).
+            addAttribute(MAIN_CONTENT, taggedNewsitemsAndCount._1.asJava)
+
+          commonAttributesModelBuilder.setRss(mv, rssUrlBuilder.getRssTitleForTagCombiner(firstTag, secondTag), rssUrlBuilder.getRssUrlForTagCombiner(firstTag, secondTag))
+          Some(mv)
 
         } else {
-          val firstTag = tags.head
-          val secondTag = tags(1)
-
-          if (totalNewsitemCount > 0) {
-            val mv = new ModelMap().
-              addAttribute("tag", firstTag).
-              addAttribute("tags", tags.asJava).
-              addAttribute("heading", firstTag.getDisplayName + " and " + secondTag.getDisplayName).
-              addAttribute("description", "Items tagged with " + firstTag.getDisplayName + " and " + secondTag.getDisplayName + ".").
-              addAttribute("link", urlBuilder.fullyQualified(urlBuilder.getTagCombinerUrl(firstTag, secondTag))).
-              addAttribute(MAIN_CONTENT, taggedNewsitemsAndCount._1.asJava)
-
-            def paginationLinks(page: Int): String = urlBuilder.getTagCombinerUrl(firstTag, secondTag, page)
-            populatePagination(mv, startIndex, totalNewsitemCount, MAX_NEWSITEMS, paginationLinks)
-            commonAttributesModelBuilder.setRss(mv, rssUrlBuilder.getRssTitleForTagCombiner(firstTag, secondTag), rssUrlBuilder.getRssUrlForTagCombiner(firstTag, secondTag))
-            Some(mv)
-
-          } else {
-            None
-          }
+          None
         }
       }
     }
 
     val tags = request.getAttribute("tags").asInstanceOf[Seq[Tag]]
-    val page = getPage(request)
-    populateTagCombinerModelAndView(tags, page)
+    populateTagCombinerModelAndView(tags)
   }
 
   def populateExtraModelContent(request: HttpServletRequest, loggedInUser: Option[User])(implicit ec: ExecutionContext, currentSpan: Span): Future[ModelMap] = {
