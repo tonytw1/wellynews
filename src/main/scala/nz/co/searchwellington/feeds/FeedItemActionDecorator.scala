@@ -21,18 +21,24 @@ import scala.concurrent.{ExecutionContext, Future}
 
       for {
         localCopy <- eventuallyLocalCopy
-        isSupressed <- eventuallyIsSuppressed
+        isSuppressed <- eventuallyIsSuppressed
       } yield {
         feedNewsitem match {
           case n: FrontendNewsitem =>
-            loggedInUser.map { l =>
-              val acceptOrEditAction = localCopy.map { lc =>
-                Action("Edit local copy", adminUrlBuilder.getResourceEditUrl(lc))
+            loggedInUser.map { _ =>
+              val acceptOrEditAction: Option[Action] = localCopy.map { lc =>
+                Some(Action("Edit local copy", adminUrlBuilder.getResourceEditUrl(lc)))
               }.getOrElse(
-                Action("Accept", adminUrlBuilder.getFeednewsItemAcceptUrl(n.acceptedFrom.get, n))
+                Some(Action("Accept", adminUrlBuilder.getFeednewsItemAcceptUrl(n.acceptedFrom.get, n)))
               )
 
-              val feedItemActions = Seq(acceptOrEditAction)
+              val unsupressAction = if (isSuppressed) {
+                Some(Action("Unsuppress", adminUrlBuilder.getFeedNewsitemUnsuppressUrl(n)))
+              } else {
+                None
+              }
+
+              val feedItemActions = Seq(acceptOrEditAction, unsupressAction).flatten
               n.copy(actions = feedItemActions)
 
             }.getOrElse {
