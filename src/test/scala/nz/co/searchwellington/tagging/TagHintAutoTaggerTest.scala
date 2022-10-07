@@ -76,6 +76,17 @@ class TagHintAutoTaggerTest extends ReasonableWaits {
   }
 
   @Test
+  def allowPartialMatchesForRssCategories(): Unit = {
+    val exhibitions = Tag(name = "exhibitions", hints = Seq("exhibition", "exhibitions"))
+    when(tagDAO.getAllTags).thenReturn(Future.successful(Seq(exhibitions)))
+    val feedItemCategories = Seq(Category(value = "Current Exhibition", domain = None))
+
+    val suggestions = Await.result(tagHintAutoTagger.suggestFeedCategoryTags(feedItemCategories), TenSeconds)
+
+    assertEquals(exhibitions, suggestions.head)
+  }
+
+  @Test
   def rssCategoriesAreCaseInsensitive(): Unit = {
     val tag = Tag(name = "events", hints = Seq("events"))
     when(tagDAO.getAllTags).thenReturn(Future.successful(Seq(tag)))
