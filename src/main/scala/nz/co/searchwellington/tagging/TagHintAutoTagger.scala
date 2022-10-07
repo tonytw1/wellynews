@@ -26,11 +26,12 @@ class TagHintAutoTagger @Autowired()(tagDAO: TagDAO) {
   def suggestFeedCategoryTags(feedItemCategories: Seq[Category])(implicit ec: ExecutionContext): Future[Set[Tag]] = {
     if (feedItemCategories.nonEmpty) {
       // Given all tags look for autohints with vaguely match the categories presented
+      val categoryTokens = feedItemCategories.map(_.value.toLowerCase()).map(tokenise)
+
       tagDAO.getAllTags.map { allTags =>
         allTags.filter { tag =>
-          feedItemCategories.exists { category =>
-            val resourceTokens = tokenise(category.value.toLowerCase())
-            matches(tag.hints, resourceTokens)
+          categoryTokens.exists { categoryTokens =>
+            matches(tag.hints, categoryTokens)
           }
         }.toSet
       }
