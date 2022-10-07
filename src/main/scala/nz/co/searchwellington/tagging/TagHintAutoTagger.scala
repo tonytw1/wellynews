@@ -16,18 +16,10 @@ class TagHintAutoTagger @Autowired()(tagDAO: TagDAO) {
 
   def suggestTags(resource: Resource)(implicit ec: ExecutionContext): Future[Set[Tag]] = {
     val resourceContent = resource.title + " " + resource.description
-    val tokens = tokenise(resourceContent.toLowerCase())
-
-    def matches(tag: Tag): Boolean = {
-      val hints = tag.hints
-      hints.exists { hint =>
-        val hintTokens = tokenise(hint.toLowerCase)
-        tokens.containsSlice(hintTokens)
-      }
-    }
+    val resourceTokens = tokenise(resourceContent.toLowerCase())
 
     tagDAO.getAllTags.map { allTags =>
-      allTags.filter(tag => matches(tag)).toSet
+      allTags.filter(tag => matches(tag.hints, resourceTokens)).toSet
     }
   }
 
@@ -36,13 +28,21 @@ class TagHintAutoTagger @Autowired()(tagDAO: TagDAO) {
       // Given all tags look for autohints with vaguely match the categories presented
       tagDAO.getAllTags.map { allTags =>
         allTags.filter { tag =>
-          val intersections = tag.hints.map(_.toLowerCase).toSet.
-            intersect(feedItemCategories.map(_.value.toLowerCase()).toSet)
-          intersections.nonEmpty
+          feedItemCategories.exists { category =>
+            val resourceTokens = tokenise(category.value.toLowerCase())
+            matches(tag.hints, resourceTokens)
+          }
         }.toSet
       }
     } else {
       Future.successful(Set.empty)
+    }
+  }
+
+  private def matches(hints: Seq[String], resourceTokens: Seq[String]): Boolean = {
+    hints.exists { hint =>
+      val hintTokens = tokenise(hint.toLowerCase)
+      resourceTokens.containsSlice(hintTokens)
     }
   }
 
@@ -56,5 +56,6 @@ class TagHintAutoTagger @Autowired()(tagDAO: TagDAO) {
     }
     tokens.toSeq
   }
+
 
 }
