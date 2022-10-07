@@ -36,7 +36,7 @@ import scala.concurrent.{ExecutionContext, Future}
           log.debug("Feed contains " + feedNewsitems.size + " items from " + total + " total items")
 
           val eventuallyAcceptedNewsitems = {
-            if (acceptancePolicy.shouldReadFeed) {
+            if (acceptancePolicy.shouldAcceptFeedItems) {
               processFeedItems(feed, readingUser, acceptancePolicy, feedNewsitems)
             } else {
               Future.successful(Seq.empty)

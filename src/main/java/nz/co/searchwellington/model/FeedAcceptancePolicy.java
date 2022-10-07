@@ -9,19 +9,19 @@ public enum FeedAcceptancePolicy {
     ACCEPT_IGNORING_DATE("Accept ignoring date.", true);
 
     private final String label;
-    private final boolean shouldReadFeed;
+    private final boolean shouldAcceptFeedItems;
     
-    FeedAcceptancePolicy(String label, boolean shouldReadFeed) {
+    FeedAcceptancePolicy(String label, boolean shouldAcceptFeedItems) {
         this.label = label;
-		this.shouldReadFeed = shouldReadFeed;
+		this.shouldAcceptFeedItems = shouldAcceptFeedItems;
     }
     
     public String getLabel() {
         return label;
     }
     
-    public boolean shouldReadFeed() {
-    	return shouldReadFeed;
+    public boolean shouldAcceptFeedItems() {
+    	return shouldAcceptFeedItems;
     }
     
 }
