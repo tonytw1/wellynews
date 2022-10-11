@@ -1,6 +1,5 @@
 package nz.co.searchwellington.controllers.ajax
 
-import nz.co.searchwellington.model.Website
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
 
@@ -15,6 +14,9 @@ class TitleTrimmerTest {
 
     val trimmedMdash = trimmer.trimTitleSuffix("Lōemis Art Show — Lōemis", "Lōemis")
     assertEquals("Lōemis Art Show", trimmedMdash)
+
+    val trimmedNdash = trimmer.trimTitleSuffix("THE WASP – Circa Theatre", "Circa Theatre")
+    assertEquals("THE WASP", trimmedNdash)
   }
 
 }
