@@ -12,6 +12,7 @@
         <scala.version>2.13.8</scala.version>
         <elastic4s.version>7.17.4</elastic4s.version>
         <jackson.version>2.13.3</jackson.version>
+        <playWsStandalone.version>2.0.8</playWsStandalone.version>
     </properties>
 
     <parent>
@@ -119,12 +120,12 @@
         <dependency>
             <groupId>com.typesafe.play</groupId>
             <artifactId>play-ahc-ws-standalone_2.13</artifactId>
-            <version>2.0.8</version>
+            <version>${playWsStandalone.version}</version>
         </dependency>
         <dependency>
             <groupId>com.typesafe.play</groupId>
             <artifactId>play-ws-standalone-json_2.13</artifactId>
-            <version>2.0.8</version>
+            <version>${playWsStandalone.version}</version>
         </dependency>
 
         <dependency>
