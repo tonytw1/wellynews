@@ -68,10 +68,11 @@ import scala.concurrent.{ExecutionContext, Future}
   }
 
   private def processFeedItems(feed: Feed, feedReaderUser: User, acceptancePolicy: FeedAcceptancePolicy, feedItems: Seq[FeedItem])(implicit ec: ExecutionContext): Future[Seq[Resource]] = {
+
     val eventualMaybeAccepted = feedItems.map { feedItem =>
-      feeditemToNewsItemService.makeNewsitemFromFeedItem(feedItem, feed).map { newsitem =>
-        feedItemAcceptanceDecider.getAcceptanceErrors(feedItem, acceptancePolicy).flatMap { acceptanceErrors => // TODO invalid url should really be an acceptance error.
-          if (acceptanceErrors.isEmpty) {
+      feedItemAcceptanceDecider.getAcceptanceErrors(feedItem, acceptancePolicy).flatMap { acceptanceErrors =>
+        if (acceptanceErrors.isEmpty) {
+          feeditemToNewsItemService.makeNewsitemFromFeedItem(feedItem, feed).map { newsitem =>
             feedReaderUpdateService.acceptFeeditem(feedReaderUser, newsitem, feed,
               feedItem.categories.getOrElse(Seq.empty)
             ).map { acceptedNewsitem =>
@@ -81,13 +82,17 @@ import scala.concurrent.{ExecutionContext, Future}
                 log.error("Error while accepting feeditem", e)
                 None
             }
-          } else {
-            log.debug("Not accepting " + newsitem.page + " due to acceptance errors: " + acceptanceErrors.mkString(", "))
+
+          }.getOrElse {
+            // TODO this relates to the url potentially not been valid; which should be pushed up
+            log.warn("Not accepting " + feedItem.url + " because feed item could not be mapped")
             Future.successful(None)
           }
+
+        } else {
+          log.debug("Not accepting " + feedItem.url + " due to acceptance errors: " + acceptanceErrors.mkString(", "))
+          Future.successful(None)
         }
-      }.getOrElse {
-        Future.successful(None)
       }
     }
 
