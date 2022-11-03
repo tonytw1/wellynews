@@ -70,7 +70,7 @@ import scala.concurrent.{ExecutionContext, Future}
   private def processFeedItems(feed: Feed, feedReaderUser: User, acceptancePolicy: FeedAcceptancePolicy, feedItems: Seq[FeedItem])(implicit ec: ExecutionContext): Future[Seq[Resource]] = {
     val eventualMaybeAccepted = feedItems.map { feedItem =>
       feeditemToNewsItemService.makeNewsitemFromFeedItem(feedItem, feed).map { newsitem =>
-        feedItemAcceptanceDecider.getAcceptanceErrors(newsitem, acceptancePolicy).flatMap { acceptanceErrors => // TODO invalid url sould really be an acceptance error.
+        feedItemAcceptanceDecider.getAcceptanceErrors(feedItem, acceptancePolicy).flatMap { acceptanceErrors => // TODO invalid url should really be an acceptance error.
           if (acceptanceErrors.isEmpty) {
             feedReaderUpdateService.acceptFeeditem(feedReaderUser, newsitem, feed,
               feedItem.categories.getOrElse(Seq.empty)

@@ -1,6 +1,7 @@
 package nz.co.searchwellington.feeds
 
 import nz.co.searchwellington.ReasonableWaits
+import nz.co.searchwellington.feeds.whakaoko.model.FeedItem
 import nz.co.searchwellington.model.{FeedAcceptancePolicy, Newsitem}
 import nz.co.searchwellington.repositories.SuppressionDAO
 import nz.co.searchwellington.repositories.mongo.MongoRepository
@@ -22,22 +23,22 @@ class FeedItemAcceptanceDeciderTest extends ReasonableWaits {
 
   @Test
   def feeditemsWithNoProblemsShouldGenerateNoObjections(): Unit = {
-    val newsitem = Newsitem(id = UUID.randomUUID().toString, title = "A feeditem", page = "http://localhost/foo", date = Some(DateTime.now.toDate))
+    val feedItem = FeedItem(id = UUID.randomUUID().toString, title = Some("A feeditem"), url = "http://localhost/foo", date = Some(DateTime.now), subscriptionId = "")
 
-    when(suppressionDAO.isSupressed(newsitem.page)).thenReturn(Future.successful(false))
-    when(mongoRepository.getResourceByUrl(newsitem.page)).thenReturn(Future.successful(None))
+    when(suppressionDAO.isSupressed(feedItem.url)).thenReturn(Future.successful(false))
+    when(mongoRepository.getResourceByUrl(feedItem.url)).thenReturn(Future.successful(None))
 
-    val objections = Await.result(feedItemAcceptanceDecider.getAcceptanceErrors(newsitem, FeedAcceptancePolicy.ACCEPT), TenSeconds)
+    val objections = Await.result(feedItemAcceptanceDecider.getAcceptanceErrors(feedItem, FeedAcceptancePolicy.ACCEPT), TenSeconds)
 
     assertTrue(objections.isEmpty)
   }
 
   @Test
   def shouldRejectFeeditemsWhichHaveAlreadyBeenAccepted(): Unit = {
-    val newsitem = Newsitem(id = UUID.randomUUID().toString, title = "A feeditem", page = "http://localhost/foo")
+    val newsitem = FeedItem(id = UUID.randomUUID().toString, title = Some("A feeditem"), url = "http://localhost/foo", subscriptionId = "")
 
-    when(suppressionDAO.isSupressed(newsitem.page)).thenReturn(Future.successful(false))
-    when(mongoRepository.getResourceByUrl(newsitem.page)).thenReturn(Future.successful(Some(Newsitem())))
+    when(suppressionDAO.isSupressed(newsitem.url)).thenReturn(Future.successful(false))
+    when(mongoRepository.getResourceByUrl(newsitem.url)).thenReturn(Future.successful(Some(Newsitem())))
 
     val objections = Await.result(feedItemAcceptanceDecider.getAcceptanceErrors(newsitem, FeedAcceptancePolicy.ACCEPT), TenSeconds)
 
@@ -47,10 +48,10 @@ class FeedItemAcceptanceDeciderTest extends ReasonableWaits {
 
   @Test
   def shouldRejectFeeditemsWithSuppressedUrls(): Unit = {
-    val newsitem = Newsitem(id = UUID.randomUUID().toString, title = "A feeditem", page = "http://localhost/foo")
+    val newsitem = FeedItem(id = UUID.randomUUID().toString, title = Some("A feeditem"), url = "http://localhost/foo", subscriptionId = "")
 
-    when(suppressionDAO.isSupressed(newsitem.page)).thenReturn(Future.successful(true))
-    when(mongoRepository.getResourceByUrl(newsitem.page)).thenReturn(Future.successful(None))
+    when(suppressionDAO.isSupressed(newsitem.url)).thenReturn(Future.successful(true))
+    when(mongoRepository.getResourceByUrl(newsitem.url)).thenReturn(Future.successful(None))
 
     val objections = Await.result(feedItemAcceptanceDecider.getAcceptanceErrors(newsitem, FeedAcceptancePolicy.ACCEPT), TenSeconds)
 
@@ -60,10 +61,10 @@ class FeedItemAcceptanceDeciderTest extends ReasonableWaits {
 
   @Test
   def shouldRejectFeeditemsWithNoTitles(): Unit = {
-    val newsitem = Newsitem(id = UUID.randomUUID().toString, page = "http://localhost/foo")
+    val newsitem = FeedItem(id = UUID.randomUUID().toString, url = "http://localhost/foo", subscriptionId = "")
 
-    when(suppressionDAO.isSupressed(newsitem.page)).thenReturn(Future.successful(false))
-    when(mongoRepository.getResourceByUrl(newsitem.page)).thenReturn(Future.successful(None))
+    when(suppressionDAO.isSupressed(newsitem.url)).thenReturn(Future.successful(false))
+    when(mongoRepository.getResourceByUrl(newsitem.url)).thenReturn(Future.successful(None))
 
     val objections = Await.result(feedItemAcceptanceDecider.getAcceptanceErrors(newsitem, FeedAcceptancePolicy.ACCEPT), TenSeconds)
 
@@ -73,10 +74,11 @@ class FeedItemAcceptanceDeciderTest extends ReasonableWaits {
 
   @Test
   def shouldRejectFeeditemsWithDatesWayInTheFuture(): Unit = {
-    val newsitemWithFuturePublicationDate = Newsitem(id = UUID.randomUUID().toString, title = "A feeditem", page = "http://localhost/foo", date = Some(DateTime.now.plusDays(10).toDate))
+    val newsitemWithFuturePublicationDate = FeedItem(id = UUID.randomUUID().toString, title = Some("A feeditem"),
+      url = "http://localhost/foo", date = Some(DateTime.now.plusDays(10)), subscriptionId = "")
 
-    when(suppressionDAO.isSupressed(newsitemWithFuturePublicationDate.page)).thenReturn(Future.successful(false))
-    when(mongoRepository.getResourceByUrl(newsitemWithFuturePublicationDate.page)).thenReturn(Future.successful(None))
+    when(suppressionDAO.isSupressed(newsitemWithFuturePublicationDate.url)).thenReturn(Future.successful(false))
+    when(mongoRepository.getResourceByUrl(newsitemWithFuturePublicationDate.url)).thenReturn(Future.successful(None))
 
     val objections = Await.result(feedItemAcceptanceDecider.getAcceptanceErrors(newsitemWithFuturePublicationDate, FeedAcceptancePolicy.ACCEPT), TenSeconds)
 

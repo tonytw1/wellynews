@@ -1,6 +1,7 @@
 package nz.co.searchwellington.feeds
 
-import nz.co.searchwellington.model.{FeedAcceptancePolicy, Newsitem}
+import nz.co.searchwellington.feeds.whakaoko.model.FeedItem
+import nz.co.searchwellington.model.FeedAcceptancePolicy
 import nz.co.searchwellington.repositories.SuppressionDAO
 import nz.co.searchwellington.repositories.mongo.MongoRepository
 import org.apache.commons.logging.LogFactory
@@ -14,17 +15,17 @@ import scala.concurrent.{ExecutionContext, Future}
 
   private val log = LogFactory.getLog(classOf[FeedItemAcceptanceDecider])
 
-  def getAcceptanceErrors(newsitem: Newsitem, acceptancePolicy: FeedAcceptancePolicy)(implicit ec: ExecutionContext): Future[Seq[String]] = {
-    val cannotBeSuppressed: Newsitem => Future[Option[String]] = (newsitem: Newsitem) => {
-      suppressionDAO.isSupressed(newsitem.page).map { isSuppressed =>
-        log.debug("Is feed item url '" + newsitem.page + "' suppressed: " + isSuppressed)
+  def getAcceptanceErrors(feedItem: FeedItem, acceptancePolicy: FeedAcceptancePolicy)(implicit ec: ExecutionContext): Future[Seq[String]] = {
+    val cannotBeSuppressed: FeedItem => Future[Option[String]] = (feedItem: FeedItem) => {
+      suppressionDAO.isSupressed(feedItem.url).map { isSuppressed =>
+        log.debug("Is feed item url '" + feedItem.url + "' suppressed: " + isSuppressed)
         if (isSuppressed) Some("This item is suppressed") else None
       }
     }
 
-    val titleCannotBeBlank = (newsitem: Newsitem) => {
+    val titleCannotBeBlank = (feedItem: FeedItem) => {
       Future.successful {
-        if (newsitem.title.trim.isEmpty) {
+        if (feedItem.title.forall(_.trim.isEmpty)) {
           Some("Item has no title")
         } else {
           None
@@ -32,17 +33,17 @@ import scala.concurrent.{ExecutionContext, Future}
       }
     }
 
-    val cannotBeMoreThanOneWeekOld = (newsitem: Newsitem) => {
+    val cannotBeMoreThanOneWeekOld = (feedItem: FeedItem) => {
       Future.successful {
         if (acceptancePolicy == FeedAcceptancePolicy.ACCEPT_EVEN_WITHOUT_DATES) {
           None
 
         } else {
-          if (newsitem.date.isEmpty) {
+          if (feedItem.date.isEmpty) {
             Some("Item has no date and feed acceptance policy is not accept even without dates")
 
           } else {
-            newsitem.date.flatMap { date =>
+            feedItem.date.flatMap { date =>
               val oneWeekAgo = DateTime.now.minusWeeks(1)
               val isMoreThanOneWeekOld = new DateTime(date).isBefore(oneWeekAgo)
               if (isMoreThanOneWeekOld) {
@@ -56,9 +57,9 @@ import scala.concurrent.{ExecutionContext, Future}
       }
     }
 
-    val cannotBeMoreThanOneWeekInTheFuture = (newsitem: Newsitem) => {
+    val cannotBeMoreThanOneWeekInTheFuture = (feedItem: FeedItem) => {
       Future.successful {
-        newsitem.date.flatMap { date =>
+        feedItem.date.flatMap { date =>
           val oneWeekFromNow = DateTime.now.plusWeeks(1)
           val isMoreThanOneWeekFromNow = new DateTime(date).isAfter(oneWeekFromNow)
           if (isMoreThanOneWeekFromNow) {
@@ -70,11 +71,11 @@ import scala.concurrent.{ExecutionContext, Future}
       }
     }
 
-    val cannotAlreadyHaveThisFeedItem = (newsitem: Newsitem) => {
-      val eventualAlreadyHaveThisFeedItem = mongoRepository.getResourceByUrl(newsitem.page).map(_.nonEmpty)
+    val cannotAlreadyHaveThisFeedItem = (feedItem: FeedItem) => {
+      val eventualAlreadyHaveThisFeedItem = mongoRepository.getResourceByUrl(feedItem.url).map(_.nonEmpty)
       eventualAlreadyHaveThisFeedItem.map { alreadyHaveThisFeedItem =>
         if (alreadyHaveThisFeedItem) {
-          log.debug("A resource with url '" + newsitem.page + "' already exists; not accepting.")
+          log.debug("A resource with url '" + feedItem.url + "' already exists; not accepting.")
           Some("Item already exists")
         } else {
           None
@@ -82,7 +83,7 @@ import scala.concurrent.{ExecutionContext, Future}
       }
     }
 
-    val alreadyHaveAnItemWithTheSameHeadlineFromTheSamePublisherWithinTheLastMonth = (_: Newsitem) => {
+    val alreadyHaveAnItemWithTheSameHeadlineFromTheSamePublisherWithinTheLastMonth = (_: FeedItem) => {
       Future.successful(None)
     } // TODO implement me
 
@@ -94,7 +95,7 @@ import scala.concurrent.{ExecutionContext, Future}
       cannotBeMoreThanOneWeekInTheFuture,
       alreadyHaveAnItemWithTheSameHeadlineFromTheSamePublisherWithinTheLastMonth)
 
-    Future.sequence(reasonsToRejectFeedItems.map(reason => reason(newsitem))).map { possibleObjections =>
+    Future.sequence(reasonsToRejectFeedItems.map(reason => reason(feedItem))).map { possibleObjections =>
       possibleObjections.flatten
     }
   }
