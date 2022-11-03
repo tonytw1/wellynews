@@ -59,6 +59,19 @@ class FeedItemAcceptanceDeciderTest extends ReasonableWaits {
   }
 
   @Test
+  def shouldRejectFeeditemsWithNoTitles(): Unit = {
+    val newsitem = Newsitem(id = UUID.randomUUID().toString, page = "http://localhost/foo")
+
+    when(suppressionDAO.isSupressed(newsitem.page)).thenReturn(Future.successful(false))
+    when(mongoRepository.getResourceByUrl(newsitem.page)).thenReturn(Future.successful(None))
+
+    val objections = Await.result(feedItemAcceptanceDecider.getAcceptanceErrors(newsitem, FeedAcceptancePolicy.ACCEPT), TenSeconds)
+
+    assertTrue(objections.nonEmpty)
+    assertEquals("Item has no title", objections.head)
+  }
+
+  @Test
   def shouldRejectFeeditemsWithDatesWayInTheFuture(): Unit = {
     val newsitemWithFuturePublicationDate = Newsitem(id = UUID.randomUUID().toString, title = "A feeditem", page = "http://localhost/foo", date = Some(DateTime.now.plusDays(10).toDate))
 
