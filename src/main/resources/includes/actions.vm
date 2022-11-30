@@ -1,4 +1,4 @@
-#if ($actions.size() > 0)
+#if ($actions && $actions.size() > 0)
     <ul>
         #foreach($action in $actions)
             <li class="admin"><a href="$action.link">$action.label</a></li>
