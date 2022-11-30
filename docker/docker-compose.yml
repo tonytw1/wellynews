@@ -17,7 +17,7 @@ services:
     ports:
     - "27017:27017"
   rabbit:
-    image: rabbitmq:3
+    image: rabbitmq:3.11.4
     ports:
     - "5672:5672"
 networks:
