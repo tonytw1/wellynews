@@ -24,8 +24,8 @@
 			<p>The $siteInformation.areaname newslog is an informal roundup of the $siteInformation.areaname webspace.
 				The newslog is also available as an <a href="rssfeeds">RSS feed</a>
 				#if ($siteInformation.isTwitterEnabled()) or via <a href="https://twitter.com/wellynews">Twitter</a>
-					and <a href="https://mastodon.wellington.gen.nz">Mastodon</a>
-				#end.
+					and <a href="https://mastodon.wellington.gen.nz">Mastodon</a>.
+				#end
 			</p>
 
 			#parse("includes/main_content.vm")
