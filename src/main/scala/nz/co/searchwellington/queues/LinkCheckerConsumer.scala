@@ -25,7 +25,7 @@ import scala.concurrent.{ExecutionContext, ExecutionContextExecutor}
       val channel = connection.createChannel
       channel.queueDeclare(LinkCheckerQueue.QUEUE_NAME, false, false, false, null)
       val consumer = new LinkCheckerConsumer(channel)
-      val consumerTag = channel.basicConsume(LinkCheckerQueue.QUEUE_NAME, true, consumer)
+      val consumerTag = channel.basicConsume(LinkCheckerQueue.QUEUE_NAME, false, consumer)
       log.info(s"Link checker consumer thread started with consumer tag: $consumerTag")
 
     } catch {
@@ -48,6 +48,8 @@ import scala.concurrent.{ExecutionContext, ExecutionContextExecutor}
         log.debug("Received link checker message: " + message)
         pulledCounter.increment()
         linkChecker.scanResource(message)
+        channel.basicAck(envelope.getDeliveryTag, false)
+
         logQueueCount(channel)
 
       } catch {
