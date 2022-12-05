@@ -42,17 +42,13 @@ import scala.util.Try
   def scanResource(resourceId: String)(implicit ec: ExecutionContext): Unit = {
     log.info("Scanning resource: " + resourceId)
     val objectId = BSONObjectID.parse(resourceId).get
-    val eventualMaybeResourceWithUrl = mongoRepository.getResourceByObjectId(objectId).map { mayByResource =>
-      mayByResource.filter(_.page.nonEmpty)
-    }
 
-    val y: Future[Boolean] = eventualMaybeResourceWithUrl.flatMap { maybeResourceWithUrl =>
-      val a = maybeResourceWithUrl.map { resource =>
+    val eventualResult = for {
+      maybeResourceWithUrl <- mongoRepository.getResourceByObjectId(objectId)
+      result <- maybeResourceWithUrl.map { resource =>
         log.info("Checking: " + resource.title + " (" + resource.page + ")")
 
-        val j = checkResource(resource)
-
-        val g = j.flatMap { outcome =>
+        checkResource(resource).flatMap { outcome =>
           log.debug("Updating resource")
           resource.setLastScanned(DateTime.now.toDate)
           contentUpdateService.update(resource).map { _ => // TODO should be a specific field set
@@ -61,23 +57,24 @@ import scala.util.Try
             outcome
           }
         }
-        g
 
       }.getOrElse {
         log.warn("Link checker was past an unknown resource id: " + resourceId + " / " + objectId.stringify)
         failedCounter.increment()
         Future.successful(false)
-      }
-      a
 
-    }.recoverWith {
-      case e: Exception =>
-        log.error("Link check failed: " + e.getMessage, e)
-        failedCounter.increment()
-        Future.successful(false)
+      }.recoverWith {
+        case e: Exception =>
+          log.error("Link check failed: " + e.getMessage, e)
+          failedCounter.increment()
+          Future.successful(false)
+      }
+
+    } yield {
+      result
     }
 
-    Await.result(y, OneMinute)
+    Await.result(eventualResult, OneMinute)
   }
 
   // Given a URL load it and return the http status and the page contents
