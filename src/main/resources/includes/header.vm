@@ -32,7 +32,7 @@
 	var markers = [];
 	 
  	function showAddress(lat, long, title, url, description) {
- 		markers.push({lat: lat, long: long, title: title, description: description});
+ 		markers.push({lat: lat, long: long, title: title, url: url, description: description});
  	}
  	
  	function positionSuccess(position) {

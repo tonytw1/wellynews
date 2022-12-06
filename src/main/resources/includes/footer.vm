@@ -13,7 +13,12 @@
 	    
 	    var mapMarkers = [];
 		markers.forEach(function(marker) {
-			mapMarkers.push(L.marker([marker.lat, marker.long]).addTo(map).bindPopup("<h4>" + marker.title + "</h4>" + "<p"> + marker.description + "</p>"));
+		    var description = "";
+		    if (marker.description) {
+		        description = "<p>" + marker.description + "</p>";
+		    }
+		    var popupContent = "<h3><a href=\"" + marker.url + "\">"+ marker.title + "</a></h3>" + description;
+			mapMarkers.push(L.marker([marker.lat, marker.long]).addTo(map).bindPopup(popupContent));
 	    });
 	    
 	   	map.fitBounds(new L.featureGroup(mapMarkers).getBounds());
