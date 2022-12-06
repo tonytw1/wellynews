@@ -13,7 +13,7 @@
 	    
 	    var mapMarkers = [];
 		markers.forEach(function(marker) {
-			mapMarkers.push(L.marker([marker.lat, marker.long]).addTo(map).bindPopup(marker.title));
+			mapMarkers.push(L.marker([marker.lat, marker.long]).addTo(map).bindPopup("<h4>" + marker.title + "</h4>" + "<p"> + marker.description + "</p>"));
 	    });
 	    
 	   	map.fitBounds(new L.featureGroup(mapMarkers).getBounds());
