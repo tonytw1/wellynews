@@ -1,10 +1,9 @@
 package nz.co.searchwellington.feeds.whakaoko
 
-import akka.actor.ActorSystem
-import akka.stream.ActorMaterializer
 import io.opentelemetry.api.trace.Span
 import nz.co.searchwellington.ReasonableWaits
 import nz.co.searchwellington.feeds.whakaoko.model._
+import nz.co.searchwellington.http.WSClient
 import nz.co.searchwellington.instrumentation.SpanFactory
 import org.apache.commons.logging.LogFactory
 import org.apache.http.HttpStatus
@@ -14,23 +13,18 @@ import org.springframework.stereotype.Component
 import play.api.libs.json.{JodaReads, Json, OWrites, Reads}
 import play.api.libs.ws.JsonBodyWritables.writeableOf_JsValue
 import play.api.libs.ws.StandaloneWSRequest
-import play.api.libs.ws.ahc.StandaloneAhcWSClient
 
 import scala.concurrent.{ExecutionContext, Future}
 
 @Component
 class WhakaokoClient @Autowired()(@Value("${whakaoko.url}") whakaokoUrl: String,
                                   @Value("${whakaoko.channel}") whakaokoChannel: String,
-                                  @Value("${whakaoko.token}") whakaokoToken: String) extends ReasonableWaits {
+                                  @Value("${whakaoko.token}") whakaokoToken: String,
+                                  wsClient: WSClient) extends ReasonableWaits {
 
   private val log = LogFactory.getLog(classOf[WhakaokoClient])
 
   private val ApplicationJsonHeader = "Content-Type" -> "application/json; charset=UTF8"
-
-  implicit val system: ActorSystem = ActorSystem()
-  implicit val materializer: ActorMaterializer = ActorMaterializer()
-
-  private val wsClient = StandaloneAhcWSClient()
 
   private implicit val dr: Reads[DateTime] = JodaReads.DefaultJodaDateTimeReads
   private implicit val llr: Reads[LatLong] = Json.reads[LatLong]
@@ -52,7 +46,7 @@ class WhakaokoClient @Autowired()(@Value("${whakaoko.url}") whakaokoUrl: String,
     )
 
     implicit val csrw: OWrites[CreateSubscriptionRequest] = Json.writes[CreateSubscriptionRequest]
-    withWhakaokoAuth(wsClient.url(createFeedSubscriptionUrl)).
+    withWhakaokoAuth(wsClient.wsClient.url(createFeedSubscriptionUrl)).
       withRequestTimeout(TenSeconds).
       post(Json.toJson(createSubscriptionRequest)).map { r =>
       span.setAttribute("http.response.status", r.status)
@@ -69,7 +63,7 @@ class WhakaokoClient @Autowired()(@Value("${whakaoko.url}") whakaokoUrl: String,
   def getSubscription(subscriptionId: String)(implicit ec: ExecutionContext, currentSpan: Span): Future[Option[Subscription]] = {
     val span = startSpan(currentSpan, "getSubscription")
 
-    withWhakaokoAuth(wsClient.url(subscriptionUrl(subscriptionId))).
+    withWhakaokoAuth(wsClient.wsClient.url(subscriptionUrl(subscriptionId))).
       withRequestTimeout(TenSeconds).
       get.map { r =>
       span.setAttribute("http.response.status", r.status)
@@ -88,7 +82,7 @@ class WhakaokoClient @Autowired()(@Value("${whakaoko.url}") whakaokoUrl: String,
     log.info("Fetching channel items page: " + page)
 
     val channelItemsUrl = whakaokoUrl + "/" + "/channels/" + whakaokoChannel + "/items"
-    val request = withWhakaokoAuth(wsClient.url(channelItemsUrl)).
+    val request = withWhakaokoAuth(wsClient.wsClient.url(channelItemsUrl)).
       addQueryStringParameters("page" -> page.toString).
       addQueryStringParameters("subscriptions" -> subscriptions.getOrElse(Seq.empty).mkString(",")). // TODO This is an Option - decide
       withRequestTimeout(TenSeconds)
@@ -107,7 +101,7 @@ class WhakaokoClient @Autowired()(@Value("${whakaoko.url}") whakaokoUrl: String,
 
     val channelSubscriptionsUrl = whakaokoUrl + "/" + "/channels/" + whakaokoChannel + "/subscriptions"
     log.info("Fetching channel subscriptions from: " + channelSubscriptionsUrl)
-    withWhakaokoAuth(wsClient.url(channelSubscriptionsUrl).withQueryStringParameters("pageSize" -> pageSize.toString)).
+    withWhakaokoAuth(wsClient.wsClient.url(channelSubscriptionsUrl).withQueryStringParameters("pageSize" -> pageSize.toString)).
       withRequestTimeout(TenSeconds).
       get.map { r =>
       span.setAttribute("http.response.status", r.status)
@@ -125,7 +119,7 @@ class WhakaokoClient @Autowired()(@Value("${whakaoko.url}") whakaokoUrl: String,
   def getSubscriptionFeedItems(subscriptionId: String)(implicit ec: ExecutionContext, currentSpan: Span): Future[(Seq[FeedItem], Long)] = {
     val span = startSpan(currentSpan, "getSubscriptionFeedItems")
 
-    withWhakaokoAuth(wsClient.url(subscriptionUrl(subscriptionId) + "/items").withQueryStringParameters("pageSize" -> pageSize.toString)).
+    withWhakaokoAuth(wsClient.wsClient.url(subscriptionUrl(subscriptionId) + "/items").withQueryStringParameters("pageSize" -> pageSize.toString)).
       withRequestTimeout(TenSeconds).
       get.map { r =>
       span.setAttribute("http.response.status", r.status)
@@ -145,7 +139,7 @@ class WhakaokoClient @Autowired()(@Value("${whakaoko.url}") whakaokoUrl: String,
     val span = startSpan(currentSpan, "updateSubscriptionName")
 
     implicit val supw: OWrites[SubscriptionUpdateRequest] = Json.writes[SubscriptionUpdateRequest]
-    val request = wsClient.url(subscriptionUrl(subscriptionId)).
+    val request = wsClient.wsClient.url(subscriptionUrl(subscriptionId)).
       withHttpHeaders(ApplicationJsonHeader).
       withRequestTimeout(TenSeconds)
 

@@ -22,6 +22,8 @@ class GeotagParsingTest extends GeotagParsing {
 
   @Test
   def shouldParseUserInputToPlace(): Unit = {
+    import scala.concurrent.ExecutionContext.Implicits.global
+
     when(geocodeService.resolveOsmId(new model.OsmId(456L, OsmType.RELATION))).thenReturn(new Place(null, new uk.co.eelpieconsulting.common.geo.model.LatLong(51.0, -0.3), null))
 
     val result = parseGeotag("Somewhere", "456/RELATION")

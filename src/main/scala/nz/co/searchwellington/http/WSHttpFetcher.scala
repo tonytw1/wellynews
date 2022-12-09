@@ -1,30 +1,21 @@
 package nz.co.searchwellington.http
 
-import java.net.URL
-
-import akka.actor.ActorSystem
-import akka.stream.ActorMaterializer
 import nz.co.searchwellington.ReasonableWaits
 import nz.co.searchwellington.model.SiteInformation
 import org.apache.commons.logging.LogFactory
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
-import play.api.libs.ws.ahc._
 
+import java.net.URL
 import scala.concurrent.{ExecutionContext, Future}
 
 @Component
-class WSHttpFetcher @Autowired()(siteInformation: SiteInformation) extends HttpFetcher with ReasonableWaits {
+class WSHttpFetcher @Autowired()(siteInformation: SiteInformation, wsClient: WSClient) extends HttpFetcher with ReasonableWaits {
 
   private val log = LogFactory.getLog(classOf[WSHttpFetcher])
 
-  implicit val system: ActorSystem = ActorSystem()  // TODO what ec are these running in?
-  implicit val materializer: ActorMaterializer = ActorMaterializer()
-
-  private val wsClient = StandaloneAhcWSClient()
-
   override def httpFetch(url: URL)(implicit ec: ExecutionContext): Future[HttpFetchResult] = {
-    wsClient.url(url.toExternalForm).withRequestTimeout(TenSeconds).get.map { r =>
+    wsClient.wsClient.url(url.toExternalForm).withRequestTimeout(TenSeconds).get.map { r =>
       log.info("Got HTTP response code " + r.status + " for url: " + url)
       HttpFetchResult(r.status, r.body)
     }

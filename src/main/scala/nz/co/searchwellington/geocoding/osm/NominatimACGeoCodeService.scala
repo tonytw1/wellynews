@@ -1,85 +1,78 @@
 package nz.co.searchwellington.geocoding.osm
 
-import akka.actor.ActorSystem
-import akka.stream.ActorMaterializer
 import nz.co.searchwellington.ReasonableWaits
-import org.apache.http.HttpStatus
+import nz.co.searchwellington.http.WSClient
 import org.apache.commons.logging.LogFactory
+import org.apache.http.HttpStatus
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
 import play.api.libs.json.{Json, Reads}
-import play.api.libs.ws.ahc.StandaloneAhcWSClient
 import uk.co.eelpieconsulting.common.geo.model.{LatLong, OsmId, OsmType, Place}
 
-import scala.concurrent.{Await, ExecutionContext}
+import scala.concurrent.Await
+import scala.concurrent.ExecutionContext.Implicits.global
 
 @Component
-class NominatimACGeoCodeService @Autowired()() extends GeoCodeService with ReasonableWaits {
+class NominatimACGeoCodeService @Autowired()(wsClient: WSClient) extends GeoCodeService with ReasonableWaits {
 
   private val log = LogFactory.getLog(classOf[NominatimACGeoCodeService])
-
-  implicit val system: ActorSystem = ActorSystem()
-  implicit val materializer: ActorMaterializer = ActorMaterializer()
-
-  private val wsClient = StandaloneAhcWSClient()
-
-  private implicit val ec: ExecutionContext = ExecutionContext.Implicits.global
 
   override def resolveOsmId(osmId: OsmId): Place = {
     val url = "https://nominatim-ac.eelpieconsulting.co.uk/places/" + osmId.getId + osmId.getType.toString.take(1)
 
-    val eventualPlace = wsClient.url(url).
+    val eventualPlace = wsClient.wsClient.url(url).
       withRequestTimeout(TenSeconds).get.map { result =>
-        result.status match {
-          case HttpStatus.SC_OK =>
-            implicit val nacll: Reads[NominatimACLatLong] = Json.reads[NominatimACLatLong]
-            implicit val nacpr: Reads[NominatimACPlace] = Json.reads[NominatimACPlace]
+      result.status match {
+        case HttpStatus.SC_OK =>
+          implicit val nacll: Reads[NominatimACLatLong] = Json.reads[NominatimACLatLong]
+          implicit val nacpr: Reads[NominatimACPlace] = Json.reads[NominatimACPlace]
 
-            val body = result.body
-            log.info("Nominatim AC response: " + body)
+          val body = result.body
+          log.info("Nominatim AC response: " + body)
 
-            val nominatimACPlace = Json.parse(body).as[NominatimACPlace]
-            log.info("Nominatim AC response parsed: " + nominatimACPlace)
+          val nominatimACPlace = Json.parse(body).as[NominatimACPlace]
+          log.info("Nominatim AC response parsed: " + nominatimACPlace)
 
-            val osmType = Option(nominatimACPlace.osmType).flatMap { osmType =>
-              osmType match {
-                case "N" => Some(OsmType.NODE)
-                case "W" => Some(OsmType.WAY)
-                case "R" => Some(OsmType.RELATION)
-                case _ => None
-              }
+          val osmType = Option(nominatimACPlace.osmType).flatMap { osmType =>
+            osmType match {
+              case "N" => Some(OsmType.NODE)
+              case "W" => Some(OsmType.WAY)
+              case "R" => Some(OsmType.RELATION)
+              case _ => None
             }
+          }
 
-            val osmId = for {
-              i <- Option(nominatimACPlace.osmId)
-              t <- osmType
-            } yield {
-              new OsmId(i, t)
-            }
+          val osmId = for {
+            i <- Option(nominatimACPlace.osmId)
+            t <- osmType
+          } yield {
+            new OsmId(i, t)
+          }
 
-            val latLong = nominatimACPlace.latlong.map { ll =>
-              new LatLong(ll.lat, ll.lon)
-            }
+          val latLong = nominatimACPlace.latlong.map { ll =>
+            new LatLong(ll.lat, ll.lon)
+          }
 
-            val place = new Place(
-              nominatimACPlace.address,
-              latLong.orNull,
-              osmId.orNull
-            )
+          val place = new Place(
+            nominatimACPlace.address,
+            latLong.orNull,
+            osmId.orNull
+          )
 
-            log.info("Place: " + place)
-            place
+          log.info("Place: " + place)
+          place
 
-          case _ =>
-            log.warn("NominatimAC call to " + url + " failed with status: " + result.status)
-            null
-        }
+        case _ =>
+          log.warn("NominatimAC call to " + url + " failed with status: " + result.status)
+          null
+      }
     }
 
-    Await.result(eventualPlace, TenSeconds)
+    Await.result(eventualPlace, TenSeconds) // TODO push up
   }
 
   case class NominatimACPlace(address: String, osmId: Long, osmType: String, latlong: Option[NominatimACLatLong])
-  case class NominatimACLatLong (lat: Double, lon: Double)
+
+  case class NominatimACLatLong(lat: Double, lon: Double)
 
 }

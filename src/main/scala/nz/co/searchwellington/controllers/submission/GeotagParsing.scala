@@ -4,11 +4,13 @@ import nz.co.searchwellington.geocoding.osm.GeoCodeService
 import nz.co.searchwellington.model.geo.{Geocode, LatLong, OsmId}
 import uk.co.eelpieconsulting.common.geo.model.OsmType
 
+import scala.concurrent.ExecutionContext
+
 trait GeotagParsing {
 
   def geocodeService: GeoCodeService
 
-  def parseGeotag(address: String, osmId: String): Option[Geocode] = {
+  def parseGeotag(address: String, osmId: String)(implicit ec: ExecutionContext): Option[Geocode] = {
     if (osmId.nonEmpty) {
       parseOsmId(osmId).flatMap { osm: uk.co.eelpieconsulting.common.geo.model.OsmId =>
         val resolvedPlace = geocodeService.resolveOsmId(osm)
