@@ -27,26 +27,21 @@ class RequestFilter @Autowired()(val combinerPageAttributeSetter: CombinerPageAt
     "/tags")
 
   def loadAttributesOntoRequest(request: HttpServletRequest): Unit = {
-    for (filter <- filters) {
-      filter.filter(request)
-    }
-    if (isReservedPath(RequestPath.getPathFrom(request))) {
-      return
-    }
-
-    for (attributeSetter <- attributeSetters) {
-      if (attributeSetter.setAttributes(request)) {
-        return
+    if (!isReservedPath(RequestPath.getPathFrom(request))) {
+      for (filter <- filters) {
+        filter.filter(request)
+      }
+      for (attributeSetter <- attributeSetters) {
+        if (attributeSetter.setAttributes(request)) {
+          return // TODO this is likely behaving as a break
+        }
       }
     }
-    log.debug("Looking for single publisher and tag urls")
   }
-
 
   def getFilters: Array[RequestAttributeFilter] = {
     filters
   }
-
 
   private def isReservedPath(path: String): Boolean = {
     reservedUrlWords.exists(path.startsWith)
