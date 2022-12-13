@@ -11,17 +11,17 @@ import javax.servlet.http.HttpServletRequest
 import scala.concurrent.Await
 import scala.concurrent.ExecutionContext.Implicits.global
 
-@Component class FeedAttributeSetter @Autowired()(mongoRepository: MongoRepository) extends AttributeSetter with ReasonableWaits {
+@Component
+class FeedAttributeSetter @Autowired()(mongoRepository: MongoRepository) extends AttributeSetter with ReasonableWaits {
 
-  private val FEED_ATTRIBUTE = "feedAttribute" // TODO private so not actually used?
-  private val feedPattern = Pattern.compile("^/feed/(.*?)(/(edit|save|rss|json))?$")
+  private val feedPattern = Pattern.compile("^/feed/(.*?)(/(edit|save|rss|json|accept-all))?$")
 
   override def setAttributes(request: HttpServletRequest): Boolean = {
     val contentMatcher = feedPattern.matcher(RequestPath.getPathFrom(request))
     if (contentMatcher.matches) {
       val urlWords = contentMatcher.group(1)
       Await.result(mongoRepository.getFeedByUrlwords(urlWords), TenSeconds).exists { feed =>
-        request.setAttribute(FEED_ATTRIBUTE, feed)
+        request.setAttribute(FeedAttributeSetter.FEED_ATTRIBUTE, feed)
         request.setAttribute("resource", feed)
         true
       }
@@ -30,5 +30,8 @@ import scala.concurrent.ExecutionContext.Implicits.global
       false
     }
   }
+}
 
+object FeedAttributeSetter {
+  val FEED_ATTRIBUTE = "feedAttribute"
 }

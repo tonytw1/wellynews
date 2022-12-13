@@ -5,6 +5,7 @@ import nz.co.searchwellington.ReasonableWaits
 import nz.co.searchwellington.controllers.models.GeotaggedNewsitemExtractor
 import nz.co.searchwellington.feeds.whakaoko.{WhakaokoFeedReader, WhakaokoService}
 import nz.co.searchwellington.feeds.{FeedItemActionDecorator, FeeditemToNewsitemService}
+import nz.co.searchwellington.filters.attributesetters.FeedAttributeSetter
 import nz.co.searchwellington.model.frontend.{FrontendNewsitem, FrontendResource}
 import nz.co.searchwellington.model.mappers.FrontendResourceMapper
 import nz.co.searchwellington.model.{Feed, User}
@@ -28,10 +29,9 @@ import scala.jdk.CollectionConverters._
                                                whakaokoService: WhakaokoService) extends ModelBuilder with ReasonableWaits {
 
   private val log = LogFactory.getLog(classOf[FeedModelBuilder])
-  private val FEED_ATTRIBUTE = "feedAttribute"
 
   def isValid(request: HttpServletRequest): Boolean = {
-    request.getAttribute(FEED_ATTRIBUTE) != null
+    request.getAttribute(FeedAttributeSetter.FEED_ATTRIBUTE) != null
   }
 
   def populateContentModel(request: HttpServletRequest, loggedInUser: Option[User])(implicit ec: ExecutionContext, currentSpan: Span): Future[Option[ModelMap]] = {
@@ -89,7 +89,7 @@ import scala.jdk.CollectionConverters._
       })
     }
 
-    val feedOnRequest = Option(request.getAttribute(FEED_ATTRIBUTE).asInstanceOf[Feed])
+    val feedOnRequest = Option(request.getAttribute(FeedAttributeSetter.FEED_ATTRIBUTE).asInstanceOf[Feed])
 
     feedOnRequest.map { feed =>
       val eventualFrontendFeed = frontendResourceMapper.createFrontendResourceFrom(feed, loggedInUser)

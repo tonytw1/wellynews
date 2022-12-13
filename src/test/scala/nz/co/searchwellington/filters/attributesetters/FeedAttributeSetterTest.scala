@@ -15,7 +15,7 @@ import scala.concurrent.Future
 class FeedAttributeSetterTest {
   private val mongoRepository = mock(classOf[MongoRepository])
   private val feed = Feed(id = UUID.randomUUID().toString, title = "Wellington City Council news")
-  private val request= new MockHttpServletRequest
+  private val request = new MockHttpServletRequest
 
   private val feedAttributeSetter = new FeedAttributeSetter(mongoRepository)
 
@@ -38,6 +38,12 @@ class FeedAttributeSetterTest {
 
   @Test def shouldSetFeedAttributeForFeedSavePath(): Unit = {
     request.setRequestURI("/feed/wcc-news/save")
+    feedAttributeSetter.setAttributes(request)
+    assertEquals(feed, request.getAttribute("feedAttribute"))
+  }
+
+  @Test def shouldSetFeedAttributeForAcceptAll(): Unit = {
+    request.setRequestURI("/feed/wcc-news/accept-all")
     feedAttributeSetter.setAttributes(request)
     assertEquals(feed, request.getAttribute("feedAttribute"))
   }

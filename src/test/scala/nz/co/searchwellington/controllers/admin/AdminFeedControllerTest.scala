@@ -19,10 +19,9 @@ import scala.concurrent.ExecutionContext.Implicits.global
 
 class AdminFeedControllerTest {
   private val FEED_ID = UUID.randomUUID().toString
-  private val adminUser = User(id ="273", admin = true)
+  private val adminUser = User(id = "273", admin = true)
   private val feed = Feed(id = FEED_ID, title = "A feed")
 
-  private val requestFilter = mock(classOf[AdminRequestFilter])
   private val urlWordsGenerator = new UrlWordsGenerator(new DateFormatter(DateTimeZone.UTC))
   private val urlBuilder = new UrlBuilder(new SiteInformation("", "", "", "", ""), urlWordsGenerator)
   private val loggedInUserFilter = mock(classOf[LoggedInUserFilter])
@@ -31,7 +30,7 @@ class AdminFeedControllerTest {
 
   private implicit val currentSpan = Span.current()
 
-  val controller = new AdminFeedController(requestFilter, feedReader, urlBuilder, permissionService, loggedInUserFilter)
+  val controller = new AdminFeedController(feedReader, urlBuilder, permissionService, loggedInUserFilter)
 
   @Test
   def manualFeedReaderRunsShouldBeAttributedToTheUserWhoKicksThemOffAndShouldAcceptAllEvenIfNoDateIsGivenOfNotCurrent(): Unit = {
