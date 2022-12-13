@@ -20,6 +20,7 @@ import org.springframework.web.servlet.ModelAndView
 import org.springframework.web.servlet.view.RedirectView
 import reactivemongo.api.bson.BSONObjectID
 
+import javax.servlet.http.{HttpServletRequest, HttpServletResponse}
 import javax.validation.Valid
 import scala.concurrent.Await
 import scala.concurrent.ExecutionContext.Implicits.global
@@ -38,7 +39,6 @@ class EditTagController @Autowired()(mongoRepository: MongoRepository, tagDAO: T
 
   @GetMapping(Array("/edit-tag/{id}"))
   def prompt(@PathVariable id: String): ModelAndView = {
-
     def promptForEditTag(loggedInUser: User): ModelAndView = {
       Await.result(mongoRepository.getTagById(id), TenSeconds).map { tag =>
         val editTag = new EditTag(tag.display_name,
@@ -65,7 +65,6 @@ class EditTagController @Autowired()(mongoRepository: MongoRepository, tagDAO: T
 
   @PostMapping(Array("/edit-tag/{id}"))
   def submit(@PathVariable id: String, @Valid @ModelAttribute("formObject") editTag: EditTag, result: BindingResult): ModelAndView = {
-
     def submitEditTag(loggedInUser: User): ModelAndView = {
       Await.result(mongoRepository.getTagById(id), TenSeconds).map { tag =>
         val parentTag = optionalBsonObjectId(editTag.getParent).flatMap { p =>
@@ -116,6 +115,23 @@ class EditTagController @Autowired()(mongoRepository: MongoRepository, tagDAO: T
     }
 
     requiringAdminUser(submitEditTag)
+  }
+
+  @GetMapping(Array("/delete-tag/{id}"))
+  def delete(@PathVariable id: String, request: HttpServletRequest, response: HttpServletResponse): ModelAndView = {
+
+    def deleteTag(loggedInUser: User): ModelAndView = {
+      Await.result(mongoRepository.getTagById(id), TenSeconds).map { tag =>
+        tagModificationService.deleteTag(tag)
+        new ModelAndView("deleteTag").
+          addObject("heading", "Deleted tag").
+          addObject("tag", tag)
+      }
+    }.getOrElse {
+      NotFound
+    }
+
+    requiringAdminUser(deleteTag)
   }
 
   private def renderEditForm(tag: Tag, editTag: EditTag): ModelAndView = {

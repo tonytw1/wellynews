@@ -79,8 +79,7 @@ class AdminUrlBuilder @Autowired()(urlBuilder: UrlBuilder, @Value("${whakaoko.ur
     "/edit-tag/" + tag.id
   }
 
-  def deleteTagUrl(tag: Tag): String = "/edit/tag/delete?tag=" + tag.name
-
+  def deleteTagUrl(tag: Tag): String = "/delete-tag/" + tag.id
 
   def getWhakaokoPreviewUrl(subscription: Subscription): String = {
     if (subscription != null) {
