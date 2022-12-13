@@ -91,12 +91,10 @@ import scala.jdk.CollectionConverters._
 
         val results = Await.result(eventuallyAutoTaggedResources, ThirtySeconds).flatten
         val frontendResults = Await.result(Future.sequence(results.map(r => frontendResourceMapper.createFrontendResourceFrom(r, None))), TenSeconds)
-        val mv = new ModelAndView("autoTagApply").
+        new ModelAndView("autoTagApply").
           addObject("heading", "Autotagging").
           addObject("tag", tag).
           addObject("resources_to_tag", frontendResults.asJava)
-
-        mv
 
       }.getOrElse{
         response.setStatus(HttpServletResponse.SC_NOT_FOUND)
