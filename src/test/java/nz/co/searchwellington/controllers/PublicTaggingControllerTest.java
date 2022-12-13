@@ -3,7 +3,6 @@ package nz.co.searchwellington.controllers;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
-import nz.co.searchwellington.filters.AdminRequestFilter;
 import nz.co.searchwellington.model.Resource;
 import nz.co.searchwellington.model.User;
 

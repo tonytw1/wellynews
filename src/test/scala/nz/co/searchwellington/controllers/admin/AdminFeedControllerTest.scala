@@ -3,7 +3,6 @@ package nz.co.searchwellington.controllers.admin
 import io.opentelemetry.api.trace.Span
 import nz.co.searchwellington.controllers.LoggedInUserFilter
 import nz.co.searchwellington.feeds.FeedReader
-import nz.co.searchwellington.filters.AdminRequestFilter
 import nz.co.searchwellington.model._
 import nz.co.searchwellington.permissions.EditPermissionService
 import nz.co.searchwellington.urls.UrlBuilder
