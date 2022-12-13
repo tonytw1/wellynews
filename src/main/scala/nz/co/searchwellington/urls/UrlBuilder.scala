@@ -1,6 +1,7 @@
 package nz.co.searchwellington.urls
 
 import nz.co.searchwellington.controllers.models.helpers.ArchiveMonth
+import nz.co.searchwellington.filters.PageParameterFilter
 import nz.co.searchwellington.model._
 import nz.co.searchwellington.model.frontend.{FrontendFeed, FrontendNewsitem, FrontendResource, FrontendWebsite}
 import nz.co.searchwellington.model.geo.OsmId
@@ -218,7 +219,7 @@ class UrlBuilder @Autowired()(siteInformation: SiteInformation, urlWordsGenerato
 
   def getSearchUrlFor(keywords: String, page: Option[Int] = None, tag: Option[Tag] = None, publisher: Option[Website] = None): String = {
     val ps = Seq(
-      page.map(p => "page" -> p.toString),
+      page.map(p => PageParameterFilter.PAGE_ATTRIBUTE -> p.toString),
       tag.map(t => "tag" -> t.name),
       publisher.map(p => "publisher" -> p.url_words.get)  // TODO naked get
     ).flatten

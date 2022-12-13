@@ -1,5 +1,6 @@
 package nz.co.searchwellington.controllers.models.helpers
 
+import nz.co.searchwellington.filters.PageParameterFilter
 import nz.co.searchwellington.model.PaginationLink
 import org.springframework.ui.ModelMap
 
@@ -9,8 +10,8 @@ import scala.jdk.CollectionConverters._
 trait Pagination {
 
   def getPage(request: HttpServletRequest): Int = {
-    if (request.getAttribute("page") != null) {
-      request.getAttribute("page").asInstanceOf[Integer]
+    if (request.getAttribute(PageParameterFilter.PAGE_ATTRIBUTE) != null) {
+      request.getAttribute(PageParameterFilter.PAGE_ATTRIBUTE).asInstanceOf[Integer]
     } else {
       1
     }
