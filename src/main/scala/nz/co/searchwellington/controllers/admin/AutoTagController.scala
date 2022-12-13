@@ -34,7 +34,7 @@ import scala.jdk.CollectionConverters._
 
   private val log = LogFactory.getLog(classOf[AutoTagController])
 
-  @RequestMapping(Array("/*/autotag"), method = Array(RequestMethod.GET))
+  @RequestMapping(value = Array("/*/autotag"), method = Array(RequestMethod.GET))
   def prompt(request: HttpServletRequest, response: HttpServletResponse): ModelAndView = {
     implicit val currentSpan: Span = Span.current()
 
