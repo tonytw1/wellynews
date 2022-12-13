@@ -38,14 +38,14 @@ import scala.jdk.CollectionConverters._
   def prompt(request: HttpServletRequest, response: HttpServletResponse): ModelAndView = {
     implicit val currentSpan: Span = Span.current()
 
-    def prompt(loggedInUser: User): ModelAndView = {
+    def prompt(adminUser: User): ModelAndView = {
       Option(request.getAttribute(TagPageAttributeSetter.TAG).asInstanceOf[Tag]).fold {
         response.setStatus(HttpServletResponse.SC_NOT_FOUND)
         NotFound
 
       } { tag =>
         Await.result(for {
-          suggestions <- getPossibleAutotagResources(loggedInUser, tag, Some(loggedInUser)) // TODO double pass
+          suggestions <- getPossibleAutotagResources(adminUser, tag)
         } yield {
           new ModelAndView("autoTagPrompt").
             addObject("heading", "Autotagging").
@@ -60,7 +60,7 @@ import scala.jdk.CollectionConverters._
 
   @RequestMapping(value = Array("/*/autotag"), method = Array(RequestMethod.POST))
   def apply(request: HttpServletRequest, response: HttpServletResponse): ModelAndView = {
-    def apply(loggedInUser: User): ModelAndView = {
+    def apply(adminUser: User): ModelAndView = {
       Option(request.getAttribute(TagPageAttributeSetter.TAG).asInstanceOf[Tag]).map { tag =>
 
         def applyTagTo(resource: Resource, tag: Tag): Future[Resource] = {
@@ -69,7 +69,7 @@ import scala.jdk.CollectionConverters._
           impliedTagService.alreadyHasTag(resource, tag).flatMap { alreadyHasTag =>
             if (!alreadyHasTag) {
               log.info("Applying tag " + tag.getName + " to:" + resource.title)
-              val withTag = handTaggingService.addUserTagging(loggedInUser, tag, resource)
+              val withTag = handTaggingService.addUserTagging(adminUser, tag, resource)
               contentUpdateService.update(withTag).map { u =>
                 withTag
               }
@@ -107,9 +107,9 @@ import scala.jdk.CollectionConverters._
     requiringAdminUser(apply)
   }
 
-  private def getPossibleAutotagResources(user: User, tag: Tag, loggedInUser: Option[User])(implicit currentSpan: Span): Future[Seq[FrontendResource]] = {
+  private def getPossibleAutotagResources(user: User, tag: Tag)(implicit currentSpan: Span): Future[Seq[FrontendResource]] = {
     val autotagHints = tag.hints.toSet
-    contentRetrievalService.getNewsitemsMatchingKeywordsNotTaggedByUser(autotagHints + tag.display_name, user, tag, loggedInUser)
+    contentRetrievalService.getNewsitemsMatchingKeywordsNotTaggedByUser(autotagHints + tag.display_name, user, tag, Some(user))
   }
 
 }
