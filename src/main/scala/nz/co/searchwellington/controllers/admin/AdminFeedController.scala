@@ -23,7 +23,7 @@ import scala.concurrent.ExecutionContext.Implicits.global
                                                    val loggedInUserFilter: LoggedInUserFilter)
   extends RequiringLoggedInUser with Errors {
 
-  @RequestMapping(Array("/feed/(.*)/accept-all"))
+  @RequestMapping(Array("/feed/*/accept-all"))
   def acceptAllFrom(request: HttpServletRequest): ModelAndView = {
     implicit val currentSpan: Span = Span.current()
 
