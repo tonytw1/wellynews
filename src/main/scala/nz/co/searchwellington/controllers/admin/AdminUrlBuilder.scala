@@ -38,7 +38,7 @@ class AdminUrlBuilder @Autowired()(urlBuilder: UrlBuilder, @Value("${whakaoko.ur
   }
 
   def getResourceDeleteUrl(resource: FrontendResource): String = {
-    "/delete?resource=" + resource.getId
+    "/delete-resource/" + resource.getId
   }
 
   def getSaveUrl: String = {

@@ -37,10 +37,10 @@ class AdminUrlBuilderTest {
   def canConstructEditUrlForFrontendFeed(): Unit = assertEquals("/edit-feed/124", adminUrlBuilder.getResourceEditUrl(frontendFeed))
 
   @Test
-  def canConstructDeleteUrlForFrontendResource(): Unit = assertEquals("/delete?resource=123", adminUrlBuilder.getResourceDeleteUrl(frontendWebsite))
+  def canConstructDeleteUrlForFrontendResource(): Unit = assertEquals("/delete-resource/123", adminUrlBuilder.getResourceDeleteUrl(frontendWebsite))
 
   @Test
-  def canConstructCheckUrlForFrontendResource(): Unit = assertEquals("/admin/linkchecker/add?resource=123", adminUrlBuilder.getResourceCheckUrl(frontendWebsite))
+  def canConstructCheckUrlForFrontendResource(): Unit = assertEquals("/check-resource/123", adminUrlBuilder.getResourceCheckUrl(frontendWebsite))
 
   @Test
   def canConstructViewSnapshotUrlForFrontendResource(): Unit = assertEquals("/my-local-sports-team/viewsnapshot", adminUrlBuilder.getViewSnapshotUrl(frontendWebsite))
