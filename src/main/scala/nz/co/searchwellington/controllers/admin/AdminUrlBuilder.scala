@@ -46,7 +46,7 @@ class AdminUrlBuilder @Autowired()(urlBuilder: UrlBuilder, @Value("${whakaoko.ur
   }
 
   def getResourceCheckUrl(resource: FrontendResource): String = {
-    "/admin/linkchecker/add?resource=" + resource.getId
+    "/check-resource/" + resource.getId
   }
 
   def getViewSnapshotUrl(resource: FrontendResource): String = {
