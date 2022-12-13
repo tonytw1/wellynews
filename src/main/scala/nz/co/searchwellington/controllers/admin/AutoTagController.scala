@@ -107,6 +107,8 @@ import scala.jdk.CollectionConverters._
 
   private def getPossibleAutotagResources(user: User, tag: Tag)(implicit currentSpan: Span): Future[Seq[FrontendResource]] = {
     val autotagHints = tag.hints.toSet
+    // TODO should only return resources which do not have tht tag at all.
+    // Duplicate taggings are ignored by the submit action.
     contentRetrievalService.getNewsitemsMatchingKeywordsNotTaggedByUser(autotagHints + tag.display_name, user, tag, Some(user))
   }
 
