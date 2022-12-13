@@ -70,7 +70,7 @@ import scala.jdk.CollectionConverters._
             if (!alreadyHasTag) {
               log.info("Applying tag " + tag.getName + " to:" + resource.title)
               val withTag = handTaggingService.addUserTagging(adminUser, tag, resource)
-              contentUpdateService.update(withTag).map { u =>
+              contentUpdateService.update(withTag).map { _ =>
                 withTag
               }
             } else {
@@ -107,9 +107,7 @@ import scala.jdk.CollectionConverters._
 
   private def getPossibleAutotagResources(user: User, tag: Tag)(implicit currentSpan: Span): Future[Seq[FrontendResource]] = {
     val autotagHints = tag.hints.toSet
-    // TODO should only return resources which do not have tht tag at all.
-    // Duplicate taggings are ignored by the submit action.
-    contentRetrievalService.getNewsitemsMatchingKeywordsNotTaggedByUser(autotagHints + tag.display_name, user, tag, Some(user))
+    contentRetrievalService.getNewsitemsMatchingKeywordsNotTaggedWithTag(autotagHints + tag.display_name, tag, Some(user))
   }
 
 }

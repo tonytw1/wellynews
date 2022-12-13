@@ -64,19 +64,17 @@ import scala.concurrent.{ExecutionContext, Future}
 
   def getTopLevelTags()(implicit ec: ExecutionContext): Future[Seq[Tag]] = tagDAO.getTopLevelTags
 
-  def getNewsitemsMatchingKeywordsNotTaggedByUser(keywords: Set[String], user: User, tag: Tag, loggedInUser: Option[User])(implicit ec: ExecutionContext, currentSpan: Span): Future[Seq[FrontendResource]] = {
+  def getNewsitemsMatchingKeywordsNotTaggedWithTag(keywords: Set[String], tag: Tag, loggedInUser: Option[User])(implicit ec: ExecutionContext, currentSpan: Span): Future[Seq[FrontendResource]] = {
 
-    def getNewsitemIdsMatchingKeywords(keywords: Set[String], user: User): Future[(Seq[ElasticResource], Long)] = {
+    def getNewsitemIdsMatchingKeywords(keywords: Set[String], loggedInUser: Option[User]): Future[(Seq[ElasticResource], Long)] = {
       val query = ResourceQuery(`type` = newsitems, q = Some(keywords.mkString(" ")))
-      elasticSearchIndexer.getResources(query, order = byRelevance, loggedInUser = Some(user))
+      elasticSearchIndexer.getResources(query, order = byRelevance, loggedInUser = loggedInUser)
     }
 
-    getNewsitemIdsMatchingKeywords(keywords, user).flatMap(i => fetchResourcesForElasticResources(i._1)).map { resources =>
-      resources.filter { r =>
+    getNewsitemIdsMatchingKeywords(keywords, loggedInUser).flatMap(i => fetchResourcesForElasticResources(i._1)).map { resources =>
+      resources.filter { r => // TODO Should be able to push this filter to the query
         val hasExistingTagging = r.resource_tags.exists{ tagging =>
-          val bool = tagging.user_id == user._id && tagging.tag_id == tag._id
-          log.info("Existing tagging: " + tagging.tag_id + " / " + tag._id  + ": " + bool)
-          bool
+          tagging.tag_id == tag._id
         }
         !hasExistingTagging
       }
