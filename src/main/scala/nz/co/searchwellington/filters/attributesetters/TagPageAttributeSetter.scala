@@ -32,7 +32,7 @@ import scala.concurrent.ExecutionContext.Implicits.global
           log.debug("Looking for tag '" + tagUrlWords + "'")
           Await.result(mongoRepository.getTagByUrlWords(tagUrlWords), TenSeconds).exists { tag =>
             log.debug("Setting tag: " + tag.getName)
-            request.setAttribute("tag", tag) // TODO deprecate
+            request.setAttribute(TagPageAttributeSetter.TAG, tag) // TODO deprecate
             val tags = Seq(tag)
             log.debug("Setting tags: " + tags)
             request.setAttribute("tags", tags)
@@ -63,4 +63,8 @@ import scala.concurrent.ExecutionContext.Implicits.global
     reservedUrlWords.contains(urlWord)
   }
 
+}
+
+object TagPageAttributeSetter {
+  val TAG = "tag"
 }

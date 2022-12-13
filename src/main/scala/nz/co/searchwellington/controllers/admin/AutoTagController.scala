@@ -3,7 +3,7 @@ package nz.co.searchwellington.controllers.admin
 import io.opentelemetry.api.trace.Span
 import nz.co.searchwellington.ReasonableWaits
 import nz.co.searchwellington.controllers.{CommonModelObjectsService, LoggedInUserFilter, RequiringLoggedInUser}
-import nz.co.searchwellington.filters.AdminRequestFilter
+import nz.co.searchwellington.filters.attributesetters.TagPageAttributeSetter
 import nz.co.searchwellington.model.frontend.FrontendResource
 import nz.co.searchwellington.model.mappers.FrontendResourceMapper
 import nz.co.searchwellington.model.{Resource, Tag, User}
@@ -11,6 +11,7 @@ import nz.co.searchwellington.modification.ContentUpdateService
 import nz.co.searchwellington.repositories.mongo.MongoRepository
 import nz.co.searchwellington.repositories.{ContentRetrievalService, HandTaggingService}
 import nz.co.searchwellington.tagging.ImpliedTagService
+import nz.co.searchwellington.views.Errors
 import org.apache.commons.logging.LogFactory
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Controller
@@ -23,24 +24,24 @@ import scala.concurrent.{Await, Future}
 import scala.jdk.CollectionConverters._
 
 @Controller class AutoTagController @Autowired()(mongoRepository: MongoRepository,
-                                                 requestFilter: AdminRequestFilter,
                                                  impliedTagService: ImpliedTagService,
                                                  contentUpdateService: ContentUpdateService,
                                                  val loggedInUserFilter: LoggedInUserFilter,
                                                  handTaggingService: HandTaggingService,
                                                  val contentRetrievalService: ContentRetrievalService,
                                                  frontendResourceMapper: FrontendResourceMapper)
-  extends ReasonableWaits with CommonModelObjectsService with RequiringLoggedInUser {
+  extends ReasonableWaits with CommonModelObjectsService with RequiringLoggedInUser with Errors {
 
   private val log = LogFactory.getLog(classOf[AutoTagController])
 
-  @RequestMapping(Array("/*/autotag")) def prompt(request: HttpServletRequest, response: HttpServletResponse): ModelAndView = {
+  @RequestMapping(Array("/*/autotag"), method = Array(RequestMethod.GET))
+  def prompt(request: HttpServletRequest, response: HttpServletResponse): ModelAndView = {
     implicit val currentSpan: Span = Span.current()
 
     def prompt(loggedInUser: User): ModelAndView = {
-      Option(request.getAttribute("tag").asInstanceOf[Tag]).fold {
+      Option(request.getAttribute(TagPageAttributeSetter.TAG).asInstanceOf[Tag]).fold {
         response.setStatus(HttpServletResponse.SC_NOT_FOUND)
-        null: ModelAndView
+        NotFound
 
       } { tag =>
         Await.result(for {
@@ -57,10 +58,10 @@ import scala.jdk.CollectionConverters._
     requiringAdminUser(prompt)
   }
 
-  @RequestMapping(value = Array("/*/autotag/apply"), method = Array(RequestMethod.POST)) def apply(request: HttpServletRequest, response: HttpServletResponse): ModelAndView = {
+  @RequestMapping(value = Array("/*/autotag"), method = Array(RequestMethod.POST))
+  def apply(request: HttpServletRequest, response: HttpServletResponse): ModelAndView = {
     def apply(loggedInUser: User): ModelAndView = {
-      requestFilter.loadAttributesOntoRequest(request)
-      Option(request.getAttribute("tag").asInstanceOf[Tag]).map { tag =>
+      Option(request.getAttribute(TagPageAttributeSetter.TAG).asInstanceOf[Tag]).map { tag =>
 
         def applyTagTo(resource: Resource, tag: Tag): Future[Resource] = {
           // There is no need to apply a tag if it is already implied on this resource (by a publisher or feed tag)
@@ -98,8 +99,8 @@ import scala.jdk.CollectionConverters._
         mv
 
       }.getOrElse{
-        response.setStatus(HttpServletResponse.SC_NOT_FOUND)  // TODO deduplicate 404 response
-        null
+        response.setStatus(HttpServletResponse.SC_NOT_FOUND)
+        NotFound
       }
     }
 

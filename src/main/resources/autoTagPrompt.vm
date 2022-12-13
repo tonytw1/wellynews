@@ -18,7 +18,7 @@
 
 <p>The following items might be a match for the tag $tag.displayName.toLowerCase()</p>
 
-<form method="POST" action="$urlBuilder.getAutoTagUrl($tag)/apply">
+<form method="POST" action="$urlBuilder.getAutoTagUrl($tag)">
 <ul class="flat_list">
 #foreach($item in $resources_to_tag)
 		<li>#parse("includes/content_element.vm")
