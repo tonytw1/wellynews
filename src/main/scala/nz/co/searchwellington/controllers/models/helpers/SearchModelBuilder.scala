@@ -34,8 +34,7 @@ import scala.jdk.CollectionConverters._
 
     val maybeTag = Option(request.getAttribute("tag")).map(_.asInstanceOf[Tag])
     val maybePublisher = Option(request.getAttribute("publisher").asInstanceOf[Website])
-
-    log.info("Search parameters: ", keywords, maybeTag, maybePublisher)
+    log.info("Search parameters: ", keywords, maybeTag.map(_.name), maybePublisher.map(_.title))
 
     val eventualMaybeFrontendPublisher = maybePublisher.map { publisher =>
       val eventualResource = frontendResourceMapper.createFrontendResourceFrom(publisher, loggedInUser)
