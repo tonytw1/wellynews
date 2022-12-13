@@ -27,6 +27,4 @@ class SiteInformation @Autowired()(@Value("${areaname}") areaname: String = "",
 
   def getImageRoot: String = imageRoot
 
-  def isTwitterEnabled: Boolean = twitterUsername != null && twitterUsername.nonEmpty
-
 }
