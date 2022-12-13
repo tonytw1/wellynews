@@ -11,11 +11,11 @@ import javax.servlet.http.HttpServletRequest
 @Component("requestFilter")
 @Scope(value = "request", proxyMode = ScopedProxyMode.TARGET_CLASS)
 class RequestFilter @Autowired()(val combinerPageAttributeSetter: CombinerPageAttributeSetter, val publisherPageAttributeSetter: PublisherPageAttributeSetter,
-                                 val feedAttributeSetter: FeedAttributeSetter, val tagPageAttibuteSetter: TagPageAttributeSetter, val filters: Array[RequestAttributeFilter]) {
+                                 val feedAttributeSetter: FeedAttributeSetter, val tagPageAttributeSetter: TagPageAttributeSetter, val filters: Array[RequestAttributeFilter]) {
 
   private val log = LogFactory.getLog(classOf[RequestFilter])
 
-  private val attributeSetters = Seq(tagPageAttibuteSetter, publisherPageAttributeSetter, feedAttributeSetter, combinerPageAttributeSetter)
+  private val attributeSetters = Seq(tagPageAttributeSetter, publisherPageAttributeSetter, feedAttributeSetter, combinerPageAttributeSetter)
 
   private val reservedUrlWords = Set(
     "/about",
