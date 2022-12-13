@@ -1,7 +1,7 @@
 package nz.co.searchwellington.urls
 
 import nz.co.searchwellington.controllers.models.helpers.ArchiveMonth
-import nz.co.searchwellington.filters.PageParameterFilter
+import nz.co.searchwellington.filters.attributesetters.PageParameterFilter
 import nz.co.searchwellington.model._
 import nz.co.searchwellington.model.frontend.{FrontendFeed, FrontendNewsitem, FrontendResource, FrontendWebsite}
 import nz.co.searchwellington.model.geo.OsmId

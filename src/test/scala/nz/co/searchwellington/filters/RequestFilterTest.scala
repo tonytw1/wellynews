@@ -1,6 +1,6 @@
 package nz.co.searchwellington.filters
 
-import nz.co.searchwellington.filters.attributesetters.{CombinerPageAttributeSetter, FeedAttributeSetter, PublisherPageAttributeSetter, TagPageAttributeSetter}
+import nz.co.searchwellington.filters.attributesetters.{CombinerPageAttributeSetter, FeedAttributeSetter, PageParameterFilter, PublisherPageAttributeSetter, TagPageAttributeSetter}
 import nz.co.searchwellington.model.{Feed, Tag, Website}
 import nz.co.searchwellington.repositories.TagDAO
 import nz.co.searchwellington.repositories.mongo.MongoRepository

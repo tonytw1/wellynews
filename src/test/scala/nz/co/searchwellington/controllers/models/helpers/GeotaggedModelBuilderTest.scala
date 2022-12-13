@@ -3,7 +3,7 @@ package nz.co.searchwellington.controllers.models.helpers
 import io.opentelemetry.api.trace.Span
 import nz.co.searchwellington.ReasonableWaits
 import nz.co.searchwellington.controllers.RssUrlBuilder
-import nz.co.searchwellington.filters.LocationParameterFilter
+import nz.co.searchwellington.filters.attributesetters.LocationParameterFilter
 import nz.co.searchwellington.model.frontend.FrontendResource
 import nz.co.searchwellington.repositories.ContentRetrievalService
 import nz.co.searchwellington.tagging.RelatedTagsService

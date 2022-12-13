@@ -1,6 +1,6 @@
 package nz.co.searchwellington.controllers.models.helpers
 
-import nz.co.searchwellington.filters.PageParameterFilter
+import nz.co.searchwellington.filters.attributesetters.PageParameterFilter
 import nz.co.searchwellington.model.PaginationLink
 import org.springframework.ui.ModelMap
 
