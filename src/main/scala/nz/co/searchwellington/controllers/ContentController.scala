@@ -41,11 +41,12 @@ class ContentController @Autowired()(contentModelBuilderServiceFactory: ContentM
   }
 
   private def buildAndRender(request: HttpServletRequest)(implicit ec: ExecutionContext, currentSpan: Span): ModelAndView = {
+    val loggedInUser = loggedInUserFilter.getLoggedInUser
     val eventualMaybeView = requestFilter.loadAttributesOntoRequest(request).flatMap { attributes =>
       attributes.toSeq.foreach( a =>
-        request.setAttribute(a._1, a._2)
+      request.setAttribute(a._1, a._2)
       )
-      contentModelBuilderService.buildModelAndView(request, loggedInUserFilter.getLoggedInUser)
+      contentModelBuilderService.buildModelAndView(request, loggedInUser)
     }
 
     try {
