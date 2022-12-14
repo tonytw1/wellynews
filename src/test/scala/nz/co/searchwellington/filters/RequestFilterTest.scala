@@ -1,6 +1,6 @@
 package nz.co.searchwellington.filters
 
-import nz.co.searchwellington.filters.attributesetters.{CombinerPageAttributeSetter, FeedAttributeSetter, PageParameterFilter, PublisherPageAttributeSetter, TagPageAttributeSetter}
+import nz.co.searchwellington.filters.attributesetters.{CombinerPageAttributeSetter, FeedAttributeSetter, LocationParameterFilter, PageParameterFilter, PublisherPageAttributeSetter, TagPageAttributeSetter}
 import nz.co.searchwellington.model.{Feed, Tag, Website}
 import nz.co.searchwellington.repositories.TagDAO
 import nz.co.searchwellington.repositories.mongo.MongoRepository
@@ -22,10 +22,11 @@ class RequestFilterTest {
   private val mongoRepository = mock(classOf[MongoRepository])
   private val tagDAO = mock(classOf[TagDAO])
 
-  private val filters = Array[RequestAttributeFilter](new PageParameterFilter)
-
-  private val filter = new RequestFilter(new CombinerPageAttributeSetter(mongoRepository), new PublisherPageAttributeSetter(mongoRepository),
-    new FeedAttributeSetter(mongoRepository), new TagPageAttributeSetter(tagDAO, mongoRepository), filters) // TODO suggests test coverage at wrong level
+  private val filter = new RequestFilter(new CombinerPageAttributeSetter(mongoRepository),
+    new PublisherPageAttributeSetter(mongoRepository),
+    new FeedAttributeSetter(mongoRepository),
+    new TagPageAttributeSetter(tagDAO, mongoRepository),
+    new PageParameterFilter, mock(classOf[LocationParameterFilter])) // TODO suggests test coverage at wrong level
 
   @BeforeEach
   def setUp(): Unit = {
@@ -53,7 +54,7 @@ class RequestFilterTest {
     filter.loadAttributesOntoRequest(request)
 
     val page = request.getAttribute("page").asInstanceOf[Integer]
-    assertEquals(3, page.intValue)
+    assertEquals(3, page)
   }
 
   @Test

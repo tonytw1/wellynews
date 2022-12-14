@@ -2,7 +2,6 @@ package nz.co.searchwellington.filters.attributesetters;
 
 import com.google.common.base.Strings
 import nz.co.searchwellington.exceptions.UnresolvableLocationException
-import nz.co.searchwellington.filters.RequestAttributeFilter
 import nz.co.searchwellington.geocoding.osm.{GeoCodeService, OsmIdParser}
 import org.apache.commons.logging.LogFactory
 import org.springframework.beans.factory.annotation.Autowired
@@ -14,7 +13,7 @@ import javax.servlet.http.HttpServletRequest;
 
 @Component
 @Scope(value = "request")
-class LocationParameterFilter @Autowired()(geoCodeService: GeoCodeService, osmIdParser: OsmIdParser) extends RequestAttributeFilter {
+class LocationParameterFilter @Autowired()(geoCodeService: GeoCodeService, osmIdParser: OsmIdParser) extends AttributeSetter {
 
   private val log = LogFactory.getLog(classOf[LocationParameterFilter])
 
@@ -22,7 +21,7 @@ class LocationParameterFilter @Autowired()(geoCodeService: GeoCodeService, osmId
   private val LONGITUDE = "longitude"
   private val OSM = "osm"
 
-  override def filter(request: HttpServletRequest) = {
+  override def setAttributes(request: HttpServletRequest): Boolean = {
 
     processDoubleParameter(request, LocationParameterFilter.RADIUS).foreach { radius =>
       if (radius > 0) {
@@ -49,6 +48,7 @@ class LocationParameterFilter @Autowired()(geoCodeService: GeoCodeService, osmId
       // TODO lat, long isn't really an address - this should be something like a display method on latLong or the view which gives a sensible output when address is null.
       request.setAttribute(LocationParameterFilter.LOCATION, new Place(latLongLabel, latLong, null));
     }
+    false
   }
 
   private def processDoubleParameter(request: HttpServletRequest, parameterName: String): Option[Double] = {

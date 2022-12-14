@@ -1,7 +1,6 @@
 package nz.co.searchwellington.filters
 
 import nz.co.searchwellington.filters.attributesetters._
-import org.apache.commons.logging.LogFactory
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.context.annotation.{Scope, ScopedProxyMode}
 import org.springframework.stereotype.Component
@@ -10,10 +9,20 @@ import javax.servlet.http.HttpServletRequest
 
 @Component("requestFilter")
 @Scope(value = "request", proxyMode = ScopedProxyMode.TARGET_CLASS)
-class RequestFilter @Autowired()(val combinerPageAttributeSetter: CombinerPageAttributeSetter, val publisherPageAttributeSetter: PublisherPageAttributeSetter,
-                                 val feedAttributeSetter: FeedAttributeSetter, val tagPageAttributeSetter: TagPageAttributeSetter, val filters: Array[RequestAttributeFilter]) {
+class RequestFilter @Autowired()(combinerPageAttributeSetter: CombinerPageAttributeSetter, publisherPageAttributeSetter: PublisherPageAttributeSetter,
+                                 feedAttributeSetter: FeedAttributeSetter, tagPageAttributeSetter: TagPageAttributeSetter,
+                                 pageParameterFilter: PageParameterFilter,
+                                 locationParameterFilter: LocationParameterFilter) {
 
-  private val attributeSetters = Seq(tagPageAttributeSetter, publisherPageAttributeSetter, feedAttributeSetter, combinerPageAttributeSetter)
+  private val attributeSetters = Seq(
+    pageParameterFilter,
+    locationParameterFilter,
+    pageParameterFilter,
+    locationParameterFilter,
+    tagPageAttributeSetter,
+    publisherPageAttributeSetter, feedAttributeSetter, combinerPageAttributeSetter,
+
+  )
 
   private val reservedUrlWords = Set(
     "/about",
@@ -26,12 +35,9 @@ class RequestFilter @Autowired()(val combinerPageAttributeSetter: CombinerPageAt
 
   def loadAttributesOntoRequest(request: HttpServletRequest): Unit = {
     if (!isReservedPath(RequestPath.getPathFrom(request))) {
-      for (filter <- filters) {
-        filter.filter(request)
-      }
       for (attributeSetter <- attributeSetters) {
         if (attributeSetter.setAttributes(request)) {
-          return // TODO this is likely behaving as a break
+          return
         }
       }
     }

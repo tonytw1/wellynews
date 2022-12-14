@@ -20,7 +20,9 @@ class LocationParameterFilterTest {
     val request = new MockHttpServletRequest
     request.setParameter("osm", "123/NODE")
     Mockito.when(geocodeService.resolveOsmId(petoneStation.getOsmId)).thenReturn(petoneStation)
-    filter.filter(request)
+
+    filter.setAttributes(request)
+
     val locationAttribute = request.getAttribute("location").asInstanceOf[Place]
     assertEquals(LocationParameterFilterTest.VALID_LOCATION, locationAttribute.getAddress)
   }
@@ -28,7 +30,9 @@ class LocationParameterFilterTest {
   @Test def canResolveLocationSearchRadius() = {
     val request = new MockHttpServletRequest
     request.setParameter("radius", "3")
-    filter.filter(request)
+
+    filter.setAttributes(request)
+
     assertEquals(3.0, request.getAttribute("radius"))
   }
 
@@ -36,7 +40,9 @@ class LocationParameterFilterTest {
     val request = new MockHttpServletRequest
     request.setParameter("latitude", "51.2")
     request.setParameter("longitude", "-0.1")
-    filter.filter(request)
+
+    filter.setAttributes(request)
+
     val locationAttribute = request.getAttribute("location").asInstanceOf[Place]
     assertEquals(51.2, locationAttribute.getLatLong.getLatitude, 0)
     assertEquals(-0.1, locationAttribute.getLatLong.getLongitude, 0)
