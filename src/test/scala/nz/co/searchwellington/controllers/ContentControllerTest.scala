@@ -37,6 +37,7 @@ class ContentControllerTest {
     val expectedModelAndView = new ModelAndView("a-view", Map("foo" -> "bar").asJava)
     when(contentModelBuilderServiceFactory.makeContentModelBuilderService()).thenReturn(contentModelBuilderService)
     when(contentModelBuilderService.buildModelAndView(request)).thenReturn(Future.successful(Some(expectedModelAndView)))
+    when(requestFilter.loadAttributesOntoRequest(request)).thenReturn(Future(Seq.empty))
 
     val modelAndView = contentController.normal(request, response)
 
@@ -47,6 +48,7 @@ class ContentControllerTest {
   def should404IfNoModelWasAvailableForThisRequest(): Unit = {
     when(contentModelBuilderServiceFactory.makeContentModelBuilderService()).thenReturn(contentModelBuilderService)
     when(contentModelBuilderService.buildModelAndView(unknownPathRequest)).thenReturn(Future.successful(None))
+    when(requestFilter.loadAttributesOntoRequest(unknownPathRequest)).thenReturn(Future(Seq.empty))
 
     try {
       contentController.normal(unknownPathRequest, response)
@@ -63,6 +65,7 @@ class ContentControllerTest {
   def shouldNotPush404sOntoTheReturnToUrlStack(): Unit = {
     when(contentModelBuilderServiceFactory.makeContentModelBuilderService()).thenReturn(contentModelBuilderService)
     when(contentModelBuilderService.buildModelAndView(unknownPathRequest)).thenReturn(Future.successful(None))
+    when(requestFilter.loadAttributesOntoRequest(unknownPathRequest)).thenReturn(Future(Seq.empty))
 
     val triedView = Try {
       contentController.normal(unknownPathRequest, response)
@@ -77,6 +80,7 @@ class ContentControllerTest {
     val expectedModelAndView = new ModelAndView("a-view", Map("foo" -> "bar").asJava)
     when(contentModelBuilderServiceFactory.makeContentModelBuilderService()).thenReturn(contentModelBuilderService)
     when(contentModelBuilderService.buildModelAndView(request)).thenReturn(Future.successful(Some(expectedModelAndView)))
+    when(requestFilter.loadAttributesOntoRequest(request)).thenReturn(Future(Seq.empty))
 
     contentController.normal(request, response)
 
