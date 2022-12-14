@@ -41,9 +41,10 @@ class ContentController @Autowired()(contentModelBuilderServiceFactory: ContentM
   }
 
   private def buildAndRender(request: HttpServletRequest)(implicit ec: ExecutionContext, currentSpan: Span): ModelAndView = {
-    requestFilter.loadAttributesOntoRequest(request)
+    val eventualMaybeView = requestFilter.loadAttributesOntoRequest(request).flatMap { _ =>
+      contentModelBuilderService.buildModelAndView(request, loggedInUserFilter.getLoggedInUser)
+    }
 
-    val eventualMaybeView = contentModelBuilderService.buildModelAndView(request, loggedInUserFilter.getLoggedInUser)
     try {
       Await.result(eventualMaybeView, TenSeconds).fold {
         log.warn("Model was null; returning 404")
