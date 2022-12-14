@@ -3,6 +3,7 @@ package nz.co.searchwellington.controllers
 import io.opentelemetry.api.trace.Span
 import nz.co.searchwellington.ReasonableWaits
 import nz.co.searchwellington.controllers.models.ContentModelBuilderServiceFactory
+import nz.co.searchwellington.filters.RequestFilter
 import org.apache.commons.logging.LogFactory
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.core.annotation.Order
@@ -17,7 +18,10 @@ import scala.concurrent.{Await, ExecutionContext}
 
 @Order(5)
 @Controller
-class ContentController @Autowired()(contentModelBuilderServiceFactory: ContentModelBuilderServiceFactory, urlStack: UrlStack, loggedInUserFilter: LoggedInUserFilter) extends ReasonableWaits {
+class ContentController @Autowired()(contentModelBuilderServiceFactory: ContentModelBuilderServiceFactory,
+                                     urlStack: UrlStack,
+                                     requestFilter: RequestFilter,
+                                     loggedInUserFilter: LoggedInUserFilter) extends ReasonableWaits {
 
   private val log = LogFactory.getLog(classOf[ContentController])
 
@@ -37,6 +41,8 @@ class ContentController @Autowired()(contentModelBuilderServiceFactory: ContentM
   }
 
   private def buildAndRender(request: HttpServletRequest)(implicit ec: ExecutionContext, currentSpan: Span): ModelAndView = {
+    requestFilter.loadAttributesOntoRequest(request)
+
     val eventualMaybeView = contentModelBuilderService.buildModelAndView(request, loggedInUserFilter.getLoggedInUser)
     try {
       Await.result(eventualMaybeView, TenSeconds).fold {

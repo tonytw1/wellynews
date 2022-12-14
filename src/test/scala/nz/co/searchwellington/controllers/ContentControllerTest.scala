@@ -2,6 +2,7 @@ package nz.co.searchwellington.controllers
 
 import io.opentelemetry.api.trace.Span
 import nz.co.searchwellington.controllers.models.{ContentModelBuilderService, ContentModelBuilderServiceFactory}
+import nz.co.searchwellington.filters.RequestFilter
 import org.junit.jupiter.api.Assertions.{assertEquals, assertFalse, assertTrue, fail}
 import org.junit.jupiter.api.Test
 import org.mockito.Mockito.{mock, verify, verifyNoInteractions, when}
@@ -20,6 +21,7 @@ class ContentControllerTest {
   private val contentModelBuilderServiceFactory = mock(classOf[ContentModelBuilderServiceFactory])
   private val contentModelBuilderService = mock(classOf[ContentModelBuilderService])
   private val urlStack = mock(classOf[UrlStack])
+  private val requestFilter = mock(classOf[RequestFilter])
   private val loggedInUserFilter = mock(classOf[LoggedInUserFilter])
 
   private val request = mock(classOf[HttpServletRequest])
@@ -28,7 +30,7 @@ class ContentControllerTest {
 
   private implicit val currentSpan: Span = Span.current()
 
-  private def contentController = new ContentController(contentModelBuilderServiceFactory, urlStack, loggedInUserFilter)
+  private def contentController = new ContentController(contentModelBuilderServiceFactory, urlStack, requestFilter, loggedInUserFilter)
 
   @Test
   def shouldDelegateToTheContentModelBuilderToGetTheModelForThisRequest(): Unit = {

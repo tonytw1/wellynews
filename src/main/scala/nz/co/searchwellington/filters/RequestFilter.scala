@@ -13,8 +13,6 @@ import javax.servlet.http.HttpServletRequest
 class RequestFilter @Autowired()(val combinerPageAttributeSetter: CombinerPageAttributeSetter, val publisherPageAttributeSetter: PublisherPageAttributeSetter,
                                  val feedAttributeSetter: FeedAttributeSetter, val tagPageAttributeSetter: TagPageAttributeSetter, val filters: Array[RequestAttributeFilter]) {
 
-  private val log = LogFactory.getLog(classOf[RequestFilter])
-
   private val attributeSetters = Seq(tagPageAttributeSetter, publisherPageAttributeSetter, feedAttributeSetter, combinerPageAttributeSetter)
 
   private val reservedUrlWords = Set(
@@ -37,10 +35,6 @@ class RequestFilter @Autowired()(val combinerPageAttributeSetter: CombinerPageAt
         }
       }
     }
-  }
-
-  def getFilters: Array[RequestAttributeFilter] = {
-    filters
   }
 
   private def isReservedPath(path: String): Boolean = {
