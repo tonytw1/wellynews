@@ -19,7 +19,7 @@ import scala.concurrent.Future
   private val log = LogFactory.getLog(classOf[TagPageAttributeSetter])
   private val tagPagePathPattern = Pattern.compile("^/(.*?)(/(comment|geotagged|autotag|.*?-.*?))?(/(rss|json))?$")
 
-  override def setAttributes(request: HttpServletRequest): Future[Boolean] = {
+  override def setAttributes(request: HttpServletRequest): Future[Map[String, Any]] = {
     log.debug("Looking for single tag path")
     val contentMatcher = tagPagePathPattern.matcher(RequestPath.getPathFrom(request))
     if (contentMatcher.matches) {
@@ -29,21 +29,22 @@ import scala.concurrent.Future
       if (tagUrlWords.trim.nonEmpty && !tagUrlWords.contains("+")) {
         log.debug("Looking for tag '" + tagUrlWords + "'")
         mongoRepository.getTagByUrlWords(tagUrlWords).map { maybeTag =>
-          maybeTag.exists { tag =>
-            log.debug("Setting tag: " + tag.getName)
-            request.setAttribute(TagPageAttributeSetter.TAG, tag) // TODO deprecate
-            val tags = Seq(tag)
-            log.debug("Setting tags: " + tags)
-            request.setAttribute("tags", tags)
-            true
+          maybeTag.map { tag =>
+            Map (
+              "tag" -> tag,  // TODO deprecate
+              "tags" -> Seq(tag)
+            )
+          }.getOrElse {
+            Map.empty
           }
         }
+
       } else {
-        Future.successful(false)
+        Future.successful(Map.empty)
       }
 
     } else {
-      Future.successful(false)
+      Future.successful(Map.empty)
     }
   }
 

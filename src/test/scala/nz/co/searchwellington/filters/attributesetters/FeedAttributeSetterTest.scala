@@ -28,33 +28,33 @@ class FeedAttributeSetterTest extends ReasonableWaits{
   @Test def shouldSetFeedAttributeForFeedPagePath(): Unit = {
     request.setRequestURI("/feed/wcc-news")
 
-    Await.result(feedAttributeSetter.setAttributes(request), TenSeconds)
+    val attributes = Await.result(feedAttributeSetter.setAttributes(request), TenSeconds)
 
-    assertEquals(feed, request.getAttribute("feedAttribute"))
+    assertEquals(feed, attributes("feedAttribute"))
   }
 
   @Test def shouldSetFeedAttributeForFeedEditPagePath(): Unit = {
     request.setRequestURI("/feed/wcc-news/edit")
 
-    Await.result(feedAttributeSetter.setAttributes(request), TenSeconds)
+    val attributes = Await.result(feedAttributeSetter.setAttributes(request), TenSeconds)
 
-    assertEquals(feed, request.getAttribute("feedAttribute"))
+    assertEquals(feed, attributes("feedAttribute"))
   }
 
   @Test def shouldSetFeedAttributeForFeedSavePath(): Unit = {
     request.setRequestURI("/feed/wcc-news/save")
 
-    Await.result(feedAttributeSetter.setAttributes(request), TenSeconds)
+    val attributes = Await.result(feedAttributeSetter.setAttributes(request), TenSeconds)
 
-    assertEquals(feed, request.getAttribute("feedAttribute"))
+    assertEquals(feed, attributes("feedAttribute"))
   }
 
   @Test def shouldSetFeedAttributeForAcceptAll(): Unit = {
     request.setRequestURI("/feed/wcc-news/accept-all")
 
-    Await.result(feedAttributeSetter.setAttributes(request), TenSeconds)
+    val attributes = Await.result(feedAttributeSetter.setAttributes(request), TenSeconds)
 
-    assertEquals(feed, request.getAttribute("feedAttribute"))
+    assertEquals(feed, attributes("feedAttribute"))
   }
 
 }

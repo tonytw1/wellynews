@@ -20,9 +20,10 @@ import scala.concurrent.Future
   private val log = LogFactory.getLog(classOf[CombinerPageAttributeSetter])
   private val combinerPattern = Pattern.compile("^/(.*)\\+(.*?)(/rss|/json)?$")
 
-  override def setAttributes(request: HttpServletRequest): Future[Boolean] = {
+  override def setAttributes(request: HttpServletRequest): Future[Map[String, Any]] = {
     val matcher = combinerPattern.matcher(RequestPath.getPathFrom(request))
-    val eventualAnswer = if (matcher.matches) {
+
+    val eventualAnswer: Future[Map[String, Any]] = if (matcher.matches) {
       val left = matcher.group(1)
       val right = matcher.group(2)
       log.debug("Path matches combiner pattern for '" + left + "', '" + right + "'")
@@ -32,7 +33,7 @@ import scala.concurrent.Future
       for {
         maybeRightHandTag <- eventualMaybeRightHandTag
         result <- {
-          maybeRightHandTag.map { rightHandTag =>
+          val z: Future[Map[String, Any]] = maybeRightHandTag.map { rightHandTag =>
             val eventualMaybeLeftWebsite = mongoRepository.getWebsiteByUrlwords(left)
             val eventualMaybeLeftTag = mongoRepository.getTagByUrlWords(left)
             for {
@@ -41,28 +42,36 @@ import scala.concurrent.Future
             } yield {
               maybeLeftWebsite.map { publisher =>
                 log.debug("Right matches tag: " + rightHandTag.getName + " and left matches publisher: " + publisher.getTitle)
-                request.setAttribute("publisher", publisher)
-                request.setAttribute("tag", rightHandTag)
-                true
+                Map(
+                  "publisher" -> publisher,
+                  "tag" -> rightHandTag
+                )
               }.getOrElse {
-                maybeLeftTag.exists { leftHandTag =>
+                maybeLeftTag.map { leftHandTag =>
                   log.debug("Setting tags '" + leftHandTag.getName + "', '" + rightHandTag.getName + "'")
                   val tags = Seq(leftHandTag, rightHandTag)
                   request.setAttribute("tags", tags)
-                  true
+                  Map(
+                    "tags" -> tags
+                  )
+                }.getOrElse {
+                  Map.empty
                 }
               }
             }
+
           }.getOrElse {
-            Future.successful(false)
+            Future.successful(Map.empty)
           }
+          z
         }
+
       } yield {
         result
       }
 
     } else {
-      Future.successful(false)
+      Future.successful(Map.empty)
     }
 
     eventualAnswer

@@ -19,7 +19,6 @@ class RequestFilter @Autowired()(combinerPageAttributeSetter: CombinerPageAttrib
 
   private val attributeSetters = Seq(
     pageParameterFilter,
-    pageParameterFilter,
     locationParameterFilter,
     tagPageAttributeSetter,
     publisherPageAttributeSetter,
@@ -27,10 +26,13 @@ class RequestFilter @Autowired()(combinerPageAttributeSetter: CombinerPageAttrib
     combinerPageAttributeSetter
   )
 
-  def loadAttributesOntoRequest(request: HttpServletRequest)(implicit ec: ExecutionContext): Future[Seq[Boolean]] = {
+  def loadAttributesOntoRequest(request: HttpServletRequest)(implicit ec: ExecutionContext): Future[Map[String, Any]] = {
     Future.sequence(attributeSetters.map { setter =>
       setter.setAttributes(request)
-    })
+    }).map { attributes =>
+      // Merge all the contributions from the various setters
+      attributes.flatten.toMap
+    }
   }
 
 }

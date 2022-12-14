@@ -5,6 +5,6 @@ import scala.concurrent.Future
 
 trait AttributeSetter {
 
-  def setAttributes(request: HttpServletRequest): Future[Boolean]
+  def setAttributes(request: HttpServletRequest): Future[Map[String, Any]]
 
 }

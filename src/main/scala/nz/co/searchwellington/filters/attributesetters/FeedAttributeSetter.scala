@@ -16,19 +16,22 @@ class FeedAttributeSetter @Autowired()(mongoRepository: MongoRepository) extends
 
   private val feedPattern = Pattern.compile("^/feed/(.*?)(/(edit|save|rss|json|accept-all))?$")
 
-  override def setAttributes(request: HttpServletRequest): Future[Boolean] = {
+  override def setAttributes(request: HttpServletRequest): Future[Map[String, Any]] = {
     val contentMatcher = feedPattern.matcher(RequestPath.getPathFrom(request))
     if (contentMatcher.matches) {
       val urlWords = contentMatcher.group(1)
       mongoRepository.getFeedByUrlwords(urlWords).map { maybeFeed =>
-          maybeFeed.exists { feed =>
-            request.setAttribute(FeedAttributeSetter.FEED_ATTRIBUTE, feed)
-            request.setAttribute("resource", feed)
-            true
+          maybeFeed.map { feed =>
+            Map (
+              FeedAttributeSetter.FEED_ATTRIBUTE -> feed,
+              "resource" -> feed
+            )
+          }.getOrElse{
+            Map.empty
           }
       }
     } else {
-      Future.successful(false)
+      Future.successful(Map.empty)
     }
   }
 }

@@ -22,14 +22,15 @@ class LocationParameterFilter @Autowired()(geoCodeService: GeoCodeService, osmId
   private val LONGITUDE = "longitude"
   private val OSM = "osm"
 
-  override def setAttributes(request: HttpServletRequest): Future[Boolean] = {
+  override def setAttributes(request: HttpServletRequest): Future[Map[String, Any]] = {
+
     processDoubleParameter(request, LocationParameterFilter.RADIUS).foreach { radius =>
       if (radius > 0) {
-        request.setAttribute(LocationParameterFilter.RADIUS, radius);
+        request.setAttribute(LocationParameterFilter.RADIUS, radius)  // TODO
       }
     }
 
-    if (!Strings.isNullOrEmpty(request.getParameter(OSM))) {
+    Future.successful(if (!Strings.isNullOrEmpty(request.getParameter(OSM))) {
       val osmIdString = request.getParameter(OSM);
       val osmId = osmIdParser.parseOsmId(osmIdString)
       if (osmId != null) {
@@ -38,21 +39,25 @@ class LocationParameterFilter @Autowired()(geoCodeService: GeoCodeService, osmId
         if (resolvedPlace == null) {
           throw new UnresolvableLocationException("OSM place could not be resolved");
         }
-        request.setAttribute(LocationParameterFilter.LOCATION, resolvedPlace)
+        Map (
+          LocationParameterFilter.LOCATION -> resolvedPlace
+        )
+
+      } else {
+        Map.empty
       }
-      Future.successful(false)
 
     } else if (!Strings.isNullOrEmpty(request.getParameter("latitude")) && !Strings.isNullOrEmpty(request.getParameter("longitude"))) {
       val latLong = new LatLong(request.getParameter(LATITUDE).toDouble, request.getParameter(LONGITUDE).toDouble)
       val latLongLabel = latLong.getLatitude + ", " + latLong.getLongitude;
-      // TODO - is you wanted to, you could resolve for a name, but don't alter the user supplied lat/long values.
-      // TODO lat, long isn't really an address - this should be something like a display method on latLong or the view which gives a sensible output when address is null.
-      request.setAttribute(LocationParameterFilter.LOCATION, new Place(latLongLabel, latLong, null));
-      Future.successful(false)
+      Map (
+        LocationParameterFilter.LOCATION -> new Place(latLongLabel, latLong, null)
+      )
 
     } else {
-      Future.successful(false)
-    }
+      Map.empty
+    })
+
   }
 
   private def processDoubleParameter(request: HttpServletRequest, parameterName: String): Option[Double] = {

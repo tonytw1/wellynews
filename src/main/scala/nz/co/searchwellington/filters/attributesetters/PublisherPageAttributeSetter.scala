@@ -16,23 +16,26 @@ import scala.concurrent.Future
 
   private val publisherPagePathPattern = Pattern.compile("^/(.*?)(/(geotagged|.*?-.*?))?(/(rss|json))?$")
 
-  def setAttributes(request: HttpServletRequest): Future[Boolean] = {
+  def setAttributes(request: HttpServletRequest): Future[Map[String, Any]] = {
     val contentMatcher = publisherPagePathPattern.matcher(RequestPath.getPathFrom(request))
     if (contentMatcher.matches) {
       val publisherUrlWords = contentMatcher.group(1)
       if (publisherUrlWords.trim.nonEmpty && !publisherUrlWords.contains("+")) {
         mongoRepository.getWebsiteByUrlwords(publisherUrlWords).map { maybeWebsite =>
-          maybeWebsite.exists { publisher =>
-            request.setAttribute("publisher", publisher)
-            request.setAttribute("resource", publisher)
-            true
+          maybeWebsite.map { publisher =>
+            Map(
+              "publisher" -> publisher,
+              "resource" -> publisher
+            )
+          }.getOrElse {
+            Map.empty
           }
         }
       } else {
-        Future.successful(false)
+        Future.successful(Map.empty)
       }
     } else {
-      Future.successful(false)
+      Future.successful(Map.empty)
     }
   }
 

@@ -18,7 +18,7 @@ class PublisherPageAttributeSetterTest extends ReasonableWaits {
   private val publisher = Website(id = UUID.randomUUID().toString, title = "Wellington City Council")
   private val request = new MockHttpServletRequest
 
-  private val pageAttributeSetter = new PublisherPageAttributeSetter(mongoRepository)
+  private val publisherPageAttributeSetter = new PublisherPageAttributeSetter(mongoRepository)
 
   @BeforeEach
   def setup(): Unit = {
@@ -29,9 +29,9 @@ class PublisherPageAttributeSetterTest extends ReasonableWaits {
   def shouldSetPublisherAttributeForPublisherPath(): Unit = {
     request.setRequestURI("/wellington-city-council")
 
-    Await.result(pageAttributeSetter.setAttributes(request), TenSeconds)
+    val attributes = Await.result(publisherPageAttributeSetter.setAttributes(request), TenSeconds)
 
-    assertEquals(publisher, request.getAttribute("publisher"))
+    assertEquals(publisher, attributes("publisher"))
   }
 
 
@@ -39,18 +39,18 @@ class PublisherPageAttributeSetterTest extends ReasonableWaits {
   def shouldSetPublisherAttributeForPublisherArchivePath(): Unit = {
     request.setRequestURI("/wellington-city-council/2020-mar")
 
-    Await.result(pageAttributeSetter.setAttributes(request), TenSeconds)
+    val attributes = Await.result(publisherPageAttributeSetter.setAttributes(request), TenSeconds)
 
-    assertEquals(publisher, request.getAttribute("publisher"))
+    assertEquals(publisher, attributes("publisher"))
   }
 
   @Test
   def shouldSetPublisherAttributeForPublisherRssPath(): Unit = {
     request.setRequestURI("/wellington-city-council/rss")
 
-    Await.result(pageAttributeSetter.setAttributes(request), TenSeconds)
+    val attributes = Await.result(publisherPageAttributeSetter.setAttributes(request), TenSeconds)
 
-    assertEquals(publisher, request.getAttribute("publisher"))
+    assertEquals(publisher, attributes("publisher"))
   }
 
 }

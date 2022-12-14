@@ -45,8 +45,10 @@ class RequestFilterTest extends ReasonableWaits {
   def shouldPopulateTagForAutotagUrl(): Unit = {
     val request = new MockHttpServletRequest
     request.setRequestURI("/transport/autotag")
-    filter.loadAttributesOntoRequest(request)
-    verify(mongoRepository).getTagByUrlWords("transport") // TODO don't verify your stubs
+
+    val attributes = Await.result(filter.loadAttributesOntoRequest(request), TenSeconds)
+
+    assertEquals(transportTag, attributes("tag"))
   }
 
   @Test
@@ -55,27 +57,31 @@ class RequestFilterTest extends ReasonableWaits {
     request.setRequestURI("/transport")
     request.setParameter("page", "3")
 
-    filter.loadAttributesOntoRequest(request)
+    val attributes = Await.result(filter.loadAttributesOntoRequest(request), TenSeconds)
 
-    val page = request.getAttribute("page").asInstanceOf[Integer]
-    assertEquals(3, page)
+    assertEquals(3, attributes("page").asInstanceOf[Integer])
   }
 
   @Test
   def shouldPopulateTagForSingleTagCommentRequest(): Unit = {
     val request = new MockHttpServletRequest
     request.setRequestURI("/transport/comment")
-    filter.loadAttributesOntoRequest(request)
-    verify(mongoRepository).getTagByUrlWords("transport") // TODO don't verify stubs
-    assertEquals(transportTag, request.getAttribute("tag"))
+
+    val attributes = Await.result(filter.loadAttributesOntoRequest(request), TenSeconds)
+
+    assertEquals(transportTag, attributes("tag"))
   }
 
+  @Deprecated
   @Test
   def shouldPopulateTagForSingleTagCommentRssRequest(): Unit = {
     val request = new MockHttpServletRequest
     request.setRequestURI("/transport/comment/rss")
-    filter.loadAttributesOntoRequest(request)
+
+    val attributes = Await.result(filter.loadAttributesOntoRequest(request), TenSeconds)
+
     verify(mongoRepository).getTagByUrlWords("transport")
+    assertEquals(transportTag, attributes("tag"))
   }
 
   @Test
@@ -85,10 +91,9 @@ class RequestFilterTest extends ReasonableWaits {
     when(mongoRepository.getTagByUrlWords("capital-times")).thenReturn(Future.successful(None))
     when(mongoRepository.getWebsiteByUrlwords("capital-times")).thenReturn(Future.successful(Some(capitalTimesPublisher)))
 
-    Await.result(filter.loadAttributesOntoRequest(request), TenSeconds)
+    val attributes = Await.result(filter.loadAttributesOntoRequest(request), TenSeconds)
 
-    verify(mongoRepository).getWebsiteByUrlwords("capital-times")
-    assertEquals(capitalTimesPublisher, request.getAttribute("publisher"))
+    assertEquals(capitalTimesPublisher, attributes("publisher"))
   }
 
   @Test
@@ -96,10 +101,9 @@ class RequestFilterTest extends ReasonableWaits {
     val request = new MockHttpServletRequest
     request.setRequestURI("/transport/geotagged")
 
-    Await.result(filter.loadAttributesOntoRequest(request), TenSeconds)
+    val attributes = Await.result(filter.loadAttributesOntoRequest(request), TenSeconds)
 
-    verify(mongoRepository).getTagByUrlWords("transport")
-    assertEquals(transportTag, request.getAttribute("tag"))
+    assertEquals(transportTag, attributes("tag"))
   }
 
   @Test
@@ -107,10 +111,9 @@ class RequestFilterTest extends ReasonableWaits {
     val request = new MockHttpServletRequest
     request.setRequestURI("/transport")
 
-    Await.result(filter.loadAttributesOntoRequest(request), TenSeconds)
+    val attributes = Await.result(filter.loadAttributesOntoRequest(request), TenSeconds)
 
-    verify(mongoRepository).getTagByUrlWords("transport")
-    assertEquals(transportTag, request.getAttribute("tag"))
+    assertEquals(transportTag, attributes("tag"))
   }
 
   @Test
@@ -119,10 +122,9 @@ class RequestFilterTest extends ReasonableWaits {
     val request = new MockHttpServletRequest
     request.setRequestURI("/transport/rss")
 
-    Await.result(filter.loadAttributesOntoRequest(request), TenSeconds)
+    val attributes = Await.result(filter.loadAttributesOntoRequest(request), TenSeconds)
 
-    verify(mongoRepository).getTagByUrlWords("transport")
-    assertEquals(transportTag, request.getAttribute("tag"))
+    assertEquals(transportTag, attributes("tag"))
   }
 
   @Test
@@ -132,10 +134,10 @@ class RequestFilterTest extends ReasonableWaits {
     when(mongoRepository.getTagByUrlWords("capital-times")).thenReturn(Future.successful(None))
     when(mongoRepository.getWebsiteByUrlwords("capital-times")).thenReturn(Future.successful(Some(capitalTimesPublisher)))
 
-    Await.result(filter.loadAttributesOntoRequest(request), TenSeconds)
+    val attributes = Await.result(filter.loadAttributesOntoRequest(request), TenSeconds)
 
-    val publisher = request.getAttribute("publisher").asInstanceOf[Website]
-    val tag = request.getAttribute("tag").asInstanceOf[Tag]
+    val publisher = attributes("publisher").asInstanceOf[Website]
+    val tag = attributes("tag").asInstanceOf[Tag]
     assertEquals(capitalTimesPublisher, publisher)
     assertEquals(soccerTag, tag)
   }
@@ -148,11 +150,11 @@ class RequestFilterTest extends ReasonableWaits {
     when(mongoRepository.getTagByUrlWords("capital-times")).thenReturn(Future.successful(None))
     when(mongoRepository.getWebsiteByUrlwords("capital-times")).thenReturn(Future.successful(Some(capitalTimesPublisher)))
 
-    Await.result(filter.loadAttributesOntoRequest(request), TenSeconds)
+    val attributes = Await.result(filter.loadAttributesOntoRequest(request), TenSeconds)
 
-    val publisher = request.getAttribute("publisher").asInstanceOf[Website]
+    val publisher = attributes("publisher").asInstanceOf[Website]
     assertEquals(capitalTimesPublisher, publisher)
-    val tag = request.getAttribute("tag").asInstanceOf[Tag]
+    val tag = attributes("tag").asInstanceOf[Tag]
     assertEquals(soccerTag, tag)
   }
 
@@ -164,9 +166,9 @@ class RequestFilterTest extends ReasonableWaits {
     when(mongoRepository.getWebsiteByUrlwords("transport")).thenReturn(Future.successful(None))
     when(mongoRepository.getWebsiteByUrlwords("transport+soccer")).thenReturn(Future.successful(None))
 
-    Await.result(filter.loadAttributesOntoRequest(request), TenSeconds)
+    val attributes = Await.result(filter.loadAttributesOntoRequest(request), TenSeconds)
 
-    val tags = request.getAttribute("tags").asInstanceOf[Seq[Tag]]
+    val tags = attributes("tags").asInstanceOf[Seq[Tag]]
     assertEquals(2, tags.size)
     assertEquals(transportTag, tags.head)
     assertEquals(soccerTag, tags(1))
@@ -178,9 +180,9 @@ class RequestFilterTest extends ReasonableWaits {
     request.setRequestURI("/transport+soccer/json")
     when(mongoRepository.getWebsiteByUrlwords("transport")).thenReturn(Future.successful(None))
 
-    Await.result(filter.loadAttributesOntoRequest(request), TenSeconds)
+    val attributes = Await.result(filter.loadAttributesOntoRequest(request), TenSeconds)
 
-    val tags = request.getAttribute("tags").asInstanceOf[Seq[Tag]]
+    val tags = attributes("tags").asInstanceOf[Seq[Tag]]
     assertEquals(2, tags.size)
     assertEquals(transportTag, tags.head)
     assertEquals(soccerTag, tags(1))
@@ -193,9 +195,9 @@ class RequestFilterTest extends ReasonableWaits {
     request.setParameter("resource", "a-publisher")
     when(mongoRepository.getWebsiteByUrlwords("a-publisher")).thenReturn(Future.successful(Some(capitalTimesPublisher)))
 
-    Await.result(filter.loadAttributesOntoRequest(request), TenSeconds)
+    val attributes = Await.result(filter.loadAttributesOntoRequest(request), TenSeconds)
 
-    assertEquals(capitalTimesPublisher, request.getAttribute("resource"))
+    assertEquals(capitalTimesPublisher, attributes("resource"))
   }
 
 }

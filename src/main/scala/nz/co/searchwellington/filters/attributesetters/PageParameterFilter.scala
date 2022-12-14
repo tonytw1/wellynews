@@ -10,18 +10,20 @@ import scala.concurrent.Future
 @Scope("request")
 class PageParameterFilter extends AttributeSetter {
 
-  override def setAttributes(request: HttpServletRequest): Future[Boolean] = {
+  override def setAttributes(request: HttpServletRequest): Future[Map[String, Any]] = {
     if (request.getParameter(PageParameterFilter.PAGE_ATTRIBUTE) != null) {
       val pageString = request.getParameter(PageParameterFilter.PAGE_ATTRIBUTE)
       try {
-        val page = pageString.toInt
-        request.setAttribute(PageParameterFilter.PAGE_ATTRIBUTE, page)
-
+        Future.successful(Map(
+          PageParameterFilter.PAGE_ATTRIBUTE -> pageString.toInt
+        ))
       } catch {
         case e: NumberFormatException =>
+          Future.successful(Map.empty)
       }
+    } else {
+      Future.successful(Map.empty)
     }
-    Future.successful(false)
   }
 }
 
