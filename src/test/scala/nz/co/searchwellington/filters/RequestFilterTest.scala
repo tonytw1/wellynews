@@ -58,22 +58,6 @@ class RequestFilterTest {
   }
 
   @Test
-  def shouldNotAttemptToResolveTagForReservedUrlWordComment(): Unit = {
-    val request = new MockHttpServletRequest
-    request.setRequestURI("/comment")
-    filter.loadAttributesOntoRequest(request)
-    verifyNoMoreInteractions(mongoRepository)
-  }
-
-  @Test
-  def shouldNotAttemptToResolveTagForReservedUrlWordGeotagged(): Unit = {
-    val request = new MockHttpServletRequest
-    request.setRequestURI("/geotagged/rss")
-    filter.loadAttributesOntoRequest(request)
-    verifyNoMoreInteractions(mongoRepository)
-  }
-
-  @Test
   def shouldPopulateTagForSingleTagCommentRequest(): Unit = {
     val request = new MockHttpServletRequest
     request.setRequestURI("/transport/comment")

@@ -20,31 +20,17 @@ class RequestFilter @Autowired()(combinerPageAttributeSetter: CombinerPageAttrib
     pageParameterFilter,
     locationParameterFilter,
     tagPageAttributeSetter,
-    publisherPageAttributeSetter, feedAttributeSetter, combinerPageAttributeSetter,
-
+    publisherPageAttributeSetter,
+    feedAttributeSetter,
+    combinerPageAttributeSetter
   )
 
-  private val reservedUrlWords = Set(
-    "/about",
-    "/api",
-    "/autotag",
-    "/comment",
-    "/feeds",
-    "/geotagged",
-    "/tags")
-
   def loadAttributesOntoRequest(request: HttpServletRequest): Unit = {
-    if (!isReservedPath(RequestPath.getPathFrom(request))) {
-      for (attributeSetter <- attributeSetters) {
-        if (attributeSetter.setAttributes(request)) {
-          return
-        }
+    for (attributeSetter <- attributeSetters) {
+      if (attributeSetter.setAttributes(request)) {
+        return
       }
     }
-  }
-
-  private def isReservedPath(path: String): Boolean = {
-    reservedUrlWords.exists(path.startsWith)
   }
 
 }
