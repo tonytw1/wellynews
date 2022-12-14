@@ -1,22 +1,25 @@
 package nz.co.searchwellington.filters
 
-import nz.co.searchwellington.filters.attributesetters.{CombinerPageAttributeSetter, FeedAttributeSetter, LocationParameterFilter, PageParameterFilter, PublisherPageAttributeSetter, TagPageAttributeSetter}
+import nz.co.searchwellington.ReasonableWaits
+import nz.co.searchwellington.filters.attributesetters._
+import nz.co.searchwellington.geocoding.osm.{GeoCodeService, OsmIdParser}
 import nz.co.searchwellington.model.{Feed, Tag, Website}
 import nz.co.searchwellington.repositories.TagDAO
 import nz.co.searchwellington.repositories.mongo.MongoRepository
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.{BeforeEach, Test}
-import org.mockito.Mockito.{mock, verify, verifyNoMoreInteractions, when}
+import org.mockito.ArgumentMatchers._
+import org.mockito.Mockito.{mock, verify, when}
 import org.springframework.mock.web.MockHttpServletRequest
 
 import scala.concurrent.ExecutionContext.Implicits.global
-import scala.concurrent.Future
+import scala.concurrent.{Await, Future}
 
-class RequestFilterTest {
+class RequestFilterTest extends ReasonableWaits {
 
   private val transportTag = mock(classOf[Tag])
   private val soccerTag = mock(classOf[Tag])
-  private val capitalTimesPublisher = mock(classOf[Website])
+  private val capitalTimesPublisher = Website(title = "Capital times")
   private val feed = mock(classOf[Feed])
 
   private val mongoRepository = mock(classOf[MongoRepository])
@@ -26,7 +29,8 @@ class RequestFilterTest {
     new PublisherPageAttributeSetter(mongoRepository),
     new FeedAttributeSetter(mongoRepository),
     new TagPageAttributeSetter(tagDAO, mongoRepository),
-    new PageParameterFilter, mock(classOf[LocationParameterFilter])) // TODO suggests test coverage at wrong level
+    new PageParameterFilter,
+    new LocationParameterFilter(mock(classOf[GeoCodeService]), new OsmIdParser)) // TODO suggests test coverage at wrong level
 
   @BeforeEach
   def setUp(): Unit = {
@@ -34,7 +38,7 @@ class RequestFilterTest {
     when(mongoRepository.getTagByUrlWords("soccer")).thenReturn(Future.successful(Some(soccerTag)))
     when(mongoRepository.getWebsiteByUrlwords("capital-times")).thenReturn(Future.successful(Some(capitalTimesPublisher)))
     when(mongoRepository.getFeedByUrlwords("tranz-metro-delays")).thenReturn(Future.successful(Some(feed)))
-
+    when(mongoRepository.getWebsiteByUrlwords(any())(any())).thenReturn(Future.successful(None))
   }
 
   @Test
@@ -79,8 +83,9 @@ class RequestFilterTest {
     val request = new MockHttpServletRequest
     request.setRequestURI("/capital-times")
     when(mongoRepository.getTagByUrlWords("capital-times")).thenReturn(Future.successful(None))
+    when(mongoRepository.getWebsiteByUrlwords("capital-times")).thenReturn(Future.successful(Some(capitalTimesPublisher)))
 
-    filter.loadAttributesOntoRequest(request)
+    Await.result(filter.loadAttributesOntoRequest(request), TenSeconds)
 
     verify(mongoRepository).getWebsiteByUrlwords("capital-times")
     assertEquals(capitalTimesPublisher, request.getAttribute("publisher"))
@@ -90,7 +95,9 @@ class RequestFilterTest {
   def shouldPopulateTagForSingleTagGeotagRequest(): Unit = {
     val request = new MockHttpServletRequest
     request.setRequestURI("/transport/geotagged")
-    filter.loadAttributesOntoRequest(request)
+
+    Await.result(filter.loadAttributesOntoRequest(request), TenSeconds)
+
     verify(mongoRepository).getTagByUrlWords("transport")
     assertEquals(transportTag, request.getAttribute("tag"))
   }
@@ -99,7 +106,9 @@ class RequestFilterTest {
   def shouldPopulateTagForSingleTagRequest(): Unit = {
     val request = new MockHttpServletRequest
     request.setRequestURI("/transport")
-    filter.loadAttributesOntoRequest(request)
+
+    Await.result(filter.loadAttributesOntoRequest(request), TenSeconds)
+
     verify(mongoRepository).getTagByUrlWords("transport")
     assertEquals(transportTag, request.getAttribute("tag"))
   }
@@ -110,7 +119,7 @@ class RequestFilterTest {
     val request = new MockHttpServletRequest
     request.setRequestURI("/transport/rss")
 
-    filter.loadAttributesOntoRequest(request)
+    Await.result(filter.loadAttributesOntoRequest(request), TenSeconds)
 
     verify(mongoRepository).getTagByUrlWords("transport")
     assertEquals(transportTag, request.getAttribute("tag"))
@@ -120,11 +129,10 @@ class RequestFilterTest {
   def shouldPopulateAttributesForPublisherTagCombinerRequest(): Unit = {
     val request = new MockHttpServletRequest
     request.setRequestURI("/capital-times+soccer")
-    when(mongoRepository.getTagByUrlWords("capital-times+soccer")).thenReturn(Future.successful(None)) // TODO tag combiner pattern should have been blocked before here
-    when(mongoRepository.getWebsiteByUrlwords("capital-times+soccer")).thenReturn(Future.successful(None))
     when(mongoRepository.getTagByUrlWords("capital-times")).thenReturn(Future.successful(None))
+    when(mongoRepository.getWebsiteByUrlwords("capital-times")).thenReturn(Future.successful(Some(capitalTimesPublisher)))
 
-    filter.loadAttributesOntoRequest(request)
+    Await.result(filter.loadAttributesOntoRequest(request), TenSeconds)
 
     val publisher = request.getAttribute("publisher").asInstanceOf[Website]
     val tag = request.getAttribute("tag").asInstanceOf[Tag]
@@ -137,11 +145,10 @@ class RequestFilterTest {
   def shouldPopulateAttributesForPublisherTagCombinerRssRequest(): Unit = {
     val request = new MockHttpServletRequest
     request.setRequestURI("/capital-times+soccer/rss")
-    when(mongoRepository.getTagByUrlWords("capital-times+soccer")).thenReturn(Future.successful(None)) // TODO tag combiner pattern should have been blocked before here
-    when(mongoRepository.getWebsiteByUrlwords("capital-times+soccer")).thenReturn(Future.successful(None))
     when(mongoRepository.getTagByUrlWords("capital-times")).thenReturn(Future.successful(None))
+    when(mongoRepository.getWebsiteByUrlwords("capital-times")).thenReturn(Future.successful(Some(capitalTimesPublisher)))
 
-    filter.loadAttributesOntoRequest(request)
+    Await.result(filter.loadAttributesOntoRequest(request), TenSeconds)
 
     val publisher = request.getAttribute("publisher").asInstanceOf[Website]
     assertEquals(capitalTimesPublisher, publisher)
@@ -153,14 +160,11 @@ class RequestFilterTest {
   def shouldPopulateTagsForTagCombinerRequest(): Unit = {
     val request = new MockHttpServletRequest
     request.setRequestURI("/transport+soccer")
-    when(mongoRepository.getTagByUrlWords("transport+soccer")).thenReturn(Future.successful(None)) // TODO tag combiner pattern should have been blocked before here
-    when(mongoRepository.getWebsiteByUrlwords("transport+soccer")).thenReturn(Future.successful(None))
-
     when(mongoRepository.getTagByUrlWords("transport")).thenReturn(Future.successful(Some(transportTag)))
     when(mongoRepository.getWebsiteByUrlwords("transport")).thenReturn(Future.successful(None))
     when(mongoRepository.getWebsiteByUrlwords("transport+soccer")).thenReturn(Future.successful(None))
 
-    filter.loadAttributesOntoRequest(request)
+    Await.result(filter.loadAttributesOntoRequest(request), TenSeconds)
 
     val tags = request.getAttribute("tags").asInstanceOf[Seq[Tag]]
     assertEquals(2, tags.size)
@@ -172,11 +176,9 @@ class RequestFilterTest {
   def shouldPopulateTagsForTagCombinerJSONRequest(): Unit = {
     val request = new MockHttpServletRequest
     request.setRequestURI("/transport+soccer/json")
-    when(mongoRepository.getTagByUrlWords("transport+soccer")).thenReturn(Future.successful(None)) // TODO tag combiner pattern should have been blocked before here
-    when(mongoRepository.getWebsiteByUrlwords("transport+soccer")).thenReturn(Future.successful(None))
     when(mongoRepository.getWebsiteByUrlwords("transport")).thenReturn(Future.successful(None))
 
-    filter.loadAttributesOntoRequest(request)
+    Await.result(filter.loadAttributesOntoRequest(request), TenSeconds)
 
     val tags = request.getAttribute("tags").asInstanceOf[Seq[Tag]]
     assertEquals(2, tags.size)
@@ -190,7 +192,9 @@ class RequestFilterTest {
     request.setRequestURI("/edit/edit")
     request.setParameter("resource", "a-publisher")
     when(mongoRepository.getWebsiteByUrlwords("a-publisher")).thenReturn(Future.successful(Some(capitalTimesPublisher)))
-    filter.loadAttributesOntoRequest(request)
+
+    Await.result(filter.loadAttributesOntoRequest(request), TenSeconds)
+
     assertEquals(capitalTimesPublisher, request.getAttribute("resource"))
   }
 

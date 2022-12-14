@@ -10,7 +10,7 @@ import org.springframework.stereotype.Component
 import java.util.regex.Pattern
 import javax.servlet.http.HttpServletRequest
 import scala.concurrent.ExecutionContext.Implicits.global
-import scala.concurrent.{Await, Future}
+import scala.concurrent.Future
 
 // Handles [website | publisher + tag] combiners
 // The right hand side must be a tag; the left could be a website or publisher
@@ -20,7 +20,7 @@ import scala.concurrent.{Await, Future}
   private val log = LogFactory.getLog(classOf[CombinerPageAttributeSetter])
   private val combinerPattern = Pattern.compile("^/(.*)\\+(.*?)(/rss|/json)?$")
 
-  override def setAttributes(request: HttpServletRequest): Boolean = {
+  override def setAttributes(request: HttpServletRequest): Future[Boolean] = {
     val matcher = combinerPattern.matcher(RequestPath.getPathFrom(request))
     val eventualAnswer = if (matcher.matches) {
       val left = matcher.group(1)
@@ -65,6 +65,6 @@ import scala.concurrent.{Await, Future}
       Future.successful(false)
     }
 
-    Await.result(eventualAnswer, TenSeconds)
+    eventualAnswer
   }
 }

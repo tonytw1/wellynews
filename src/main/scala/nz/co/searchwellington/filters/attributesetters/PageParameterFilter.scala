@@ -2,13 +2,15 @@ package nz.co.searchwellington.filters.attributesetters
 
 import org.springframework.context.annotation.Scope
 import org.springframework.stereotype.Component
+
 import javax.servlet.http.HttpServletRequest
+import scala.concurrent.Future
 
 @Component
 @Scope("request")
 class PageParameterFilter extends AttributeSetter {
 
-  override def setAttributes(request: HttpServletRequest): Boolean = {
+  override def setAttributes(request: HttpServletRequest): Future[Boolean] = {
     if (request.getParameter(PageParameterFilter.PAGE_ATTRIBUTE) != null) {
       val pageString = request.getParameter(PageParameterFilter.PAGE_ATTRIBUTE)
       try {
@@ -19,7 +21,7 @@ class PageParameterFilter extends AttributeSetter {
         case e: NumberFormatException =>
       }
     }
-    false
+    Future.successful(false)
   }
 }
 

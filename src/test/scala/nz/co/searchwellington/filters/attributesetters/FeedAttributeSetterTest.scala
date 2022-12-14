@@ -1,5 +1,6 @@
 package nz.co.searchwellington.filters.attributesetters
 
+import nz.co.searchwellington.ReasonableWaits
 import nz.co.searchwellington.model.Feed
 import nz.co.searchwellington.repositories.mongo.MongoRepository
 import org.junit.jupiter.api.Assertions.assertEquals
@@ -10,9 +11,9 @@ import org.springframework.mock.web.MockHttpServletRequest
 
 import java.util.UUID
 import scala.concurrent.ExecutionContext.Implicits.global
-import scala.concurrent.Future
+import scala.concurrent.{Await, Future}
 
-class FeedAttributeSetterTest {
+class FeedAttributeSetterTest extends ReasonableWaits{
   private val mongoRepository = mock(classOf[MongoRepository])
   private val feed = Feed(id = UUID.randomUUID().toString, title = "Wellington City Council news")
   private val request = new MockHttpServletRequest
@@ -26,25 +27,33 @@ class FeedAttributeSetterTest {
 
   @Test def shouldSetFeedAttributeForFeedPagePath(): Unit = {
     request.setRequestURI("/feed/wcc-news")
-    feedAttributeSetter.setAttributes(request)
+
+    Await.result(feedAttributeSetter.setAttributes(request), TenSeconds)
+
     assertEquals(feed, request.getAttribute("feedAttribute"))
   }
 
   @Test def shouldSetFeedAttributeForFeedEditPagePath(): Unit = {
     request.setRequestURI("/feed/wcc-news/edit")
-    feedAttributeSetter.setAttributes(request)
+
+    Await.result(feedAttributeSetter.setAttributes(request), TenSeconds)
+
     assertEquals(feed, request.getAttribute("feedAttribute"))
   }
 
   @Test def shouldSetFeedAttributeForFeedSavePath(): Unit = {
     request.setRequestURI("/feed/wcc-news/save")
-    feedAttributeSetter.setAttributes(request)
+
+    Await.result(feedAttributeSetter.setAttributes(request), TenSeconds)
+
     assertEquals(feed, request.getAttribute("feedAttribute"))
   }
 
   @Test def shouldSetFeedAttributeForAcceptAll(): Unit = {
     request.setRequestURI("/feed/wcc-news/accept-all")
-    feedAttributeSetter.setAttributes(request)
+
+    Await.result(feedAttributeSetter.setAttributes(request), TenSeconds)
+
     assertEquals(feed, request.getAttribute("feedAttribute"))
   }
 

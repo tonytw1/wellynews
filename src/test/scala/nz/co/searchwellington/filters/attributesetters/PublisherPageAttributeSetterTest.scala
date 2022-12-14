@@ -1,5 +1,6 @@
 package nz.co.searchwellington.filters.attributesetters
 
+import nz.co.searchwellington.ReasonableWaits
 import nz.co.searchwellington.model.Website
 import nz.co.searchwellington.repositories.mongo.MongoRepository
 import org.junit.jupiter.api.Assertions.assertEquals
@@ -10,9 +11,9 @@ import org.springframework.mock.web.MockHttpServletRequest
 
 import java.util.UUID
 import scala.concurrent.ExecutionContext.Implicits.global
-import scala.concurrent.Future
+import scala.concurrent.{Await, Future}
 
-class PublisherPageAttributeSetterTest {
+class PublisherPageAttributeSetterTest extends ReasonableWaits {
   private val mongoRepository: MongoRepository = mock(classOf[MongoRepository])
   private val publisher = Website(id = UUID.randomUUID().toString, title = "Wellington City Council")
   private val request = new MockHttpServletRequest
@@ -28,7 +29,7 @@ class PublisherPageAttributeSetterTest {
   def shouldSetPublisherAttributeForPublisherPath(): Unit = {
     request.setRequestURI("/wellington-city-council")
 
-    pageAttributeSetter.setAttributes(request)
+    Await.result(pageAttributeSetter.setAttributes(request), TenSeconds)
 
     assertEquals(publisher, request.getAttribute("publisher"))
   }
@@ -38,7 +39,7 @@ class PublisherPageAttributeSetterTest {
   def shouldSetPublisherAttributeForPublisherArchivePath(): Unit = {
     request.setRequestURI("/wellington-city-council/2020-mar")
 
-    pageAttributeSetter.setAttributes(request)
+    Await.result(pageAttributeSetter.setAttributes(request), TenSeconds)
 
     assertEquals(publisher, request.getAttribute("publisher"))
   }
@@ -47,7 +48,7 @@ class PublisherPageAttributeSetterTest {
   def shouldSetPublisherAttributeForPublisherRssPath(): Unit = {
     request.setRequestURI("/wellington-city-council/rss")
 
-    pageAttributeSetter.setAttributes(request)
+    Await.result(pageAttributeSetter.setAttributes(request), TenSeconds)
 
     assertEquals(publisher, request.getAttribute("publisher"))
   }

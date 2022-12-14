@@ -8,26 +8,27 @@ import org.springframework.stereotype.Component
 
 import java.util.regex.Pattern
 import javax.servlet.http.HttpServletRequest
-import scala.concurrent.Await
 import scala.concurrent.ExecutionContext.Implicits.global
+import scala.concurrent.Future
 
 @Component
 class FeedAttributeSetter @Autowired()(mongoRepository: MongoRepository) extends AttributeSetter with ReasonableWaits {
 
   private val feedPattern = Pattern.compile("^/feed/(.*?)(/(edit|save|rss|json|accept-all))?$")
 
-  override def setAttributes(request: HttpServletRequest): Boolean = {
+  override def setAttributes(request: HttpServletRequest): Future[Boolean] = {
     val contentMatcher = feedPattern.matcher(RequestPath.getPathFrom(request))
     if (contentMatcher.matches) {
       val urlWords = contentMatcher.group(1)
-      Await.result(mongoRepository.getFeedByUrlwords(urlWords), TenSeconds).exists { feed =>
-        request.setAttribute(FeedAttributeSetter.FEED_ATTRIBUTE, feed)
-        request.setAttribute("resource", feed)
-        true
+      mongoRepository.getFeedByUrlwords(urlWords).map { maybeFeed =>
+          maybeFeed.exists { feed =>
+            request.setAttribute(FeedAttributeSetter.FEED_ATTRIBUTE, feed)
+            request.setAttribute("resource", feed)
+            true
+          }
       }
-
     } else {
-      false
+      Future.successful(false)
     }
   }
 }
