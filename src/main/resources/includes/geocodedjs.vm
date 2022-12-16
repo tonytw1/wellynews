@@ -3,6 +3,7 @@
 		showAddress($item.geocode.latLong.latitude, $item.geocode.latLong.longitude,
 			"$escape.javascript($item.name)",
 			"$escape.javascript($item.url)",
-			"$escape.javascript($item.description)");
+			"$escape.javascript($item.description)",
+			"$dateFormatter.dayMonthYear($item.date)");
 	#end
 </script>

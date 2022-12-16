@@ -13,11 +13,12 @@
 	    
 	    var mapMarkers = [];
 		markers.forEach(function(marker) {
+		    var date ="<p>" + marker.date + "</p>";
 		    var description = "";
 		    if (marker.description) {
 		        description = "<p>" + marker.description + "</p>";
 		    }
-		    var popupContent = "<h3><a href=\"" + marker.url + "\">"+ marker.title + "</a></h3>" + description;
+		    var popupContent = "<h3><a href=\"" + marker.url + "\">" + marker.title + "</a></h3>" + date + description;
 			mapMarkers.push(L.marker([marker.lat, marker.long]).addTo(map).bindPopup(popupContent));
 	    });
 	    

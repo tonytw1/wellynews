@@ -31,8 +31,8 @@
 <script>
 	var markers = [];
 	 
- 	function showAddress(lat, long, title, url, description) {
- 		markers.push({lat: lat, long: long, title: title, url: url, description: description});
+ 	function showAddress(lat, long, title, url, description, date) {
+ 		markers.push({lat: lat, long: long, title: title, url: url, description: description, date: date});
  	}
  	
  	function positionSuccess(position) {
