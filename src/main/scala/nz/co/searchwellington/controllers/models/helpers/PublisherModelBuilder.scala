@@ -72,7 +72,7 @@ import scala.jdk.CollectionConverters._
           }
 
           commonAttributesModelBuilder.setRss(mv, rssUrlBuilder.getRssTitleForPublisher(publisher), rssUrlBuilder.getRssUrlForPublisher(publisher))
-          populateGeotaggedItems(mv, newsitems) // TODO This should be a seperate query
+          populateGeotaggedItems(mv, newsitems) // TODO This should be a separate query so that it can reach all the way back to max items
         }
         mv.addAttribute("feeds", publisherFeeds.asJava)
 
