@@ -4,7 +4,6 @@ import io.opentelemetry.api.trace.Span
 import nz.co.searchwellington.ReasonableWaits
 import nz.co.searchwellington.controllers.RssUrlBuilder
 import nz.co.searchwellington.controllers.admin.AdminUrlBuilder
-import nz.co.searchwellington.controllers.models.GeotaggedNewsitemExtractor
 import nz.co.searchwellington.model.frontend.{Action, FrontendResource, FrontendWebsite}
 import nz.co.searchwellington.model.mappers.FrontendResourceMapper
 import nz.co.searchwellington.model.{PublisherArchiveLink, Tag, User, Website}
@@ -24,7 +23,6 @@ import scala.jdk.CollectionConverters._
                                                     relatedTagsService: RelatedTagsService,
                                                     val contentRetrievalService: ContentRetrievalService,
                                                     val urlBuilder: UrlBuilder,
-                                                    geotaggedNewsitemExtractor: GeotaggedNewsitemExtractor,
                                                     commonAttributesModelBuilder: CommonAttributesModelBuilder,
                                                     frontendResourceMapper: FrontendResourceMapper,
                                                     editPermissionService: EditPermissionService,
@@ -44,12 +42,14 @@ import scala.jdk.CollectionConverters._
       val eventualPublisherNewsitems = contentRetrievalService.getPublisherNewsitems(publisher, MAX_NEWSITEMS, loggedInUser)
       val eventualPublisherFeeds = contentRetrievalService.getPublisherFeeds(publisher, loggedInUser)
       val eventualFrontendWebsite = frontendResourceMapper.createFrontendResourceFrom(publisher)
+      val eventualGeotaggedNewsitems = contentRetrievalService.getGeotaggedNewsitemsForPublisher(publisher, MAX_NUMBER_OF_GEOTAGGED_TO_SHOW, loggedInUser = loggedInUser)
 
       for {
         publisherNewsitemsAndTotalCount: (Seq[FrontendResource], Long) <- eventualPublisherNewsitems
         (newsitems, totalNewsitems) = publisherNewsitemsAndTotalCount
         publisherFeeds <- eventualPublisherFeeds
         frontendWebsite <- eventualFrontendWebsite
+        geotaggedNewsitems <- eventualGeotaggedNewsitems
 
       } yield {
         val mv = new ModelMap().
@@ -70,9 +70,10 @@ import scala.jdk.CollectionConverters._
               mv.addAttribute("more", urlBuilder.getArchiveLinkUrl(moreLink))
             }
           }
-
+          if (geotaggedNewsitems.nonEmpty) {
+            mv.addAttribute("geocoded", geotaggedNewsitems.asJava)
+          }
           commonAttributesModelBuilder.setRss(mv, rssUrlBuilder.getRssTitleForPublisher(publisher), rssUrlBuilder.getRssUrlForPublisher(publisher))
-          populateGeotaggedItems(mv, newsitems) // TODO This should be a separate query so that it can reach all the way back to max items
         }
         mv.addAttribute("feeds", publisherFeeds.asJava)
 
@@ -130,12 +131,5 @@ import scala.jdk.CollectionConverters._
   }
 
   def getViewName(mv: ModelMap, loggedInUser: Option[User]): String = "publisher"
-
-  private def populateGeotaggedItems(mv: ModelMap, mainContent: Seq[FrontendResource])(implicit ec: ExecutionContext): Unit = {
-    val geotaggedNewsitems = geotaggedNewsitemExtractor.extractGeotaggedItems(mainContent)
-    if (geotaggedNewsitems.nonEmpty) {
-      mv.addAttribute("geocoded", geotaggedNewsitems.asJava)
-    }
-  }
 
 }

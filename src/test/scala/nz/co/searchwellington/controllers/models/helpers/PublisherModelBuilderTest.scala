@@ -4,7 +4,6 @@ import io.opentelemetry.api.trace.Span
 import nz.co.searchwellington.ReasonableWaits
 import nz.co.searchwellington.controllers.RssUrlBuilder
 import nz.co.searchwellington.controllers.admin.AdminUrlBuilder
-import nz.co.searchwellington.controllers.models.GeotaggedNewsitemExtractor
 import nz.co.searchwellington.model._
 import nz.co.searchwellington.model.frontend.{FrontendFeed, FrontendNewsitem, FrontendResource, FrontendWebsite}
 import nz.co.searchwellington.model.geo.Geocode
@@ -33,7 +32,6 @@ class PublisherModelBuilderTest extends ReasonableWaits with ContentFields {
   private val adminUrlBuilder = new AdminUrlBuilder(urlBuilder, "")
   private val relatedTagsService = mock(classOf[RelatedTagsService])
   private val contentRetrievalService = mock(classOf[ContentRetrievalService])
-  private val geotaggedNewsitemExtractor = new GeotaggedNewsitemExtractor
   private val commonAttributesModelBuilder = new CommonAttributesModelBuilder
   private val frontendResourceMapper = mock(classOf[FrontendResourceMapper])
   private val editPermissionService = mock(classOf[EditPermissionService])
@@ -44,7 +42,7 @@ class PublisherModelBuilderTest extends ReasonableWaits with ContentFields {
   private implicit val currentSpan: Span = Span.current()
 
   private val modelBuilder = new PublisherModelBuilder(rssUrlBuilder, relatedTagsService, contentRetrievalService, urlBuilder,
-    geotaggedNewsitemExtractor, commonAttributesModelBuilder, frontendResourceMapper, editPermissionService, adminUrlBuilder)
+    commonAttributesModelBuilder, frontendResourceMapper, editPermissionService, adminUrlBuilder)
 
   @Test
   def mainContentShouldBePublisherNewsitems(): Unit = {
@@ -56,6 +54,7 @@ class PublisherModelBuilderTest extends ReasonableWaits with ContentFields {
     when(frontendResourceMapper.createFrontendResourceFrom(publisher)).thenReturn(Future.successful(frontendPublisher))
     when(contentRetrievalService.getPublisherNewsitems(publisher, 30, None)).thenReturn(Future.successful((publisherNewsitems, 1L)))
     when(contentRetrievalService.getPublisherFeeds(publisher, None)).thenReturn(Future.successful(publisherFeeds))
+    when(contentRetrievalService.getGeotaggedNewsitemsForPublisher(publisher, 30, None)).thenReturn(Future.successful(Seq.empty))
 
     val mv = Await.result(modelBuilder.populateContentModel(request), TenSeconds).get
 
@@ -79,6 +78,7 @@ class PublisherModelBuilderTest extends ReasonableWaits with ContentFields {
     when(frontendResourceMapper.createFrontendResourceFrom(publisher)).thenReturn(Future.successful(frontendPublisher))
     when(contentRetrievalService.getPublisherNewsitems(publisher, 30, None)).thenReturn(Future.successful((maxedOutPublisherNewsitems, 32L)))
     when(contentRetrievalService.getPublisherFeeds(publisher, None)).thenReturn(Future.successful(publisherFeeds))
+    when(contentRetrievalService.getGeotaggedNewsitemsForPublisher(publisher, 30, None)).thenReturn(Future.successful(Seq.empty))
 
     val mv = Await.result(modelBuilder.populateContentModel(request), TenSeconds).get
 
@@ -98,6 +98,8 @@ class PublisherModelBuilderTest extends ReasonableWaits with ContentFields {
 
     when(contentRetrievalService.getPublisherNewsitems(publisher, 30, loggedInUser)).thenReturn(Future.successful((publisherNewsitems, publisherNewsitems.size.toLong)))
     when(contentRetrievalService.getPublisherFeeds(publisher, loggedInUser)).thenReturn(Future.successful(Seq.empty))
+    when(contentRetrievalService.getGeotaggedNewsitemsForPublisher(publisher, 30, None)).thenReturn(Future.successful(Seq.empty))
+    when(contentRetrievalService.getGeotaggedNewsitemsForPublisher(publisher, 30, None)).thenReturn(Future.successful(Seq(geotaggedNewsitem)))
 
     when(relatedTagsService.getRelatedTagsForPublisher(publisher, None)).thenReturn(Future.successful(Seq()))
     when(frontendResourceMapper.createFrontendResourceFrom(publisher)).thenReturn(Future.successful(frontendPublisher))

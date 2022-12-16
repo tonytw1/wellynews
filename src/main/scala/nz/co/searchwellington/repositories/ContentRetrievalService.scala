@@ -152,8 +152,13 @@ import scala.concurrent.{ExecutionContext, Future}
   }
 
   def getGeotaggedNewsitemsForTag(tag: Tag, maxItems: Int, loggedInUser: Option[User])(implicit ec: ExecutionContext, currentSpan: Span): Future[Seq[FrontendResource]] = {
-    val geotaggedNewsitemsForTag = ResourceQuery(`type` = newsitems, geocoded = Some(true), tags = Some(Set(tag)), maxItems = maxItems) // TODO page size
+    val geotaggedNewsitemsForTag = ResourceQuery(`type` = newsitems, geocoded = Some(true), tags = Some(Set(tag)), maxItems = maxItems)
     elasticSearchIndexer.getResources(geotaggedNewsitemsForTag, loggedInUser = loggedInUser).flatMap(i => fetchByIdsAndFrontendMap(i._1, loggedInUser))
+  }
+
+  def getGeotaggedNewsitemsForPublisher(publisher: Website, maxItems: Int, loggedInUser: Option[User])(implicit ec: ExecutionContext, currentSpan: Span): Future[Seq[FrontendResource]] = {
+    val geotaggedNewsitemsForPublisher = ResourceQuery(`type` = newsitems, geocoded = Some(true), publisher = Some(publisher), maxItems = maxItems)
+    elasticSearchIndexer.getResources(geotaggedNewsitemsForPublisher, loggedInUser = loggedInUser).flatMap(i => fetchByIdsAndFrontendMap(i._1, loggedInUser))
   }
 
   def getLatestNewsitems(maxItems: Int = MAX_NEWSITEMS, loggedInUser: Option[User])(implicit ec: ExecutionContext, currentSpan: Span): Future[Seq[FrontendResource]] = {
