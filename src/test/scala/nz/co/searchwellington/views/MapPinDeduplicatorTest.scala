@@ -1,37 +1,44 @@
 package nz.co.searchwellington.views
 
-import nz.co.searchwellington.model.Newsitem
+import nz.co.searchwellington.model.frontend.{FrontendNewsitem, FrontendResource}
 import nz.co.searchwellington.model.geo.{Geocode, LatLong}
+import org.joda.time.DateTime
 import org.junit.jupiter.api.Assertions.{assertEquals, assertFalse, assertTrue}
 import org.junit.jupiter.api.Test
+
+import java.util
+import java.util.UUID
 
 class MapPinDeduplicatorTest {
   private val here = Geocode(Some("here"), Some(LatLong(1.1, 1.1)))
   private val there = Geocode(Some("there"), Some(LatLong(2.2, 2.2)))
   private val alsoHere = Geocode(Some("here"), Some(LatLong(1.1, 1.1)))
-  private val firstNewsitem = Newsitem(title = "First", geocode = Some(here))
-  private val secondNewsitem = Newsitem(title = "Second", geocode = Some(there))
-  private val thirdNewsitem = Newsitem(title = "Third", geocode = Some(alsoHere))
+
+  private val firstNewsitem = FrontendNewsitem(name = "First", geocode = Some(here), date = DateTime.now().minusDays(5).toDate, id = UUID.randomUUID().toString, url = "")
+  private val secondNewsitem = FrontendNewsitem(name = "Second", geocode = Some(there), date = DateTime.now().minusDays(5).toDate, id = UUID.randomUUID().toString, url = "")
+  private val thirdNewsitem = FrontendNewsitem(name = "Third", geocode = Some(alsoHere), date = DateTime.now().toDate, id = UUID.randomUUID().toString, url = "")
+
   private val geocoded = Seq(firstNewsitem, secondNewsitem, thirdNewsitem)
 
-  private val cleaner = new MapPinDeduplicator()
+  private val mapPinDeduplicator = new MapPinDeduplicator()
 
   @Test
-  def shouldDedupeListByGeocodeSoThatLowerItemsDoNotOverlayEarlierOnes(): Unit = {
-    val deduped = cleaner.dedupe(geocoded)
+  def shouldProtectItemsWithUniqueLocations(): Unit = {
+    val deduped: util.List[FrontendResource] = mapPinDeduplicator.dedupe(geocoded)
 
     assertEquals(2, deduped.size)
-    assertFalse(deduped.contains(thirdNewsitem))
+
+    assertTrue(deduped.contains(secondNewsitem), "Expected item to survive because it has a unique and distant location")
   }
 
   @Test
-  def shouldPutSelectedItemInFirst(): Unit = {
-    val selected = Newsitem(geocode = Some(there))
+  def shouldPreferMostRecentlyPublishedItems(): Unit = {
+    val deduped = mapPinDeduplicator.dedupe(geocoded)
 
-    val deduped = cleaner.dedupe(geocoded, Some(selected))
+    assertEquals(2, deduped.size)
 
-    assertTrue(deduped.contains(selected))
-    assertFalse(deduped.contains(secondNewsitem))
+    assertTrue(deduped.contains(thirdNewsitem), "Expected item to survive because it has the most recent date")
+    assertFalse(deduped.contains(firstNewsitem), "Expected item to survive because it has the most recent date")
   }
 
 }

@@ -1,5 +1,5 @@
 <script>
-	#foreach($item in $geocoded)
+	#foreach($item in $mapPinDeduplicator.dedupe($geocoded))
 		showAddress($item.geocode.latLong.latitude, $item.geocode.latLong.longitude,
 			"$escape.javascript($item.name)",
 			"$escape.javascript($item.url)",

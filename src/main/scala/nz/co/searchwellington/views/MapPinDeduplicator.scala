@@ -1,34 +1,39 @@
 package nz.co.searchwellington.views
 
-import nz.co.searchwellington.model.Newsitem
+import nz.co.searchwellington.model.frontend.FrontendResource
 import nz.co.searchwellington.model.geo.Geocode
 import org.apache.commons.logging.LogFactory
 import org.springframework.stereotype.Component
 import uk.co.eelpieconsulting.common.geo.DistanceMeasuringService
 import uk.co.eelpieconsulting.common.geo.model.LatLong
 
-@Component class MapPinDeduplicator() {
+import scala.jdk.CollectionConverters._
+
+@Component
+class MapPinDeduplicator() {
 
   private val ONE_HUNDRED_METERS = 0.1
   private val log = LogFactory.getLog(classOf[MapPinDeduplicator])
 
   private val distanceMeasuringService = new DistanceMeasuringService
 
-  def dedupe(geocoded: Seq[Newsitem], selected: Option[Newsitem] = None): Seq[Newsitem] = {
-    log.debug("Deduping collection with " + geocoded.size + " items")
-    var deduped = Seq(selected).flatten
+  def dedupe(geocoded: Seq[FrontendResource]): java.util.List[FrontendResource] = {
+    var deduped: Seq[FrontendResource] = Seq.empty
 
-    geocoded.foreach { resource =>
+    val byDateDescending = geocoded.sortBy(r => r.date).reverse
+
+    byDateDescending.foreach { resource =>
       resource.geocode.foreach { p =>
         val isUnique = !listAlreadyContainsResourceWithThisLocation(deduped, p)
-        if (isUnique) deduped = deduped :+ resource
+        if (isUnique) {
+          deduped = deduped :+ resource
+        }
       }
     }
-    log.debug("Returning collection with " + deduped.size + " items")
-    deduped
+    deduped.asJava
   }
 
-  private def listAlreadyContainsResourceWithThisLocation(deduped: Seq[Newsitem], geocode: Geocode): Boolean = {
+  private def listAlreadyContainsResourceWithThisLocation(deduped: Seq[FrontendResource], geocode: Geocode): Boolean = {
     deduped.exists { r =>
       r.geocode.forall { rp =>
         areSameOrOverlappingLocations(rp, geocode)
@@ -42,6 +47,7 @@ import uk.co.eelpieconsulting.common.geo.model.LatLong
         new uk.co.eelpieconsulting.common.geo.model.LatLong(ll.latitude, ll.longitude)
       }
     }
+
     for {
       hereLatLong <- latLongFor(here)
       thereLatLong <- latLongFor(there)
