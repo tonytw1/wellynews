@@ -2,7 +2,6 @@ package nz.co.searchwellington.views
 
 import nz.co.searchwellington.model.frontend.FrontendResource
 import nz.co.searchwellington.model.geo.Geocode
-import org.apache.commons.logging.LogFactory
 import org.springframework.stereotype.Component
 import uk.co.eelpieconsulting.common.geo.DistanceMeasuringService
 import uk.co.eelpieconsulting.common.geo.model.LatLong
@@ -13,14 +12,13 @@ import scala.jdk.CollectionConverters._
 class MapPinDeduplicator() {
 
   private val ONE_HUNDRED_METERS = 0.1
-  private val log = LogFactory.getLog(classOf[MapPinDeduplicator])
 
   private val distanceMeasuringService = new DistanceMeasuringService
 
-  def dedupe(geocoded: Seq[FrontendResource]): java.util.List[FrontendResource] = {
+  def dedupe(geocoded: java.util.List[FrontendResource]): java.util.List[FrontendResource] = {
     var deduped: Seq[FrontendResource] = Seq.empty
 
-    val byDateDescending = geocoded.sortBy(r => r.date).reverse
+    val byDateDescending = geocoded.asScala.sortBy(r => r.date).reverse
 
     byDateDescending.foreach { resource =>
       resource.geocode.foreach { p =>
