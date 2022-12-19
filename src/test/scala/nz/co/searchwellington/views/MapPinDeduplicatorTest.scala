@@ -12,9 +12,9 @@ import java.util.UUID
 import scala.jdk.CollectionConverters._
 
 class MapPinDeduplicatorTest {
-  private val here = Geocode(Some("here"), Some(LatLong(174.7787, -41.2924)))
+  private val here = Geocode(Some("here"), Some(LatLong(-41.2924, 174.7787)))
   private val there = Geocode(Some("there"), Some(LatLong(2.2, 2.2)))
-  private val alsoHere = Geocode(Some("here"), Some(LatLong(174.7787, -41.2924)))
+  private val alsoHere = Geocode(Some("here"), Some(LatLong(-41.2924, 174.7788)))
 
   private val firstNewsitem = FrontendNewsitem(name = "First", geocode = Some(here), date = DateTime.now().minusDays(5).toDate, id = UUID.randomUUID().toString, url = "")
   private val secondNewsitem = FrontendNewsitem(name = "Second", geocode = Some(there), date = DateTime.now().minusDays(5).toDate, id = UUID.randomUUID().toString, url = "")
