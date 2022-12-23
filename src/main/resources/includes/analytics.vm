@@ -1,5 +1,0 @@
-#if (!$loggedInUser)
-	$siteInformation.trackingCode
-#else
-<!-- Stats disabled -->
-#end

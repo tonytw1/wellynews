@@ -1,6 +1,5 @@
 <br clear="all">
 <hr>
-#parse("includes/analytics.vm")
 
 #if ($geocoded) 
 <script type="text/javascript">
