@@ -37,16 +37,16 @@ class ContentController @Autowired()(contentModelBuilderServiceFactory: ContentM
   def normal(request: HttpServletRequest, response: HttpServletResponse): ModelAndView = {
     import scala.concurrent.ExecutionContext.Implicits.global
     implicit val currentSpan: Span = Span.current()
-    buildAndRender(request)
+    buildAndRender(request, response)
   }
 
-  private def buildAndRender(request: HttpServletRequest)(implicit ec: ExecutionContext, currentSpan: Span): ModelAndView = {
+  private def buildAndRender(request: HttpServletRequest, response: HttpServletResponse)(implicit ec: ExecutionContext, currentSpan: Span): ModelAndView = {
     val loggedInUser = loggedInUserFilter.getLoggedInUser
     val eventualMaybeView = requestFilter.loadAttributesOntoRequest(request).flatMap { attributes =>
       attributes.toSeq.foreach( a =>
       request.setAttribute(a._1, a._2)
       )
-      contentModelBuilderService.buildModelAndView(request, loggedInUser)
+      contentModelBuilderService.buildModelAndView(request, response, loggedInUser)
     }
 
     try {

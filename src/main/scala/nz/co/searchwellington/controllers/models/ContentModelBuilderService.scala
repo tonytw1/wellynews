@@ -12,7 +12,7 @@ import org.springframework.ui.ModelMap
 import org.springframework.web.servlet.ModelAndView
 import uk.co.eelpieconsulting.common.views.ViewFactory
 
-import javax.servlet.http.HttpServletRequest
+import javax.servlet.http.{HttpServletRequest, HttpServletResponse}
 import scala.concurrent.{ExecutionContext, Future}
 
 class ContentModelBuilderService(viewFactory: ViewFactory,
@@ -23,7 +23,7 @@ class ContentModelBuilderService(viewFactory: ViewFactory,
 
   private val viewType = "viewType"
 
-  def buildModelAndView(request: HttpServletRequest, loggedInUser: Option[User] = None)(implicit ec: ExecutionContext, currentSpan: Span): Future[Option[ModelAndView]] = {
+  def buildModelAndView(request: HttpServletRequest, response: HttpServletResponse, loggedInUser: Option[User] = None)(implicit ec: ExecutionContext, currentSpan: Span): Future[Option[ModelAndView]] = {
     modelBuilders.find(mb => mb.isValid(request)).map { mb =>
       currentSpan.setAttribute("modelBuilder", mb.getClass.getSimpleName)
 
@@ -88,6 +88,9 @@ class ContentModelBuilderService(viewFactory: ViewFactory,
 
           } else if (path.endsWith("/json")) {
             currentSpan.setAttribute(viewType, "json")
+            // Allow javascript access to json end points
+            response.setHeader("Access-Control-Allow-Origin", "*")
+            response.setHeader("Access-Control-Allow-Methods", "GET")
             jsonViewOf(mv)
 
           } else {

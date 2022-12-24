@@ -9,7 +9,7 @@ import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.{mock, when}
-import org.springframework.mock.web.MockHttpServletRequest
+import org.springframework.mock.web.{MockHttpServletRequest, MockHttpServletResponse}
 import org.springframework.ui.ModelMap
 import org.springframework.web.servlet.ModelAndView
 import uk.co.eelpieconsulting.common.views.ViewFactory
@@ -31,6 +31,8 @@ class ContentModelBuilderServiceTest extends ReasonableWaits {
     request.setRequestURI("/something")
     request
   }
+
+  private val response = new MockHttpServletResponse
 
   private val validModel = new ModelMap("").addAttribute("something", "abc")
   private val validExtras = new ModelMap().addAttribute("somethingextra", "xyz")
@@ -54,7 +56,7 @@ class ContentModelBuilderServiceTest extends ReasonableWaits {
     when(contentRetrievalService.getTopLevelTags).thenReturn(Future.successful(Seq.empty))
     when(contentRetrievalService.getFeaturedTags).thenReturn(Future.successful(Seq.empty))
 
-    val result = Await.result(contentModelBuilderService.buildModelAndView(request), TenSeconds)
+    val result = Await.result(contentModelBuilderService.buildModelAndView(request, response), TenSeconds)
 
     val expectedModelAndView = new ModelAndView("a-view").addAllObjects(validModel).addAllObjects(validExtras)
     assertEquals(expectedModelAndView.getModel, result.get.getModel)
@@ -70,7 +72,7 @@ class ContentModelBuilderServiceTest extends ReasonableWaits {
     when(contentRetrievalService.getTopLevelTags).thenReturn(Future.successful(Seq.empty))
     when(contentRetrievalService.getFeaturedTags).thenReturn(Future.successful(Seq.empty))
 
-    val result = Await.result(contentModelBuilderService.buildModelAndView(request), TenSeconds)
+    val result = Await.result(contentModelBuilderService.buildModelAndView(request, response), TenSeconds)
 
     val model = result.get.getModel
     assertEquals("abc", model.get("something"))
@@ -88,7 +90,7 @@ class ContentModelBuilderServiceTest extends ReasonableWaits {
     when(contentRetrievalService.getTopLevelTags).thenReturn(Future.successful(Seq.empty))
     when(contentRetrievalService.getFeaturedTags).thenReturn(Future.successful(Seq.empty))
 
-    val result = Await.result(contentModelBuilderService.buildModelAndView(request, Some(loggedInUser)), TenSeconds)
+    val result = Await.result(contentModelBuilderService.buildModelAndView(request, response, Some(loggedInUser)), TenSeconds)
 
     assertEquals(loggedInUser, result.get.getModel.get("loggedInUser"))
   }
@@ -98,7 +100,7 @@ class ContentModelBuilderServiceTest extends ReasonableWaits {
     when(validModelBuilder.isValid(request)).thenReturn(false)
     when(invalidModelBuilder.isValid(request)).thenReturn(false)
 
-    val result = Await.result(contentModelBuilderService.buildModelAndView(request), TenSeconds)
+    val result = Await.result(contentModelBuilderService.buildModelAndView(request, response), TenSeconds)
 
     assertEquals(None, result)
   }
@@ -112,7 +114,7 @@ class ContentModelBuilderServiceTest extends ReasonableWaits {
     val rssView = mock(classOf[RssView])
     when(viewFactory.getRssView(any, any, any)).thenReturn(rssView)
     request.setRequestURI("/something/rss")
-    assertEquals(rssView, Await.result(contentModelBuilderService.buildModelAndView(request), TenSeconds).get.getView)
+    assertEquals(rssView, Await.result(contentModelBuilderService.buildModelAndView(request, response), TenSeconds).get.getView)
   }
 
   @Test
@@ -124,7 +126,7 @@ class ContentModelBuilderServiceTest extends ReasonableWaits {
     val jsonView = mock(classOf[JsonView])
     when(viewFactory.getJsonView).thenReturn(jsonView)
     request.setRequestURI("/something/json")
-    assertEquals(jsonView, Await.result(contentModelBuilderService.buildModelAndView(request), TenSeconds).get.getView)
+    assertEquals(jsonView, Await.result(contentModelBuilderService.buildModelAndView(request, response), TenSeconds).get.getView)
   }
 
 }

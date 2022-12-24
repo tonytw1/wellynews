@@ -36,7 +36,7 @@ class ContentControllerTest {
   def shouldDelegateToTheContentModelBuilderToGetTheModelForThisRequest(): Unit = {
     val expectedModelAndView = new ModelAndView("a-view", Map("foo" -> "bar").asJava)
     when(contentModelBuilderServiceFactory.makeContentModelBuilderService()).thenReturn(contentModelBuilderService)
-    when(contentModelBuilderService.buildModelAndView(request)).thenReturn(Future.successful(Some(expectedModelAndView)))
+    when(contentModelBuilderService.buildModelAndView(request, response)).thenReturn(Future.successful(Some(expectedModelAndView)))
     when(requestFilter.loadAttributesOntoRequest(request)).thenReturn(Future(Map.empty))
 
     val modelAndView = contentController.normal(request, response)
@@ -47,7 +47,7 @@ class ContentControllerTest {
   @Test
   def should404IfNoModelWasAvailableForThisRequest(): Unit = {
     when(contentModelBuilderServiceFactory.makeContentModelBuilderService()).thenReturn(contentModelBuilderService)
-    when(contentModelBuilderService.buildModelAndView(unknownPathRequest)).thenReturn(Future.successful(None))
+    when(contentModelBuilderService.buildModelAndView(unknownPathRequest, response)).thenReturn(Future.successful(None))
     when(requestFilter.loadAttributesOntoRequest(unknownPathRequest)).thenReturn(Future(Map.empty))
 
     try {
@@ -64,7 +64,7 @@ class ContentControllerTest {
   @Test
   def shouldNotPush404sOntoTheReturnToUrlStack(): Unit = {
     when(contentModelBuilderServiceFactory.makeContentModelBuilderService()).thenReturn(contentModelBuilderService)
-    when(contentModelBuilderService.buildModelAndView(unknownPathRequest)).thenReturn(Future.successful(None))
+    when(contentModelBuilderService.buildModelAndView(unknownPathRequest, response)).thenReturn(Future.successful(None))
     when(requestFilter.loadAttributesOntoRequest(unknownPathRequest)).thenReturn(Future(Map.empty))
 
     val triedView = Try {
@@ -79,7 +79,7 @@ class ContentControllerTest {
   def htmlPageViewsShouldBePutOntoTheUrlStack(): Unit = {
     val expectedModelAndView = new ModelAndView("a-view", Map("foo" -> "bar").asJava)
     when(contentModelBuilderServiceFactory.makeContentModelBuilderService()).thenReturn(contentModelBuilderService)
-    when(contentModelBuilderService.buildModelAndView(request)).thenReturn(Future.successful(Some(expectedModelAndView)))
+    when(contentModelBuilderService.buildModelAndView(request, response)).thenReturn(Future.successful(Some(expectedModelAndView)))
     when(requestFilter.loadAttributesOntoRequest(request)).thenReturn(Future(Map.empty))
 
     contentController.normal(request, response)

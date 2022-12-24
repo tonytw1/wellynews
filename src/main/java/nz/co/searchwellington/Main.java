@@ -6,7 +6,6 @@ import nz.co.searchwellington.commentfeeds.detectors.DateRegexCommentFeedDetecto
 import nz.co.searchwellington.commentfeeds.detectors.GenericCommentFeedDetector;
 import nz.co.searchwellington.controllers.RssUrlBuilder;
 import nz.co.searchwellington.controllers.admin.AdminUrlBuilder;
-import nz.co.searchwellington.filters.CORSFilter;
 import nz.co.searchwellington.model.SiteInformation;
 import nz.co.searchwellington.urls.UrlBuilder;
 import nz.co.searchwellington.utils.EscapeTools;
@@ -15,7 +14,6 @@ import nz.co.searchwellington.views.DateFormatter;
 import nz.co.searchwellington.views.MapPinDeduplicator;
 import org.apache.velocity.app.Velocity;
 import org.apache.velocity.spring.VelocityEngineFactoryBean;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -45,9 +43,6 @@ public class Main {
     public static void main(String[] args) {
         ctx = SpringApplication.run(Main.class, args);
     }
-
-    @Autowired
-    private CORSFilter CORSFilter;
 
     @Bean
     public CommentFeedDetector newswireCommentFeedDetector() {
