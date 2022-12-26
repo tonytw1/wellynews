@@ -1,7 +1,6 @@
 package nz.co.searchwellington.filters.attributesetters;
 
-import com.google.common.base.Strings
-import nz.co.searchwellington.exceptions.UnresolvableLocationException
+import nz.co.searchwellington.filters.attributesetters.LocationParameterFilter.{LOCATION, RADIUS}
 import nz.co.searchwellington.geocoding.osm.{GeoCodeService, OsmIdParser}
 import org.apache.commons.logging.LogFactory
 import org.springframework.beans.factory.annotation.Autowired
@@ -21,41 +20,35 @@ class LocationParameterFilter @Autowired()(geoCodeService: GeoCodeService, osmId
   private val OSM = "osm"
 
   override def setAttributes(request: HttpServletRequest): Future[Map[String, Any]] = {
-
-    processDoubleParameter(request, LocationParameterFilter.RADIUS).foreach { radius =>
+    val maybeRadius: Option[Double] = processDoubleParameter(request, LocationParameterFilter.RADIUS).flatMap { radius =>
       if (radius > 0) {
-        request.setAttribute(LocationParameterFilter.RADIUS, radius)  // TODO
+        Some(radius)
+      } else {
+        None
       }
     }
 
-    Future.successful(if (!Strings.isNullOrEmpty(request.getParameter(OSM))) {
-      val osmIdString = request.getParameter(OSM);
-      val osmId = osmIdParser.parseOsmId(osmIdString)
-      if (osmId != null) {
-        val resolvedPlace = geoCodeService.resolveOsmId(osmId);
-        log.debug("OSM id '" + osmId + "' resolved to: " + resolvedPlace);
-        if (resolvedPlace == null) {
-          throw new UnresolvableLocationException("OSM place could not be resolved");
-        }
-        Map (
-          LocationParameterFilter.LOCATION -> resolvedPlace
-        )
+    val maybeOsmPlace: Option[Place] = for {
+      osmIdString <- Option(request.getParameter(OSM))
+      osmId <- Option(osmIdParser.parseOsmId(osmIdString))
+      resolvedPlace <- Option(geoCodeService.resolveOsmId(osmId))
+    } yield {
+      log.debug("OSM id '" + osmId + "' resolved to: " + resolvedPlace);
+      resolvedPlace
+    }
 
-      } else {
-        Map.empty
-      }
-
-    } else if (!Strings.isNullOrEmpty(request.getParameter("latitude")) && !Strings.isNullOrEmpty(request.getParameter("longitude"))) {
-      val latLong = new LatLong(request.getParameter(LATITUDE).toDouble, request.getParameter(LONGITUDE).toDouble)
+    val maybeLatLongLocation = for {
+      latitide <- Option(request.getParameter(LATITUDE))
+      longitude <- Option(request.getParameter(LONGITUDE))
+    } yield {
+      val latLong = new LatLong(latitide.toDouble, longitude.toDouble)
       val latLongLabel = latLong.getLatitude + ", " + latLong.getLongitude;
-      Map (
-        LocationParameterFilter.LOCATION -> new Place(latLongLabel, latLong, null)
-      )
+      new Place(latLongLabel, latLong, null)
+    }
 
-    } else {
-      Map.empty
-    })
-
+    Future.successful(Seq(Seq(maybeOsmPlace, maybeLatLongLocation).flatten.headOption.map { place =>
+      LOCATION -> place
+    }, maybeRadius.map { radius => RADIUS -> radius }).flatten.toMap)
   }
 
   private def processDoubleParameter(request: HttpServletRequest, parameterName: String): Option[Double] = {

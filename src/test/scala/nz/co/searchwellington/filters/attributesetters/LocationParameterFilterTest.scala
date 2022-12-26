@@ -5,6 +5,7 @@ import nz.co.searchwellington.geocoding.osm.{GeoCodeService, OsmIdParser}
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
 import org.mockito.Mockito
+import org.mockito.Mockito.when
 import org.springframework.mock.web.MockHttpServletRequest
 import uk.co.eelpieconsulting.common.geo.model.{LatLong, OsmId, OsmType, Place}
 
@@ -14,23 +15,23 @@ class LocationParameterFilterTest extends ReasonableWaits {
   private val VALID_LOCATION_NAME = "Petone Station"
   private val geocodeService = Mockito.mock(classOf[GeoCodeService])
   private val petoneStation = new Place(VALID_LOCATION_NAME, new LatLong(1.1, 2.2), new OsmId(123, OsmType.NODE))
+
   private val filter = new LocationParameterFilter(geocodeService, new OsmIdParser)
 
-
-  @Test def canResolveOsmIdAsLocation() = {
+  @Test
+  def canResolveOsmIdAsLocation() = {
     val request = new MockHttpServletRequest
     request.setParameter("osm", "123/NODE")
-    Mockito.when(geocodeService.resolveOsmId(petoneStation.getOsmId)).thenReturn(petoneStation)
+    when(geocodeService.resolveOsmId(petoneStation.getOsmId)).thenReturn(petoneStation)
 
     val attributes = Await.result(filter.setAttributes(request), TenSeconds)
-    println(attributes)
 
     val locationAttribute = attributes("location").asInstanceOf[Place]
     assertEquals(VALID_LOCATION_NAME, locationAttribute.getAddress)
   }
 
-  /* TODO restore
-  @Test def canResolveLocationSearchRadius() = {
+  @Test
+  def canResolveLocationSearchRadius() = {
     val request = new MockHttpServletRequest
     request.setParameter("radius", "3")
 
@@ -38,9 +39,9 @@ class LocationParameterFilterTest extends ReasonableWaits {
 
     assertEquals(3.0, attributes("radius"))
   }
-  */
 
-  @Test def canResolveAbsoluteLatLongPointAsALocation() = {
+  @Test
+  def canResolveAbsoluteLatLongPointAsALocation() = {
     val request = new MockHttpServletRequest
     request.setParameter("latitude", "51.2")
     request.setParameter("longitude", "-0.1")
