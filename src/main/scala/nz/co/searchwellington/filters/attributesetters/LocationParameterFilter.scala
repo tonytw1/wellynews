@@ -5,7 +5,6 @@ import nz.co.searchwellington.exceptions.UnresolvableLocationException
 import nz.co.searchwellington.geocoding.osm.{GeoCodeService, OsmIdParser}
 import org.apache.commons.logging.LogFactory
 import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.context.annotation.Scope
 import org.springframework.stereotype.Component
 import uk.co.eelpieconsulting.common.geo.model.{LatLong, Place}
 
@@ -13,7 +12,6 @@ import javax.servlet.http.HttpServletRequest
 import scala.concurrent.Future;
 
 @Component
-@Scope(value = "request")
 class LocationParameterFilter @Autowired()(geoCodeService: GeoCodeService, osmIdParser: OsmIdParser) extends AttributeSetter {
 
   private val log = LogFactory.getLog(classOf[LocationParameterFilter])

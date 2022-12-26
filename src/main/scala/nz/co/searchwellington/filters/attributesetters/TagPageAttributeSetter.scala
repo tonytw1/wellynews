@@ -13,7 +13,8 @@ import javax.servlet.http.HttpServletRequest
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
-@Component class TagPageAttributeSetter @Autowired()(var tagDAO: TagDAO, mongoRepository: MongoRepository) extends AttributeSetter
+@Component
+class TagPageAttributeSetter @Autowired()(var tagDAO: TagDAO, mongoRepository: MongoRepository) extends AttributeSetter
   with ReasonableWaits {
 
   private val log = LogFactory.getLog(classOf[TagPageAttributeSetter])
@@ -30,8 +31,8 @@ import scala.concurrent.Future
         log.debug("Looking for tag '" + tagUrlWords + "'")
         mongoRepository.getTagByUrlWords(tagUrlWords).map { maybeTag =>
           maybeTag.map { tag =>
-            Map (
-              "tag" -> tag,  // TODO deprecate
+            Map(
+              "tag" -> tag, // TODO deprecate
               "tags" -> Seq(tag)
             )
           }.getOrElse {

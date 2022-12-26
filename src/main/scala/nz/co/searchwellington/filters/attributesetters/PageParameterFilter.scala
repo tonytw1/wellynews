@@ -1,13 +1,11 @@
 package nz.co.searchwellington.filters.attributesetters
 
-import org.springframework.context.annotation.Scope
 import org.springframework.stereotype.Component
 
 import javax.servlet.http.HttpServletRequest
 import scala.concurrent.Future
 
 @Component
-@Scope("request")
 class PageParameterFilter extends AttributeSetter {
 
   override def setAttributes(request: HttpServletRequest): Future[Map[String, Any]] = {

@@ -11,7 +11,8 @@ import javax.servlet.http.HttpServletRequest
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
-@Component class PublisherPageAttributeSetter @Autowired()(mongoRepository: MongoRepository)
+@Component
+class PublisherPageAttributeSetter @Autowired()(mongoRepository: MongoRepository)
   extends AttributeSetter with ReasonableWaits {
 
   private val publisherPagePathPattern = Pattern.compile("^/(.*?)(/(geotagged|.*?-.*?))?(/(rss|json))?$")
