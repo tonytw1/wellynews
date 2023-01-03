@@ -21,7 +21,8 @@ case class ResourceQuery(`type`: Option[Set[String]] = None,
                          hostname: Option[String] = None,
                          before: Option[DateTime] = None,
                          notPublishedBy: Option[Website] = None,
-                         acceptedDate: Option[LocalDate] = None
+                         acceptedDate: Option[LocalDate] = None,
+                         acceptedAfter: Option[LocalDate] = None
                         )
 
 case class Circle(centre: LatLong, radius: Double)

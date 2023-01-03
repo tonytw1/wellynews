@@ -264,7 +264,9 @@ import scala.concurrent.{ExecutionContext, Future}
   }
 
   def getAcceptedDates(loggedInUser: Option[User])(implicit ec: ExecutionContext, currentSpan: Span): Future[Seq[(java.time.LocalDate, Long)]] = {
-      elasticSearchIndexer.createdAcceptedDateAggregationFor(allNewsitems, loggedInUser)
+      val twoWeeksAgo = DateTime.now.toLocalDate.minusWeeks(2)
+      val allNewsitemsAcceptedInTheLastTwoWeeks = allNewsitems.copy(acceptedAfter = Some(twoWeeksAgo))
+      elasticSearchIndexer.createdAcceptedDateAggregationFor(allNewsitemsAcceptedInTheLastTwoWeeks, loggedInUser)
   }
 
   def getArchiveMonths(loggedInUser: Option[User])(implicit ec: ExecutionContext, currentSpan: Span): Future[Seq[ArchiveLink]] = {
