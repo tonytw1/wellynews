@@ -251,7 +251,7 @@ class ElasticSearchIndexer @Autowired()(val showBrokenDecisionService: ShowBroke
       startSpan()
 
     val dateDay = dateHistogramAgg(AcceptedDate, AcceptedDate).
-      calendarInterval(DateHistogramInterval.Day).format("YYYY-MM-dd").
+      calendarInterval(DateHistogramInterval.Day).
       order(HistogramOrder.KEY_DESC).
       minDocCount(1)
 
@@ -262,7 +262,8 @@ class ElasticSearchIndexer @Autowired()(val showBrokenDecisionService: ShowBroke
       span.setAttribute("buckets", dateAgg.buckets.size)
       span.end()
       dateAgg.buckets.map { b =>
-        val day = b.date
+        val startOfDay: DateTime = ISODateTimeFormat.dateTimeParser().parseDateTime(b.date)
+        val day: String = startOfDay.toLocalDate().toString("YYYY-MM-dd")
         (day, b.docCount)
       } // TODO compared to month aggregation; who should do the date parsing?
     }
