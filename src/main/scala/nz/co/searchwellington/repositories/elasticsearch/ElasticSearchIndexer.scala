@@ -255,7 +255,7 @@ class ElasticSearchIndexer @Autowired()(val showBrokenDecisionService: ShowBroke
       order(HistogramOrder.KEY_DESC).
       minDocCount(1)
 
-    val request = search(Index) query composeQueryFor(query, loggedInUser) limit 0 aggregations Seq(dateDay)
+    val request = search(Index) query composeQueryFor(query, loggedInUser) size 0 aggregations Seq(dateDay)
 
     client.execute(request).map { r =>
       val dateAgg = r.result.aggs.result[DateHistogram](AcceptedDate)
@@ -278,7 +278,7 @@ class ElasticSearchIndexer @Autowired()(val showBrokenDecisionService: ShowBroke
 
     val dateMonth = dateHistogramAgg(Date, Date).calendarInterval(DateHistogramInterval.Month).order(HistogramOrder.KEY_DESC).minDocCount(1)
 
-    val request = search(Index) query composeQueryFor(query, loggedInUser) limit 0 aggregations Seq(dateMonth)
+    val request = search(Index) query composeQueryFor(query, loggedInUser) size 0 aggregations Seq(dateMonth)
 
     client.execute(request).map { r =>
       val dateAgg = r.result.aggs.result[DateHistogram](Date)
@@ -301,7 +301,7 @@ class ElasticSearchIndexer @Autowired()(val showBrokenDecisionService: ShowBroke
       startSpan()
 
     val aggs = Seq(termsAgg(aggName, aggName) size size.getOrElse(Integer.MAX_VALUE))
-    val request = (search(Index) query composeQueryFor(query, loggedInUser)) limit 0 aggregations aggs
+    val request = (search(Index) query composeQueryFor(query, loggedInUser)) size 0 aggregations aggs
     client.execute(request).map { r =>
       val terms = r.result.aggs.result[Terms](aggName)
       span.setAttribute("buckets", terms.buckets.size)
