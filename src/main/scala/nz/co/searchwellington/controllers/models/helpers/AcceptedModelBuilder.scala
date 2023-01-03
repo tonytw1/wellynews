@@ -67,8 +67,7 @@ import scala.jdk.CollectionConverters._
       acceptedDatesAggregation <- contentRetrievalService.getAcceptedDates(loggedInUser)
     } yield {
       acceptedDatesAggregation.take(14).map {
-        case (dateString, count) =>
-          val day = java.time.LocalDate.parse(dateString)
+        case (day, count) =>
           AcceptedDay(day, count)
       }
     }

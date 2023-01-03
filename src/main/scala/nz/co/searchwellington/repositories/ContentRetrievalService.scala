@@ -263,7 +263,7 @@ import scala.concurrent.{ExecutionContext, Future}
     toFrontendResourcesWithTotalCount(elasticSearchIndexer.getResources(websitesByKeyword, order = byRelevance, loggedInUser = loggedInUser), loggedInUser)
   }
 
-  def getAcceptedDates(loggedInUser: Option[User])(implicit ec: ExecutionContext, currentSpan: Span): Future[Seq[(String, Long)]] = {
+  def getAcceptedDates(loggedInUser: Option[User])(implicit ec: ExecutionContext, currentSpan: Span): Future[Seq[(java.time.LocalDate, Long)]] = {
       elasticSearchIndexer.createdAcceptedDateAggregationFor(allNewsitems, loggedInUser)
   }
 

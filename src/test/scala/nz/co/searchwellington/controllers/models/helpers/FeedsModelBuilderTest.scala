@@ -9,8 +9,7 @@ import nz.co.searchwellington.repositories.ContentRetrievalService
 import nz.co.searchwellington.urls.UrlBuilder
 import org.joda.time.DateTime
 import org.junit.jupiter.api.Assertions.{assertEquals, assertTrue}
-import org.junit.jupiter.api.Test
-import org.junit.jupiter.api.BeforeEach
+import org.junit.jupiter.api.{BeforeEach, Test}
 import org.mockito.Mockito.{mock, when}
 import org.springframework.mock.web.MockHttpServletRequest
 import reactivemongo.api.bson.BSONObjectID
@@ -61,7 +60,7 @@ class FeedsModelBuilderTest extends ReasonableWaits with ContentFields {
     when(suggestedFeeditemsService.getSuggestionFeednewsitems(6, Some(adminUser))).thenReturn(Future.successful(suggestedFeeditems))
     val currentFeeds = Seq(FrontendFeed(id = UUID.randomUUID().toString))
     when(contentRetrievalService.getAllFeedsOrderedByLatestItemDate(Some(adminUser))).thenReturn(Future.successful(currentFeeds))
-    val acceptDaysAggregation = Seq(("2022-06-01", 12L),("2022-05-31", 7L))
+    val acceptDaysAggregation = Seq((java.time.LocalDate.of(2022, 6, 1), 12L), (java.time.LocalDate.of(2022, 5, 31), 7L))
     when(contentRetrievalService.getAcceptedDates(loggedInUser = Some(adminUser))).thenReturn(Future.successful(acceptDaysAggregation))
 
     val discoveredFeeditems = Seq(

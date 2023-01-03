@@ -217,7 +217,7 @@ class ElasticSearchIndexerTest extends IndexableResource with ReasonableWaits {
 
     def acceptedCounts = Await.result(elasticSearchIndexer.createdAcceptedDateAggregationFor(allNewsitems, loggedInUser = Some(loggedInUser)), TenSeconds)
 
-    eventually(timeout(TenSeconds), interval(TenMilliSeconds))(acceptedCounts.headOption.map(_._1) mustBe Some("2022-06-02"))
+    eventually(timeout(TenSeconds), interval(TenMilliSeconds))(acceptedCounts.headOption.map(_._1) mustBe Some(java.time.LocalDate.of(2022, 6, 2)))
     eventually(timeout(TenSeconds), interval(TenMilliSeconds))(acceptedCounts.headOption.map(_._2) mustBe Some(2L))
   }
 

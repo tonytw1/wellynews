@@ -2,7 +2,6 @@ package nz.co.searchwellington.controllers.models.helpers
 
 import io.opentelemetry.api.trace.Span
 import nz.co.searchwellington.ReasonableWaits
-import nz.co.searchwellington.controllers.admin.AdminUrlBuilder
 import nz.co.searchwellington.feeds.suggesteditems.SuggestedFeeditemsService
 import nz.co.searchwellington.filters.RequestPath
 import nz.co.searchwellington.model.frontend.Action
@@ -14,7 +13,6 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
 import org.springframework.ui.ModelMap
 
-import java.time.LocalDate
 import javax.servlet.http.HttpServletRequest
 import scala.concurrent.{ExecutionContext, Future}
 import scala.jdk.CollectionConverters._
@@ -93,8 +91,7 @@ import scala.jdk.CollectionConverters._
       acceptedDatesAggregation <- contentRetrievalService.getAcceptedDates(loggedInUser)
     } yield {
       acceptedDatesAggregation.take(14).map {
-        case (dateString, count) =>
-          val day = LocalDate.parse(dateString)
+        case (day, count) =>
           AcceptedDay(day, count)
       }
     }

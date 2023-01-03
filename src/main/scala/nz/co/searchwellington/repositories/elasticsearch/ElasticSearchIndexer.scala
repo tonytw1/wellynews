@@ -243,7 +243,7 @@ class ElasticSearchIndexer @Autowired()(val showBrokenDecisionService: ShowBroke
     getAggregationFor(allResources, "type", loggedInUser)
   }
 
-  def createdAcceptedDateAggregationFor(query: ResourceQuery, loggedInUser: Option[User])(implicit ec: ExecutionContext, currentSpan: Span): Future[Seq[(String, Long)]] = {
+  def createdAcceptedDateAggregationFor(query: ResourceQuery, loggedInUser: Option[User])(implicit ec: ExecutionContext, currentSpan: Span): Future[Seq[(java.time.LocalDate, Long)]] = {
     val span = SpanFactory.childOf(currentSpan, "createdAcceptedDateAggregationFor").
       setAttribute("database", "elasticsearch").
       setAttribute("query", query.toString).
@@ -262,10 +262,10 @@ class ElasticSearchIndexer @Autowired()(val showBrokenDecisionService: ShowBroke
       span.setAttribute("buckets", dateAgg.buckets.size)
       span.end()
       dateAgg.buckets.map { b =>
-        val startOfDay: DateTime = ISODateTimeFormat.dateTimeParser().parseDateTime(b.date)
-        val day: String = startOfDay.toLocalDate().toString("YYYY-MM-dd")
+        val localDate = ISODateTimeFormat.dateTimeParser().parseDateTime(b.date).toLocalDate
+        val day = java.time.LocalDate.of(localDate.getYear, localDate.getMonthOfYear, localDate.getDayOfMonth)
         (day, b.docCount)
-      } // TODO compared to month aggregation; who should do the date parsing?
+      }
     }
   }
 
