@@ -192,7 +192,6 @@ class RequestFilterTest extends ReasonableWaits {
   def testShouldPopulateWebsiteResourceByUrlStub(): Unit = {
     val request = new MockHttpServletRequest
     request.setRequestURI("/edit/edit")
-    request.setParameter("resource", "a-publisher")
     when(mongoRepository.getWebsiteByUrlwords("a-publisher")).thenReturn(Future.successful(Some(capitalTimesPublisher)))
 
     val attributes = Await.result(filter.loadAttributesOntoRequest(request), TenSeconds)

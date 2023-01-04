@@ -25,8 +25,7 @@ class PublisherPageAttributeSetter @Autowired()(mongoRepository: MongoRepository
         mongoRepository.getWebsiteByUrlwords(publisherUrlWords).map { maybeWebsite =>
           maybeWebsite.map { publisher =>
             Map(
-              "publisher" -> publisher,
-              "resource" -> publisher
+              "publisher" -> publisher
             )
           }.getOrElse {
             Map.empty
@@ -41,3 +40,4 @@ class PublisherPageAttributeSetter @Autowired()(mongoRepository: MongoRepository
   }
 
 }
+

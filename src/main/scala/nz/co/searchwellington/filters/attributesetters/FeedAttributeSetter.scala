@@ -21,14 +21,13 @@ class FeedAttributeSetter @Autowired()(mongoRepository: MongoRepository) extends
     if (contentMatcher.matches) {
       val urlWords = contentMatcher.group(1)
       mongoRepository.getFeedByUrlwords(urlWords).map { maybeFeed =>
-          maybeFeed.map { feed =>
-            Map (
-              FeedAttributeSetter.FEED_ATTRIBUTE -> feed,
-              "resource" -> feed
-            )
-          }.getOrElse{
-            Map.empty
-          }
+        maybeFeed.map { feed =>
+          Map(
+            FeedAttributeSetter.FEED_ATTRIBUTE -> feed
+          )
+        }.getOrElse {
+          Map.empty
+        }
       }
     } else {
       Future.successful(Map.empty)
