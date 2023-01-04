@@ -2,6 +2,7 @@ package nz.co.searchwellington.filters.attributesetters
 
 import nz.co.searchwellington.ReasonableWaits
 import nz.co.searchwellington.filters.RequestPath
+import nz.co.searchwellington.filters.attributesetters.FeedAttributeSetter.FEED_ATTRIBUTE
 import nz.co.searchwellington.repositories.mongo.MongoRepository
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
@@ -23,7 +24,7 @@ class FeedAttributeSetter @Autowired()(mongoRepository: MongoRepository) extends
       mongoRepository.getFeedByUrlwords(urlWords).map { maybeFeed =>
         maybeFeed.map { feed =>
           Map(
-            FeedAttributeSetter.FEED_ATTRIBUTE -> feed
+            FEED_ATTRIBUTE -> feed
           )
         }.getOrElse {
           Map.empty

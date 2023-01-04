@@ -4,6 +4,7 @@ import io.opentelemetry.api.trace.Span
 import nz.co.searchwellington.ReasonableWaits
 import nz.co.searchwellington.controllers.RssUrlBuilder
 import nz.co.searchwellington.controllers.admin.AdminUrlBuilder
+import nz.co.searchwellington.filters.attributesetters.PublisherPageAttributeSetter
 import nz.co.searchwellington.model.frontend.{Action, FrontendResource, FrontendWebsite}
 import nz.co.searchwellington.model.mappers.FrontendResourceMapper
 import nz.co.searchwellington.model.{PublisherArchiveLink, Tag, User, Website}
@@ -31,7 +32,7 @@ import scala.jdk.CollectionConverters._
 
   def isValid(request: HttpServletRequest): Boolean = {
     val tag = request.getAttribute("tag").asInstanceOf[Tag]
-    val publisher = request.getAttribute("publisher").asInstanceOf[Website]
+    val publisher = request.getAttribute(PublisherPageAttributeSetter.PUBLISHER_ATTRIBUTE).asInstanceOf[Website]
     val isPublisherPage = publisher != null && tag == null
     isPublisherPage
   }
@@ -90,12 +91,12 @@ import scala.jdk.CollectionConverters._
       }
     }
 
-    val publisher = request.getAttribute("publisher").asInstanceOf[Website]
+    val publisher = request.getAttribute(PublisherPageAttributeSetter.PUBLISHER_ATTRIBUTE).asInstanceOf[Website]
     populatePublisherPageModelAndView(publisher)
   }
 
   def populateExtraModelContent(request: HttpServletRequest, loggedInUser: Option[User])(implicit ec: ExecutionContext, currentSpan: Span): Future[ModelMap] = {
-    val publisher = request.getAttribute("publisher").asInstanceOf[Website]
+    val publisher = request.getAttribute(PublisherPageAttributeSetter.PUBLISHER_ATTRIBUTE).asInstanceOf[Website]
 
     val eventualPublisherWatchlist = contentRetrievalService.getPublisherWatchlist(publisher, loggedInUser)
     val eventualPublisherArchiveLinks = contentRetrievalService.getPublisherArchiveMonths(publisher, loggedInUser)

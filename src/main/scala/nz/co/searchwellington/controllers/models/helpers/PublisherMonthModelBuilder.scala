@@ -3,6 +3,7 @@ package nz.co.searchwellington.controllers.models.helpers
 import io.opentelemetry.api.trace.Span
 import nz.co.searchwellington.controllers.RssUrlBuilder
 import nz.co.searchwellington.filters.RequestPath
+import nz.co.searchwellington.filters.attributesetters.PublisherPageAttributeSetter
 import nz.co.searchwellington.model.mappers.FrontendResourceMapper
 import nz.co.searchwellington.model.{PublisherArchiveLink, User, Website}
 import nz.co.searchwellington.repositories.ContentRetrievalService
@@ -22,13 +23,13 @@ import scala.jdk.CollectionConverters._
   extends ModelBuilder with ArchiveMonth with ArchiveMonths {
 
   override def isValid(request: HttpServletRequest): Boolean = {
-    Option(request.getAttribute("publisher").asInstanceOf[Website]).flatMap { publisher =>
+    Option(request.getAttribute(PublisherPageAttributeSetter.PUBLISHER_ATTRIBUTE).asInstanceOf[Website]).flatMap { publisher =>
       parseMonth(publisher, RequestPath.getPathFrom(request))
     }.nonEmpty
   }
 
   override def populateContentModel(request: HttpServletRequest, loggedInUser: Option[User])(implicit ec: ExecutionContext, currentSpan: Span): Future[Option[ModelMap]] = {
-    Option(request.getAttribute("publisher").asInstanceOf[Website]).map { publisher =>
+    Option(request.getAttribute(PublisherPageAttributeSetter.PUBLISHER_ATTRIBUTE).asInstanceOf[Website]).map { publisher =>
       parseMonth(publisher, RequestPath.getPathFrom(request)).map { month =>
         for {
           eventualFrontendWebsite <- frontendResourceMapper.createFrontendResourceFrom(publisher, loggedInUser)
@@ -52,7 +53,7 @@ import scala.jdk.CollectionConverters._
   }
 
   override def populateExtraModelContent(request: HttpServletRequest, loggedInUser: Option[User])(implicit ec: ExecutionContext, currentSpan: Span): Future[ModelMap] = {
-    Option(request.getAttribute("publisher").asInstanceOf[Website]).flatMap { publisher =>
+    Option(request.getAttribute(PublisherPageAttributeSetter.PUBLISHER_ATTRIBUTE).asInstanceOf[Website]).flatMap { publisher =>
       parseMonth(publisher, RequestPath.getPathFrom(request)).map { month =>
         val eventualPublisherArchiveMonths = contentRetrievalService.getPublisherArchiveMonths(publisher, loggedInUser)
         val eventualFrontendPublisher = frontendResourceMapper.createFrontendResourceFrom(publisher, loggedInUser)

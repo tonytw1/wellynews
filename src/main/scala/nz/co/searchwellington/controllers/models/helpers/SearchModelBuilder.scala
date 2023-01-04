@@ -2,6 +2,7 @@ package nz.co.searchwellington.controllers.models.helpers
 
 import io.opentelemetry.api.trace.Span
 import nz.co.searchwellington.ReasonableWaits
+import nz.co.searchwellington.filters.attributesetters.PublisherPageAttributeSetter
 import nz.co.searchwellington.model.mappers.FrontendResourceMapper
 import nz.co.searchwellington.model.{Tag, User, Website}
 import nz.co.searchwellington.repositories.ContentRetrievalService
@@ -33,7 +34,7 @@ import scala.jdk.CollectionConverters._
     val startIndex = getStartIndex(page, MAX_NEWSITEMS)
 
     val maybeTag = Option(request.getAttribute("tag")).map(_.asInstanceOf[Tag])
-    val maybePublisher = Option(request.getAttribute("publisher").asInstanceOf[Website])
+    val maybePublisher = Option(request.getAttribute(PublisherPageAttributeSetter.PUBLISHER_ATTRIBUTE).asInstanceOf[Website])
     log.info("Search parameters: ", keywords, maybeTag.map(_.name), maybePublisher.map(_.title))
 
     val eventualMaybeFrontendPublisher = maybePublisher.map { publisher =>

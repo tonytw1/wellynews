@@ -2,6 +2,7 @@ package nz.co.searchwellington.filters.attributesetters
 
 import nz.co.searchwellington.ReasonableWaits
 import nz.co.searchwellington.filters.RequestPath
+import nz.co.searchwellington.filters.attributesetters.PublisherPageAttributeSetter.PUBLISHER_ATTRIBUTE
 import nz.co.searchwellington.repositories.mongo.MongoRepository
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
@@ -25,7 +26,7 @@ class PublisherPageAttributeSetter @Autowired()(mongoRepository: MongoRepository
         mongoRepository.getWebsiteByUrlwords(publisherUrlWords).map { maybeWebsite =>
           maybeWebsite.map { publisher =>
             Map(
-              "publisher" -> publisher
+              PUBLISHER_ATTRIBUTE -> publisher
             )
           }.getOrElse {
             Map.empty
@@ -39,5 +40,9 @@ class PublisherPageAttributeSetter @Autowired()(mongoRepository: MongoRepository
     }
   }
 
+}
+
+object PublisherPageAttributeSetter {
+  val PUBLISHER_ATTRIBUTE = "publisher"
 }
 

@@ -3,6 +3,7 @@ package nz.co.searchwellington.controllers.models.helpers
 import io.opentelemetry.api.trace.Span
 import nz.co.searchwellington.ReasonableWaits
 import nz.co.searchwellington.controllers.RssUrlBuilder
+import nz.co.searchwellington.filters.attributesetters.PublisherPageAttributeSetter
 import nz.co.searchwellington.model.mappers.FrontendResourceMapper
 import nz.co.searchwellington.model.{Tag, User, Website}
 import nz.co.searchwellington.repositories.ContentRetrievalService
@@ -23,13 +24,13 @@ import scala.jdk.CollectionConverters._
 
   def isValid(request: HttpServletRequest): Boolean = {
     val tag = request.getAttribute("tag").asInstanceOf[Tag]
-    val publisher = request.getAttribute("publisher").asInstanceOf[Website]
+    val publisher = request.getAttribute(PublisherPageAttributeSetter.PUBLISHER_ATTRIBUTE).asInstanceOf[Website]
     publisher != null && tag != null
   }
 
   def populateContentModel(request: HttpServletRequest, loggedInUser: Option[User])(implicit ec: ExecutionContext, currentSpan: Span): Future[Option[ModelMap]] = {
     val tag = request.getAttribute("tag").asInstanceOf[Tag]
-    val publisher = request.getAttribute("publisher").asInstanceOf[Website]
+    val publisher = request.getAttribute(PublisherPageAttributeSetter.PUBLISHER_ATTRIBUTE).asInstanceOf[Website]
     val eventualFrontendPublisher = frontendResourceMapper.createFrontendResourceFrom(publisher)
     for {
       frontendPublisher <- eventualFrontendPublisher
@@ -53,7 +54,7 @@ import scala.jdk.CollectionConverters._
   }
 
   def populateExtraModelContent(request: HttpServletRequest, loggedInUser: Option[User])(implicit ec: ExecutionContext, currentSpan: Span): Future[ModelMap] = {
-    val publisher = request.getAttribute("publisher").asInstanceOf[Website]
+    val publisher = request.getAttribute(PublisherPageAttributeSetter.PUBLISHER_ATTRIBUTE).asInstanceOf[Website]
     for {
       relatedTags <- relatedTagsService.getRelatedTagsForPublisher(publisher, loggedInUser)
       latestNewsitems <- latestNewsitems(loggedInUser)
