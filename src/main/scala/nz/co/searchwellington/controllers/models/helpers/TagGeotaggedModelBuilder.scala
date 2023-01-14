@@ -27,8 +27,8 @@ import scala.jdk.CollectionConverters._
   def isValid(request: HttpServletRequest): Boolean = {
     val tags = request.getAttribute(TagPageAttributeSetter.TAGS).asInstanceOf[Seq[Tag]]
     val isSingleTagPage = tags != null && tags.size == 1
-    val hasCommentPath = RequestPath.getPathFrom(request).matches("^(.*?)/geotagged(/(rss|json))?$")
-    isSingleTagPage && hasCommentPath
+    val hasGeotaggedSuffix = RequestPath.getPathFrom(request).matches("^(.*?)/geotagged(/(rss|json))?$")
+    isSingleTagPage && hasGeotaggedSuffix
   }
 
   def populateContentModel(request: HttpServletRequest, loggedInUser: Option[User])(implicit ec: ExecutionContext, currentSpan: Span): Future[Option[ModelMap]] = {
