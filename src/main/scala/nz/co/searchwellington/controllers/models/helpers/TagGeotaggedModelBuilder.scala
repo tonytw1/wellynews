@@ -4,6 +4,7 @@ import io.opentelemetry.api.trace.Span
 import nz.co.searchwellington.ReasonableWaits
 import nz.co.searchwellington.controllers.RssUrlBuilder
 import nz.co.searchwellington.filters.RequestPath
+import nz.co.searchwellington.filters.attributesetters.TagPageAttributeSetter
 import nz.co.searchwellington.model.{Tag, User}
 import nz.co.searchwellington.repositories.ContentRetrievalService
 import nz.co.searchwellington.urls.UrlBuilder
@@ -24,7 +25,7 @@ import scala.jdk.CollectionConverters._
   private val log = LogFactory.getLog(classOf[TagGeotaggedModelBuilder])
 
   def isValid(request: HttpServletRequest): Boolean = {
-    val tags = request.getAttribute("tags").asInstanceOf[Seq[Tag]]
+    val tags = request.getAttribute(TagPageAttributeSetter.TAGS).asInstanceOf[Seq[Tag]]
     val isSingleTagPage = tags != null && tags.size == 1
     val hasCommentPath = RequestPath.getPathFrom(request).matches("^(.*?)/geotagged(/(rss|json))?$")
     isSingleTagPage && hasCommentPath
@@ -50,7 +51,7 @@ import scala.jdk.CollectionConverters._
     }
 
     log.debug("Building tag geotagged page model")
-    val tags = request.getAttribute("tags").asInstanceOf[Seq[Tag]]
+    val tags = request.getAttribute(TagPageAttributeSetter.TAGS).asInstanceOf[Seq[Tag]]
     val tag = tags.head
     populateTagCommentPageModelAndView(tag)
   }

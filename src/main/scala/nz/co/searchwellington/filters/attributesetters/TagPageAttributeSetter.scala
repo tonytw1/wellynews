@@ -32,8 +32,8 @@ class TagPageAttributeSetter @Autowired()(var tagDAO: TagDAO, mongoRepository: M
         mongoRepository.getTagByUrlWords(tagUrlWords).map { maybeTag =>
           maybeTag.map { tag =>
             Map(
-              "tag" -> tag, // TODO deprecate
-              "tags" -> Seq(tag)
+              TagPageAttributeSetter.TAG -> tag, // TODO deprecate
+              TagPageAttributeSetter.TAGS -> Seq(tag)
             )
           }.getOrElse {
             Map.empty
@@ -53,4 +53,5 @@ class TagPageAttributeSetter @Autowired()(var tagDAO: TagDAO, mongoRepository: M
 
 object TagPageAttributeSetter {
   val TAG = "tag"
+  val TAGS = "tags"
 }

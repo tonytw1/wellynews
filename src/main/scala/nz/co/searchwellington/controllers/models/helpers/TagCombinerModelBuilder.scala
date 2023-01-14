@@ -3,6 +3,7 @@ package nz.co.searchwellington.controllers.models.helpers
 import io.opentelemetry.api.trace.Span
 import nz.co.searchwellington.ReasonableWaits
 import nz.co.searchwellington.controllers.RssUrlBuilder
+import nz.co.searchwellington.filters.attributesetters.TagPageAttributeSetter
 import nz.co.searchwellington.model.{Resource, Tag, User}
 import nz.co.searchwellington.repositories.ContentRetrievalService
 import nz.co.searchwellington.tagging.RelatedTagsService
@@ -22,7 +23,7 @@ import scala.jdk.CollectionConverters._
   extends ModelBuilder with CommonSizes with ReasonableWaits {
 
   def isValid(request: HttpServletRequest): Boolean = {
-    val tags = request.getAttribute("tags").asInstanceOf[Seq[Tag]]
+    val tags = request.getAttribute(TagPageAttributeSetter.TAGS).asInstanceOf[Seq[Tag]]
     val isTagCombinerPage = tags != null && tags.size == 2
     isTagCombinerPage
   }
@@ -56,12 +57,12 @@ import scala.jdk.CollectionConverters._
       }
     }
 
-    val tags = request.getAttribute("tags").asInstanceOf[Seq[Tag]]
+    val tags = request.getAttribute(TagPageAttributeSetter.TAGS).asInstanceOf[Seq[Tag]]
     populateTagCombinerModelAndView(tags)
   }
 
   def populateExtraModelContent(request: HttpServletRequest, loggedInUser: Option[User])(implicit ec: ExecutionContext, currentSpan: Span): Future[ModelMap] = {
-    val tags = request.getAttribute("tags").asInstanceOf[Seq[Tag]]
+    val tags = request.getAttribute(TagPageAttributeSetter.TAGS).asInstanceOf[Seq[Tag]]
     if (tags.nonEmpty) {
       val tag = tags.head
       val eventualTaggedWebsites = contentRetrievalService.getTaggedWebsites(tag, MAX_WEBSITES, loggedInUser = loggedInUser)
