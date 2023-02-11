@@ -3,7 +3,6 @@ package nz.co.searchwellington.controllers.admin
 import io.opentelemetry.api.trace.Span
 import nz.co.searchwellington.ReasonableWaits
 import nz.co.searchwellington.controllers.{CommonModelObjectsService, LoggedInUserFilter, RequiringLoggedInUser}
-import nz.co.searchwellington.filters.attributesetters.TagPageAttributeSetter
 import nz.co.searchwellington.model.frontend.FrontendResource
 import nz.co.searchwellington.model.mappers.FrontendResourceMapper
 import nz.co.searchwellington.model.{Resource, Tag, User}
@@ -16,7 +15,7 @@ import org.apache.commons.logging.LogFactory
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.core.annotation.Order
 import org.springframework.stereotype.Controller
-import org.springframework.web.bind.annotation.{RequestMapping, RequestMethod}
+import org.springframework.web.bind.annotation.{PathVariable, RequestMapping, RequestMethod}
 import org.springframework.web.servlet.ModelAndView
 
 import javax.servlet.http.{HttpServletRequest, HttpServletResponse}
@@ -27,22 +26,23 @@ import scala.jdk.CollectionConverters._
 @Order(5)
 @Controller
 class AutoTagController @Autowired()(mongoRepository: MongoRepository,
-                                                 impliedTagService: ImpliedTagService,
-                                                 contentUpdateService: ContentUpdateService,
-                                                 val loggedInUserFilter: LoggedInUserFilter,
-                                                 handTaggingService: HandTaggingService,
-                                                 val contentRetrievalService: ContentRetrievalService,
-                                                 frontendResourceMapper: FrontendResourceMapper)
+                                     impliedTagService: ImpliedTagService,
+                                     contentUpdateService: ContentUpdateService,
+                                     val loggedInUserFilter: LoggedInUserFilter,
+                                     handTaggingService: HandTaggingService,
+                                     val contentRetrievalService: ContentRetrievalService,
+                                     frontendResourceMapper: FrontendResourceMapper)
   extends ReasonableWaits with CommonModelObjectsService with RequiringLoggedInUser with Errors {
 
   private val log = LogFactory.getLog(classOf[AutoTagController])
 
-  @RequestMapping(value = Array("/*/autotag"), method = Array(RequestMethod.GET))
-  def prompt(request: HttpServletRequest, response: HttpServletResponse): ModelAndView = {
+  @RequestMapping(value = Array("/{tagUrlWords}/autotag"), method = Array(RequestMethod.GET))
+  def prompt(@PathVariable tagUrlWords: String, response: HttpServletResponse): ModelAndView = {
     implicit val currentSpan: Span = Span.current()
 
     def prompt(adminUser: User): ModelAndView = {
-      Option(request.getAttribute(TagPageAttributeSetter.TAG).asInstanceOf[Tag]).fold {
+      val maybeTag = Await.result(mongoRepository.getTagByUrlWords(tagUrlWords), TenSeconds)
+      maybeTag.fold {
         response.setStatus(HttpServletResponse.SC_NOT_FOUND)
         NotFound
 
@@ -61,11 +61,11 @@ class AutoTagController @Autowired()(mongoRepository: MongoRepository,
     requiringAdminUser(prompt)
   }
 
-  @RequestMapping(value = Array("/*/autotag"), method = Array(RequestMethod.POST))
-  def apply(request: HttpServletRequest, response: HttpServletResponse): ModelAndView = {
+  @RequestMapping(value = Array("/{tagUrlWords}/autotag"), method = Array(RequestMethod.POST))
+  def apply(@PathVariable tagUrlWords: String, request: HttpServletRequest, response: HttpServletResponse): ModelAndView = {
     def apply(adminUser: User): ModelAndView = {
-      Option(request.getAttribute(TagPageAttributeSetter.TAG).asInstanceOf[Tag]).map { tag =>
-
+      val maybeTag = Await.result(mongoRepository.getTagByUrlWords(tagUrlWords), TenSeconds)
+      maybeTag.map { tag =>
         def applyTagTo(resource: Resource, tag: Tag): Future[Resource] = {
           // There is no need to apply a tag if it is already implied on this resource (by a publisher or feed tag)
           // TODO The autotagging on acceptances isn't making the same check?
@@ -99,7 +99,7 @@ class AutoTagController @Autowired()(mongoRepository: MongoRepository,
           addObject("tag", tag).
           addObject("resources_to_tag", frontendResults.asJava)
 
-      }.getOrElse{
+      }.getOrElse {
         response.setStatus(HttpServletResponse.SC_NOT_FOUND)
         NotFound
       }
