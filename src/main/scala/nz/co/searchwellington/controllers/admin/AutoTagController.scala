@@ -14,6 +14,7 @@ import nz.co.searchwellington.tagging.ImpliedTagService
 import nz.co.searchwellington.views.Errors
 import org.apache.commons.logging.LogFactory
 import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.core.annotation.Order
 import org.springframework.stereotype.Controller
 import org.springframework.web.bind.annotation.{RequestMapping, RequestMethod}
 import org.springframework.web.servlet.ModelAndView
@@ -23,7 +24,9 @@ import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.{Await, Future}
 import scala.jdk.CollectionConverters._
 
-@Controller class AutoTagController @Autowired()(mongoRepository: MongoRepository,
+@Order(5)
+@Controller
+class AutoTagController @Autowired()(mongoRepository: MongoRepository,
                                                  impliedTagService: ImpliedTagService,
                                                  contentUpdateService: ContentUpdateService,
                                                  val loggedInUserFilter: LoggedInUserFilter,
