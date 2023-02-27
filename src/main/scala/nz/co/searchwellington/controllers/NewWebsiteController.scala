@@ -5,8 +5,8 @@ import nz.co.searchwellington.controllers.submission.EndUserInputs
 import nz.co.searchwellington.forms.NewWebsite
 import nz.co.searchwellington.model.{UrlWordsGenerator, Website}
 import nz.co.searchwellington.modification.ContentUpdateService
-import nz.co.searchwellington.repositories.TagDAO
 import nz.co.searchwellington.repositories.mongo.MongoRepository
+import nz.co.searchwellington.repositories.{HandTaggingService, TagDAO}
 import nz.co.searchwellington.urls.{UrlBuilder, UrlCleaner}
 import org.apache.commons.logging.LogFactory
 import org.joda.time.DateTime
@@ -30,6 +30,7 @@ class NewWebsiteController @Autowired()(contentUpdateService: ContentUpdateServi
                                         val anonUserService: AnonUserService,
                                         val urlCleaner: UrlCleaner,
                                         tagDAO: TagDAO,
+                                        handTaggingService: HandTaggingService,
                                         loggedInUserFilter: LoggedInUserFilter) extends ReasonableWaits
   with EnsuredSubmitter with EndUserInputs {
 
@@ -39,38 +40,43 @@ class NewWebsiteController @Autowired()(contentUpdateService: ContentUpdateServi
   def prompt(): ModelAndView = renderNewWebsiteForm(new NewWebsite())
 
   @PostMapping(Array("/new-website"))
-  def submit(@Valid @ModelAttribute("formObject") newWebsite: NewWebsite, result: BindingResult, request: HttpServletRequest): ModelAndView = {
+  def submit(@Valid @ModelAttribute("formObject") formObject: NewWebsite, result: BindingResult, request: HttpServletRequest): ModelAndView = {
     val loggedInUser = loggedInUserFilter.getLoggedInUser
 
     if (result.hasErrors) {
       log.warn("New website submission has errors: " + result)
-      renderNewWebsiteForm(newWebsite)
+      renderNewWebsiteForm(formObject)
 
     } else {
-      log.info("Got valid new website submission: " + newWebsite)
-      val url = cleanUrl(newWebsite.getUrl).toOption.get.toExternalForm  // TODO error handling
-
-      val w = Website(title = processTitle(newWebsite.getTitle),
-        page = url,
-        date = Some(DateTime.now.toDate),
-      )
-      val urlWords = urlWordsGenerator.makeUrlWordsFor(w)
+      log.info("Got valid new website submission: " + formObject)
+      val url = cleanUrl(formObject.getUrl).toOption.get.toExternalForm // TODO error handling
+      val title = processTitle(formObject.getTitle)
+      val urlWords = urlWordsGenerator.makeUrlWordsFromName(title)
+      val submittedTags = Await.result(tagDAO.loadTagsById(formObject.getTags.asScala.toSeq), TenSeconds).toSet
 
       val eventualModelAndView = mongoRepository.getWebsiteByUrlwords(urlWords).flatMap { maybeExistingWebsite =>
         maybeExistingWebsite.fold {
-          val website = w.copy(url_words = Some(urlWords))
           val submittingUser = ensuredSubmittingUser(loggedInUser)
-          val withSubmittingUser = website.copy(owner = Some(submittingUser._id), held = submissionShouldBeHeld(Some(submittingUser)))
-          contentUpdateService.create(withSubmittingUser).map { _ =>
-            log.info("Created website: " + withSubmittingUser)
+          val withTags = handTaggingService.setUsersTagging(submittingUser, submittedTags.map(_._id),
+            Website(title = title,
+              page = url,
+              date = Some(DateTime.now.toDate),
+              url_words = Some(urlWords),
+              owner = Some(submittingUser._id),
+              held = submissionShouldBeHeld(Some(submittingUser)))
+          ).asInstanceOf[Website]
+
+          contentUpdateService.create(withTags).map { _ =>
+            log.info("Created website: " + withTags)
             setSignedInUser(request, submittingUser)
-            new ModelAndView(new RedirectView(urlBuilder.getPublisherUrl(withSubmittingUser)))
+            new ModelAndView(new RedirectView(urlBuilder.getPublisherUrl(withTags)))
           }
+
         } { existing =>
           log.warn("Found existing website site same url words: " + existing.title)
           result.addError(new ObjectError("newWebsite",
             "Found existing website with same name"))
-          Future.successful(renderNewWebsiteForm(newWebsite))
+          Future.successful(renderNewWebsiteForm(formObject))
         }
       }
 
