@@ -191,8 +191,7 @@
         <dependency>
             <groupId>io.lemonlabs</groupId>
             <artifactId>scala-uri_2.13</artifactId>
-            <version>4.0.2</version>
-            <type>jar</type>
+            <version>4.0.3</version>
         </dependency>
 
         <dependency>
