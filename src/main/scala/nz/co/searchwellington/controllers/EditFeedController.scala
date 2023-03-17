@@ -99,8 +99,8 @@ class EditFeedController @Autowired()(contentUpdateService: ContentUpdateService
           contentUpdateService.update(withUpdatedTags).map { result =>
             if (result) {
               log.info("Updated feed: " + withUpdatedTags)
-              val tagsHaveChanged = f.resource_tags.map(_.tag_id) == withUpdatedTags.resource_tags.map(_.tag_id).toSet
-              val publisherHasChanged = f.publisher == updatedFeed.publisher
+              val tagsHaveChanged = f.resource_tags.map(_.tag_id) != withUpdatedTags.resource_tags.map(_.tag_id).toSet
+              val publisherHasChanged = f.publisher != updatedFeed.publisher
               if (tagsHaveChanged || publisherHasChanged) {
                 // TODO is the feed url has changed we will need to update Whakaoko
                 // This would be easier of the feed knew it's whakaoko subscription id
