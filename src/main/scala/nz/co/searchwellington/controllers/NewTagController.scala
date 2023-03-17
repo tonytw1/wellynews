@@ -57,7 +57,7 @@ class NewTagController @Autowired()(mongoRepository: MongoRepository,
           new ModelAndView(new RedirectView(urlBuilder.getTagUrl(withUrlWords)))
 
         } else {
-          result.addError(new ObjectError("displayName", "Found existing feed with same URL words"))
+          result.addError(new ObjectError("displayName", "Found existing tag with same URL words"))
           renderForm(newTag)
         }
 
