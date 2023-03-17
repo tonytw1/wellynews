@@ -1,5 +1,7 @@
 package nz.co.searchwellington.repositories.elasticsearch
 
+import com.sksamuel.elastic4s.Response
+import com.sksamuel.elastic4s.requests.bulk.BulkResponse
 import nz.co.searchwellington.ReasonableWaits
 import nz.co.searchwellington.model.geo.LatLong
 import nz.co.searchwellington.model.{Feed, Newsitem, Resource, Watchlist, Website}
@@ -24,10 +26,10 @@ import scala.concurrent.{Await, ExecutionContext, Future}
   private val BATCH_COMMIT_SIZE = 100
 
   def index(resource: Resource)(implicit ec: ExecutionContext): Future[Boolean] = {
-    toIndexable(resource).map { toIndex =>
+    toIndexable(resource).flatMap { toIndex =>
       elasticSearchIndexer.updateMultipleContentItems(Seq(toIndex))
-    }.map { r =>
-      r.isCompleted
+    }.map { r: Response[BulkResponse] =>
+      !r.result.hasFailures
     }
   }
 
