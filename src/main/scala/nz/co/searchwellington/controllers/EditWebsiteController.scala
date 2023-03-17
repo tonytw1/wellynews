@@ -93,18 +93,20 @@ class EditWebsiteController @Autowired()(contentUpdateService: ContentUpdateServ
             held = submissionShouldBeHeld(loggedInUser)
           )
 
-          val tags = Await.result(tagDAO.loadTagsById(editWebsite.getTags.asScala.toSeq), TenSeconds).toSet
-          val withNewTags = handTaggingService.setUsersTagging(loggedInUser, tags.map(_._id), updated)
+          val requestedTags = Await.result(tagDAO.loadTagsById(editWebsite.getTags.asScala.toSeq), TenSeconds).toSet
+          val withUpdatedTags = handTaggingService.setUsersTagging(loggedInUser, requestedTags.map(_._id), updated)
 
-          contentUpdateService.update(withNewTags)
-          log.info("Updated website: " + withNewTags)
-
-          val tagsHaveChanged = tags.map(_._id) == withNewTags.resource_tags.map(_.tag_id).toSet
-          if (tagsHaveChanged) {
-            mongoRepository.getResourcesIdsForPublisher(w).flatMap { taggedResourceIds =>
-              elasticSearchIndexRebuildService.reindexResources(taggedResourceIds, totalResources = taggedResourceIds.size)
-            }.map { i =>
-              log.info("Reindexed publisher resources after publisher tag change: " + i)
+          contentUpdateService.update(withUpdatedTags).map { result =>
+            if (result) {
+              log.info("Updated website: " + withUpdatedTags)
+              val tagsHaveChanged = w.resource_tags.map(_.tag_id) == withUpdatedTags.resource_tags.map(_.tag_id).toSet
+              if (tagsHaveChanged) {
+                mongoRepository.getResourcesIdsForPublisher(w).flatMap { taggedResourceIds =>
+                  elasticSearchIndexRebuildService.reindexResources(taggedResourceIds, totalResources = taggedResourceIds.size)
+                }.map { i =>
+                  log.info("Reindexed publisher resources after publisher tag change: " + i)
+                }
+              }
             }
           }
 
