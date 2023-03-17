@@ -5,6 +5,7 @@ import nz.co.searchwellington.controllers.submission.EndUserInputs
 import nz.co.searchwellington.forms.EditFeed
 import nz.co.searchwellington.model.{Feed, UrlWordsGenerator, User}
 import nz.co.searchwellington.modification.ContentUpdateService
+import nz.co.searchwellington.repositories.elasticsearch.ElasticSearchIndexRebuildService
 import nz.co.searchwellington.repositories.mongo.MongoRepository
 import nz.co.searchwellington.repositories.{HandTaggingService, TagDAO}
 import nz.co.searchwellington.urls.{UrlBuilder, UrlCleaner}
@@ -30,6 +31,7 @@ class EditFeedController @Autowired()(contentUpdateService: ContentUpdateService
                                       val loggedInUserFilter: LoggedInUserFilter,
                                       tagDAO: TagDAO,
                                       handTaggingService: HandTaggingService,
+                                      elasticSearchIndexRebuildService: ElasticSearchIndexRebuildService,
                                       val urlCleaner: UrlCleaner) extends ReasonableWaits with AcceptancePolicyOptions
   with Errors with RequiringLoggedInUser with EndUserInputs with HeldSubmissions {
 
@@ -91,16 +93,25 @@ class EditFeedController @Autowired()(contentUpdateService: ContentUpdateService
             held = submissionShouldBeHeld(loggedInUser)
           )
           val updatedFeed = uf.copy(url_words = Some(urlWordsGenerator.makeUrlWordsFor(uf, publisher)))
-          val submittedTags = Await.result(tagDAO.loadTagsById(formObject.getTags.asScala.toSeq), TenSeconds).toSet
+          val requestedTags = Await.result(tagDAO.loadTagsById(formObject.getTags.asScala.toSeq), TenSeconds).toSet
+          val withUpdatedTags = handTaggingService.setUsersTagging(loggedInUser, requestedTags.map(_._id), updatedFeed)
 
-          val updated = handTaggingService.setUsersTagging(loggedInUser, submittedTags.map(_._id), updatedFeed)
-
-          contentUpdateService.update(updated)
-          log.info("Updated feed: " + updated)
-
-          // TODO is the feed url has changed we will need to update Whakaoko
-          // This would be easier of the feed knew it's whakaoko subscription id
-
+          contentUpdateService.update(withUpdatedTags).map { result =>
+            if (result) {
+              log.info("Updated feed: " + withUpdatedTags)
+              val tagsHaveChanged = f.resource_tags.map(_.tag_id) == withUpdatedTags.resource_tags.map(_.tag_id).toSet
+              val publisherHasChanged = f.publisher == updatedFeed.publisher
+              if (tagsHaveChanged || publisherHasChanged) {
+                // TODO is the feed url has changed we will need to update Whakaoko
+                // This would be easier of the feed knew it's whakaoko subscription id
+                mongoRepository.getResourcesIdsAcceptedFrom(f).flatMap { taggedResourceIds =>
+                  elasticSearchIndexRebuildService.reindexResources(taggedResourceIds, totalResources = taggedResourceIds.size)
+                }.map { i =>
+                  log.info("Reindexed feed newsitems after feed tag or publisher change: " + i)
+                }
+              }
+            }
+          }
           new ModelAndView(new RedirectView(urlBuilder.getFeedUrl(updatedFeed)))
         }
       }.getOrElse(NotFound)
