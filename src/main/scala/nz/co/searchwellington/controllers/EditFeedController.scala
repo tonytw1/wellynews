@@ -19,7 +19,7 @@ import org.springframework.web.servlet.ModelAndView
 import org.springframework.web.servlet.view.RedirectView
 
 import javax.validation.Valid
-import scala.concurrent.Await
+import scala.concurrent.{Await, Future}
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.jdk.CollectionConverters._
 
@@ -96,10 +96,11 @@ class EditFeedController @Autowired()(contentUpdateService: ContentUpdateService
           val requestedTags = Await.result(tagDAO.loadTagsById(formObject.getTags.asScala.toSeq), TenSeconds).toSet
           val withUpdatedTags = handTaggingService.setUsersTagging(loggedInUser, requestedTags.map(_._id), updatedFeed)
 
-          contentUpdateService.update(withUpdatedTags).map { result =>
+          contentUpdateService.update(withUpdatedTags).flatMap { result =>
+            log.info("Update result was: " + result)
             if (result) {
               log.info("Updated feed: " + withUpdatedTags)
-              val tagsHaveChanged = f.resource_tags.map(_.tag_id) != withUpdatedTags.resource_tags.map(_.tag_id).toSet
+              val tagsHaveChanged = f.resource_tags.map(_.tag_id).toSet != withUpdatedTags.resource_tags.map(_.tag_id).toSet
               val publisherHasChanged = f.publisher != updatedFeed.publisher
               if (tagsHaveChanged || publisherHasChanged) {
                 // TODO is the feed url has changed we will need to update Whakaoko
@@ -108,8 +109,13 @@ class EditFeedController @Autowired()(contentUpdateService: ContentUpdateService
                   elasticSearchIndexRebuildService.reindexResources(taggedResourceIds, totalResources = taggedResourceIds.size)
                 }.map { i =>
                   log.info("Reindexed feed newsitems after feed tag or publisher change: " + i)
+                  true
                 }
+              } else {
+                Future.successful(false)
               }
+            } else {
+              Future.successful(true)
             }
           }
           new ModelAndView(new RedirectView(urlBuilder.getFeedUrl(updatedFeed)))
