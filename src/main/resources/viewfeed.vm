@@ -21,7 +21,6 @@
             #end
             #if ($feed.acceptancePolicy)
                 <p>$feed.acceptancePolicy</p>
-                <p>This feed is read by this <a href="$adminUrlBuilder.getWhakaokoPreviewUrl($subscription)">Whakaoko subscription</a></p>
             #end
 		</ul>
 
@@ -37,6 +36,10 @@
             #else
                 <p>This feed is provided by a third party.</p>
             #end
+        #end
+
+        #if($subscription)
+            <p>This feed is read by this <a href="$adminUrlBuilder.getWhakaokoPreviewUrl($subscription)">Whakaoko subscription</a></p>
         #end
 
         <p>
