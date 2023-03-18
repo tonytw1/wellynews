@@ -12,7 +12,9 @@
         <scala.version>2.13.9</scala.version>
         <elastic4s.version>8.5.3</elastic4s.version>
         <jackson.version>2.13.4</jackson.version>
-        <playWsStandalone.version>2.0.8</playWsStandalone.version>
+        <playWsStandalone.version>2.1.10</playWsStandalone.version>
+        <!-- 2.6 is the last version of akka with a free licence; must not be increased above 2.6 -->
+        <akka.version>2.6.10</akka.version>
     </properties>
 
     <parent>
@@ -126,6 +128,18 @@
             <groupId>com.typesafe.play</groupId>
             <artifactId>play-ws-standalone-json_2.13</artifactId>
             <version>${playWsStandalone.version}</version>
+        </dependency>
+
+        <!-- explicit akka version so reactivemongo and standalone wsclient play nicely together -->
+        <dependency>
+            <groupId>com.typesafe.akka</groupId>
+            <artifactId>akka-actor_2.13</artifactId>
+            <version>${akka.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.typesafe.akka</groupId>
+            <artifactId>akka-stream_2.13</artifactId>
+            <version>${akka.version}</version>
         </dependency>
 
         <dependency>
