@@ -22,7 +22,7 @@
 		</center>
 		<br />
 		
-		<span class="wordlecredit">Word cloud by <a href="http://www.wordle.net/">Wordle</a></span>
+		<span class="wordlecredit">Word cloud by Wordle</span>
 		<br/>
 		<p>A number of large news organisations have begun providing <a href="http://www.guardian.co.uk/open-platform">APIs to their content</a>. 
 		These APIs allow content to be queried programmatically for use in mash ups and the like.</p>
