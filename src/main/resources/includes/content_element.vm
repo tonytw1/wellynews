@@ -89,7 +89,7 @@
             #if($item.taggingStatus)
                 <li class="tagged" rel="noindex"><a href="$urlBuilder.getLocalPageUrl($item)">$item.taggingStatus</a></li>
                 #foreach ($tag in $item.taggingsToShow)
-                    <li class="tagged"><a href="$urlBuilder.getTagUrl($tag)">$tag.name.toLowerCase()</a></li>
+                    <li class="tagged"><a href="$urlBuilder.getTagUrl($tag)">$urlWordsGenerator.makeUrlWordsForTag($tag)</a></li>
                 #end
             #end
 

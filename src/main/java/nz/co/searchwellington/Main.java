@@ -7,6 +7,7 @@ import nz.co.searchwellington.commentfeeds.detectors.GenericCommentFeedDetector;
 import nz.co.searchwellington.controllers.RssUrlBuilder;
 import nz.co.searchwellington.controllers.admin.AdminUrlBuilder;
 import nz.co.searchwellington.model.SiteInformation;
+import nz.co.searchwellington.model.UrlWordsGenerator;
 import nz.co.searchwellington.urls.UrlBuilder;
 import nz.co.searchwellington.utils.EscapeTools;
 import nz.co.searchwellington.views.ColumnSplitter;
@@ -103,6 +104,7 @@ public class Main {
             RssUrlBuilder rssUrlBuilder,
             SiteInformation siteInformation,
             UrlBuilder urlBuilder,
+            UrlWordsGenerator urlWordsGenerator,
             MapPinDeduplicator mapPinDeduplicator) {
         final VelocityViewResolver viewResolver = new VelocityViewResolver();
         viewResolver.setCache(true);
@@ -116,6 +118,7 @@ public class Main {
         attributes.put("rssUrlBuilder", rssUrlBuilder);
         attributes.put("siteInformation", siteInformation);
         attributes.put("urlBuilder", urlBuilder);
+        attributes.put("urlWordsGenerator", urlWordsGenerator);
         attributes.put("mapPinDeduplicator", mapPinDeduplicator);
         viewResolver.setAttributesMap(attributes);
         return viewResolver;
