@@ -1,8 +1,8 @@
 package nz.co.searchwellington.controllers
 
+import jakarta.servlet.http.HttpServletRequest
 import nz.co.searchwellington.model.User
 
-import javax.servlet.http.HttpServletRequest
 import scala.concurrent.ExecutionContext
 
 trait EnsuredSubmitter {

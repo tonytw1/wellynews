@@ -1,6 +1,6 @@
 package nz.co.searchwellington.signin
 
-import javax.servlet.http.{HttpServletRequest, HttpServletResponse}
+import jakarta.servlet.http.{HttpServletRequest, HttpServletResponse}
 import nz.co.searchwellington.ReasonableWaits
 import nz.co.searchwellington.model.User
 import nz.co.searchwellington.repositories.mongo.MongoRepository

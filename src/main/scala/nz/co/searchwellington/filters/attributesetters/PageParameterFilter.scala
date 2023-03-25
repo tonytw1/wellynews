@@ -1,8 +1,8 @@
 package nz.co.searchwellington.filters.attributesetters
 
+import jakarta.servlet.http.HttpServletRequest
 import org.springframework.stereotype.Component
 
-import javax.servlet.http.HttpServletRequest
 import scala.concurrent.Future
 
 @Component

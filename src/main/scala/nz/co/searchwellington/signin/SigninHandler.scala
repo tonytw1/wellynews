@@ -1,9 +1,8 @@
 package nz.co.searchwellington.signin
 
+import jakarta.servlet.http.{HttpServletRequest, HttpServletResponse}
 import nz.co.searchwellington.model.User
 import org.springframework.web.servlet.ModelAndView
-import javax.servlet.http.HttpServletRequest
-import javax.servlet.http.HttpServletResponse
 
 trait SigninHandler {
 

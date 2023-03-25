@@ -1,6 +1,7 @@
 package nz.co.searchwellington.controllers
 
 import io.opentelemetry.api.trace.Span
+import jakarta.servlet.http.HttpServletRequest
 import nz.co.searchwellington.ReasonableWaits
 import nz.co.searchwellington.controllers.models.helpers.CommonAttributesModelBuilder
 import nz.co.searchwellington.model.SiteInformation
@@ -13,7 +14,6 @@ import org.springframework.ui.ModelMap
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.servlet.ModelAndView
 
-import javax.servlet.http.HttpServletRequest
 import scala.concurrent.Await
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.jdk.CollectionConverters._

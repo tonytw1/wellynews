@@ -1,6 +1,7 @@
 package nz.co.searchwellington.signin
 
 import io.opentelemetry.api.trace.Span
+import jakarta.servlet.http.HttpServletRequest
 import nz.co.searchwellington.controllers.{CommonModelObjectsService, LoggedInUserFilter, UrlStack}
 import nz.co.searchwellington.repositories.ContentRetrievalService
 import org.springframework.beans.factory.annotation.Autowired
@@ -9,7 +10,6 @@ import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.servlet.ModelAndView
 import org.springframework.web.servlet.view.RedirectView
 
-import javax.servlet.http.HttpServletRequest
 import scala.concurrent.Await
 import scala.concurrent.ExecutionContext.Implicits.global
 

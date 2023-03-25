@@ -1,6 +1,6 @@
 package nz.co.searchwellington.filters;
 
-import javax.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletRequest;
 
 public class RequestPath {
 

@@ -1,5 +1,6 @@
 package nz.co.searchwellington.controllers
 
+import jakarta.servlet.http.HttpServletRequest
 import nz.co.searchwellington.ReasonableWaits
 import nz.co.searchwellington.controllers.submission.EndUserInputs
 import nz.co.searchwellington.forms.NewWatchlist
@@ -12,11 +13,10 @@ import org.joda.time.DateTime
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Controller
 import org.springframework.validation.{BindingResult, ObjectError}
-import org.springframework.web.bind.annotation.{GetMapping, ModelAttribute, PostMapping, RequestMapping, RequestMethod}
+import org.springframework.web.bind.annotation.{GetMapping, ModelAttribute, PostMapping}
 import org.springframework.web.servlet.ModelAndView
 import org.springframework.web.servlet.view.RedirectView
 
-import javax.servlet.http.HttpServletRequest
 import javax.validation.Valid
 import scala.concurrent.Await
 import scala.concurrent.ExecutionContext.Implicits.global

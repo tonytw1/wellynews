@@ -1,6 +1,7 @@
 package nz.co.searchwellington.controllers.admin
 
 import io.opentelemetry.api.trace.Span
+import jakarta.servlet.http.{HttpServletRequest, HttpServletResponse}
 import nz.co.searchwellington.ReasonableWaits
 import nz.co.searchwellington.controllers.{CommonModelObjectsService, LoggedInUserFilter, RequiringLoggedInUser}
 import nz.co.searchwellington.model.frontend.FrontendResource
@@ -18,7 +19,6 @@ import org.springframework.stereotype.Controller
 import org.springframework.web.bind.annotation.{PathVariable, RequestMapping, RequestMethod}
 import org.springframework.web.servlet.ModelAndView
 
-import javax.servlet.http.{HttpServletRequest, HttpServletResponse}
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.{Await, Future}
 import scala.jdk.CollectionConverters._

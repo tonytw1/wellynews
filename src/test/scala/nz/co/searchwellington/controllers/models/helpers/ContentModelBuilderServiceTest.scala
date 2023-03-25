@@ -5,23 +5,22 @@ import nz.co.searchwellington.ReasonableWaits
 import nz.co.searchwellington.controllers.models.ContentModelBuilderService
 import nz.co.searchwellington.model.User
 import nz.co.searchwellington.repositories.ContentRetrievalService
-import org.junit.jupiter.api.Assertions.assertEquals
+import org.junit.jupiter.api.Assertions.{assertEquals, assertTrue}
 import org.junit.jupiter.api.Test
-import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.{mock, when}
 import org.springframework.mock.web.{MockHttpServletRequest, MockHttpServletResponse}
 import org.springframework.ui.ModelMap
 import org.springframework.web.servlet.ModelAndView
-import uk.co.eelpieconsulting.common.views.ViewFactory
 import uk.co.eelpieconsulting.common.views.json.JsonView
 import uk.co.eelpieconsulting.common.views.rss.RssView
+import uk.co.eelpieconsulting.common.views.{EtagGenerator, ViewFactory}
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.{Await, Future}
 
 class ContentModelBuilderServiceTest extends ReasonableWaits {
 
-  private val viewFactory = mock(classOf[ViewFactory])
+  private val viewFactory = new ViewFactory(new EtagGenerator)
   private val contentRetrievalService = mock(classOf[ContentRetrievalService])
 
   private implicit val currentSpan: Span = Span.current()
@@ -111,10 +110,11 @@ class ContentModelBuilderServiceTest extends ReasonableWaits {
     when(validModelBuilder.isValid(request)).thenReturn(true)
     when(validModelBuilder.populateContentModel(request, None)).thenReturn(Future.successful(Some(validModel)))
 
-    val rssView = mock(classOf[RssView])
-    when(viewFactory.getRssView(any, any, any)).thenReturn(rssView)
     request.setRequestURI("/something/rss")
-    assertEquals(rssView, Await.result(contentModelBuilderService.buildModelAndView(request, response), TenSeconds).get.getView)
+
+    val view = Await.result(contentModelBuilderService.buildModelAndView(request, response), TenSeconds).get.getView
+
+    assertTrue(view.isInstanceOf[RssView])
   }
 
   @Test
@@ -122,11 +122,11 @@ class ContentModelBuilderServiceTest extends ReasonableWaits {
     when(invalidModelBuilder.isValid(request)).thenReturn(false)
     when(validModelBuilder.isValid(request)).thenReturn(true)
     when(validModelBuilder.populateContentModel(request, None)).thenReturn(Future.successful(Some(validModel)))
-
-    val jsonView = mock(classOf[JsonView])
-    when(viewFactory.getJsonView).thenReturn(jsonView)
     request.setRequestURI("/something/json")
-    assertEquals(jsonView, Await.result(contentModelBuilderService.buildModelAndView(request, response), TenSeconds).get.getView)
+
+    val view = Await.result(contentModelBuilderService.buildModelAndView(request, response), TenSeconds).get.getView
+
+    assertTrue(view.isInstanceOf[JsonView])
   }
 
 }

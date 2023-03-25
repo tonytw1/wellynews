@@ -1,5 +1,6 @@
 package nz.co.searchwellington.controllers
 
+import jakarta.servlet.http.HttpServletRequest
 import nz.co.searchwellington.ReasonableWaits
 import nz.co.searchwellington.model.{Resource, User}
 import nz.co.searchwellington.modification.ContentDeletionService
@@ -14,7 +15,6 @@ import org.springframework.web.bind.annotation.{PathVariable, RequestMapping}
 import org.springframework.web.servlet.ModelAndView
 import org.springframework.web.servlet.view.RedirectView
 
-import javax.servlet.http.HttpServletRequest
 import scala.concurrent.Await
 import scala.concurrent.ExecutionContext.Implicits.global
 

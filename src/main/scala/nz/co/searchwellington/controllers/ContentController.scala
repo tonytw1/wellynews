@@ -1,6 +1,7 @@
 package nz.co.searchwellington.controllers
 
 import io.opentelemetry.api.trace.Span
+import jakarta.servlet.http.{HttpServletRequest, HttpServletResponse}
 import nz.co.searchwellington.ReasonableWaits
 import nz.co.searchwellington.controllers.models.ContentModelBuilderServiceFactory
 import nz.co.searchwellington.filters.RequestFilter
@@ -13,7 +14,6 @@ import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.server.ResponseStatusException
 import org.springframework.web.servlet.ModelAndView
 
-import javax.servlet.http.{HttpServletRequest, HttpServletResponse}
 import scala.concurrent.{Await, ExecutionContext}
 
 @Order(6)

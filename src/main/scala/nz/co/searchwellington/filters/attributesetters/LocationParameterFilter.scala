@@ -1,5 +1,6 @@
 package nz.co.searchwellington.filters.attributesetters;
 
+import jakarta.servlet.http.HttpServletRequest
 import nz.co.searchwellington.filters.attributesetters.LocationParameterFilter.{LOCATION, RADIUS}
 import nz.co.searchwellington.geocoding.osm.{GeoCodeService, OsmIdParser}
 import org.apache.commons.logging.LogFactory
@@ -7,7 +8,6 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
 import uk.co.eelpieconsulting.common.geo.model.{LatLong, Place}
 
-import javax.servlet.http.HttpServletRequest
 import scala.concurrent.Future;
 
 @Component

@@ -1,6 +1,6 @@
 package nz.co.searchwellington.controllers
 
-import javax.servlet.http.HttpServletRequest
+import jakarta.servlet.http.HttpServletRequest
 import nz.co.searchwellington.filters.RequestPath
 import nz.co.searchwellington.urls.UrlBuilder
 import org.apache.commons.logging.LogFactory

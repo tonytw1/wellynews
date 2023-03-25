@@ -1,5 +1,6 @@
 package nz.co.searchwellington.filters.attributesetters
 
+import jakarta.servlet.http.HttpServletRequest
 import nz.co.searchwellington.ReasonableWaits
 import nz.co.searchwellington.filters.RequestPath
 import nz.co.searchwellington.filters.attributesetters.FeedAttributeSetter.FEED_ATTRIBUTE
@@ -8,7 +9,6 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
 
 import java.util.regex.Pattern
-import javax.servlet.http.HttpServletRequest
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 

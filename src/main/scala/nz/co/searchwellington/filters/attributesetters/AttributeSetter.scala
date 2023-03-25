@@ -1,6 +1,7 @@
 package nz.co.searchwellington.filters.attributesetters
 
-import javax.servlet.http.HttpServletRequest
+import jakarta.servlet.http.HttpServletRequest
+
 import scala.concurrent.Future
 
 trait AttributeSetter {
