@@ -1,6 +1,6 @@
 package nz.co.searchwellington.controllers
 
-import javax.validation.Valid
+import jakarta.validation.Valid
 import nz.co.searchwellington.ReasonableWaits
 import nz.co.searchwellington.forms.NewTag
 import nz.co.searchwellington.model.{Tag, UrlWordsGenerator, User}
@@ -10,7 +10,7 @@ import org.apache.commons.logging.LogFactory
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Controller
 import org.springframework.validation.{BindingResult, ObjectError}
-import org.springframework.web.bind.annotation.{GetMapping, ModelAttribute, PostMapping, RequestMapping, RequestMethod}
+import org.springframework.web.bind.annotation.{GetMapping, ModelAttribute, PostMapping}
 import org.springframework.web.servlet.ModelAndView
 import org.springframework.web.servlet.view.RedirectView
 
