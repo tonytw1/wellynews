@@ -1,5 +1,6 @@
 package nz.co.searchwellington.controllers
 
+import jakarta.servlet.http.HttpServletRequest
 import nz.co.searchwellington.ReasonableWaits
 import nz.co.searchwellington.controllers.submission.EndUserInputs
 import nz.co.searchwellington.forms.NewWebsite
@@ -17,7 +18,6 @@ import org.springframework.web.bind.annotation.{GetMapping, ModelAttribute, Post
 import org.springframework.web.servlet.ModelAndView
 import org.springframework.web.servlet.view.RedirectView
 
-import javax.servlet.http.HttpServletRequest
 import javax.validation.Valid
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.{Await, Future}

@@ -1,6 +1,7 @@
 package nz.co.searchwellington.controllers.admin
 
 import io.opentelemetry.api.trace.Span
+import jakarta.servlet.http.HttpServletRequest
 import nz.co.searchwellington.controllers.{LoggedInUserFilter, RequiringLoggedInUser}
 import nz.co.searchwellington.feeds.FeedReader
 import nz.co.searchwellington.filters.attributesetters.FeedAttributeSetter
@@ -14,7 +15,6 @@ import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.servlet.ModelAndView
 import org.springframework.web.servlet.view.RedirectView
 
-import javax.servlet.http.HttpServletRequest
 import scala.concurrent.ExecutionContext.Implicits.global
 
 @Controller class AdminFeedController @Autowired()(feedReader: FeedReader,

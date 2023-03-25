@@ -1,6 +1,7 @@
 package nz.co.searchwellington.controllers
 
 import com.google.common.base.Strings
+import jakarta.servlet.http.HttpServletRequest
 import nz.co.searchwellington.ReasonableWaits
 import nz.co.searchwellington.feeds.PlaceToGeocodeMapper
 import nz.co.searchwellington.geocoding.osm.OsmIdParser
@@ -16,9 +17,7 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
 import uk.co.eelpieconsulting.common.geo.model.OsmId
 
-import javax.servlet.http.HttpServletRequest
 import scala.jdk.CollectionConverters.CollectionHasAsScala
-
 @Component class SubmissionProcessingService @Autowired()(tagDAO: TagDAO,
                                                           tagVoteDAO: HandTaggingDAO,
                                                           osmIdParser: OsmIdParser, placeToGeocodeMapper: PlaceToGeocodeMapper,

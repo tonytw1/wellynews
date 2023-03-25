@@ -1,8 +1,7 @@
 package nz.co.searchwellington.controllers.admin
 
+import jakarta.servlet.http.HttpServletRequest
 import nz.co.searchwellington.ReasonableWaits
-
-import javax.servlet.http.HttpServletRequest
 import nz.co.searchwellington.controllers.{LoggedInUserFilter, RequiringLoggedInUser, UrlStack}
 import nz.co.searchwellington.model.User
 import nz.co.searchwellington.repositories.SuppressionDAO

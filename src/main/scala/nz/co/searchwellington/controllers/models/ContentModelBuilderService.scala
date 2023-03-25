@@ -1,6 +1,7 @@
 package nz.co.searchwellington.controllers.models
 
 import io.opentelemetry.api.trace.Span
+import jakarta.servlet.http.{HttpServletRequest, HttpServletResponse}
 import nz.co.searchwellington.controllers.CommonModelObjectsService
 import nz.co.searchwellington.controllers.models.helpers.{ContentFields, ModelBuilder}
 import nz.co.searchwellington.filters.RequestPath
@@ -12,7 +13,6 @@ import org.springframework.ui.ModelMap
 import org.springframework.web.servlet.ModelAndView
 import uk.co.eelpieconsulting.common.views.ViewFactory
 
-import javax.servlet.http.{HttpServletRequest, HttpServletResponse}
 import scala.concurrent.{ExecutionContext, Future}
 
 class ContentModelBuilderService(viewFactory: ViewFactory,

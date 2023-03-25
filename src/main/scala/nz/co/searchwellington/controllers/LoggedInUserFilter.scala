@@ -1,6 +1,6 @@
 package nz.co.searchwellington.controllers
 
-import javax.servlet.http.HttpServletRequest
+import jakarta.servlet.http.HttpServletRequest
 import nz.co.searchwellington.model.User
 import org.apache.commons.logging.LogFactory
 import org.springframework.beans.factory.annotation.Autowired

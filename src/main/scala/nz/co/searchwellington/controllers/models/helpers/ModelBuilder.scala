@@ -1,13 +1,13 @@
 package nz.co.searchwellington.controllers.models.helpers
 
+import io.opentelemetry.api.trace.Span
+import jakarta.servlet.http.HttpServletRequest
 import nz.co.searchwellington.controllers.CommonModelObjectsService
 import nz.co.searchwellington.model.User
 import nz.co.searchwellington.repositories.ContentRetrievalService
 import org.springframework.ui.ModelMap
 
-import javax.servlet.http.HttpServletRequest
 import scala.concurrent.{ExecutionContext, Future}
-import io.opentelemetry.api.trace.Span
 
 trait ModelBuilder extends ContentFields with CommonModelObjectsService {
 

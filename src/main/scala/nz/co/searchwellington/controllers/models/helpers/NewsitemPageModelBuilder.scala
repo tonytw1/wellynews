@@ -1,6 +1,7 @@
 package nz.co.searchwellington.controllers.models.helpers
 
 import io.opentelemetry.api.trace.Span
+import jakarta.servlet.http.HttpServletRequest
 import nz.co.searchwellington.ReasonableWaits
 import nz.co.searchwellington.filters.RequestPath
 import nz.co.searchwellington.model.User
@@ -14,7 +15,6 @@ import org.springframework.stereotype.Component
 import org.springframework.ui.ModelMap
 
 import java.util.regex.Pattern
-import javax.servlet.http.HttpServletRequest
 import scala.concurrent.{ExecutionContext, Future}
 import scala.jdk.CollectionConverters._
 

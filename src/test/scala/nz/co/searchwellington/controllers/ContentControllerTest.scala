@@ -1,6 +1,7 @@
 package nz.co.searchwellington.controllers
 
 import io.opentelemetry.api.trace.Span
+import jakarta.servlet.http.{HttpServletRequest, HttpServletResponse}
 import nz.co.searchwellington.controllers.models.{ContentModelBuilderService, ContentModelBuilderServiceFactory}
 import nz.co.searchwellington.filters.RequestFilter
 import org.junit.jupiter.api.Assertions.{assertEquals, assertFalse, assertTrue, fail}
@@ -11,7 +12,6 @@ import org.springframework.util.AntPathMatcher
 import org.springframework.web.server.ResponseStatusException
 import org.springframework.web.servlet.ModelAndView
 
-import javax.servlet.http.{HttpServletRequest, HttpServletResponse}
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 import scala.jdk.CollectionConverters._
@@ -55,7 +55,7 @@ class ContentControllerTest {
       fail()
     } catch {
       case r: ResponseStatusException =>
-        assertEquals(HttpStatus.NOT_FOUND, r.getStatus)
+        assertEquals(HttpStatus.NOT_FOUND, r.getStatusCode)
       case _: Throwable =>
         fail()
     }

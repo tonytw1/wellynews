@@ -1,5 +1,6 @@
 package nz.co.searchwellington.controllers
 
+import jakarta.servlet.http.{HttpServletRequest, HttpServletResponse}
 import nz.co.searchwellington.ReasonableWaits
 import nz.co.searchwellington.controllers.submission.GeotagParsing
 import nz.co.searchwellington.forms.EditTag
@@ -20,7 +21,6 @@ import org.springframework.web.servlet.ModelAndView
 import org.springframework.web.servlet.view.RedirectView
 import reactivemongo.api.bson.BSONObjectID
 
-import javax.servlet.http.{HttpServletRequest, HttpServletResponse}
 import javax.validation.Valid
 import scala.concurrent.Await
 import scala.concurrent.ExecutionContext.Implicits.global

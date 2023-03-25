@@ -1,11 +1,11 @@
 package nz.co.searchwellington.filters
 
+import jakarta.servlet.http.HttpServletRequest
 import nz.co.searchwellington.filters.attributesetters._
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.context.annotation.{Scope, ScopedProxyMode}
 import org.springframework.stereotype.Component
 
-import javax.servlet.http.HttpServletRequest
 import scala.concurrent.{ExecutionContext, Future}
 
 @Component("requestFilter")

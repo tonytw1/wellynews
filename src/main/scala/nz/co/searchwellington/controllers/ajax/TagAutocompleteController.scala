@@ -1,5 +1,6 @@
 package nz.co.searchwellington.controllers.ajax
 
+import jakarta.servlet.http.{HttpServletRequest, HttpServletResponse}
 import nz.co.searchwellington.ReasonableWaits
 import nz.co.searchwellington.controllers.LoggedInUserFilter
 import nz.co.searchwellington.model.User
@@ -11,9 +12,8 @@ import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.servlet.ModelAndView
 import uk.co.eelpieconsulting.common.views.ViewFactory
 
-import javax.servlet.http.{HttpServletRequest, HttpServletResponse}
-import scala.concurrent.Future
 import scala.concurrent.ExecutionContext.Implicits.global
+import scala.concurrent.Future
 
 @Controller class TagAutocompleteController @Autowired()(val loggedInUserFilter: LoggedInUserFilter,
                                                          val viewFactory: ViewFactory,

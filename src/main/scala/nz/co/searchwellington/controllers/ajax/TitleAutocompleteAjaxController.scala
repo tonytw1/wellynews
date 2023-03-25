@@ -1,13 +1,14 @@
 package nz.co.searchwellington.controllers.ajax
 
 import io.opentelemetry.api.trace.Span
+import jakarta.servlet.http.HttpServletResponse
 import nz.co.searchwellington.ReasonableWaits
 import nz.co.searchwellington.controllers.LoggedInUserFilter
 import nz.co.searchwellington.htmlparsing.TitleExtractor
 import nz.co.searchwellington.http.WSHttpFetcher
 import nz.co.searchwellington.repositories.elasticsearch.PublisherGuessingService
-import org.apache.commons.text.StringEscapeUtils
 import org.apache.commons.logging.LogFactory
+import org.apache.commons.text.StringEscapeUtils
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Controller
 import org.springframework.web.bind.annotation.{GetMapping, RequestParam}
@@ -15,7 +16,6 @@ import org.springframework.web.servlet.ModelAndView
 import uk.co.eelpieconsulting.common.views.ViewFactory
 
 import java.net.URL
-import javax.servlet.http.HttpServletResponse
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.{Await, Future}
 import scala.util.Try

@@ -1,10 +1,10 @@
 package nz.co.searchwellington.controllers.models.helpers
 
+import jakarta.servlet.http.HttpServletRequest
 import nz.co.searchwellington.filters.attributesetters.PageParameterFilter
 import nz.co.searchwellington.model.PaginationLink
 import org.springframework.ui.ModelMap
 
-import javax.servlet.http.HttpServletRequest
 import scala.jdk.CollectionConverters._
 
 trait Pagination {
