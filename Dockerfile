@@ -8,7 +8,7 @@ RUN /opt/java/openjdk/bin/keytool -import -alias Thawte_RSA_CA_2018 -keystore /o
 
 RUN echo "networkaddress.cache.ttl=60" >> /opt/java/openjdk/conf/security/java.security
 
-COPY honeycomb/honeycomb-opentelemetry-javaagent-1.3.0.jar /opt/honeycomb-opentelemetry-javaagent-1.3.0.jar
+COPY honeycomb/honeycomb-opentelemetry-javaagent-1.4.2.jar /opt/honeycomb-opentelemetry-javaagent-1.4.2.jar
 
-CMD ["java", "-XshowSettings:vm", "-XX:+PrintCommandLineFlags", "-XX:MaxRAMPercentage=75", "-javaagent:/opt/honeycomb-opentelemetry-javaagent-1.3.0.jar", "-jar","/opt/wellynews/wellynews-0.0.1-SNAPSHOT.jar", "--spring.config.location=/opt/wellynews/conf/wellynews.properties"]
+CMD ["java", "-XshowSettings:vm", "-XX:+PrintCommandLineFlags", "-XX:MaxRAMPercentage=75", "-javaagent:/opt/honeycomb-opentelemetry-javaagent-1.4.2.jar", "-jar","/opt/wellynews/wellynews-0.0.1-SNAPSHOT.jar", "--spring.config.location=/opt/wellynews/conf/wellynews.properties"]
 
