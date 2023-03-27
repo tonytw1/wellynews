@@ -16,9 +16,9 @@ import org.junit.jupiter.api.Test
 import org.scalatest.concurrent.Eventually.{eventually, interval, _}
 import org.scalatest.matchers.must.Matchers.convertToAnyMustWrapper
 
-import java.util.UUID
+import java.util.{Optional, UUID}
 import scala.concurrent.ExecutionContext.Implicits.global
-import scala.concurrent.duration.{Duration, SECONDS}
+import scala.concurrent.duration.{Duration, MILLISECONDS, SECONDS}
 import scala.concurrent.{Await, Future}
 
 object ElasticSearchIndexerTest {
@@ -35,8 +35,11 @@ object ElasticSearchIndexerTest {
   val taggingReturnsOfficerService = new TaggingReturnsOfficerService(new HandTaggingDAO(mongoRepository), mongoRepository)
   val indexTagsService = new IndexTagsService(taggingReturnsOfficerService)
 
-  val elasticSearchIndexer = new ElasticSearchIndexer(showBrokenDecisionService, osmIdParser, s"http://$elasticHost:9200",
-    ElasticSearchIndexerTest.databaseAndIndexName)
+  val elasticSearchIndexer = new ElasticSearchIndexer(showBrokenDecisionService,
+    osmIdParser,
+    s"http://$elasticHost:9200",
+    ElasticSearchIndexerTest.databaseAndIndexName,
+    Optional.of(Duration(10, MILLISECONDS)))    // Make updates appear in results faster for less test lag
 }
 
 class ElasticSearchIndexerTest extends IndexableResource with ReasonableWaits {
@@ -68,14 +71,17 @@ class ElasticSearchIndexerTest extends IndexableResource with ReasonableWaits {
     indexResources(Seq(newsitem, website, feed))
 
     def newsitems = queryForResources(allNewsitems)
+
     eventually(timeout(TenSeconds), interval(TenMilliSeconds), newsitems.nonEmpty)
     assertTrue(newsitems.forall(i => i.`type` == "N"))
 
     def websites = queryForResources(ResourceQuery(`type` = Some(Set("W"))))
+
     eventually(timeout(TenSeconds), interval(TenMilliSeconds), websites.nonEmpty)
     assertTrue(websites.forall(i => i.`type` == "W"))
 
     def feeds = queryForResources(ResourceQuery(`type` = Some(Set("F"))))
+
     eventually(timeout(TenSeconds), interval(TenMilliSeconds), feeds.nonEmpty)
     assertTrue(feeds.forall(i => i.`type` == "F"))
   }
@@ -175,6 +181,7 @@ class ElasticSearchIndexerTest extends IndexableResource with ReasonableWaits {
     indexResources(Seq(publisher, publishersFeed))
 
     val publisherFeedsQuery = ResourceQuery(`type` = Some(Set("F")), publisher = Some(publisher))
+
     def publisherFeeds = queryForResources(publisherFeedsQuery)
 
     eventually(timeout(TenSeconds), interval(TenMilliSeconds))(publisherFeeds.nonEmpty mustBe true)
@@ -209,7 +216,7 @@ class ElasticSearchIndexerTest extends IndexableResource with ReasonableWaits {
       accepted = Some(new DateTime(2022, 6, 2, 11, 23, 5).toDate))
     Await.result(mongoRepository.saveResource(acceptedNewsitem), TenSeconds)
     val anotherAcceptedNewsitem = Newsitem(date = Some(new DateTime(2022, 6, 2, 0, 0, 0).toDate),
-        accepted = Some(new DateTime(2022, 6, 2, 17, 23, 5).toDate)
+      accepted = Some(new DateTime(2022, 6, 2, 17, 23, 5).toDate)
     )
     Await.result(mongoRepository.saveResource(anotherAcceptedNewsitem), TenSeconds)
 
@@ -244,7 +251,7 @@ class ElasticSearchIndexerTest extends IndexableResource with ReasonableWaits {
     val geotagged = Newsitem(
       title = "Geotagged " + UUID.randomUUID().toString,
       date = Some(new DateTime(2019, 3, 10, 0, 0, 0).toDate),
-      geocode  = Some(wellingtonCentralLibrary)
+      geocode = Some(wellingtonCentralLibrary)
     )
     Await.result(mongoRepository.saveResource(geotagged), TenSeconds)
 
@@ -254,6 +261,7 @@ class ElasticSearchIndexerTest extends IndexableResource with ReasonableWaits {
     def geocodedNewsitems = {
       Await.result(elasticSearchIndexer.getResources(ResourceQuery(`type` = Some(Set("N")), geocoded = Some(true)), loggedInUser = Some(loggedInUser)), TenSeconds)
     }
+
     eventually(timeout(TenSeconds), interval(TenMilliSeconds))(geocodedNewsitems._1.map(_._id).contains(geotagged._id) mustBe true)
     val roundTrippedGeocode = geocodedNewsitems._1.head.geocode
     assertEquals(Some(wellingtonCentralLibrary), roundTrippedGeocode)
@@ -314,6 +322,7 @@ class ElasticSearchIndexerTest extends IndexableResource with ReasonableWaits {
     indexResources(Seq(website, newsitem, watchlist, feed))
 
     def typeCounts = Await.result(elasticSearchIndexer.getTypeCounts(Some(loggedInUser)), TenSeconds).toMap
+
     def typesFound = typeCounts.keys.toSet
 
     eventually(timeout(TenSeconds), interval(TenMilliSeconds))(Set("W", "N", "F", "L").equals(typesFound) mustBe true)
@@ -336,6 +345,7 @@ class ElasticSearchIndexerTest extends IndexableResource with ReasonableWaits {
     indexResources(Seq(fooWebsite, barWebsite, fooNewsitem))
 
     def fooResources = queryForResources(ResourceQuery(hostname = Some("foo.local")))
+
     def barResources = queryForResources(ResourceQuery(hostname = Some("bar.local")))
 
     eventually(timeout(TenSeconds), interval(TenMilliSeconds))(fooResources.contains(fooWebsite) mustBe true)

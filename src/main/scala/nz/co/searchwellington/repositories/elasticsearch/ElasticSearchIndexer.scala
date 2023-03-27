@@ -24,13 +24,17 @@ import org.springframework.beans.factory.annotation.{Autowired, Value}
 import org.springframework.stereotype.Component
 import reactivemongo.api.bson.BSONObjectID
 
+import java.util.Optional
+import scala.concurrent.duration.Duration
 import scala.concurrent.{Await, ExecutionContext, Future}
 
 @Component
 class ElasticSearchIndexer @Autowired()(val showBrokenDecisionService: ShowBrokenDecisionService,
                                         val osmIdParser: OsmIdParser,
                                         @Value("${elasticsearch.url}") elasticsearchUrl: String,
-                                        @Value("${elasticsearch.index}") elasticsearchIndex: String) extends ElasticFields with ModeratedQueries with ReasonableWaits {
+                                        @Value("${elasticsearch.index}") elasticsearchIndex: String,
+                                        refreshInterval: Optional[Duration]
+                                       ) extends ElasticFields with ModeratedQueries with ReasonableWaits {
 
   def byDateDescending(request: SearchRequest): SearchRequest = request sortByFieldDesc Date
 
@@ -67,7 +71,7 @@ class ElasticSearchIndexer @Autowired()(val showBrokenDecisionService: ShowBroke
     def createIndexes(client: ElasticClient): Unit = {
       try {
         val eventualCreateIndexResult = client.execute {
-          createIndex(Index).mapping(properties(
+          val createIndexRequest = createIndex(Index).mapping(properties(
             textField(Title),
             keywordField(TitleSort),
             keywordField(Type),
@@ -90,6 +94,12 @@ class ElasticSearchIndexer @Autowired()(val showBrokenDecisionService: ShowBroke
               keywordField("osmId")
             ))
           ))
+
+          if (refreshInterval.isPresent) {
+            createIndexRequest.refreshInterval(refreshInterval.get)
+          } else {
+            createIndexRequest
+          }
         }
 
         val result = Await.result(eventualCreateIndexResult, OneMinute)
@@ -156,16 +166,16 @@ class ElasticSearchIndexer @Autowired()(val showBrokenDecisionService: ShowBroke
         resource.last_changed.map(lc => LastChanged -> new DateTime(lc)),
         indexResource.hostname.map(u => Hostname -> u),
         accepted.map(a => AcceptedDate -> new DateTime(a)),
-        indexResource.geocode.map ( g => {
+        indexResource.geocode.map { geocode =>
           val geotagVoteFields = Seq(
-            g.address.map("address" -> _),
+            geocode.address.map("address" -> _),
             latLong.map(ll => LatLong -> Map("lat" -> ll.getLatitude, "lon" -> ll.getLongitude)),
-            g.osmId.map { osmId =>
+            geocode.osmId.map { osmId =>
               "osmId" -> (osmId.id.toString + "/" + osmId.`type`)
             }
           )
           GeotagVote -> geotagVoteFields.flatten.toMap
-        })
+        }
       )
       indexInto(Index).fields(fields.flatten) id resource._id.stringify
     }
