@@ -11,8 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
 import org.springframework.web.servlet.ModelAndView
 import org.springframework.web.servlet.view.RedirectView
-import twitter4j.TwitterException
-import twitter4j.auth.{AccessToken, RequestToken}
+import twitter4j.{AccessToken, RequestToken, TwitterException}
 
 import scala.collection.mutable
 import scala.concurrent.Await
@@ -31,8 +30,7 @@ import scala.concurrent.ExecutionContext.Implicits.global
         val callbackUrl = urlBuilder.getTwitterCallbackUrl
         log.info("Getting request token with callback url: " + callbackUrl)
 
-        val twitterApi = twitterApiFactory.getTwitterApi
-        val requestToken = twitterApi.getOAuthRequestToken(callbackUrl)
+        val requestToken = twitterApiFactory.oauthAuthentication.getOAuthRequestToken(callbackUrl)
 
         log.info("Got request token: " + requestToken.getToken)
         tokens.put(requestToken.getToken, requestToken)
@@ -61,7 +59,7 @@ import scala.concurrent.ExecutionContext.Implicits.global
           log.debug("Found stored request token: " + requestToken)
           try {
             log.debug("Exchanging request token for access token")
-            Option(twitterApiFactory.getTwitterApi.getOAuthAccessToken(requestToken, verifier)).flatMap { accessToken =>
+            Option(twitterApiFactory.oauthAuthentication.getOAuthAccessToken(requestToken, verifier)).flatMap { accessToken =>
               log.debug("Got access token: '" + accessToken.getToken + "', '" + accessToken.getTokenSecret + "'")
               tokens.remove(requestToken.getToken)
               log.info("Using twitter access token to lookup twitter user details")
@@ -109,26 +107,26 @@ import scala.concurrent.ExecutionContext.Implicits.global
   }
 
   override def decorateUserWithExternalSigninIdentifier(user: User, externalIdentifier: Any): User = {
-      externalIdentifier match {
-        case twitterUserId: Long =>
-          if (user.twitterid.isEmpty) {
-            user.copy(twitterid = Some(twitterUserId.toInt)) // TODO persistance should be Long
-            // val twitterScreenName: String = twitterUser.getScreenName()
-            //if (userDAO.getUserByProfileName(twitterScreenName) == null) {
-            // user.setProfilename(twitterScreenName) TODO
-            //}
-          } else {
-            user
-          }
-        case _ =>
+    externalIdentifier match {
+      case twitterUserId: Long =>
+        if (user.twitterid.isEmpty) {
+          user.copy(twitterid = Some(twitterUserId.toInt)) // TODO persistance should be Long
+          // val twitterScreenName: String = twitterUser.getScreenName()
+          //if (userDAO.getUserByProfileName(twitterScreenName) == null) {
+          // user.setProfilename(twitterScreenName) TODO
+          //}
+        } else {
           user
+        }
+      case _ =>
+        user
     }
   }
 
-  private def getTwitterUserCredentials(accessToken: AccessToken): Option[twitter4j.User] = {
+  private def getTwitterUserCredentials(accessToken: AccessToken): Option[twitter4j.v1.User] = {
     try {
-      val twitterApi = twitterApiFactory.getOauthedTwitterApiForAccessToken(accessToken.getToken, accessToken.getTokenSecret)
-      Some(twitterApi.verifyCredentials)
+      val twitterApi = twitterApiFactory.getOauthedTwitterApiForAccessToken(accessToken)
+      Some(twitterApi.v1.users().verifyCredentials())
     } catch {
       case e: TwitterException =>
         log.warn("Failed up obtain twitter user details due to Twitter exception: " + e.getMessage)
