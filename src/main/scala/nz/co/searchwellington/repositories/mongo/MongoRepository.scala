@@ -66,30 +66,24 @@ class MongoRepository @Autowired()(@Value("${mongo.uri}") mongoUri: String) exte
     snapshotCollection.create(failsIfExists = false)
 
     log.info("Ensuring mongo indexes")
-    val resourceByTypeAndUrlWords = Index(Seq("type" -> IndexType.Ascending, "url_words" -> IndexType.Ascending), name = Some("type_with_url_words"), unique = false)
-    val resourceByUrl = Index(Seq("page" -> IndexType.Ascending), name = Some("page"), unique = false)
-    val resourceById = Index(Seq("id" -> IndexType.Ascending), name = Some("id"), unique = true)
-    val requiredResourceIndexes = Seq(resourceByTypeAndUrlWords, resourceByUrl, resourceById)
+    val resourceByTypeAndUrlWords = (resourceCollection, Index(Seq("type" -> IndexType.Ascending, "url_words" -> IndexType.Ascending), name = Some("type_with_url_words"), unique = false))
+    val resourceByUrl = (resourceCollection, Index(Seq("page" -> IndexType.Ascending), name = Some("page"), unique = false))
+    val resourceById = (resourceCollection, Index(Seq("id" -> IndexType.Ascending), name = Some("id"), unique = true))
+    val suppressedUrls = (suppressionCollection, Index(Seq("url" -> IndexType.Ascending), name = Some("url"), unique = false))
+    val discoveredFeedsSeen = (discoveredFeedCollection, Index(Seq("seen" -> IndexType.Descending), name = Some("seen"), unique = false))
+    val snapshotByUrl = (snapshotCollection, Index(Seq("url" -> IndexType.Ascending), name = Some("url"), unique = true))
 
-    requiredResourceIndexes.foreach { requiredIndex =>
-      if (Await.result(resourceCollection.indexesManager.ensure(requiredIndex), OneMinute)) {
-        log.info("Created missing index " + requiredIndex.name)
+    val requiredIndexes = (Seq(resourceByTypeAndUrlWords, resourceByUrl, resourceById, suppressedUrls, discoveredFeedsSeen, snapshotByUrl))
+
+    requiredIndexes.foreach { requiredIndex =>
+      val collection = requiredIndex._1
+      val index = requiredIndex._2
+      if (Await.result(collection.indexesManager.ensure(index), OneMinute)) {
+        log.info("Created missing index " + index.name)
       } else {
-        log.info("Did not create existing index " + requiredIndex.name)
+        log.info("Did not create existing index " + index.name)
       }
     }
-
-    val suppressedUrls = Index(Seq("url" -> IndexType.Ascending), name = Some("url"), unique = false)
-    val suppressedUrlsResult = Await.result(suppressionCollection.indexesManager.ensure(suppressedUrls), OneMinute)
-    log.info("Ensured index result for " + suppressedUrls.name + ": " + suppressedUrlsResult)
-
-    val discoveredFeedsSeen = Index(Seq("seen" -> IndexType.Descending), name = Some("seen"), unique = false)
-    val discoveredFeedsSeenResult = Await.result(discoveredFeedCollection.indexesManager.ensure(discoveredFeedsSeen), OneMinute)
-    log.info("Ensured index result for " + suppressedUrls.name + ": " + discoveredFeedsSeenResult)
-
-    val snapshotByUrl = Index(Seq("url" -> IndexType.Ascending), name = Some("url"), unique = true)
-    val snapshotByUrlResult = Await.result(snapshotCollection.indexesManager.ensure(snapshotByUrl), OneMinute)
-    log.info("Ensured index result for " + snapshotByUrl.name + ": " + snapshotByUrlResult)
   }
 
   // TODO This feels wrong; why is the reactive mongo supplied one private?
