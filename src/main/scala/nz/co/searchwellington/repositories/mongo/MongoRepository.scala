@@ -75,14 +75,13 @@ class MongoRepository @Autowired()(@Value("${mongo.uri}") mongoUri: String) exte
 
     val requiredIndexes = (Seq(resourceByTypeAndUrlWords, resourceByUrl, resourceById, suppressedUrls, discoveredFeedsSeen, snapshotByUrl))
 
-    requiredIndexes.foreach { requiredIndex =>
-      val collection = requiredIndex._1
-      val index = requiredIndex._2
-      if (Await.result(collection.indexesManager.ensure(index), OneMinute)) {
-        log.info("Created missing index " + index.name)
-      } else {
-        log.info("Did not create existing index " + index.name)
-      }
+    requiredIndexes.foreach {
+      case (collection, index) =>
+        if (Await.result(collection.indexesManager.ensure(index), OneMinute)) {
+          log.info(s"Created missing index ${collection.name} / ${index.name.getOrElse(index.key.mkString(", "))}")
+        } else {
+          log.info("Did not create existing index " + index.name)
+        }
     }
   }
 
