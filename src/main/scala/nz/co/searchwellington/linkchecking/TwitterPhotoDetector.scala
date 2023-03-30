@@ -1,16 +1,20 @@
 package nz.co.searchwellington.linkchecking
-import nz.co.searchwellington.model.Resource
+import nz.co.searchwellington.ReasonableWaits
+import nz.co.searchwellington.model.{Newsitem, Resource}
+import nz.co.searchwellington.repositories.mongo.MongoRepository
 import org.apache.commons.logging.LogFactory
 import org.htmlparser.filters.{AndFilter, HasAttributeFilter, NodeClassFilter, TagNameFilter}
 import org.htmlparser.{Parser, Tag}
 import org.joda.time.DateTime
+import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
 
-import scala.concurrent.{ExecutionContext, Future}
+import scala.concurrent.{Await, ExecutionContext, Future}
 import scala.util.{Failure, Success, Try}
 
 @Component
-class TwitterPhotoDetector extends LinkCheckerProcessor {
+class TwitterPhotoDetector @Autowired()(mongoRepository: MongoRepository)
+  extends LinkCheckerProcessor with ReasonableWaits {
 
   private val log = LogFactory.getLog(classOf[TwitterPhotoDetector])
 
@@ -25,6 +29,12 @@ class TwitterPhotoDetector extends LinkCheckerProcessor {
           val imageURLs = tags.flatMap(tag => Option(tag.getAttribute("content")))
           if (imageURLs.nonEmpty) {
             log.info("Found twitter:images: " + imageURLs.mkString(", "))
+            checkResource match {
+              case newsitem: Newsitem =>
+                log.info("Set twitter:images: " + imageURLs.mkString(", "))
+                newsitem.twitterImage = imageURLs.headOption.map(_.trim)
+                Await.result(mongoRepository.saveResource(newsitem), TenSeconds)
+            }
           }
         }
       } match {
