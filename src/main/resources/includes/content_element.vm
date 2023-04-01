@@ -1,16 +1,16 @@
 	
 	<li #if ($item.type == "N" || $item.type == "FNI") itemscope itemtype="https://schema.org/NewsArticle" #end >
 
+		#if ($item.twitterImage)
+			<img src="$item.twitterImage" />
+		#end
+
 		#set($itemUrl = $item.url) 				
 		#if ($item.type == ('F'))
             #set($itemUrl = $urlBuilder.getFeedUrl($item))
 		#end
 		
 		<h5 #if ($item.type == "N" || $item.type == "FNI") itemprop="headline" #end><a href="$itemUrl">$item.name</a></h5>
-
-		#if ($item.twitterImage)
-			<img src="$item.twitterImage" />
-		#end
 
 		<ul>
 			#if ($item.date && ($item.type == "N" || $item.type == "FNI" || $item.type == "S") && $dateFormatter)
