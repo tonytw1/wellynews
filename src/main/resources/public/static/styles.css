@@ -305,19 +305,13 @@ margin-top: 0px;
 }
 
 
-
-
-
 h5 {
-font-size: 1.1em;
-padding-top: 8px;
-margin-bottom: 12px;
-margin-top: 0px;
-font-weight: normal;
-
-font-family: georgia, serif;
-      font-size: 1.2em;
-
+	font-size: 1.1em;
+	margin-bottom: 12px;
+	margin-top: 0px;
+	font-weight: normal;
+	font-family: georgia, serif;
+	font-size: 1.2em;
 }
 
 a {
@@ -519,7 +513,8 @@ select {
 }
 
 .main_content_item img {
-    max-width: 100%
+    max-width: 100%;
+	padding-bottom: 8px;
 }
 
 .righthand_one img {
