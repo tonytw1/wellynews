@@ -1,11 +1,11 @@
 ul { margin-left: 0px; }
 
 body {
-font:80% Arial, Helvetica, sans-serif;
-background:#FFF;
-color: #444;
-text-align: center;
-word-wrap: break-text;
+	font: 80% Arial, Helvetica, sans-serif;
+	background: #FFF;
+	color: #444;
+	text-align: center;
+	word-wrap: break-word;
 }
 
 .yellow {
