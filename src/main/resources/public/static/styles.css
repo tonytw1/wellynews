@@ -526,9 +526,12 @@ select {
 	padding-bottom: 8px;
 }
 
-.righthand_one img {
-	max-width: 120px
+.righthand_content_item {
+	border-top-style: dotted;
+	border-top-width: 1px;
+	padding-top: 8px;
 }
-.righthand_two img {
-	max-width: 120px
+.righthand_content_item img {
+	max-width: 100%;
+	padding-bottom: 8px;
 }
