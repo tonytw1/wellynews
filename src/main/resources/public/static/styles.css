@@ -511,9 +511,18 @@ select {
 	border-top-width: 1px;
 	padding-top: 8px;
 }
-
 .main_content_item img {
     max-width: 100%;
+	padding-bottom: 8px;
+}
+
+.secondary_content_item {
+	border-top-style: dotted;
+	border-top-width: 1px;
+	padding-top: 8px;
+}
+.secondary_content_item img {
+	max-width: 100%;
 	padding-bottom: 8px;
 }
 
