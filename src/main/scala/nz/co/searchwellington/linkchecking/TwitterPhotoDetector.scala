@@ -1,4 +1,5 @@
 package nz.co.searchwellington.linkchecking
+
 import nz.co.searchwellington.ReasonableWaits
 import nz.co.searchwellington.model.{Newsitem, Resource}
 import nz.co.searchwellington.repositories.mongo.MongoRepository
@@ -18,14 +19,17 @@ class TwitterPhotoDetector @Autowired()(mongoRepository: MongoRepository)
 
   private val log = LogFactory.getLog(classOf[TwitterPhotoDetector])
 
-  private val imageMetaTags = new OrFilter(
+  private val ogImage = new OrFilter(
     new HasAttributeFilter("name", "og:image"),
-    new HasAttributeFilter("name", "twitter:image")
+    new HasAttributeFilter("property", "og:image")
   )
+  private val twitterImage = new HasAttributeFilter("name", "twitter:image")
+  private val imageMetaTags = new OrFilter(ogImage, twitterImage)
+
   private val metaTags = new AndFilter(new TagNameFilter("META"), new NodeClassFilter(classOf[Tag]))
 
   private val metaImageTags = new AndFilter(metaTags, imageMetaTags)
-  
+
   override def process(checkResource: Resource, maybePageContent: Option[String], seen: DateTime)(implicit ec: ExecutionContext): Future[Boolean] = {
     maybePageContent.map { pageContent =>
 
@@ -33,11 +37,6 @@ class TwitterPhotoDetector @Autowired()(mongoRepository: MongoRepository)
       parserFor(pageContent).flatMap { parser =>
         Try {
           val tags: Seq[Tag] = parser.extractAllNodesThatMatch(metaImageTags).toNodeArray.toSeq.map(_.asInstanceOf[Tag])
-
-          //println(openGraphMetaTags.size)
-
-         //println(openGraphMetaTags.map(tag=> tag.toHtml).mkString(", "))
-          println(tags.map(tag=> tag.toHtml).mkString(", "))
 
           val imageURLs = tags.flatMap(tag => Option(tag.getAttribute("content")))
           if (imageURLs.nonEmpty) {
@@ -58,7 +57,7 @@ class TwitterPhotoDetector @Autowired()(mongoRepository: MongoRepository)
           Future.successful(false)
       }
 
-    }.getOrElse{
+    }.getOrElse {
       Future.successful(true)
     }
   }
