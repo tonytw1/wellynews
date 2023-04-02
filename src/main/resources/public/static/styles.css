@@ -310,8 +310,6 @@ margin-top: 0px;
 
 h5 {
 font-size: 1.1em;
-border-top-style: dotted;
-border-top-width: 1px; 
 padding-top: 8px;
 margin-bottom: 12px;
 margin-top: 0px;
@@ -513,7 +511,13 @@ select {
 	padding-left: 0;
 	display: inline;
 	}
-	
+
+.main_content_item {
+	border-top-style: dotted;
+	border-top-width: 1px;
+	padding-top: 8px;
+}
+
 .main_content_item img {
     max-width: 100%
 }
