@@ -515,7 +515,7 @@ select {
 	}
 	
 .main_content_item img {
-    max-width: 320px
+    max-width: 100%
 }
 
 .righthand_one img {
