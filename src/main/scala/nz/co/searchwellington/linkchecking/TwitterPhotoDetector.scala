@@ -1,51 +1,37 @@
 package nz.co.searchwellington.linkchecking
-import nz.co.searchwellington.model.Resource
+
+import nz.co.searchwellington.ReasonableWaits
+import nz.co.searchwellington.linkchecking.cards.SocialImageDetector
+import nz.co.searchwellington.model.{Newsitem, Resource}
+import nz.co.searchwellington.repositories.mongo.MongoRepository
 import org.apache.commons.logging.LogFactory
-import org.htmlparser.filters.{AndFilter, HasAttributeFilter, NodeClassFilter, TagNameFilter}
-import org.htmlparser.{Parser, Tag}
 import org.joda.time.DateTime
+import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
 
-import scala.concurrent.{ExecutionContext, Future}
-import scala.util.{Failure, Success, Try}
+import scala.concurrent.{Await, ExecutionContext, Future}
 
 @Component
-class TwitterPhotoDetector extends LinkCheckerProcessor {
+class TwitterPhotoDetector @Autowired()(mongoRepository: MongoRepository, socialImageDetector: SocialImageDetector)
+  extends LinkCheckerProcessor with ReasonableWaits {
 
   private val log = LogFactory.getLog(classOf[TwitterPhotoDetector])
 
-  private val metaTags = new AndFilter(new TagNameFilter("META"), new NodeClassFilter(classOf[Tag]))
-  private val twitterPhotoMetaTags = new AndFilter(metaTags, new HasAttributeFilter("name", "twitter:image"))
-
   override def process(checkResource: Resource, maybePageContent: Option[String], seen: DateTime)(implicit ec: ExecutionContext): Future[Boolean] = {
-    maybePageContent.map { pageContent =>
-      parserFor(pageContent).flatMap { parser =>
-        Try {
-          val tags = parser.extractAllNodesThatMatch(twitterPhotoMetaTags).toNodeArray.toSeq.map(_.asInstanceOf[Tag])
-          val imageURLs = tags.flatMap(tag => Option(tag.getAttribute("content")))
-          if (imageURLs.nonEmpty) {
-            log.info("Found twitter:images: " + imageURLs.mkString(", "))
-          }
-        }
-      } match {
-        case Success(_) =>
-          Future.successful(true)
-        case Failure(e) =>
-          log.warn("Failed to parse html for twitter:images", e)
-          Future.successful(false)
+    val imageDetectedImageUrls = maybePageContent.flatMap { pageContent =>
+      socialImageDetector.extractSocialImageUrlsFrom(pageContent)
+    }
+
+    imageDetectedImageUrls.flatMap(_.headOption).foreach { imageURL =>
+      log.info("Found first social image: " + imageURL)
+      checkResource match {
+        case newsitem: Newsitem =>
+          newsitem.twitterImage = Some(imageURL)
+          Await.result(mongoRepository.saveResource(newsitem), TenSeconds)
       }
-
-    }.getOrElse{
-      Future.successful(true)
     }
-  }
 
-  private def parserFor(html: String): Try[Parser] = {
-    Try {
-      val parser = new Parser
-      parser.setInputHTML(html)
-      parser
-    }
+    Future.successful(true)
   }
 
 }

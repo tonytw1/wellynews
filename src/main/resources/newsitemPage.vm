@@ -17,12 +17,7 @@
 			<h2>$item.publisherName</h2>		
 		#end
 	#end
-	
-	#if($geocoded)
-		<div id="map" style="width: 520px; height: 520px"></div>
-		#parse("includes/geocodedjs.vm")
-	#end
-		
+
 	<ul class="flat_list">
 		<li class="content_item">
 			<ul class="main_content_item">
@@ -47,6 +42,7 @@
             #end
         </ul>
     #end
+
     #if($other_tagging_votes.size() > 0)
         <ul>
             #foreach ($tagging in $other_tagging_votes)
@@ -66,21 +62,17 @@
             <li>#parse("includes/geotag_icon.vm") $geotagging.geocode.displayName - $geotagging.explanation</li>
         #end
 	</ul>
-
 	<hr/>
 </div>
 
-<div class="right">
+    <div class="right">
+        #parse("includes/geocoded.vm")
 
-<div class="box">
-#parse("includes/latest_newsitems.vm")
-
-<br clear="all"/>
-
-</div>
-
-
-</div>
+        <div class="box">
+            #parse("includes/latest_newsitems.vm")
+            <br/>
+        </div>
+    </div>
 
 </div>
 

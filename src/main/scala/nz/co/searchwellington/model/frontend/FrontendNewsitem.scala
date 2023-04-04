@@ -31,7 +31,9 @@ case class FrontendNewsitem(id: String,
                             image: FrontendImage = null,
                             lastScanned: Option[Date] = None,
                             lastChanged: Option[Date] = None,
-                            actions: Seq[Action] = Seq.empty) extends FrontendResource with RssFeedable {
+                            actions: Seq[Action] = Seq.empty,
+                            twitterImage: String = null,
+                           ) extends FrontendResource with RssFeedable {
 
   def getPublisherName: String = publisherName.orNull
   def getPublisherUrlWords: String = publisherUrlWords.orNull
@@ -47,10 +49,12 @@ case class FrontendNewsitem(id: String,
 
   def getFrontendImage: FrontendImage = image
 
-  override def getImageUrl: String = if (image != null) image.getUrl else null
+  override def getImageUrl: String = twitterImage
 
   def getHangTags: util.List[Tag] = {
     handTags.map(_.asJava).orNull
   }
+
+  def getTwitterImage: String = twitterImage
 
 }
