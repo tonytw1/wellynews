@@ -28,6 +28,7 @@ class TwitterPhotoDetector @Autowired()(mongoRepository: MongoRepository, social
         case newsitem: Newsitem =>
           newsitem.twitterImage = Some(imageURL)
           Await.result(mongoRepository.saveResource(newsitem), TenSeconds)
+        case _ =>
       }
     }
 
