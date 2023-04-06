@@ -35,20 +35,13 @@ class ImageProxy(wsClient: WSClient, mongoRepository: MongoRepository) extends R
 
       maybeCardImageUrl.map { url =>
         log.info("Proxying: " + url)
-        wsClient.wsClient.url(url).withRequestTimeout(TenSeconds).get.map { r =>
-          log.info("Got: " + r.status)
-          r.status match {
-            case HttpStatus.SC_OK =>
-              // Echo these to response
-              val bytes: Array[Byte] = r.bodyAsBytes.toArray
-              ResponseEntity.ok().
-                contentType(MediaType.valueOf(r.contentType)).
-                body(bytes)
-            case _ =>
-              log.warn("Couldn't fetch: " + url)
-              NotFound
-          }
+        fetchContentForOrigin(url).map {
+          case Some((contentType, bytes)) =>
+            ResponseEntity.ok().contentType(MediaType.parseMediaType(contentType)).body(bytes)
+          case None =>
+            NotFound
         }
+
       }.getOrElse {
         Future.successful(NotFound)
       }
@@ -56,4 +49,19 @@ class ImageProxy(wsClient: WSClient, mongoRepository: MongoRepository) extends R
 
     Await.result(eventualResponse, TenSeconds)
   }
+
+  private def fetchContentForOrigin(url: String) = wsClient.wsClient.url(url).withRequestTimeout(TenSeconds).get.map { r =>
+    log.info("Got: " + r.status)
+    r.status match {
+      case HttpStatus.SC_OK =>
+        // Echo these to response
+        val bytes: Array[Byte] = r.bodyAsBytes.toArray
+        Some((r.contentType, bytes))
+
+      case _ =>
+        log.warn("Couldn't fetch: " + url)
+        None
+    }
+  }
+
 }
