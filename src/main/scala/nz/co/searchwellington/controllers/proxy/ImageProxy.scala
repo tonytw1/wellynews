@@ -4,6 +4,7 @@ import nz.co.searchwellington.ReasonableWaits
 import nz.co.searchwellington.http.WSClient
 import org.apache.commons.logging.LogFactory
 import org.apache.http.HttpStatus
+import org.springframework.http.{MediaType, ResponseEntity}
 import org.springframework.stereotype.Controller
 import org.springframework.web.bind.annotation.{GetMapping, RequestParam}
 
@@ -16,25 +17,25 @@ class ImageProxy(wsClient: WSClient) extends ReasonableWaits {
   private val log = LogFactory.getLog(classOf[ImageProxy])
 
   @GetMapping(Array("/proxy"))
-  def image(@RequestParam url: String): Unit = {
+  def image(@RequestParam url: String): ResponseEntity[Array[Byte]] = {
     // Given a 3rd party image url which we are going to inline;
     // Fetch it, cache it and serve it from here
     // Classic open proxy
-    val self = wsClient.wsClient.url(url).withRequestTimeout(TenSeconds)
-    Await.result(self.get.map { r =>
+
+    log.info("Proxying: " + url)
+    Await.result(wsClient.wsClient.url(url).withRequestTimeout(TenSeconds).get.map { r =>
+      log.info("Got: " + r.status)
       r.status match {
-        case HttpStatus.SC_OK => {
+        case HttpStatus.SC_OK =>
           // Echo these to response
-          org.springframework.http.ResponseEntity.ok()
-            // TODO headers
-            .body(r.bodyAsBytes);
-        }
+          val bytes: Array[Byte] = r.bodyAsBytes.toArray
+          org.springframework.http.ResponseEntity.ok().
+            contentType(MediaType.valueOf(r.contentType)).
+            body(bytes)
         case _ =>
           log.warn("Couldn't fetch: " + url)
-          // TODO error
-          null
+          org.springframework.http.ResponseEntity.notFound().build()
       }
-
     }, TenSeconds)
 
   }
