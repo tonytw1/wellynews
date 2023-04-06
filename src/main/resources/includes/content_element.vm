@@ -8,7 +8,7 @@
 
 		#if ($item.twitterImage)
 			<a href="$itemUrl">
-				<img src="$item.twitterImage" />
+				<img src="/cardimage?id=$item.id" />
 			</a>
 		#end
 
