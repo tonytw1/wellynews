@@ -6,12 +6,13 @@ import nz.co.searchwellington.model.Newsitem
 import nz.co.searchwellington.repositories.mongo.MongoRepository
 import org.apache.commons.logging.LogFactory
 import org.apache.http.HttpStatus
-import org.springframework.http.{MediaType, ResponseEntity}
+import org.springframework.http.{CacheControl, MediaType, ResponseEntity}
 import org.springframework.stereotype.Controller
 import org.springframework.util.DigestUtils
 import org.springframework.web.bind.annotation.{GetMapping, RequestParam}
 
 import java.io._
+import java.util.concurrent.TimeUnit
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.{Await, Future}
 import scala.util.Try
@@ -49,7 +50,10 @@ class ImageProxy(wsClient: WSClient, mongoRepository: MongoRepository, cache: Fi
             case Some((contentType, bytes)) =>
               val mediaType = MediaType.parseMediaType(contentType)
               cache.put(url, (mediaType, bytes))
-              ResponseEntity.ok().contentType(mediaType).body(bytes)
+              ResponseEntity.ok().
+                contentType(mediaType).
+                cacheControl(CacheControl.maxAge(24, TimeUnit.HOURS))
+                .body(bytes)
 
             case None =>
               NotFound // TODO negative cache marker
