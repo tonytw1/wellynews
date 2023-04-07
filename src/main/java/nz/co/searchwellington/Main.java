@@ -76,9 +76,8 @@ public class Main {
     }
 
     @Bean
-    public FileSystemCache fileSystemImageCache() {
-        String tmpdir = System.getProperty("java.io.tmpdir");
-        return new FileSystemCache(tmpdir);
+    public FileSystemCache fileSystemImageCache(@Value("${cardimages.path}") String cardImagesPath) {
+        return new FileSystemCache(cardImagesPath);
     }
 
     @Bean("feedReaderTaskExecutor")
