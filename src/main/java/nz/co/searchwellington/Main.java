@@ -6,6 +6,7 @@ import nz.co.searchwellington.commentfeeds.detectors.DateRegexCommentFeedDetecto
 import nz.co.searchwellington.commentfeeds.detectors.GenericCommentFeedDetector;
 import nz.co.searchwellington.controllers.RssUrlBuilder;
 import nz.co.searchwellington.controllers.admin.AdminUrlBuilder;
+import nz.co.searchwellington.controllers.proxy.FileSystemCache;
 import nz.co.searchwellington.model.SiteInformation;
 import nz.co.searchwellington.model.UrlWordsGenerator;
 import nz.co.searchwellington.urls.UrlBuilder;
@@ -72,6 +73,12 @@ public class Main {
     @Bean
     public CommentFeedDetector dateRegexCommentFeedDetector() {
         return new DateRegexCommentFeedDetector();
+    }
+
+    @Bean
+    public FileSystemCache fileSystemImageCache() {
+        String tmpdir = System.getProperty("java.io.tmpdir");
+        return new FileSystemCache(tmpdir);
     }
 
     @Bean("feedReaderTaskExecutor")

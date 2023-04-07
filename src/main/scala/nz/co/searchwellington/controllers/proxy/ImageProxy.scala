@@ -8,20 +8,20 @@ import org.apache.commons.logging.LogFactory
 import org.apache.http.HttpStatus
 import org.springframework.http.{MediaType, ResponseEntity}
 import org.springframework.stereotype.Controller
+import org.springframework.util.DigestUtils
 import org.springframework.web.bind.annotation.{GetMapping, RequestParam}
 
-import java.util.concurrent.ConcurrentHashMap
+import java.io._
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.{Await, Future}
+import scala.util.Try
 
 @Controller
-class ImageProxy(wsClient: WSClient, mongoRepository: MongoRepository) extends ReasonableWaits {
+class ImageProxy(wsClient: WSClient, mongoRepository: MongoRepository, cache: FileSystemCache[(MediaType, Array[Byte])]) extends ReasonableWaits {
 
   private val log = LogFactory.getLog(classOf[ImageProxy])
 
   private val NotFound = ResponseEntity.status(HttpStatus.SC_NOT_FOUND).body("Not Found".getBytes)
-
-  private val cache = new InMemoryCache()
 
   @GetMapping(Array("/cardimage"))
   def image(@RequestParam id: String): ResponseEntity[Array[Byte]] = {
@@ -80,14 +80,37 @@ class ImageProxy(wsClient: WSClient, mongoRepository: MongoRepository) extends R
       }
     }
   }
-  
-  class InMemoryCache[T] {
-    private val map = new ConcurrentHashMap[String, (MediaType, Array[Byte])]()
 
-    def get(key: String): Option[(MediaType, Array[Byte])] = Option(map.get(key))
+}
 
-    def put(key: String, value: (MediaType, Array[Byte])) = map.put(key, value)
+class FileSystemCache[T](cacheDir: String) {
 
+  private val log = LogFactory.getLog(classOf[FileSystemCache[T]])
+
+  def get(key: String): Option[T] = {
+    val file = new File(filenameFor(key))
+
+    if (file.exists) {
+      Try {
+        val ois = new ObjectInputStream(new FileInputStream(file))
+        val value = ois.readObject.asInstanceOf[T]
+        ois.close()
+        Some(value)
+
+      }.toOption.flatten
+    } else {
+      None
+    }
   }
 
+  def put(key: String, value: T): Unit = {
+    val filepath = filenameFor(key)
+    log.info(s"Caching $key to $filepath")
+    val oos = new ObjectOutputStream(new FileOutputStream(filepath))
+    oos.writeObject(value)
+    oos.close()
+  }
+
+  private def filenameFor(key: String) =
+    cacheDir + "/" + DigestUtils.md5DigestAsHex(key.getBytes)
 }
