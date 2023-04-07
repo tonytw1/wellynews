@@ -21,7 +21,7 @@ class ImageProxy(wsClient: WSClient, mongoRepository: MongoRepository) extends R
 
   private val NotFound = ResponseEntity.status(HttpStatus.SC_NOT_FOUND).body("Not Found".getBytes)
 
-  private val cache = new ConcurrentHashMap[String, (MediaType, Array[Byte])]()
+  private val cache = new InMemoryCache()
 
   @GetMapping(Array("/cardimage"))
   def image(@RequestParam id: String): ResponseEntity[Array[Byte]] = {
@@ -39,13 +39,12 @@ class ImageProxy(wsClient: WSClient, mongoRepository: MongoRepository) extends R
       maybeCardImageUrl.map { url =>
         log.info("Proxying: " + url)
 
-        val cached = cache.get(url)
-        if (cached != null) {
-          val (mediaType, bytes) = cache.get(url)
+        val maybeCached = cache.get(url)
+        maybeCached.map { cached =>
           log.info(s"Serving $url from cache")
-          Future.successful(ResponseEntity.ok().contentType(mediaType).body(bytes))
+          Future.successful(ResponseEntity.ok().contentType(cached._1).body(cached._2))
 
-        } else {
+        }.getOrElse {
           fetchContentForOrigin(url).map {
             case Some((contentType, bytes)) =>
               val mediaType = MediaType.parseMediaType(contentType)
@@ -80,6 +79,15 @@ class ImageProxy(wsClient: WSClient, mongoRepository: MongoRepository) extends R
           None
       }
     }
+  }
+  
+  class InMemoryCache[T] {
+    private val map = new ConcurrentHashMap[String, (MediaType, Array[Byte])]()
+
+    def get(key: String): Option[(MediaType, Array[Byte])] = Option(map.get(key))
+
+    def put(key: String, value: (MediaType, Array[Byte])) = map.put(key, value)
+
   }
 
 }
