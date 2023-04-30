@@ -6,7 +6,11 @@ import org.apache.velocity.spring.VelocityEngineFactoryBean
 import org.joda.time.DateTime
 import org.junit.jupiter.api.Assertions.{assertEquals, assertTrue}
 import org.junit.jupiter.api.Test
+import org.springframework.mock.web.{MockHttpServletRequest, MockHttpServletResponse}
 import org.springframework.ui.ModelMap
+import org.springframework.web.servlet.View
+import uk.co.eelpieconsulting.common.views.EtagGenerator
+import uk.co.eelpieconsulting.common.views.rss.RssView
 
 import java.io.StringWriter
 import java.util.{Properties, UUID}
@@ -18,10 +22,7 @@ class ViewsTest {
   def shouldRenderTagPageHtmlViewsFromTemplate(): Unit = {
     val model = new ModelMap()
     model.addAttribute("tag", new Tag(name = "transport", display_name = "Transport"))
-    val newsitems = (1 to 20).map { i =>
-        FrontendNewsitem(id = UUID.randomUUID().toString, name = s"Newsitem $i", description = "A test newsitem", publisherName = Some("A publisher"))
-    }
-    model.addAttribute("main_content", newsitems.asJava)
+    model.addAttribute("main_content", validNewsitems.asJava)
 
     val velocityEngine = getVelocityEngine
     assertEquals("UTF-8", velocityEngine.getProperty("resource.default_encoding"))
@@ -36,6 +37,19 @@ class ViewsTest {
     }
   }
 
+  @Test
+  def canRenderRssViews(): Unit = {
+    val model = new ModelMap()
+    model.addAttribute("tag", new Tag(name = "transport", display_name = "Transport"))
+    model.addAttribute("data", validNewsitems.asJava)
+    val rssView: View = new RssView(new EtagGenerator(), "", "", "")
+    val response = new MockHttpServletResponse()
+
+    rssView.render(model, new MockHttpServletRequest(), response)
+
+    val responseBody = new String(response.getContentAsByteArray)
+    assertTrue(responseBody.contains("<title>Newsitem 1</title>"))
+  }
 
   // TODO can we get this from the actual bean?
   private def getVelocityEngine = {
@@ -52,4 +66,11 @@ class ViewsTest {
     velocityEngineFactory.setVelocityProperties(vp)
     velocityEngineFactory.createVelocityEngine()
   }
+
+  private def validNewsitems: Seq[FrontendNewsitem] = {
+    (1 to 20).map { i =>
+      FrontendNewsitem(id = UUID.randomUUID().toString, name = s"Newsitem $i", description = "A test newsitem", publisherName = Some("A publisher"))
+    }
+  }
+
 }
