@@ -2,9 +2,7 @@ package nz.co.searchwellington.views
 
 import nz.co.searchwellington.model.Tag
 import nz.co.searchwellington.model.frontend.FrontendNewsitem
-import org.apache.http.client.utils.URIBuilder
-import org.apache.velocity.spring.VelocityEngineFactoryBean
-import org.joda.time.DateTime
+import org.apache.velocity.spring.{VelocityEngineFactoryBean, VelocityEngineUtils}
 import org.junit.jupiter.api.Assertions.{assertEquals, assertTrue}
 import org.junit.jupiter.api.Test
 import org.springframework.mock.web.{MockHttpServletRequest, MockHttpServletResponse}
@@ -14,7 +12,6 @@ import uk.co.eelpieconsulting.common.views.EtagGenerator
 import uk.co.eelpieconsulting.common.views.rss.RssView
 
 import java.io.StringWriter
-import java.net.URL
 import java.util.{Properties, UUID}
 import scala.jdk.CollectionConverters._
 
@@ -30,13 +27,11 @@ class ViewsTest {
     assertEquals("UTF-8", velocityEngine.getProperty("resource.default_encoding"))
     assertEquals("true", velocityEngine.getProperty("resource.loader.class.cache"))
 
-    (1 to 10).foreach { _ =>
-      val start = DateTime.now()
-      val writer = new StringWriter()
-      org.apache.velocity.spring.VelocityEngineUtils.mergeTemplate(velocityEngine, "tag.vm", "UTF-8", model, writer)
-      //println("Rendered tag page in " + new Duration(start, DateTime.now()).getMillis + " ms")
-      assertTrue(writer.toString.contains("<h2>Transport</h2>"))
-    }
+    val writer = new StringWriter()
+
+    VelocityEngineUtils.mergeTemplate(velocityEngine, "tag.vm", "UTF-8", model, writer)
+
+    assertTrue(writer.toString.contains("<h2>Transport</h2>"))
   }
 
   @Test
