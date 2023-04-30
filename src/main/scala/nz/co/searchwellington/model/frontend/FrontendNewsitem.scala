@@ -3,8 +3,10 @@ package nz.co.searchwellington.model.frontend
 import com.fasterxml.jackson.annotation.JsonFormat
 import nz.co.searchwellington.model.geo.Geocode
 import nz.co.searchwellington.model.{Tag, User}
+import org.apache.http.client.utils.URIBuilder
 import uk.co.eelpieconsulting.common.views.rss.RssFeedable
 
+import java.net.URL
 import java.util
 import java.util.Date
 import scala.jdk.CollectionConverters._
@@ -49,7 +51,21 @@ case class FrontendNewsitem(id: String,
 
   def getFrontendImage: FrontendImage = image
 
-  override def getImageUrl: String = twitterImage
+  override def getImageUrl: String = {
+    if (twitterImage != null) {
+      // Work around Media Module URL -> URI cast which breaks on fragements.
+      // TODO push up to RssView
+      val asUrl = new URL(twitterImage)
+      // This is the call that media module makes with is problematic.
+      // asUrl.toURI
+      val builder = new URIBuilder().setScheme(asUrl.getProtocol).
+        setHost(asUrl.getHost).setPath(asUrl.getPath).setQuery(asUrl.getQuery)
+      val asURISafe = builder.build().toURL
+      asURISafe.toExternalForm
+    } else {
+      null
+    }
+  }
 
   def getHangTags: util.List[Tag] = {
     handTags.map(_.asJava).orNull
