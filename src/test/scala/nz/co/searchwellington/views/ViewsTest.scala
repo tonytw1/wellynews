@@ -51,6 +51,25 @@ class ViewsTest {
     assertTrue(responseBody.contains("<title>Newsitem 1</title>"))
   }
 
+  @Test
+  def canRenderRssViewsWithURIFragmentsInImageUrl(): Unit = {
+    val urlWithFragments = "https://i0.wp.com/guardiansofthebays.org.nz/wp-content/uploads/2022/09/Sunrise-over-Rongotai-and-the-airport.jpg?fit=1200%2C600&#038;ssl=1&#038;w=640"
+    val model = new ModelMap()
+    model.addAttribute("tag", new Tag(name = "transport", display_name = "Transport"))
+    val newsitemWithOddImageURL = FrontendNewsitem(id = UUID.randomUUID().toString, name = s"Newsitem with odd image URI", description = "A test newsitem", publisherName = Some("A publisher"),
+      url = urlWithFragments, twitterImage = urlWithFragments)
+
+    model.addAttribute("data", Seq(newsitemWithOddImageURL).asJava)
+    val rssView: View = new RssView(new EtagGenerator(), "", "", "")
+    val response = new MockHttpServletResponse()
+
+    rssView.render(model, new MockHttpServletRequest(), response)
+
+    val responseBody = new String(response.getContentAsByteArray)
+    assertTrue(responseBody.contains("<title>Newsitem with odd image URI</title>"))
+    assertTrue(responseBody.contains("media:thumbnail url=\"https://i0.wp.com/guardiansofthebays.org.nz/wp-content/uploads/2022/09/Sunrise-over-Rongotai-and-the-airport.jpg?fit=1200%2C600&#038;ssl=1&#038;w=640\""))
+  }
+
   // TODO can we get this from the actual bean?
   private def getVelocityEngine = {
     val velocityEngineFactory = new VelocityEngineFactoryBean
