@@ -10,7 +10,7 @@ import org.springframework.stereotype.Component
 import org.springframework.util.MimeTypeUtils
 import play.api.libs.json.Json
 import play.api.libs.ws.DefaultBodyWritables.writeableOf_WsBody
-import play.api.libs.ws.InMemoryBody
+import play.api.libs.ws.{EmptyBody, InMemoryBody}
 
 import scala.concurrent.{ExecutionContext, Future}
 
@@ -39,6 +39,22 @@ class SocialImageDetector @Autowired()(wsClient: WSClient, @Value("${cards.url}"
     } else {
       log.warn("Cards service is not configured")
       Future.successful(None)
+    }
+  }
+
+  def pin(selectedImageUrl: String)(implicit ec: ExecutionContext): Future[Boolean] = {
+    val request = wsClient.wsClient.url(cardsUrl + "/pinned").
+      withQueryStringParameters("url" -> selectedImageUrl).
+      withRequestTimeout(ThirtySeconds)
+
+    request.post(EmptyBody).map { r =>
+      r.status match {
+        case 200 =>
+          true
+        case _ =>
+          log.warn(s"Cards pin call failed: ${r.status} / ${r.body})")
+          false
+      }
     }
   }
 }

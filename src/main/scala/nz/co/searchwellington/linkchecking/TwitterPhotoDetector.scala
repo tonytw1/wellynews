@@ -29,8 +29,21 @@ class TwitterPhotoDetector @Autowired()(mongoRepository: MongoRepository, social
         log.info("Found first social image: " + detectedImage)
         checkResource match {
           case newsitem: Newsitem =>
-            newsitem.twitterImage = Some(detectedImage.url)
-            Await.result(mongoRepository.saveResource(newsitem), TenSeconds)
+
+            // Pin this image
+            val selectedImageUrl = detectedImage.url
+            val future = socialImageDetector.pin(selectedImageUrl).flatMap { pinned =>
+              if (pinned) {
+                newsitem.twitterImage = Some(selectedImageUrl)
+                mongoRepository.saveResource(newsitem).map { r =>
+                  r.writeErrors.isEmpty
+                }
+              } else {
+                Future.successful(false)
+              }
+            }
+            Await.result(future, OneMinute)
+
           case _ =>
         }
       }
