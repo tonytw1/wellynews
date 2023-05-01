@@ -5,8 +5,6 @@ import nz.co.searchwellington.model.frontend.FrontendNewsitem
 import org.apache.velocity.spring.{VelocityEngineFactoryBean, VelocityEngineUtils}
 import org.junit.jupiter.api.Assertions.{assertEquals, assertTrue}
 import org.junit.jupiter.api.Test
-import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.mock.web.{MockHttpServletRequest, MockHttpServletResponse}
 import org.springframework.ui.ModelMap
 import org.springframework.web.servlet.View
@@ -14,12 +12,10 @@ import uk.co.eelpieconsulting.common.views.EtagGenerator
 import uk.co.eelpieconsulting.common.views.rss.RssView
 
 import java.io.StringWriter
-import java.util.UUID
+import java.util.{Properties, UUID}
 import scala.jdk.CollectionConverters._
 
-@SpringBootTest
-class ViewsTest @Autowired()(velocityEngineFactoryBean: VelocityEngineFactoryBean) {
-
+class ViewsTest {
 
   @Test
   def shouldRenderTagPageHtmlViewsFromTemplate(): Unit = {
@@ -72,7 +68,21 @@ class ViewsTest @Autowired()(velocityEngineFactoryBean: VelocityEngineFactoryBea
     assertTrue(responseBody.contains("media:thumbnail url=\"https://i0.wp.com/guardiansofthebays.org.nz/wp-content/uploads/2022/09/Sunrise-over-Rongotai-and-the-airport.jpg?fit=1200%2C600\""))
   }
 
-  private def getVelocityEngine = velocityEngineFactoryBean.createVelocityEngine()
+  // TODO can we get this from the actual bean?
+  private def getVelocityEngine = {
+    val velocityEngineFactory = new VelocityEngineFactoryBean
+    val vp = new Properties
+    vp.setProperty("resource.loader", "class")
+
+    vp.setProperty("resource.loader.class.cache", "true")
+    // When resource.manager.cache.default_size is set to 0, then the default implementation uses the standard Java ConcurrentHashMap.
+    vp.setProperty("resource.manager.cache.default_size", "0")
+
+    vp.setProperty("class.resource.loader.class", "org.apache.velocity.runtime.resource.loader.ClasspathResourceLoader")
+    vp.setProperty("velocimacro.library", "spring.vm")
+    velocityEngineFactory.setVelocityProperties(vp)
+    velocityEngineFactory.createVelocityEngine()
+  }
 
   private def validNewsitems: Seq[FrontendNewsitem] = {
     (1 to 20).map { i =>
