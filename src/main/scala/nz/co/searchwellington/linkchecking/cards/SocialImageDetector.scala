@@ -1,68 +1,51 @@
 package nz.co.searchwellington.linkchecking.cards
 
-import org.htmlparser.{Parser, Tag}
+import akka.util.ByteString
+import nz.co.searchwellington.ReasonableWaits
+import nz.co.searchwellington.http.WSClient
 import org.apache.commons.logging.LogFactory
-import org.htmlparser.filters.{AndFilter, HasAttributeFilter, NodeClassFilter, OrFilter, TagNameFilter}
+import org.springframework.beans.factory.annotation.{Autowired, Value}
+import org.springframework.http.HttpHeaders
 import org.springframework.stereotype.Component
+import org.springframework.util.MimeTypeUtils
+import play.api.libs.json.Json
+import play.api.libs.ws.DefaultBodyWritables.writeableOf_WsBody
+import play.api.libs.ws.InMemoryBody
 
-import java.net.URI
-import scala.util.{Failure, Success, Try}
+import scala.concurrent.{ExecutionContext, Future}
 
 @Component
-class SocialImageDetector {
+class SocialImageDetector @Autowired()(wsClient: WSClient, @Value("${cards.url}") cardsUrl: String) extends ReasonableWaits {
 
   private val log = LogFactory.getLog(classOf[SocialImageDetector])
+  private implicit val dir = Json.reads[DetectedImage]
 
-  private val validImageUrlSchemes = Set("http", "https")
+  def extractSocialImageUrlsFrom(pageContent: String)(implicit ec: ExecutionContext): Future[Option[Seq[DetectedImage]]] = {
+    if (cardsUrl.nonEmpty) {
+      val request = wsClient.wsClient.url(cardsUrl + "/detect").
+        withHttpHeaders((HttpHeaders.CONTENT_TYPE, MimeTypeUtils.TEXT_HTML_VALUE)).
+        withRequestTimeout(TenSeconds)
 
-  private val ogImage = new OrFilter(
-    new HasAttributeFilter("name", "og:image"),
-    new HasAttributeFilter("property", "og:image")
-  )
-  private val twitterImage = new HasAttributeFilter("name", "twitter:image")
-  private val imageMetaTags = new OrFilter(ogImage, twitterImage)
-
-  private val metaTags = new AndFilter(new TagNameFilter("META"), new NodeClassFilter(classOf[Tag]))
-
-  private val metaImageTags = new AndFilter(metaTags, imageMetaTags)
-
-  def extractSocialImageUrlsFrom(pageContent: String): Option[Seq[String]] = {
-    parserFor(pageContent).flatMap { parser =>
-      Try {
-        val metaTags = parser.extractAllNodesThatMatch(metaImageTags).toNodeArray.toSeq.map(_.asInstanceOf[Tag])
-        for {
-          tag <- metaTags
-          content <- Option(tag.getAttribute("content"))
-          uri <- Try(java.net.URI.create(content)).toOption
-          fullyQualified <- onlyFullQualified(uri)
-        } yield {
-          fullyQualified.toURL.toExternalForm
+      request.post(InMemoryBody(ByteString(pageContent.getBytes))).map { r =>
+        r.status match {
+          case 200 =>
+            Some(Json.parse(r.body).as[Seq[DetectedImage]])
+          case _ =>
+            log.warn(s"Cards detect call failed: ${r.status} / ${r.body})")
+            None
         }
       }
 
-    } match {
-      case Success(detected) =>
-        Some(detected)
-      case Failure(e) =>
-        log.warn("Failed to detect social images", e)
-        None
-    }
-  }
-
-  private def onlyFullQualified(uri: URI) = {
-    if (validImageUrlSchemes.contains(uri.getScheme)) {
-      Some(uri)
     } else {
-      None
+      log.warn("Cards service is not configured")
+      Future.successful(None)
     }
   }
-
-  private def parserFor(html: String): Try[Parser] = {
-    Try {
-      val parser = new Parser
-      parser.setInputHTML(html)
-      parser
-    }
-  }
-
 }
+
+case class DetectedImage(url: String,
+                         source: String,
+                         contentType: Option[String] = None,
+                         width: Option[Int] = None,
+                         height: Option[Int] = None,
+                         alt: Option[String] = None)

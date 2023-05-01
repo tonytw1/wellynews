@@ -18,21 +18,25 @@ class TwitterPhotoDetector @Autowired()(mongoRepository: MongoRepository, social
   private val log = LogFactory.getLog(classOf[TwitterPhotoDetector])
 
   override def process(checkResource: Resource, maybePageContent: Option[String], seen: DateTime)(implicit ec: ExecutionContext): Future[Boolean] = {
-    val imageDetectedImageUrls = maybePageContent.flatMap { pageContent =>
+    val eventualImageDetectedImageUrls = maybePageContent.map { pageContent =>
       socialImageDetector.extractSocialImageUrlsFrom(pageContent)
+    }.getOrElse{
+      Future.successful(None)
     }
 
-    imageDetectedImageUrls.flatMap(_.headOption).foreach { imageURL =>
-      log.info("Found first social image: " + imageURL)
-      checkResource match {
-        case newsitem: Newsitem =>
-          newsitem.twitterImage = Some(imageURL)
-          Await.result(mongoRepository.saveResource(newsitem), TenSeconds)
-        case _ =>
+    eventualImageDetectedImageUrls.map { imageDetectedUrls =>
+      imageDetectedUrls.flatMap(_.headOption).foreach { detectedImage =>
+        log.info("Found first social image: " + detectedImage)
+        checkResource match {
+          case newsitem: Newsitem =>
+            newsitem.twitterImage = Some(detectedImage.url)
+            Await.result(mongoRepository.saveResource(newsitem), TenSeconds)
+          case _ =>
+        }
       }
+    }.map { _ =>
+      true
     }
-
-    Future.successful(true)
   }
 
 }
