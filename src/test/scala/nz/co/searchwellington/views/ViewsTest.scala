@@ -51,11 +51,19 @@ class ViewsTest {
   @Test
   def canRenderRssViewsWithURIFragmentsInImageUrl(): Unit = {
     val urlWithFragments = "https://i0.wp.com/guardiansofthebays.org.nz/wp-content/uploads/2022/09/Sunrise-over-Rongotai-and-the-airport.jpg?fit=1200%2C600&#038;ssl=1&#038;w=640"
+    val asUrl = new URL(urlWithFragments)
+
+    // This is the call that media module makes with is problematic.
+    asUrl.toURI
+
+    val builder = new URIBuilder().setScheme(asUrl.getProtocol).
+      setHost(asUrl.getHost).setPath(asUrl.getPath).setQuery(asUrl.getQuery)
+    val asURISafe = builder.build().toURL
 
     val model = new ModelMap()
     model.addAttribute("tag", new Tag(name = "transport", display_name = "Transport"))
     val newsitemWithOddImageURL = FrontendNewsitem(id = UUID.randomUUID().toString, name = s"Newsitem with odd image URI", description = "A test newsitem", publisherName = Some("A publisher"),
-      url = urlWithFragments, twitterImage = urlWithFragments)
+      url = urlWithFragments, twitterImage = asURISafe.toExternalForm)
 
     model.addAttribute("data", Seq(newsitemWithOddImageURL).asJava)
     val rssView: View = new RssView(new EtagGenerator(), "", "", "")
