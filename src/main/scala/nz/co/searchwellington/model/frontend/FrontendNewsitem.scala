@@ -5,6 +5,7 @@ import nz.co.searchwellington.model.geo.Geocode
 import nz.co.searchwellington.model.{Tag, User}
 import uk.co.eelpieconsulting.common.views.rss.RssFeedable
 
+import java.net.URLEncoder
 import java.util
 import java.util.Date
 import scala.jdk.CollectionConverters._
@@ -49,7 +50,13 @@ case class FrontendNewsitem(id: String,
 
   def getFrontendImage: FrontendImage = image
 
-  override def getImageUrl: String = twitterImage
+  override def getImageUrl: String = {
+    if (twitterImage != null) {
+      "https://cards.eelpieconsulting.co.uk/pinned?url=" + URLEncoder.encode(twitterImage, "UTF-8") // TODO not in a great place
+    } else {
+      null
+    }
+  }
 
   def getHangTags: util.List[Tag] = {
     handTags.map(_.asJava).orNull
