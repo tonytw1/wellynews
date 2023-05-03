@@ -2,6 +2,7 @@ package nz.co.searchwellington.views
 
 import nz.co.searchwellington.model.Tag
 import nz.co.searchwellington.model.frontend.FrontendNewsitem
+import org.apache.http.client.utils.URIBuilder
 import org.apache.velocity.spring.{VelocityEngineFactoryBean, VelocityEngineUtils}
 import org.junit.jupiter.api.Assertions.{assertEquals, assertTrue}
 import org.junit.jupiter.api.Test
@@ -12,6 +13,7 @@ import uk.co.eelpieconsulting.common.views.EtagGenerator
 import uk.co.eelpieconsulting.common.views.rss.RssView
 
 import java.io.StringWriter
+import java.net.URL
 import java.util.{Properties, UUID}
 import scala.jdk.CollectionConverters._
 
