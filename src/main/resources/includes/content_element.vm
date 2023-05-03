@@ -6,9 +6,9 @@
             #set($itemUrl = $urlBuilder.getFeedUrl($item))
 		#end
 
-		#if ($urlBuilder.cardImage($item))
+		#if ($urlBuilder.getCardImage($item))
 			<a href="$itemUrl">
-				<img src="$urlBuilder.cardImage($item)" />
+				<img src="$urlBuilder.getCardImage($item)" />
 			</a>
 		#end
 
