@@ -6,9 +6,9 @@
             #set($itemUrl = $urlBuilder.getFeedUrl($item))
 		#end
 
-		#if ($item.twitterImage)
+		#if ($urlBuilder.cardImage($item))
 			<a href="$itemUrl">
-				<img src="https://cards.eelpieconsulting.co.uk/pinned?url=$item.twitterImage" />
+				<img src="$urlBuilder.cardImage($item)" />
 			</a>
 		#end
 

@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
 import uk.co.eelpieconsulting.common.geo.model.Place
 
+import java.net.URLEncoder
 import java.time.LocalDate
 
 @Component
@@ -22,6 +23,19 @@ class UrlBuilder @Autowired()(siteInformation: SiteInformation, urlWordsGenerato
   def getHomeUri: String = "/"
 
   def getImageUrl(filename: String): String = getStaticUrl(filename)
+
+  def getCardImage(item: FrontendResource): String = {
+    item match {
+      case newsitem: FrontendNewsitem =>
+        if (newsitem.twitterImage != null) {
+          "https://cards.eelpieconsulting.co.uk/pinned?url=" + URLEncoder.encode(newsitem.twitterImage, "UTF-8")
+        } else {
+          null
+        }
+      case _ =>
+        null
+    }
+  }
 
   def getStaticUrl(filename: String): String = {
     siteInformation.getStaticRoot + filename
