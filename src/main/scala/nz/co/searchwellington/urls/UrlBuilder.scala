@@ -28,7 +28,7 @@ class UrlBuilder @Autowired()(siteInformation: SiteInformation, urlWordsGenerato
     item match {
       case newsitem: FrontendNewsitem =>
         if (newsitem.twitterImage != null) {
-          "https://cards.eelpieconsulting.co.uk/pinned?url=" + URLEncoder.encode(newsitem.twitterImage, "UTF-8")
+          "https://cards.eelpieconsulting.co.uk/thumbnail?url=" + URLEncoder.encode(newsitem.twitterImage, "UTF-8")
         } else {
           null
         }

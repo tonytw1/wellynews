@@ -52,7 +52,7 @@ case class FrontendNewsitem(id: String,
 
   override def getImageUrl: String = {
     if (twitterImage != null) {
-      "https://cards.eelpieconsulting.co.uk/pinned?url=" + URLEncoder.encode(twitterImage, "UTF-8") // TODO not in a great place
+      "https://cards.eelpieconsulting.co.uk/thumbnail?url=" + URLEncoder.encode(twitterImage, "UTF-8") // TODO not in a great place
     } else {
       null
     }
