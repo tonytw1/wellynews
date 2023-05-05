@@ -19,10 +19,11 @@ MongoDB is used for persistence and Elasticsearch for indexing.
 
 ## Related services
 
-Specific details of RSS and Twitter have been pushed into these potentially reusable services:
+Specific concerns have been pushed into these potentially reusable services:
 
 - [Whakaoko](https://github.com/tonytw1/whakaoko) for RSS feed polling and aggregation.
 - [RSS to Twitter](https://github.com/tonytw1/rsstotwitter) for automatic publishing to the @wellynews Twitter account.
+- [Cards](https://github.com/tonytw1/cards) for decorating news items with social media images.
 - [Brownbag](https://github.com/tonytw1/brownbag) for screen scraping interesting content into RSS feeds for easier ingression
 
 
