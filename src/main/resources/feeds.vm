@@ -12,8 +12,8 @@
 
 #parse("includes/actions.vm")
 
-<p>$siteInformation.sitename <a href="$urlBuilder.getAcceptedUrl()">accepts newsitems</a> from <a href="$urlBuilder.feedsUrl">these $siteInformation.areaname related feeds</a>.</p>
-
+<p>$siteInformation.sitename <a href="$urlBuilder.getAcceptedUrl()">accepts newsitems</a> from <a href="$urlBuilder.feedsUrl">these $siteInformation.areaname related RSS feeds</a>.</p>
+<p>If you're a local group who'd like your content distributed outside of the wall gardens of Facebook and Twitter then providing an RSS feed of your news items is a great way to this.</p>
 <p><a href="rssfeeds">RSS feeds</a> produced by $siteInformation.sitename are summarised <a href="rssfeeds">here</a>.</p>
 
 <ul>
