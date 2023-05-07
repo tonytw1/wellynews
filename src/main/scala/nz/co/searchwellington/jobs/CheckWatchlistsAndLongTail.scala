@@ -30,11 +30,11 @@ import scala.concurrent.{Await, Future}
 
   @Scheduled(cron = "0 */10 * * * *")
   def queueExpiredItems(): Unit = {
-    val numberOfItemsToQueue = 100
+    val numberOfItemsToQueue = 1000
 
     log.info("Queuing items")
     def neverScanned = mongoRepository.getNeverScanned(100)
-    def lastScannedOverAMonthAgo = mongoRepository.getNotCheckedSince(DateTime.now.minusMonths(1), numberOfItemsToQueue)
+    def lastScannedOverAMonthAgo = mongoRepository.getNotCheckedSince(DateTime.now.minusWeeks(1), numberOfItemsToQueue)
     val selectors = Seq(neverScanned, lastScannedOverAMonthAgo)
 
     val eventuallyQueued = Future.sequence(selectors.map { selector =>
