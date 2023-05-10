@@ -23,7 +23,9 @@ import scala.concurrent.{ExecutionContext, ExecutionContextExecutor}
     try {
       val connection = rabbitConnectionFactory.connect
       val channel = connection.createChannel
-      channel.queueDeclare(LinkCheckerQueue.QUEUE_NAME, false, false, false, null)
+      val ok = channel.queueDeclare(LinkCheckerQueue.QUEUE_NAME, false, false, false, null)
+      log.info(s"Link checker queue declared; contains ${ok.getMessageCount} messages")
+
       val consumer = new LinkCheckerConsumer(channel)
       val consumerTag = channel.basicConsume(LinkCheckerQueue.QUEUE_NAME, true, consumer)
       log.info(s"Link checker consumer thread started with consumer tag: $consumerTag")
@@ -59,7 +61,9 @@ import scala.concurrent.{ExecutionContext, ExecutionContextExecutor}
 
   private def logQueueCount(channel: Channel): Unit = {
     try {
-      val count = channel.messageCount(LinkCheckerQueue.QUEUE_NAME)
+      val ok = channel.queueDeclare(LinkCheckerQueue.QUEUE_NAME, false, false, false, null)
+      val count = ok.getMessageCount
+
       log.info(s"Link checker queue contains $count messages")
     } catch {
       case e: Exception =>
