@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.{Autowired, Qualifier}
 import org.springframework.core.task.TaskExecutor
 import org.springframework.stereotype.Component
 
+import scala.compat.java8.functionConverterImpls.AsJavaToDoubleFunction
 import scala.concurrent.{ExecutionContext, ExecutionContextExecutor}
 
 @Component class LinkCheckerConsumer @Autowired()(linkChecker: LinkChecker, rabbitConnectionFactory: RabbitConnectionFactory,
@@ -41,6 +42,13 @@ import scala.concurrent.{ExecutionContext, ExecutionContextExecutor}
   class LinkCheckerConsumer(channel: Channel) extends DefaultConsumer(channel: Channel) {
 
     private implicit val executionContext: ExecutionContextExecutor = ExecutionContext.fromExecutor(linkCheckerTaskExecutor)
+
+    private def countMessages(channel: Channel): Double = {
+      channel.messageCount(LinkCheckerQueue.QUEUE_NAME)
+    }
+    val countMessagesToDoubleFunction: AsJavaToDoubleFunction[Channel] = new AsJavaToDoubleFunction(countMessages)
+
+    registry.gauge("linkchecker_queue", channel, countMessagesToDoubleFunction)
 
     override def handleDelivery(consumerTag: String, envelope: Envelope, properties: AMQP.BasicProperties, body: Array[Byte]): Unit = {
 
