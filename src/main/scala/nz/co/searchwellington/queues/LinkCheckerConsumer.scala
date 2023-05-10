@@ -29,7 +29,7 @@ import scala.concurrent.{ExecutionContext, ExecutionContextExecutor}
       log.info(s"Link checker queue declared; contains ${ok.getMessageCount} messages")
 
       val consumer = new LinkCheckerConsumer(channel)
-      val consumerTag = channel.basicConsume(LinkCheckerQueue.QUEUE_NAME, true, consumer)
+      val consumerTag = channel.basicConsume(LinkCheckerQueue.QUEUE_NAME, false, consumer)
       log.info(s"Link checker consumer thread started with consumer tag: $consumerTag")
 
     } catch {
@@ -42,8 +42,6 @@ import scala.concurrent.{ExecutionContext, ExecutionContextExecutor}
 
     private implicit val executionContext: ExecutionContextExecutor = ExecutionContext.fromExecutor(linkCheckerTaskExecutor)
 
-    logQueueCount(channel)
-
     override def handleDelivery(consumerTag: String, envelope: Envelope, properties: AMQP.BasicProperties, body: Array[Byte]): Unit = {
 
       try {
@@ -52,24 +50,14 @@ import scala.concurrent.{ExecutionContext, ExecutionContextExecutor}
         log.debug("Received link checker message: " + message)
         pulledCounter.increment()
         linkChecker.scanResource(message)
-        logQueueCount(channel)
 
       } catch {
         case e: Exception =>
           log.error("Error while processing link checker message: ", e)
       }
+
+      channel.basicAck(envelope.getDeliveryTag, false)
     }
   }
 
-  private def logQueueCount(channel: Channel): Unit = {
-    try {
-      val ok = channel.queueDeclare(LinkCheckerQueue.QUEUE_NAME, false, false, false, null)
-      val count = ok.getMessageCount
-
-      log.info(s"Link checker queue contains $count messages")
-    } catch {
-      case e: Exception =>
-        log.error("Error while counting messages: ", e)
-    }
-  }
 }
