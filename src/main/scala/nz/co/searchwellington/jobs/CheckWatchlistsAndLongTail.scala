@@ -28,9 +28,9 @@ import scala.concurrent.{Await, Future}
     log.info("Queued watchlists: " + queued.size)
   }
 
-  @Scheduled(cron = "0 */10 * * * *")
+  @Scheduled(cron = "0 */1 * * * *")
   def queueExpiredItems(): Unit = {
-    val numberOfItemsToQueue = 1000
+    val numberOfItemsToQueue = 100
 
     log.info("Queuing items")
     def neverScanned = mongoRepository.getNeverScanned(100)
