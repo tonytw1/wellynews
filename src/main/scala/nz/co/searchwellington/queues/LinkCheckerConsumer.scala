@@ -23,6 +23,8 @@ import scala.concurrent.{ExecutionContext, ExecutionContextExecutor}
     try {
       val connection = rabbitConnectionFactory.connect
       val channel = connection.createChannel
+      channel.basicQos(1)
+
       val ok = channel.queueDeclare(LinkCheckerQueue.QUEUE_NAME, false, false, false, null)
       log.info(s"Link checker queue declared; contains ${ok.getMessageCount} messages")
 
