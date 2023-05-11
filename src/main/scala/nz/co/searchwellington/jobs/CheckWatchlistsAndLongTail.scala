@@ -21,8 +21,8 @@ import scala.concurrent.{Await, Future}
   @Scheduled(fixedRate = 86400000, initialDelay = 600000)
   def queueWatchlistItems(): Unit = {
     log.info("Queuing watchlist items for checking.")
-    val eventuallyQueued = mongoRepository.getAllWatchlists.map { watchlists =>
-      watchlists.map(_._id).map(queueBsonID)
+    val eventuallyQueued = mongoRepository.getAllWatchlists.flatMap { watchlists =>
+      Future.sequence(watchlists.map(_._id).map(queueBsonID))
     }
     val queued = Await.result(eventuallyQueued, TenSeconds)
     log.info("Queued watchlists: " + queued.size)
