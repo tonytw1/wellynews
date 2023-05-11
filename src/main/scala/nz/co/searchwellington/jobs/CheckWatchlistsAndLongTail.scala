@@ -28,7 +28,7 @@ import scala.concurrent.{Await, Future}
     log.info("Queued watchlists: " + queued.size)
   }
 
-  @Scheduled(cron = "0 */5 * * * *")
+  @Scheduled(cron = "0 */10 * * * *")
   def queueExpiredItems(): Unit = {
     val numberOfItemsToQueue = 100
 
