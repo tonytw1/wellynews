@@ -21,10 +21,10 @@ import scala.concurrent.{Await, Future}
   @Scheduled(fixedRate = 86400000, initialDelay = 600000)
   def queueWatchlistItems(): Unit = {
     log.info("Queuing watchlist items for checking.")
-    val eventuallyQueued = mongoRepository.getAllWatchlists.flatMap { watchlists =>
-      Future.sequence(watchlists.map(_._id).map(queueBsonID))
+    val watchlists = mongoRepository.getAllWatchlists.map { watchlists =>
+      watchlists.map(_._id)
     }
-    val queued = Await.result(eventuallyQueued, TenSeconds)
+    val queued = enqueue(Seq(watchlists), 1000)
     log.info("Queued watchlists: " + queued.size)
   }
 
@@ -35,16 +35,21 @@ import scala.concurrent.{Await, Future}
     log.info("Queuing items")
     def neverScanned = mongoRepository.getNeverScanned(numberOfItemsToQueue)
     def lastScannedOverAMonthAgo = mongoRepository.getNotCheckedSince(DateTime.now.minusWeeks(1), numberOfItemsToQueue)
-    val selectors = Seq(neverScanned, lastScannedOverAMonthAgo)
+    val queued = enqueue(Seq(neverScanned, lastScannedOverAMonthAgo), numberOfItemsToQueue)
+    log.info("Queued: " + queued.flatten.size)
+  }
 
+  private def enqueue(selectors: Seq[Future[Seq[BSONObjectID]]], numberOfItemsToQueue: Int): Seq[String] = {
     val eventualIdsToQueue = Future.sequence(selectors).map(_.flatten.take(numberOfItemsToQueue))
 
-    val eventuallyQueued = eventualIdsToQueue.flatMap { idsToQueue =>
-      Future.sequence(idsToQueue.map(queueBsonID))
+    val eventuallyQueued = eventualIdsToQueue.map { idsToQueue =>
+      idsToQueue.foreach { id =>
+        Await.result(queueBsonID(id), TenSeconds)
+      }
+      idsToQueue.map(_.stringify)
     }
 
-    val queued = Await.result(eventuallyQueued, TenSeconds)
-    log.info("Queued: " + queued.flatten.size)
+    Await.result(eventuallyQueued, TenSeconds)
   }
 
   private def queueBsonID(r: BSONObjectID): Future[String] = {
