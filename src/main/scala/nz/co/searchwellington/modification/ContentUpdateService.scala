@@ -63,10 +63,4 @@ import scala.concurrent.{ExecutionContext, Future}
     }
   }
 
-  def setLastScanned(resource: Resource, lastScanned: Date)(implicit ec: ExecutionContext): Future[Boolean] = {
-    mongoRepository.setLastScanned(resource, lastScanned).map { writeResult =>
-      writeResult.writeErrors.isEmpty
-    }
-  }
-
 }

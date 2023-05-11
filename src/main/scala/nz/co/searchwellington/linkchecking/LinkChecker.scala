@@ -47,14 +47,10 @@ import scala.util.Try
       maybeResourceWithUrl <- mongoRepository.getResourceByObjectId(objectId)
       result <- maybeResourceWithUrl.map { resource =>
         log.info("Checking: " + resource.title + " (" + resource.page + ")")
-
-        checkResource(resource).flatMap { outcome =>
-          log.debug("Updating resource")
-          contentUpdateService.setLastScanned(resource, DateTime.now.toDate).map { _ =>
-            checkedCounter.increment()
-            log.info("Finished link checking")
-            outcome
-          }
+        checkResource(resource).map { outcome =>
+          checkedCounter.increment()
+          log.info("Finished link checking")
+          outcome
         }
 
       }.getOrElse {

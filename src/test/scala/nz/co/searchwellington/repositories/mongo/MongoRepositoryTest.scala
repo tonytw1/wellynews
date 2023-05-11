@@ -224,7 +224,7 @@ class MongoRepositoryTest extends ReasonableWaits {
     Await.result(mongoRepository.saveResource(newsitem), TenSeconds)
     val lastScanned = DateTime.now.minusWeeks(1).toDate
 
-    Await.result(mongoRepository.setLastScanned(newsitem, lastScanned), TenSeconds)
+    Await.result(mongoRepository.setLastScanned(newsitem._id, lastScanned), TenSeconds)
 
     val reloaded = Await.result(mongoRepository.getResourceByObjectId(newsitem._id), TenSeconds).get
     assertEquals(title, reloaded.title)
