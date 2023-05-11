@@ -8,6 +8,7 @@ import org.apache.commons.logging.LogFactory
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
 
+import java.util.Date
 import scala.concurrent.{ExecutionContext, Future}
 
 @Component class ContentUpdateService @Autowired()(mongoRepository: MongoRepository,
@@ -59,6 +60,12 @@ import scala.concurrent.{ExecutionContext, Future}
         linkCheckerQueue.add(resource._id.stringify)
         resource
       }
+    }
+  }
+
+  def setLastScanned(resource: Resource, lastScanned: Date)(implicit ec: ExecutionContext): Future[Boolean] = {
+    mongoRepository.setLastScanned(resource, lastScanned).map { writeResult =>
+      writeResult.writeErrors.isEmpty
     }
   }
 

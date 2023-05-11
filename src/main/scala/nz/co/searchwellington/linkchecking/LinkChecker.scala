@@ -50,8 +50,7 @@ import scala.util.Try
 
         checkResource(resource).flatMap { outcome =>
           log.debug("Updating resource")
-          resource.setLastScanned(DateTime.now.toDate)
-          contentUpdateService.update(resource).map { _ => // TODO should be a specific field set
+          contentUpdateService.setLastScanned(resource, DateTime.now.toDate).map { _ =>
             checkedCounter.increment()
             log.info("Finished link checking")
             outcome

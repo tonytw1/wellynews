@@ -218,6 +218,20 @@ class MongoRepositoryTest extends ReasonableWaits {
   }
 
   @Test
+  def canUpdateResourceLastScanned(): Unit = {
+    val title = testName
+    val newsitem = Newsitem(title = title)
+    Await.result(mongoRepository.saveResource(newsitem), TenSeconds)
+    val lastScanned = DateTime.now.minusWeeks(1).toDate
+
+    Await.result(mongoRepository.setLastScanned(newsitem, lastScanned), TenSeconds)
+
+    val reloaded = Await.result(mongoRepository.getResourceByObjectId(newsitem._id), TenSeconds).get
+    assertEquals(title, reloaded.title)
+    assertEquals(Some(lastScanned), reloaded.last_scanned)
+  }
+
+  @Test
   def canPersistNewsitemPublisher(): Unit = {
     val publisher = Website(title = testName)
     Await.result(mongoRepository.saveResource(publisher), TenSeconds)

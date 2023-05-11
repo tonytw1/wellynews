@@ -182,6 +182,12 @@ class MongoRepository @Autowired()(@Value("${mongo.uri}") mongoUri: String) exte
     }
   }
 
+  def setLastScanned(resource: Resource, lastScanned: Date)(implicit ec: ExecutionContext): Future[WriteResult] = {
+    val byId = BSONDocument("_id" -> resource._id)
+    val patch = BSONDocument("$set" -> BSONDocument("last_scanned" -> lastScanned))
+    resourceCollection.update.one(byId, patch)
+  }
+
   def saveSupression(suppression: Supression)(implicit ec: ExecutionContext): Future[WriteResult] = {
     val byId = BSONDocument("_id" -> suppression._id)
     suppressionCollection.update.one(byId, suppression, upsert = true)
