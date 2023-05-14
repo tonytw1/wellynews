@@ -2,8 +2,8 @@ package nz.co.searchwellington.controllers
 
 import io.opentelemetry.api.trace.Span
 import nz.co.searchwellington.ReasonableWaits
+import nz.co.searchwellington.feeds.FeedReaderUpdateService
 import nz.co.searchwellington.feeds.whakaoko.WhakaokoFeedReader
-import nz.co.searchwellington.feeds.{FeedReaderUpdateService, FeeditemToNewsitemService}
 import nz.co.searchwellington.repositories.mongo.MongoRepository
 import nz.co.searchwellington.urls.UrlBuilder
 import nz.co.searchwellington.views.Errors
@@ -22,9 +22,8 @@ class AcceptFeedItemController @Autowired()(mongoRepository: MongoRepository,
                                             urlBuilder: UrlBuilder,
                                             whakaokoFeedReader: WhakaokoFeedReader,
                                             feedReaderUpdateService: FeedReaderUpdateService,
-                                            loggedInUserFilter: LoggedInUserFilter,
-                                            feeditemToNewsItemService: FeeditemToNewsitemService
-                                            ) extends ReasonableWaits with AcceptancePolicyOptions with Errors {
+                                            loggedInUserFilter: LoggedInUserFilter
+                                           ) extends ReasonableWaits with AcceptancePolicyOptions with Errors {
 
   private val log = LogFactory.getLog(classOf[AcceptFeedItemController])
 
@@ -45,22 +44,24 @@ class AcceptFeedItemController @Autowired()(mongoRepository: MongoRepository,
 
           eventualFeedItemToAccept.flatMap { maybeFeedItem =>
             maybeFeedItem.map { feedItemToAccept =>
-              feeditemToNewsItemService.makeNewsitemFromFeedItem(feedItemToAccept, feed).map { newsitemToAccept =>
-                (feedReaderUpdateService acceptFeeditem(loggedInUser, newsitemToAccept, feed,
-                  feedItemToAccept.categories.getOrElse(Seq.empty))).map { accepted =>
-                  log.info("Accepted newsitem: " + accepted.title)
+              feedReaderUpdateService.acceptFeeditem(loggedInUser, feedItemToAccept, feed, feedItemToAccept.categories.getOrElse(Seq.empty)).map { maybeAccepted =>
+                maybeAccepted.map { accepted =>
+                  log.info("Accepted news item: " + accepted.title)
                   new ModelAndView(new RedirectView(urlBuilder.getFeedUrl(feed)))
-                } recover {
-                  case e: Exception =>
-                    log.error("Error while accepting feeditem", e)
-                    NotFound
+                }.getOrElse {
+                  log.warn("Feed item was not acceptable")
+                  NotFound
                 }
-              }.getOrElse {
-                Future.successful(NotFound)
+
+              } recover {
+                case e: Exception =>
+                  log.error("Error while accepting feed item", e)
+                  NotFound
               }
             }.getOrElse {
               Future.successful(NotFound)
             }
+
           }
         }.getOrElse {
           Future.successful(NotFound)
@@ -68,7 +69,7 @@ class AcceptFeedItemController @Autowired()(mongoRepository: MongoRepository,
       }
 
     }.getOrElse {
-      Future.successful(new ModelAndView()) // TODO logged in
+      Future.successful(new ModelAndView()) // TODO redirect to login
     }
 
     Await.result(eventualModelAndView, TenSeconds)
