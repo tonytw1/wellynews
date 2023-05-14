@@ -44,17 +44,18 @@ class FeedReaderUpdateServiceTest extends ReasonableWaits {
     when(feedItemAcceptor.acceptFeedItem(feedReaderUser, (feeditem, feed))).thenReturn(Some(acceptedNewsitem))
     when(autoTaggingService.autotag(acceptedNewsitem.copy(held = false))).thenReturn(Future.successful(autoTaggings))
     when(autoTaggingService.autoTagsForFeedCategories(Seq.empty)).thenReturn(Future.successful(Set.empty))
+    val expectedResourceTaggings = Seq(
+      Tagging(tag_id = atag._id, user_id = autoTagUser._id),
+      Tagging(tag_id = anotherTag._id, user_id = autoTagUser._id),
+    )
     when(contentUpdateService.create(acceptedNewsitem.copy(held = false,
-      resource_tags = Seq(
-        Tagging(tag_id = atag._id, user_id = autoTagUser._id),
-        Tagging(tag_id = anotherTag._id, user_id = autoTagUser._id),
-      )
-    ))).thenReturn(Future.successful(acceptedNewsitem))
+      resource_tags = expectedResourceTaggings
+    ))).thenReturn(Future.successful(true))
     when(meterRegistry.counter("feedreader_accepted")).thenReturn(counter)
 
     val created = Await.result(feedReaderUpdateService.acceptFeeditem(feedReaderUser, feeditem, feed, Seq.empty), TenSeconds)
 
-    assertEquals(acceptedNewsitem, created.get)
+    assertEquals(expectedResourceTaggings, created.get.resource_tags)
   }
 
 }

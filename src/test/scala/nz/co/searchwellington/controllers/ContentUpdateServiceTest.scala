@@ -51,6 +51,7 @@ class ContentUpdateServiceTest extends ReasonableWaits {
     val newResource = Website()
     when(mongoRepository.saveResource(newResource)).thenReturn(Future.successful(successfulUpdateResult))
     when(elasticSearchIndexRebuildService.index(newResource)).thenReturn(Future.successful(true))
+    when(successfulUpdateResult.writeErrors).thenReturn(Seq.empty)
 
     Await.result(service.create(newResource), TenSeconds)
 

@@ -98,15 +98,25 @@ class NewFeedController @Autowired()(contentUpdateService: ContentUpdateService,
           val submittingUser = ensuredSubmittingUser(loggedInUser)
           val withSubmittingUser = feed.copy(owner = Some(submittingUser._id), held = submissionShouldBeHeld(Some(submittingUser)))
 
-          val eventuallyCreated = whakaokoService.createFeedSubscription(withSubmittingUser.page).map { maybeSubscription =>
+          val eventuallyMaybeCreated = whakaokoService.createFeedSubscription(withSubmittingUser.page).map { maybeSubscription =>
             withSubmittingUser.whakaokoSubscription = maybeSubscription
             withSubmittingUser
-          }.flatMap(contentUpdateService.create)
+          }.flatMap { feed =>
+            contentUpdateService.create(feed).map { r =>
+              if (r) {
+                Some(feed)
+              } else {
+                None
+              }
+            }
+          }
 
-          val created = Await.result(eventuallyCreated, TenSeconds)
-          log.info("Created feed: " + created)
+          val maybeCreated = Await.result(eventuallyMaybeCreated, TenSeconds)
 
-          Await.result(mongoRepository.deleteDiscoveredFeed(created.page), TenSeconds)
+          maybeCreated.map { created =>
+            log.info("Created feed: " + maybeCreated)
+            Await.result(mongoRepository.deleteDiscoveredFeed(created.page), TenSeconds)
+          }
 
           setSignedInUser(request, submittingUser)
           new ModelAndView(new RedirectView(urlBuilder.getFeedUrl(withSubmittingUser)))

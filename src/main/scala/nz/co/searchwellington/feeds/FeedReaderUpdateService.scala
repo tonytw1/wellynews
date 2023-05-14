@@ -22,7 +22,7 @@ import scala.concurrent.{ExecutionContext, Future}
   private lazy val acceptedCount = registry.counter("feedreader_accepted") // Wrong name all; all user use this
 
 
-  def acceptFeeditem(user: User, feednewsitem: FeedItem, feed: Feed, feedItemCategories: Seq[Category])(implicit ec: ExecutionContext): Future[Option[Resource]] = {
+  def acceptFeeditem(user: User, feednewsitem: FeedItem, feed: Feed, feedItemCategories: Seq[Category])(implicit ec: ExecutionContext): Future[Option[Newsitem]] = {
     // Given a feed item from a feed, accept it and create a newsitem as the call user
     // Then apply auto tagging
     log.info("Accepting feed item: " + feednewsitem.title + " from feed: " + feed.title)
@@ -34,7 +34,7 @@ import scala.concurrent.{ExecutionContext, Future}
       val eventualAutoTaggings = autoTagger.autotag(notHeld)
       val eventualFeedCategoryAutoTaggings = autoTagger.autoTagsForFeedCategories(feedItemCategories)
 
-      val withAutoTaggings = for {
+      for {
         autoTaggings <- eventualAutoTaggings
         feedCategoryAutoTaggings <- eventualFeedCategoryAutoTaggings
         withAutoTaggings <- {
@@ -48,16 +48,20 @@ import scala.concurrent.{ExecutionContext, Future}
           val withAutoTaggings = notHeld.withTaggings(allTaggings.map(t =>
             Tagging(tag_id = t.tag._id, user_id = t.taggingUser._id, reason = t.reason)).toSeq)
 
-          contentUpdateService.create(withAutoTaggings).map { created =>
-            log.info("Created accepted newsitem: " + withAutoTaggings)
-            acceptedCount.increment()
-            created
+          contentUpdateService.create(withAutoTaggings).map { r =>
+            if (r) {
+              log.info("Created accepted newsitem: " + withAutoTaggings)
+              acceptedCount.increment()
+              Some(withAutoTaggings)
+            } else {
+              log.warn("Failed to create accepted newsitem: " + withAutoTaggings)
+              None
+            }
           }
         }
       } yield {
-        Some(withAutoTaggings)
+        withAutoTaggings
       }
-      withAutoTaggings
 
     }.getOrElse {
       Future.successful(None)

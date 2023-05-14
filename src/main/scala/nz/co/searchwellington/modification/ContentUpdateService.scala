@@ -8,7 +8,6 @@ import org.apache.commons.logging.LogFactory
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
 
-import java.util.Date
 import scala.concurrent.{ExecutionContext, Future}
 
 @Component class ContentUpdateService @Autowired()(mongoRepository: MongoRepository,
@@ -51,14 +50,20 @@ import scala.concurrent.{ExecutionContext, Future}
     }
   }
 
-  def create(resource: Resource)(implicit ec: ExecutionContext): Future[Resource] = {
+  def create(resource: Resource)(implicit ec: ExecutionContext): Future[Boolean] = {
     resource.setHttpStatus(0)
     log.debug("Creating resource: " + resource.page)
+    println(resource)
     mongoRepository.saveResource(resource).flatMap { r =>
       log.debug("Result of save for " + resource._id + " " + resource.page + ": " + r)
-      elasticSearchIndexRebuildService.index(resource).map { _ =>
-        linkCheckerQueue.add(resource._id.stringify)
-        resource
+      println(r)
+      if (r.writeErrors.isEmpty) {
+        elasticSearchIndexRebuildService.index(resource).map { _ =>
+          linkCheckerQueue.add(resource._id.stringify)
+          true
+        }
+      } else {
+        Future.successful(false)
       }
     }
   }

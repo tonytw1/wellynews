@@ -45,7 +45,7 @@ class NewNewsitemControllerTest {
     val publisher = Website(_id = BSONObjectID.generate(), title = "A publisher")
     when(mongoRepository.getWebsiteByName("A publisher")).thenReturn(Future.successful(Some(publisher)))
     when(urlCleaner.cleanSubmittedItemUrl(new URL("http://localhost/a-newsitem"))).thenReturn(new URL("http://localhost/a-newsitem"))
-    when(contentUpdateService.create(any(classOf[Resource]))(any())).thenReturn(Future.successful(null))
+    when(contentUpdateService.create(any(classOf[Resource]))(any())).thenReturn(Future.successful(true))
     when(loggedInUserFilter.getLoggedInUser).thenReturn(Some(User()))
 
     val bindingResultWithNoErrors = mock(classOf[BindingResult])
