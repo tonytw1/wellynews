@@ -17,8 +17,7 @@ import scala.concurrent.{ExecutionContext, Future}
 @Component class FeedReader @Autowired()(feedItemAcceptanceDecider: FeedItemAcceptanceDecider,
                                          contentUpdateService: ContentUpdateService,
                                          feedReaderUpdateService: FeedReaderUpdateService,
-                                         whakaokoFeedReader: WhakaokoFeedReader,
-                                         feeditemToNewsItemService: FeeditemToNewsitemService) extends ReasonableWaits {
+                                         whakaokoFeedReader: WhakaokoFeedReader) extends ReasonableWaits {
 
   private val log = LogFactory.getLog(classOf[FeedReader])
 
@@ -72,23 +71,13 @@ import scala.concurrent.{ExecutionContext, Future}
     val eventualMaybeAccepted = feedItems.map { feedItem =>
       feedItemAcceptanceDecider.getAcceptanceErrors(feedItem, acceptancePolicy).flatMap { acceptanceErrors =>
         if (acceptanceErrors.isEmpty) {
-          feeditemToNewsItemService.makeNewsitemFromFeedItem(feedItem, feed).map { newsitem =>
-            feedReaderUpdateService.acceptFeeditem(feedReaderUser, newsitem, feed,
-              feedItem.categories.getOrElse(Seq.empty)
-            ).map { acceptedNewsitem =>
-              Some(acceptedNewsitem)
-            }.recover {
-              case e: Exception =>
-                log.error("Error while accepting feeditem", e)
-                None
-            }
-
-          }.getOrElse {
-            // TODO this relates to the url potentially not been valid; which should be pushed up
-            log.warn("Not accepting " + feedItem.url + " because feed item could not be mapped")
-            Future.successful(None)
+          feedReaderUpdateService.acceptFeeditem(feedReaderUser, feedItem, feed, feedItem.categories.getOrElse(Seq.empty)).map { acceptedNewsitem =>
+            acceptedNewsitem
+          }.recover {
+            case e: Exception =>
+              log.error("Error while accepting feeditem", e)
+              None
           }
-
         } else {
           log.debug("Not accepting " + feedItem.url + " due to acceptance errors: " + acceptanceErrors.mkString(", "))
           Future.successful(None)

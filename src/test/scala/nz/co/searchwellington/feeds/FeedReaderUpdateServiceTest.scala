@@ -9,6 +9,7 @@ import nz.co.searchwellington.tagging.AutoTaggingService
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
 import org.mockito.Mockito.{mock, when}
+import nz.co.searchwellington.feeds.whakaoko.model.FeedItem
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.{Await, Future}
@@ -29,9 +30,8 @@ class FeedReaderUpdateServiceTest extends ReasonableWaits {
     val feedReaderUser = User()
     val autoTagUser = User()
 
-    val newsitem = Newsitem(id = "123", page = "http://localhost/123", title = "A newsitem")
     val feed = Feed()
-
+    val feeditem = FeedItem(id = "123", url = "http://localhost/123", title = Some("A newsitem"), subscriptionId = "a-subscription")
     val atag = Tag(id = "atag")
     val anotherTag = Tag(id = "anothertag")
 
@@ -41,7 +41,7 @@ class FeedReaderUpdateServiceTest extends ReasonableWaits {
       HandTagging(tag = anotherTag, taggingUser = autoTagUser)
     )
 
-    when(feedItemAcceptor.acceptFeedItem(feedReaderUser, (newsitem, feed))).thenReturn(acceptedNewsitem)
+    when(feedItemAcceptor.acceptFeedItem(feedReaderUser, (feeditem, feed))).thenReturn(Some(acceptedNewsitem))
     when(autoTaggingService.autotag(acceptedNewsitem.copy(held = false))).thenReturn(Future.successful(autoTaggings))
     when(autoTaggingService.autoTagsForFeedCategories(Seq.empty)).thenReturn(Future.successful(Set.empty))
     when(contentUpdateService.create(acceptedNewsitem.copy(held = false,
@@ -52,9 +52,9 @@ class FeedReaderUpdateServiceTest extends ReasonableWaits {
     ))).thenReturn(Future.successful(acceptedNewsitem))
     when(meterRegistry.counter("feedreader_accepted")).thenReturn(counter)
 
-    val created = Await.result(feedReaderUpdateService.acceptFeeditem(feedReaderUser, newsitem, feed, Seq.empty), TenSeconds)
+    val created = Await.result(feedReaderUpdateService.acceptFeeditem(feedReaderUser, feeditem, feed, Seq.empty), TenSeconds)
 
-    assertEquals(created, acceptedNewsitem)
+    assertEquals(acceptedNewsitem, created.get)
   }
 
 }

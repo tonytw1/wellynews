@@ -34,7 +34,7 @@ class FeedReaderTest extends ReasonableWaits {
 
   private implicit val currentSpan = Span.current()
 
-  private val feedReader = new FeedReader(feedItemAcceptanceDecider, contentUpdateService, feedReaderUpdateService, whakaokoFeedReader, feeditemToNewsItemService)
+  private val feedReader = new FeedReader(feedItemAcceptanceDecider, contentUpdateService, feedReaderUpdateService, whakaokoFeedReader)
 
   @Test
   def shouldNotAcceptNewsitemsFromSuggestOnlyFeeds(): Unit = {
