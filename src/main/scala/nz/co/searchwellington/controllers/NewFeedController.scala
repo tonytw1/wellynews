@@ -68,7 +68,7 @@ class NewFeedController @Autowired()(contentUpdateService: ContentUpdateService,
       log.info("Got valid new feed submission: " + newFeed)
 
       if (!result.hasErrors) {
-        val url = cleanUrl(newFeed.getUrl).toOption.get.toExternalForm  // TODO error handling
+        val url = cleanUrl(newFeed.getUrl).toOption.get.toExternalForm // TODO error handling
 
 
         val eventualMaybePublisher = trimToOption(newFeed.getPublisher).map { publisherName =>
@@ -111,12 +111,19 @@ class NewFeedController @Autowired()(contentUpdateService: ContentUpdateService,
             }
           }
 
-          val maybeCreated = Await.result(eventuallyMaybeCreated, TenSeconds)
-
-          maybeCreated.map { created =>
-            log.info("Created feed: " + maybeCreated)
-            Await.result(mongoRepository.deleteDiscoveredFeed(created.page), TenSeconds)
+          val eventualResult = eventuallyMaybeCreated.flatMap { maybeCreated =>
+            maybeCreated.map { created =>
+              log.info("Created feed: " + maybeCreated)
+              mongoRepository.deleteDiscoveredFeed(created.page).map { r =>
+                r.writeErrors.isEmpty
+              }
+            }.getOrElse {
+              log.warn("Failed to create feed: " + maybeCreated)
+              Future.successful(false)
+            }
           }
+
+          Await.result(eventualResult, TenSeconds)
 
           setSignedInUser(request, submittingUser)
           new ModelAndView(new RedirectView(urlBuilder.getFeedUrl(withSubmittingUser)))
