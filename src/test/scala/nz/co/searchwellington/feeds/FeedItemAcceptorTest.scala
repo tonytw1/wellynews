@@ -66,7 +66,19 @@ class FeedItemAcceptorTest {
   }
 
   @Test
-  def acceptedFeedItemsWithNoDatesShouldDefaultToToday(): Unit = {
+  def acceptedFeedItemsWithNoDatesShouldFallbackToAcceptedTime(): Unit = {
+    val acceptedDate = DateTime.now.minusWeeks(1)
+    val feedItemWithNoDate = FeedItem(id = "", Some("A headline"), url = "http://localhost/blah", date = None, accepted = Some(acceptedDate), subscriptionId = "a-subscription")
+    when(urlCleaner.cleanSubmittedItemUrl(new URL("http://localhost/blah"))).thenReturn(new URL("http://localhost/blah"))
+
+    val accepted = feedItemAcceptor.acceptFeedItem(feedReadingUser, (feedItemWithNoDate, feed)).get
+
+    assertFalse(accepted.date.isEmpty)
+    assertEquals(Some(acceptedDate.toDate), accepted.date)
+  }
+
+  @Test
+  def acceptedFeedItemsWithNoDatesOrAcceptedTimeShouldDefaultToToday(): Unit = {
     val feedItemWithNoDate = FeedItem(id = "", title = Some("A headline"), url = "http://localhost/blah", subscriptionId = "a-subscription", date = None)
     when(urlCleaner.cleanSubmittedItemUrl(new URL("http://localhost/blah"))).thenReturn(new URL("http://localhost/blah"))
 
