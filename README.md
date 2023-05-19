@@ -137,6 +137,14 @@ Pages often contain elements such as timestamps which mean a pages checksum chan
 This should be filtered out before checksum pages.
 
 
+### Accepted feed items view
+
+Shows the news items which have been accepted from feeds on a particular day.
+This is useful for moderation and discovering items which could benefit from having additional tags applied.
+
+![Accepted feed items](docs/accepted-feed-items.png)
+
+
 ### Admin actions
 
 #### Backfill new tag
