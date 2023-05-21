@@ -15,7 +15,7 @@ import scala.concurrent.ExecutionContext.Implicits.global
 
   // Delete users with no submissions or taggings.
   // Typically these will be spammers who's spam contributions have been deleted
-  @Scheduled(fixedRate = 600000, initialDelay = 600000)
+  @Scheduled(fixedRate = 86400000, initialDelay = 600000)
   def deleteAnonUsers(): Unit = {
     def nonAdmins(user: User) = {
       !user.admin
@@ -36,7 +36,7 @@ import scala.concurrent.ExecutionContext.Implicits.global
           val total = owned.size + tagged.size
           log.debug(s"User ${user.profilename.getOrElse(user._id)} owns ${owned.size} and has tagged ${tagged.size} for $total submissions.")
           if (total == 0) {
-            log.info(s"User ${user.profilename.getOrElse(user._id)} has $total submissions and can be deleted")
+            log.info(s"User ${user.profilename.getOrElse(user._id)} has $total submissions and taggings and can be deleted")
             mongoRepository.removeUser(user)
             deleted = deleted + 1
           }
