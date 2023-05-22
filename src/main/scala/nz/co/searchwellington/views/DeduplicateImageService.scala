@@ -2,6 +2,7 @@ package nz.co.searchwellington.views
 
 import nz.co.searchwellington.ReasonableWaits
 import nz.co.searchwellington.model.Newsitem
+import nz.co.searchwellington.model.frontend.{FrontendNewsitem, FrontendResource}
 import nz.co.searchwellington.repositories.mongo.MongoRepository
 import org.apache.commons.logging.LogFactory
 import org.springframework.beans.factory.annotation.Autowired
@@ -18,10 +19,28 @@ class DeduplicateImageService @Autowired()(mongoRepository: MongoRepository) ext
 
   private val log = LogFactory.getLog(classOf[DeduplicateImageService])
 
+  var map: Map[BSONObjectID, mutable.Map[String, Long]] = Map.empty
+
   {
     log.info("Creating image usage map")
-    val map = Await.result(indexImages(), FiveMinutes)
+    map = Await.result(indexImages(), FiveMinutes)
     log.info("Created image usge map: " + map)
+  }
+
+  def count(item: FrontendResource): Double = {
+    (item match {
+      case n: FrontendNewsitem =>
+        for {
+          p <- n.publisherId
+          url <- Option(n.twitterImage)
+          pmap <- map.get(p)
+          count <- pmap.get(url)
+        } yield {
+          val totalUsages = pmap.values.sum
+          (count.toFloat / totalUsages.toFloat).toDouble
+        }
+      case _ => None
+    }).getOrElse(0L)
   }
 
   // Produce a map of image url usage grouped by publisher

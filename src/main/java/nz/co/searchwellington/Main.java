@@ -12,6 +12,7 @@ import nz.co.searchwellington.urls.UrlBuilder;
 import nz.co.searchwellington.utils.EscapeTools;
 import nz.co.searchwellington.views.ColumnSplitter;
 import nz.co.searchwellington.views.DateFormatter;
+import nz.co.searchwellington.views.DeduplicateImageService;
 import nz.co.searchwellington.views.MapPinDeduplicator;
 import org.apache.velocity.app.Velocity;
 import org.apache.velocity.spring.VelocityEngineFactoryBean;
@@ -106,7 +107,8 @@ public class Main {
             SiteInformation siteInformation,
             UrlBuilder urlBuilder,
             UrlWordsGenerator urlWordsGenerator,
-            MapPinDeduplicator mapPinDeduplicator) {
+            MapPinDeduplicator mapPinDeduplicator,
+            DeduplicateImageService deduplicateImageService) {
         final VelocityViewResolver viewResolver = new VelocityViewResolver();
         viewResolver.setCache(true);
         viewResolver.setSuffix(".vm");
@@ -121,6 +123,7 @@ public class Main {
         attributes.put("urlBuilder", urlBuilder);
         attributes.put("urlWordsGenerator", urlWordsGenerator);
         attributes.put("mapPinDeduplicator", mapPinDeduplicator);
+        attributes.put("deduplicateImageService", deduplicateImageService);
         viewResolver.setAttributesMap(attributes);
         return viewResolver;
     }
