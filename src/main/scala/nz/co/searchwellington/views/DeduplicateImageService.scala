@@ -13,7 +13,6 @@ import scala.collection.mutable
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.{Await, Future}
 
-
 @Component
 class DeduplicateImageService @Autowired()(mongoRepository: MongoRepository) extends ReasonableWaits {
 
@@ -27,7 +26,14 @@ class DeduplicateImageService @Autowired()(mongoRepository: MongoRepository) ext
     log.info("Created image usge map: " + map)
   }
 
-  def count(item: FrontendResource): Double = {
+  def isInteresting(item: FrontendResource): Boolean = {
+    // If  a publisher has more than 3 news item images then filter out images
+    // which are used more than 20% of the time
+    val s = score(item)
+    s > 0 && s < 0.2
+  }
+
+  private def score(item: FrontendResource): Double = {
     (item match {
       case n: FrontendNewsitem =>
         for {
@@ -37,14 +43,19 @@ class DeduplicateImageService @Autowired()(mongoRepository: MongoRepository) ext
           count <- pmap.get(url)
         } yield {
           val totalUsages = pmap.values.sum
-          (count.toFloat / totalUsages.toFloat).toDouble
+          // Do not apply filtering until the publisher has 3 items
+          if (totalUsages <= 5) {
+            return 0
+          } else {
+            (count.toFloat / totalUsages.toFloat).toDouble
+          }
         }
       case _ => None
     }).getOrElse(0L)
   }
 
   // Produce a map of image url usage grouped by publisher
-  def indexImages(): Future[Map[BSONObjectID, mutable.Map[String, Long]]] = {
+  private def indexImages(): Future[Map[BSONObjectID, mutable.Map[String, Long]]] = {
     mongoRepository.getAllResourceIds().map { resourceIds =>
       val map: mutable.Map[BSONObjectID, mutable.Map[String, Long]] = mutable.Map.empty
       resourceIds.foreach { id =>

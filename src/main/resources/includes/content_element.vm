@@ -2,14 +2,13 @@
 	<li #if ($item.type == "N" || $item.type == "FNI") itemscope itemtype="https://schema.org/NewsArticle" #end >
 
 		#set($itemUrl = $item.url) 				
-		#if ($item.type == ('F'))N
+		#if ($item.type == ('F'))
             #set($itemUrl = $urlBuilder.getFeedUrl($item))
 		#end
 
-		#if ($urlBuilder.getCardImage($item))
+		#if ($deduplicateImageService.isInteresting($item))
 			<a href="$itemUrl">
 				<img src="$urlBuilder.getCardImage($item)" />
-				$deduplicateImageService.count($item)
 			</a>
 		#end
 
