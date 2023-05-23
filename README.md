@@ -145,6 +145,18 @@ This is useful for moderation and discovering items which could benefit from hav
 ![Accepted feed items](docs/accepted-feed-items.png)
 
 
+### Social media Cards / Open Graph images
+
+News items are decorated with Twitter Cards and Open Graph social media images
+using the [Cards service](https://github.com/tonytw1/cards).
+
+We try to detect and filter out images which are a publisher's generic filler images.
+
+ie.
+This generic logo should not be included but a article specific images should be.
+![Duplicate images](docs/duplicate-images.png)
+
+
 ### Admin actions
 
 #### Backfill new tag

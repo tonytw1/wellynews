@@ -6,7 +6,7 @@
             #set($itemUrl = $urlBuilder.getFeedUrl($item))
 		#end
 
-		#if ($urlBuilder.getCardImage($item))
+		#if ($deduplicateImageService.isInteresting($item))
 			<a href="$itemUrl">
 				<img src="$urlBuilder.getCardImage($item)" />
 			</a>

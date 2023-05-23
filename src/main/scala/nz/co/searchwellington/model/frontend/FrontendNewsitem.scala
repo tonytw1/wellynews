@@ -3,6 +3,7 @@ package nz.co.searchwellington.model.frontend
 import com.fasterxml.jackson.annotation.JsonFormat
 import nz.co.searchwellington.model.geo.Geocode
 import nz.co.searchwellington.model.{Tag, User}
+import reactivemongo.api.bson.BSONObjectID
 import uk.co.eelpieconsulting.common.views.rss.RssFeedable
 
 import java.net.URLEncoder
@@ -34,6 +35,7 @@ case class FrontendNewsitem(id: String,
                             lastChanged: Option[Date] = None,
                             actions: Seq[Action] = Seq.empty,
                             twitterImage: String = null,
+                            publisherId: Option[BSONObjectID] = None,
                            ) extends FrontendResource with RssFeedable {
 
   def getPublisherName: String = publisherName.orNull
