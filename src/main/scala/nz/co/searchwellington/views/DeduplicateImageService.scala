@@ -29,7 +29,7 @@ class DeduplicateImageService @Autowired()(mongoRepository: MongoRepository) ext
     // If  a publisher has more than 3 news item images then filter out images
     // which are used more than 20% of the time
     val s = score(item)
-    s > 0 && s < 0.2
+    s >= 0 && s < 0.2
   }
 
   private def score(item: FrontendResource): Double = {
