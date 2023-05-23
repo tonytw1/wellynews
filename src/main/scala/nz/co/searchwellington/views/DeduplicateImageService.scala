@@ -1,9 +1,8 @@
 package nz.co.searchwellington.views
 
 import nz.co.searchwellington.ReasonableWaits
-import nz.co.searchwellington.model.Newsitem
 import nz.co.searchwellington.model.frontend.{FrontendNewsitem, FrontendResource}
-import nz.co.searchwellington.repositories.mongo.MongoRepository
+import nz.co.searchwellington.repositories.elasticsearch.ElasticSearchIndexer
 import org.apache.commons.logging.LogFactory
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
@@ -13,11 +12,11 @@ import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.{Await, Future}
 
 @Component
-class DeduplicateImageService @Autowired()(mongoRepository: MongoRepository) extends ReasonableWaits {
+class DeduplicateImageService @Autowired()(elasticSearchIndexer: ElasticSearchIndexer) extends ReasonableWaits {
 
   private val log = LogFactory.getLog(classOf[DeduplicateImageService])
 
-  var map: Map[BSONObjectID, Map[String, Int]] = Map.empty
+  var map: Map[BSONObjectID, Map[String, Long]] = Map.empty
 
   {
     log.info("Creating image usage map")
@@ -54,30 +53,8 @@ class DeduplicateImageService @Autowired()(mongoRepository: MongoRepository) ext
   }
 
   // Produce a map of image url usages grouped by publisher
-  private def indexImages(): Future[Map[BSONObjectID, Map[String, Int]]] = {
-    mongoRepository.getAllResourceIds().map { resourceIds =>
-      val publisherImageUsages: Seq[(BSONObjectID, String)] = resourceIds.flatMap { id =>
-        val maybeResource = Await.result(mongoRepository.getResourceByObjectId(id), TenSeconds)
-        maybeResource.flatMap {
-          case newsitem: Newsitem =>
-            for {
-              publisher <- newsitem.publisher
-              image <- newsitem.twitterImage
-            } yield {
-              (publisher, image)
-            }
-          case _ =>
-            None
-        }
-      }
-
-      val groupedByPublisher = publisherImageUsages.groupBy(_._1)
-      groupedByPublisher.map { p =>
-        val counts = p._2.map(_._2).groupBy(identity).view.mapValues(_.size)
-        (p._1, counts.toMap)
-      }
-
-    }
+  private def indexImages(): Future[Map[BSONObjectID, Map[String, Long]]] = {
+    elasticSearchIndexer.getImageUsages(loggedInUser = None)
   }
 
 }
