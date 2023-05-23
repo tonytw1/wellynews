@@ -9,7 +9,6 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
 import reactivemongo.api.bson.BSONObjectID
 
-import scala.collection.mutable
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.{Await, Future}
 
@@ -18,7 +17,7 @@ class DeduplicateImageService @Autowired()(mongoRepository: MongoRepository) ext
 
   private val log = LogFactory.getLog(classOf[DeduplicateImageService])
 
-  var map: Map[BSONObjectID, mutable.Map[String, Long]] = Map.empty
+  var map: Map[BSONObjectID, Map[String, Int]] = Map.empty
 
   {
     log.info("Creating image usage map")
@@ -54,29 +53,30 @@ class DeduplicateImageService @Autowired()(mongoRepository: MongoRepository) ext
     }).getOrElse(0L)
   }
 
-  // Produce a map of image url usage grouped by publisher
-  private def indexImages(): Future[Map[BSONObjectID, mutable.Map[String, Long]]] = {
+  // Produce a map of image url usages grouped by publisher
+  private def indexImages(): Future[Map[BSONObjectID, Map[String, Int]]] = {
     mongoRepository.getAllResourceIds().map { resourceIds =>
-      val map: mutable.Map[BSONObjectID, mutable.Map[String, Long]] = mutable.Map.empty
-      resourceIds.foreach { id =>
+      val publisherImageUsages: Seq[(BSONObjectID, String)] = resourceIds.flatMap { id =>
         val maybeResource = Await.result(mongoRepository.getResourceByObjectId(id), TenSeconds)
-        maybeResource.foreach {
+        maybeResource.flatMap {
           case newsitem: Newsitem =>
-            (for {
+            for {
               publisher <- newsitem.publisher
               image <- newsitem.twitterImage
             } yield {
               (publisher, image)
-            }).foreach { pi =>
-              val pmap = map.getOrElse(pi._1, mutable.Map.empty[String, Long])
-              val c = pmap.getOrElse(pi._2, 0L)
-              pmap.put(pi._2, c + 1)
-              map.put(pi._1, pmap)
             }
           case _ =>
+            None
         }
       }
-      map.toMap
+
+      val groupedByPublisher = publisherImageUsages.groupBy(_._1)
+      groupedByPublisher.map { p =>
+        val counts = p._2.map(_._2).groupBy(identity).view.mapValues(_.size)
+        (p._1, counts.toMap)
+      }
+
     }
   }
 
