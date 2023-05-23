@@ -8,8 +8,8 @@ import twitter4j.{AccessToken, OAuthAuthorization, Twitter}
 @Component
 class TwitterApiFactory {
 
-  @Value("${consumer.key}") private val consumerKey: String = null
-  @Value("${consumer.secret}") private val consumerSecret: String = null
+  @Value("${twitter.consumer.key}") private val consumerKey: String = null
+  @Value("${twitter.consumer.secret}") private val consumerSecret: String = null
 
   def getOauthedTwitterApiForAccessToken(accessToken: AccessToken): Twitter = Twitter.newBuilder().
     oAuthConsumer(consumerKey, consumerSecret).
