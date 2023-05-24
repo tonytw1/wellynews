@@ -62,7 +62,7 @@ class ElasticSearchIndexer @Autowired()(val showBrokenDecisionService: ShowBroke
         } else {
           throw new RuntimeException("Could not determine if index exists")
         }
-      }, OneMinute)
+      }, TenSeconds)
 
       if (!exists) {
         log.info("Index does not exist; creating")
@@ -105,11 +105,13 @@ class ElasticSearchIndexer @Autowired()(val showBrokenDecisionService: ShowBroke
           }
         }
 
-        val result = Await.result(eventualCreateIndexResult, OneMinute)
+        val result = Await.result(eventualCreateIndexResult, TenSeconds)
         log.info("Create index " + Index + " result: " + result)
         if (!result.isSuccess) {
           log.info("Create index failed; throwing exception")
           throw new RuntimeException("Could not create elastic index: " + result.error.reason)
+        } else {
+          log.info("Create index succeeded")
         }
 
       } catch {
