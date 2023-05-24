@@ -262,7 +262,7 @@ class ElasticSearchIndexer @Autowired()(val showBrokenDecisionService: ShowBroke
     getAggregationFor(allResources, "type", loggedInUser)
   }
 
-  def getImageUsages(loggedInUser: Option[User])(implicit ec: ExecutionContext): Future[Map[BSONObjectID, Map[String, Long]]] = {
+  def buildImageUsagesMap(loggedInUser: Option[User])(implicit ec: ExecutionContext): Future[Map[BSONObjectID, Map[String, Long]]] = {
     val allNewsitems = ResourceQuery(`type` = Some(Set("N")))
 
     val publisherImagesAggregation = termsAgg("publisher", Publisher) size Integer.MAX_VALUE subaggs termsAgg(CardImage, CardImage)
