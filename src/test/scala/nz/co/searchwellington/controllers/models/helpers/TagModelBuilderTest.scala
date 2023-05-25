@@ -2,15 +2,13 @@ package nz.co.searchwellington.controllers.models.helpers
 
 import io.opentelemetry.api.trace.Span
 import nz.co.searchwellington.ReasonableWaits
-import nz.co.searchwellington.controllers.RssUrlBuilder
-import nz.co.searchwellington.controllers.admin.AdminUrlBuilder
 import nz.co.searchwellington.model._
 import nz.co.searchwellington.model.frontend.{FrontendNewsitem, FrontendResource}
 import nz.co.searchwellington.model.geo.Geocode
 import nz.co.searchwellington.permissions.EditPermissionService
 import nz.co.searchwellington.repositories.{ContentRetrievalService, TagDAO}
 import nz.co.searchwellington.tagging.RelatedTagsService
-import nz.co.searchwellington.urls.UrlBuilder
+import nz.co.searchwellington.urls.{AdminUrlBuilder, RssUrlBuilder, UrlBuilder}
 import org.joda.time.{DateTime, DateTimeZone, Interval}
 import org.junit.jupiter.api.Assertions.{assertEquals, assertFalse, assertNotNull, assertTrue}
 import org.junit.jupiter.api.Test

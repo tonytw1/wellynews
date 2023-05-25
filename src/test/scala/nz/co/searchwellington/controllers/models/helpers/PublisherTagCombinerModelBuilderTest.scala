@@ -2,13 +2,12 @@ package nz.co.searchwellington.controllers.models.helpers
 
 import io.opentelemetry.api.trace.Span
 import nz.co.searchwellington.ReasonableWaits
-import nz.co.searchwellington.controllers.RssUrlBuilder
 import nz.co.searchwellington.model.frontend.{FrontendNewsitem, FrontendWebsite}
 import nz.co.searchwellington.model.mappers.FrontendResourceMapper
 import nz.co.searchwellington.model.{SiteInformation, Tag, Website}
 import nz.co.searchwellington.repositories.ContentRetrievalService
 import nz.co.searchwellington.tagging.RelatedTagsService
-import nz.co.searchwellington.urls.UrlBuilder
+import nz.co.searchwellington.urls.{RssUrlBuilder, UrlBuilder}
 import org.junit.jupiter.api.Assertions.{assertEquals, assertNotNull, assertTrue}
 import org.junit.jupiter.api.Test
 import org.mockito.Mockito.{mock, when}

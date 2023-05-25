@@ -7,6 +7,7 @@ import nz.co.searchwellington.controllers.models.helpers.CommonAttributesModelBu
 import nz.co.searchwellington.model.SiteInformation
 import nz.co.searchwellington.repositories.ContentRetrievalService
 import nz.co.searchwellington.repositories.mongo.MongoRepository
+import nz.co.searchwellington.urls.RssUrlBuilder
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.core.annotation.Order
 import org.springframework.stereotype.Controller

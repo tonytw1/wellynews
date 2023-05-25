@@ -1,13 +1,12 @@
 package nz.co.searchwellington.model.mappers
 
 import nz.co.searchwellington.ReasonableWaits
-import nz.co.searchwellington.controllers.admin.AdminUrlBuilder
 import nz.co.searchwellington.model._
 import nz.co.searchwellington.model.taggingvotes.HandTagging
 import nz.co.searchwellington.permissions.EditPermissionService
 import nz.co.searchwellington.repositories.mongo.MongoRepository
 import nz.co.searchwellington.tagging.{IndexTagsService, TaggingReturnsOfficerService}
-import nz.co.searchwellington.urls.UrlBuilder
+import nz.co.searchwellington.urls.{AdminUrlBuilder, UrlBuilder}
 import org.joda.time.{DateTime, DateTimeZone}
 import org.junit.jupiter.api.Assertions.{assertEquals, assertFalse, assertTrue}
 import org.junit.jupiter.api.Test

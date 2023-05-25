@@ -1,9 +1,8 @@
-package nz.co.searchwellington.controllers.admin
+package nz.co.searchwellington.urls
 
 import nz.co.searchwellington.feeds.whakaoko.model.Subscription
-import nz.co.searchwellington.model.frontend.{FrontendFeed, FrontendNewsitem, FrontendResource, FrontendWatchlist, FrontendWebsite}
 import nz.co.searchwellington.model._
-import nz.co.searchwellington.urls.{UrlBuilder, UrlParameterEncoder}
+import nz.co.searchwellington.model.frontend._
 import org.springframework.beans.factory.annotation.{Autowired, Value}
 import org.springframework.stereotype.Component
 

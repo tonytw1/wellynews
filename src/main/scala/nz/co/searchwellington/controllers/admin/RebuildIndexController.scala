@@ -4,6 +4,7 @@ import nz.co.searchwellington.ReasonableWaits
 import nz.co.searchwellington.controllers.{AcceptFeedItemController, LoggedInUserFilter, RequiringLoggedInUser}
 import nz.co.searchwellington.repositories.elasticsearch.ElasticSearchIndexRebuildService
 import nz.co.searchwellington.repositories.mongo.MongoRepository
+import nz.co.searchwellington.urls.AdminUrlBuilder
 import org.apache.commons.logging.LogFactory
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.core.annotation.Order

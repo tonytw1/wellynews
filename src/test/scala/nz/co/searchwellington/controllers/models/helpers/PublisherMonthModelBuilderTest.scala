@@ -2,11 +2,11 @@ package nz.co.searchwellington.controllers.models.helpers
 
 import io.opentelemetry.api.trace.Span
 import nz.co.searchwellington.ReasonableWaits
-import nz.co.searchwellington.controllers.RssUrlBuilder
 import nz.co.searchwellington.model.{ArchiveLink, SiteInformation, Website}
 import nz.co.searchwellington.model.frontend.{FrontendResource, FrontendWebsite}
 import nz.co.searchwellington.model.mappers.FrontendResourceMapper
 import nz.co.searchwellington.repositories.ContentRetrievalService
+import nz.co.searchwellington.urls.RssUrlBuilder
 import org.joda.time.{DateTime, DateTimeZone, Interval}
 import org.junit.jupiter.api.Assertions.{assertEquals, assertFalse, assertNotNull, assertTrue}
 import org.junit.jupiter.api.Test

@@ -1,11 +1,11 @@
 package nz.co.searchwellington.feeds
 
 import nz.co.searchwellington.ReasonableWaits
-import nz.co.searchwellington.controllers.admin.AdminUrlBuilder
 import nz.co.searchwellington.model.User
 import nz.co.searchwellington.model.frontend.{Action, FrontendNewsitem, FrontendResource}
 import nz.co.searchwellington.repositories.SuppressionDAO
 import nz.co.searchwellington.repositories.mongo.MongoRepository
+import nz.co.searchwellington.urls.AdminUrlBuilder
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
 

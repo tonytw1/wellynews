@@ -2,12 +2,11 @@ package nz.co.searchwellington.controllers.models.helpers
 
 import io.opentelemetry.api.trace.Span
 import nz.co.searchwellington.ReasonableWaits
-import nz.co.searchwellington.controllers.RssUrlBuilder
 import nz.co.searchwellington.model.Tag
 import nz.co.searchwellington.model.frontend.{FrontendNewsitem, FrontendResource}
 import nz.co.searchwellington.repositories.{ContentRetrievalService, TagDAO}
 import nz.co.searchwellington.tagging.RelatedTagsService
-import nz.co.searchwellington.urls.UrlBuilder
+import nz.co.searchwellington.urls.{RssUrlBuilder, UrlBuilder}
 import org.junit.jupiter.api.Assertions.{assertEquals, assertFalse, assertTrue}
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.BeforeEach

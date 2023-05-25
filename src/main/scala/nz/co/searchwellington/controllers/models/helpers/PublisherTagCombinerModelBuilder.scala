@@ -3,13 +3,12 @@ package nz.co.searchwellington.controllers.models.helpers
 import io.opentelemetry.api.trace.Span
 import jakarta.servlet.http.HttpServletRequest
 import nz.co.searchwellington.ReasonableWaits
-import nz.co.searchwellington.controllers.RssUrlBuilder
 import nz.co.searchwellington.filters.attributesetters.PublisherPageAttributeSetter
 import nz.co.searchwellington.model.mappers.FrontendResourceMapper
 import nz.co.searchwellington.model.{Tag, User, Website}
 import nz.co.searchwellington.repositories.ContentRetrievalService
 import nz.co.searchwellington.tagging.RelatedTagsService
-import nz.co.searchwellington.urls.UrlBuilder
+import nz.co.searchwellington.urls.{RssUrlBuilder, UrlBuilder}
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
 import org.springframework.ui.ModelMap

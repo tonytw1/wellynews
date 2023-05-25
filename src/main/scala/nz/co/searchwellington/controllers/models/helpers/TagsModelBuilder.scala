@@ -3,11 +3,11 @@ package nz.co.searchwellington.controllers.models.helpers
 import io.opentelemetry.api.trace.Span
 import jakarta.servlet.http.HttpServletRequest
 import nz.co.searchwellington.ReasonableWaits
-import nz.co.searchwellington.controllers.admin.AdminUrlBuilder
 import nz.co.searchwellington.filters.RequestPath
 import nz.co.searchwellington.model.User
 import nz.co.searchwellington.model.frontend.Action
 import nz.co.searchwellington.repositories.{ContentRetrievalService, TagDAO}
+import nz.co.searchwellington.urls.AdminUrlBuilder
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
 import org.springframework.ui.ModelMap

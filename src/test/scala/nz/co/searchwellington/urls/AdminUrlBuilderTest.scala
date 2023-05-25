@@ -1,8 +1,7 @@
-package nz.co.searchwellington.controllers.admin
+package nz.co.searchwellington.urls
 
-import nz.co.searchwellington.model.{SiteInformation, UrlWordsGenerator}
 import nz.co.searchwellington.model.frontend.{FrontendFeed, FrontendNewsitem, FrontendWebsite}
-import nz.co.searchwellington.urls.UrlBuilder
+import nz.co.searchwellington.model.{SiteInformation, UrlWordsGenerator}
 import org.joda.time.{DateTime, DateTimeZone}
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test

@@ -3,8 +3,6 @@ package nz.co.searchwellington.controllers.models.helpers
 import io.opentelemetry.api.trace.Span
 import jakarta.servlet.http.HttpServletRequest
 import nz.co.searchwellington.ReasonableWaits
-import nz.co.searchwellington.controllers.RssUrlBuilder
-import nz.co.searchwellington.controllers.admin.AdminUrlBuilder
 import nz.co.searchwellington.filters.attributesetters.PublisherPageAttributeSetter
 import nz.co.searchwellington.model.frontend.{Action, FrontendResource, FrontendWebsite}
 import nz.co.searchwellington.model.mappers.FrontendResourceMapper
@@ -12,7 +10,7 @@ import nz.co.searchwellington.model.{PublisherArchiveLink, Tag, User, Website}
 import nz.co.searchwellington.permissions.EditPermissionService
 import nz.co.searchwellington.repositories.ContentRetrievalService
 import nz.co.searchwellington.tagging.RelatedTagsService
-import nz.co.searchwellington.urls.UrlBuilder
+import nz.co.searchwellington.urls.{AdminUrlBuilder, RssUrlBuilder, UrlBuilder}
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
 import org.springframework.ui.ModelMap

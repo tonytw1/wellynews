@@ -5,7 +5,7 @@ import java.net.URLEncoder
 
 @Deprecated
 // Suggests that we the URLs builders are not using a higher level URL library if they need help with encoding parameters
-object UrlParameterEncoder {
+protected object UrlParameterEncoder {
 
   private val UTF_8 = "UTF-8"
 

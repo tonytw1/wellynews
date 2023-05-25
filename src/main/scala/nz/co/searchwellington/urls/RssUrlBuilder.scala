@@ -1,9 +1,8 @@
-package nz.co.searchwellington.controllers
+package nz.co.searchwellington.urls
 
 import com.google.common.base.Strings
 import nz.co.searchwellington.model.frontend.FrontendWebsite
 import nz.co.searchwellington.model.{SiteInformation, Tag, Website}
-import nz.co.searchwellington.urls.UrlParameterEncoder
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
 import uk.co.eelpieconsulting.common.geo.model.{LatLong, OsmId, Place}

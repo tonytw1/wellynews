@@ -1,10 +1,10 @@
-package nz.co.searchwellington.controllers
-
-import java.util.UUID
+package nz.co.searchwellington.urls
 
 import nz.co.searchwellington.model.{SiteInformation, Tag}
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
+
+import java.util.UUID
 
 class RssUrlBuilderTest {
 
