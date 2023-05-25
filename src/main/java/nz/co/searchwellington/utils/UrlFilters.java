@@ -47,11 +47,6 @@ public class UrlFilters {
         url = HTTP_PREFIX + url;
         return url;
     }
-    
-    public static String stripHtml(String content) {
-		return htmlCleaner.stripHtml(content);        
-    }
-
 
     public static URL stripPhpSession(URL url) throws URISyntaxException, MalformedURLException {
         return removeQueryParametersFrom(url, PHPSESSION_PARAMETER);
