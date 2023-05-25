@@ -9,7 +9,7 @@ trait StringWrangling {
 
   def lowerCappedSentence(input: String): String = {
     if (isCapitalised(input)) {
-      StringUtils.capitalize(StringUtils.lowerCase(input))
+      input.toLowerCase.capitalize
     } else {
       input
     }
@@ -28,6 +28,6 @@ trait StringWrangling {
     commaSplitter.split(commaSeperated).asScala.map(_.trim).filter(!Strings.isNullOrEmpty(_)).toSeq
   }
 
-  private def isCapitalised(input: String) = input == StringUtils.upperCase(input)
+  private def isCapitalised(input: String) = input == input.toUpperCase
 
 }
