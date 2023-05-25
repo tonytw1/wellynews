@@ -7,7 +7,7 @@ import org.mockito.Mockito.{mock, verify, when}
 
 import java.net.URL
 
-class UrlCleanerTests {
+class UrlCleanerTest {
 
   private val SECURE_URL = new URL("https://www.secure/rss")
   private val BASIC_CLEANED_URL = new URL("http://www.capitalshakers.co.nz/news/genesis-energy-shakers-vs-otago-rebels-easter-sunday/?PHPSESSID=eb1ca7999e13201d6dbf02a02fffacdd")
@@ -17,8 +17,7 @@ class UrlCleanerTests {
   private val shortUrlResolverService = mock(classOf[CachingShortUrlResolverService])
   private val cleaner = new UrlCleaner(shortUrlResolverService)
 
-  @BeforeEach
-  def setUp(): Unit = {
+  {
     when(shortUrlResolverService.resolveUrl(BASIC_CLEANED_URL)).thenReturn(BASIC_CLEANED_URL)
     when(shortUrlResolverService.resolveUrl(SHORT_URL)).thenReturn(BASIC_CLEANED_URL)
     when(shortUrlResolverService.resolveUrl(SECURE_URL)).thenReturn(SECURE_URL)
