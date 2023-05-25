@@ -25,16 +25,14 @@ class UrlBuilder @Autowired()(siteInformation: SiteInformation, urlWordsGenerato
   def getImageUrl(filename: String): String = getStaticUrl(filename)
 
   def getCardImage(item: FrontendResource): String = {
-    item match {
+    (item match {
       case newsitem: FrontendNewsitem =>
-        if (newsitem.twitterImage != null) {
-          "https://cards.eelpieconsulting.co.uk/thumbnail?url=" + URLEncoder.encode(newsitem.twitterImage, "UTF-8")
-        } else {
-          null
+        newsitem.twitterImage.map { cardImage =>
+          "https://cards.eelpieconsulting.co.uk/thumbnail?url=" + URLEncoder.encode(cardImage, "UTF-8")
         }
       case _ =>
-        null
-    }
+        None
+    }).orNull
   }
 
   def getStaticUrl(filename: String): String = {

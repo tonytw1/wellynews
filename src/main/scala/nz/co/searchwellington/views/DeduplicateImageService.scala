@@ -19,10 +19,10 @@ class DeduplicateImageService @Autowired()(elasticSearchIndexer: ElasticSearchIn
   private var usages: Map[BSONObjectID, Map[String, Long]] = Map.empty
 
   def isInteresting(item: FrontendResource): Boolean = {
-    val mayBeCardImage: Option[(BSONObjectID, String)] = item match {
+    val mayBeCardImage = item match {
       case n: FrontendNewsitem => for {
         publisher <- n.publisherId
-        cardImage <- Option(n.twitterImage)
+        cardImage <- n.twitterImage
       } yield {
         (publisher, cardImage)
       }
