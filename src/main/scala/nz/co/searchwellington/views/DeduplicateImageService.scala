@@ -19,33 +19,36 @@ class DeduplicateImageService @Autowired()(elasticSearchIndexer: ElasticSearchIn
   private var usages: Map[BSONObjectID, Map[String, Long]] = Map.empty
 
   def isInteresting(item: FrontendResource): Boolean = {
-    // If  a publisher has more than 3 news item images then filter out images
-    // which are used more than 20% of the time
-    val s = score(item)
-    s >= 0 && s < 0.2
-  }
-
-  private def score(item: FrontendResource): Double = {
-    (item match {
-      case n: FrontendNewsitem =>
-        for {
-          p <- n.publisherId
-          url <- Option(n.twitterImage)
-          pmap <- usages.get(p)
-          count <- pmap.get(url)
-        } yield {
-          val totalUsages = pmap.values.sum
-          // Do not apply filtering until the publisher has 3 items
-          if (totalUsages <= 5) {
-            return 0
-          } else {
-            (count.toFloat / totalUsages.toFloat).toDouble
-          }
-        }
+    val mayBeCardImage: Option[(BSONObjectID, String)] = item match {
+      case n: FrontendNewsitem => for {
+        publisher <- n.publisherId
+        cardImage <- Option(n.twitterImage)
+      } yield {
+        (publisher, cardImage)
+      }
       case _ => None
-    }).getOrElse(0L)
+    }
+
+    mayBeCardImage.exists { pi =>
+      // Filter out images which this publisher has used more than 20% of the time.
+      val s = score(pi)
+      s < 0.2
+    }
   }
 
+  private def score(pi: (BSONObjectID, String)): Double = {
+    (for {
+      pmap <- usages.get(pi._1)
+      count <- pmap.get(pi._2)
+    } yield {
+      val totalUsages = pmap.values.sum
+      if (totalUsages <= 5) {
+        return 0
+      } else {
+        (count.toFloat / totalUsages.toFloat).toDouble
+      }
+    }).getOrElse(0.0)
+  }
 
   @Scheduled(fixedRate = 600000, initialDelay = 10000)
   def reindexImages() = {
