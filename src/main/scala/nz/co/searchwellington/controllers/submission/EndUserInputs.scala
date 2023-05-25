@@ -1,7 +1,7 @@
 package nz.co.searchwellington.controllers.submission
 
-import nz.co.searchwellington.urls.UrlCleaner
-import nz.co.searchwellington.utils.{StringWrangling, UrlFilters}
+import nz.co.searchwellington.urls.{UrlCleaner, UrlFilters}
+import nz.co.searchwellington.utils.StringWrangling
 
 import java.net.URL
 import scala.util.Try
@@ -14,8 +14,7 @@ trait EndUserInputs extends StringWrangling {
   // Given a user supplied url string provide any remedial work which might produce a more parsable URL.
   def cleanUrl(urlString: String): Either[Throwable, URL] = {
     // Trim and add prefix is missing from user submitted input
-    var cleanedString = UrlFilters.trimWhiteSpace(urlString)
-    cleanedString = UrlFilters.addHttpPrefixIfMissing(cleanedString)
+    val cleanedString = UrlFilters.addHttpPrefixIfMissing(urlString.trim)
     Try {
       val url = new URL(cleanedString)
       urlCleaner.cleanSubmittedItemUrl(url)

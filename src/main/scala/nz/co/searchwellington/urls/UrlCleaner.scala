@@ -1,14 +1,11 @@
 package nz.co.searchwellington.urls
 
 import nz.co.searchwellington.urls.shorturls.CachingShortUrlResolverService
-import nz.co.searchwellington.utils.UrlFilters
-import org.apache.commons.logging.Log
 import org.apache.commons.logging.LogFactory
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
-import java.net.MalformedURLException
-import java.net.URISyntaxException
-import java.net.URL
+
+import java.net.{MalformedURLException, URISyntaxException, URL}
 
 @Component
 class UrlCleaner @Autowired()(shortUrlResolver: CachingShortUrlResolverService) {
