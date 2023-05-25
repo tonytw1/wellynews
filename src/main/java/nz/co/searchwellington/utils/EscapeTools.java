@@ -5,9 +5,5 @@ public class EscapeTools {
     public String javascript(String input) {
         return org.apache.commons.text.StringEscapeUtils.escapeEcmaScript(input);
     }
-    
-    public String html(String input) {        
-        return org.apache.commons.text.StringEscapeUtils.escapeHtml4(input);
-    }
-    
+
 }
