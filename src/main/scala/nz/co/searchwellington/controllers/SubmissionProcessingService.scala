@@ -31,11 +31,6 @@ import scala.jdk.CollectionConverters.CollectionHasAsScala
   private val REQUEST_SELECTED_GEOCODE = "selectedGeocode"
   private val REQUEST_EMBARGO_DATE_NAME = "embargo_date"
 
-  def processImage(request: HttpServletRequest, editResource: Newsitem, loggedInUser: User): Unit = {
-    val image = request.getAttribute("image").asInstanceOf[Image]
-    // editResource.setImage(image)
-  }
-
   def processGeocode(request: HttpServletRequest): Geocode = {  // TODO make an Option
     if (!Strings.isNullOrEmpty(request.getParameter(REQUEST_SELECTED_GEOCODE))) {
 
