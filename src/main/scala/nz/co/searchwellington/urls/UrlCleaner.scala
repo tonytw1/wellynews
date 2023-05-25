@@ -15,7 +15,7 @@ class UrlCleaner @Autowired()(shortUrlResolver: CachingShortUrlResolverService) 
   final private val log = LogFactory.getLog(classOf[UrlCleaner])
 
   // Given a user or feed supplied URL attempt to reduce it to a more canonical form by stripping out things like sessions ids and utm params
-  def cleanSubmittedItemUrl(url: URL) = try {
+  def cleanSubmittedItemUrl(url: URL): URL = try {
     // Resolve short urls
     var expanded = shortUrlResolver.resolveUrl(url)
 
