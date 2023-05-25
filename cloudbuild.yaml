@@ -13,3 +13,4 @@ steps:
   args: [ '-f', 'docker/docker-compose.yml', 'down' ]
 images:
   - 'eu.gcr.io/$PROJECT_ID/wellynews'
+timeout: 600s

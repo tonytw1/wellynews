@@ -21,5 +21,6 @@ trait ElasticFields {
   val Hostname = "hostname"
   val AcceptedDate = "accepted"
   val GeotagVote = "geotagVote"
+  val CardImage = "cardImage"
 
 }

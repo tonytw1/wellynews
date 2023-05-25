@@ -176,7 +176,7 @@ This decision is based on url hostnames.
 Use docker to provide local copies of the MongoDB, Elasticsearch, Memcached andRabbitMQ dependencies.
 
 ```
-docker-compose -f docker/docker-compose.yml up
+docker compose -f docker/docker-compose.yml up
 ```
 
 Start locally.

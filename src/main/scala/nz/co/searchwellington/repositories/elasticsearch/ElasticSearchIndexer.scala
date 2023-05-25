@@ -5,7 +5,7 @@ import com.sksamuel.elastic4s.http.JavaClient
 import com.sksamuel.elastic4s.requests.bulk.BulkResponse
 import com.sksamuel.elastic4s.requests.common.DistanceUnit
 import com.sksamuel.elastic4s.requests.searches.aggs.HistogramOrder
-import com.sksamuel.elastic4s.requests.searches.aggs.responses.bucket.{DateHistogram, Terms}
+import com.sksamuel.elastic4s.requests.searches.aggs.responses.bucket.{DateHistogram, TermBucket, Terms}
 import com.sksamuel.elastic4s.requests.searches.queries.Query
 import com.sksamuel.elastic4s.requests.searches.{DateHistogramInterval, SearchRequest}
 import com.sksamuel.elastic4s.requests.{bulk => _, delete => _, searches => _}
@@ -55,12 +55,14 @@ class ElasticSearchIndexer @Autowired()(val showBrokenDecisionService: ShowBroke
     def ensureIndexes(client: ElasticClient): Unit = {
       val exists = Await.result((client execute indexExists(Index)).map { r =>
         if (r.isSuccess) {
-          log.info("Elastic index exists")
-          r.result.exists
+          val indexExists = r.result.exists
+          log.info(s"Elastic index exists: $indexExists")
+          indexExists
+
         } else {
           throw new RuntimeException("Could not determine if index exists")
         }
-      }, OneMinute)
+      }, TenSeconds)
 
       if (!exists) {
         log.info("Index does not exist; creating")
@@ -92,7 +94,8 @@ class ElasticSearchIndexer @Autowired()(val showBrokenDecisionService: ShowBroke
               textField("address").index(false),
               geopointField(LatLong),
               keywordField("osmId")
-            ))
+            )),
+            keywordField(CardImage),
           ))
 
           if (refreshInterval.isPresent) {
@@ -102,11 +105,13 @@ class ElasticSearchIndexer @Autowired()(val showBrokenDecisionService: ShowBroke
           }
         }
 
-        val result = Await.result(eventualCreateIndexResult, OneMinute)
+        val result = Await.result(eventualCreateIndexResult, TenSeconds)
         log.info("Create index " + Index + " result: " + result)
         if (!result.isSuccess) {
           log.info("Create index failed; throwing exception")
           throw new RuntimeException("Could not create elastic index: " + result.error.reason)
+        } else {
+          log.info("Create index succeeded")
         }
 
       } catch {
@@ -148,6 +153,11 @@ class ElasticSearchIndexer @Autowired()(val showBrokenDecisionService: ShowBroke
 
       val latLong = indexResource.geocode.flatMap(_.latLong)
 
+      val cardImage = resource match {
+        case n: Newsitem => n.twitterImage
+        case _ => None
+      }
+
       val fields = Seq(
         Some(Type -> resource.`type`),
         Some(Title -> resource.title),
@@ -175,7 +185,8 @@ class ElasticSearchIndexer @Autowired()(val showBrokenDecisionService: ShowBroke
             }
           )
           GeotagVote -> geotagVoteFields.flatten.toMap
-        }
+        },
+        cardImage.map(ci => CardImage -> ci)
       )
       indexInto(Index).fields(fields.flatten) id resource._id.stringify
     }
@@ -251,6 +262,24 @@ class ElasticSearchIndexer @Autowired()(val showBrokenDecisionService: ShowBroke
   def getTypeCounts(loggedInUser: Option[User])(implicit ec: ExecutionContext, currentSpan: Span): Future[Seq[(String, Long)]] = {
     val allResources = ResourceQuery()
     getAggregationFor(allResources, "type", loggedInUser)
+  }
+
+  def buildImageUsagesMap(loggedInUser: Option[User])(implicit ec: ExecutionContext): Future[Map[BSONObjectID, Map[String, Long]]] = {
+    val allNewsitems = ResourceQuery(`type` = Some(Set("N")))
+
+    val publisherImagesAggregation = termsAgg("publisher", Publisher) size Integer.MAX_VALUE subaggs termsAgg(CardImage, CardImage)
+
+    val request = (search(Index) query composeQueryFor(allNewsitems, loggedInUser)) size 0 aggregations publisherImagesAggregation
+
+    client.execute(request).map { r =>
+      val publishers = r.result.aggs.result[Terms]("publisher")
+      publishers.buckets.map { b: TermBucket =>
+        val cardImageNestedAgg: Terms = b.terms("cardImage")
+        (BSONObjectID.parse(b.key).get, cardImageNestedAgg.buckets.map { b =>
+          (b.key, b.docCount)
+        }.toMap)
+      }.toMap
+    }
   }
 
   def createdAcceptedDateAggregationFor(query: ResourceQuery, loggedInUser: Option[User])(implicit ec: ExecutionContext, currentSpan: Span): Future[Seq[(java.time.LocalDate, Long)]] = {

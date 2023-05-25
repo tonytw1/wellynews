@@ -49,7 +49,7 @@ class ElasticSearchIndexerTest extends IndexableResource with ReasonableWaits {
   val indexTagsService: IndexTagsService = ElasticSearchIndexerTest.indexTagsService
   val urlParser = new UrlParser
 
-  private val loggedInUser = User(admin = true)
+  private val adminUser = User(admin = true)
   private val allNewsitems = ResourceQuery(`type` = Some(Set("N")))
 
   private val wellingtonCentralLibrary = Geocode(address = Some("Wellington Central Library"),
@@ -132,7 +132,7 @@ class ElasticSearchIndexerTest extends IndexableResource with ReasonableWaits {
     assertTrue(taggedNewsitems.forall(i => i.`type` == "N"))
     assertTrue(taggedNewsitems.forall(i => i.resource_tags.exists(t => t.tag_id == tag._id)))
 
-    val elasticResources = Await.result(elasticSearchIndexer.getResources(taggedNewsitemsQuery, loggedInUser = Some(loggedInUser)), TenSeconds)
+    val elasticResources = Await.result(elasticSearchIndexer.getResources(taggedNewsitemsQuery, loggedInUser = Some(adminUser)), TenSeconds)
     val newsitemResource = elasticResources._1.find(_._id == taggedNewsitem._id).get
     assertEquals(Seq(tag._id), newsitemResource.handTags)
     assertEquals(Seq(tag._id), newsitemResource.indexTags)
@@ -200,7 +200,7 @@ class ElasticSearchIndexerTest extends IndexableResource with ReasonableWaits {
 
     indexResources(Seq(newsitem, anotherNewsitem, yetAnotherNewsitem))
 
-    def archiveLinks = Await.result(elasticSearchIndexer.createdMonthAggregationFor(allNewsitems, loggedInUser = Some(loggedInUser)), TenSeconds)
+    def archiveLinks = Await.result(elasticSearchIndexer.createdMonthAggregationFor(allNewsitems, loggedInUser = Some(adminUser)), TenSeconds)
 
     def monthStrings = archiveLinks.map(_._1.getStart.toDate.toGMTString)
 
@@ -222,7 +222,7 @@ class ElasticSearchIndexerTest extends IndexableResource with ReasonableWaits {
 
     indexResources(Seq(acceptedNewsitem, anotherAcceptedNewsitem))
 
-    def acceptedCounts = Await.result(elasticSearchIndexer.createdAcceptedDateAggregationFor(allNewsitems, loggedInUser = Some(loggedInUser)), TenSeconds)
+    def acceptedCounts = Await.result(elasticSearchIndexer.createdAcceptedDateAggregationFor(allNewsitems, loggedInUser = Some(adminUser)), TenSeconds)
 
     eventually(timeout(TenSeconds), interval(TenMilliSeconds))(acceptedCounts.headOption.map(_._1) mustBe Some(java.time.LocalDate.of(2022, 6, 2)))
     eventually(timeout(TenSeconds), interval(TenMilliSeconds))(acceptedCounts.headOption.map(_._2) mustBe Some(2L))
@@ -259,7 +259,7 @@ class ElasticSearchIndexerTest extends IndexableResource with ReasonableWaits {
     assertFalse(result.result.errors)
 
     def geocodedNewsitems = {
-      Await.result(elasticSearchIndexer.getResources(ResourceQuery(`type` = Some(Set("N")), geocoded = Some(true)), loggedInUser = Some(loggedInUser)), TenSeconds)
+      Await.result(elasticSearchIndexer.getResources(ResourceQuery(`type` = Some(Set("N")), geocoded = Some(true)), loggedInUser = Some(adminUser)), TenSeconds)
     }
 
     eventually(timeout(TenSeconds), interval(TenMilliSeconds))(geocodedNewsitems._1.map(_._id).contains(geotagged._id) mustBe true)
@@ -295,13 +295,13 @@ class ElasticSearchIndexerTest extends IndexableResource with ReasonableWaits {
     val withTag = ResourceQuery(tags = Some(Set(tag)))
 
     def taggedItems = {
-      Await.result(elasticSearchIndexer.getResources(withTag, loggedInUser = Some(loggedInUser)), TenSeconds)
+      Await.result(elasticSearchIndexer.getResources(withTag, loggedInUser = Some(adminUser)), TenSeconds)
     }
 
     eventually(timeout(Duration(1, SECONDS)), interval(TenMilliSeconds))(taggedItems._2 mustBe 2)
 
     def geoTaggedItems = {
-      Await.result(elasticSearchIndexer.getResources(withTag.copy(geocoded = Some(true)), loggedInUser = Some(loggedInUser)), TenSeconds)
+      Await.result(elasticSearchIndexer.getResources(withTag.copy(geocoded = Some(true)), loggedInUser = Some(adminUser)), TenSeconds)
     }
 
     eventually(timeout(Duration(1, SECONDS)), interval(TenMilliSeconds))(geoTaggedItems._2 mustBe 1)
@@ -321,7 +321,7 @@ class ElasticSearchIndexerTest extends IndexableResource with ReasonableWaits {
 
     indexResources(Seq(website, newsitem, watchlist, feed))
 
-    def typeCounts = Await.result(elasticSearchIndexer.getTypeCounts(Some(loggedInUser)), TenSeconds).toMap
+    def typeCounts = Await.result(elasticSearchIndexer.getTypeCounts(Some(adminUser)), TenSeconds).toMap
 
     def typesFound = typeCounts.keys.toSet
 
@@ -359,13 +359,34 @@ class ElasticSearchIndexerTest extends IndexableResource with ReasonableWaits {
     assertFalse(barResources.contains(fooWebsite))
   }
 
+  @Test
+  def canProduceImageUsageCounts(): Unit = {
+    val publisher = Website(page = "http://localhost")
+    val newsitem = Newsitem(page = "http://localhost/news1", publisher = Some(publisher._id), twitterImage = Some("http://localhost/image1.jpg"))
+    val newsitem2 = Newsitem(page = "http://localhost/news2", publisher = Some(publisher._id), twitterImage = Some("http://localhost/image1.jpg"))
+    val newsitem3 = Newsitem(page = "http://localhost/news3", publisher = Some(publisher._id), twitterImage = Some("http://localhost/image2.jpg"))
+
+    Await.result(mongoRepository.saveResource(publisher), TenSeconds)
+    Await.result(mongoRepository.saveResource(newsitem), TenSeconds)
+    Await.result(mongoRepository.saveResource(newsitem2), TenSeconds)
+    Await.result(mongoRepository.saveResource(newsitem3), TenSeconds)
+
+    indexResources(Seq(publisher, newsitem, newsitem2, newsitem3))
+
+    def imageUsages = Await.result(elasticSearchIndexer.buildImageUsagesMap(Some(adminUser)), TenSeconds)
+
+    eventually(timeout(TenSeconds), interval(TenMilliSeconds))(imageUsages.nonEmpty mustBe true)
+    assertTrue(imageUsages.nonEmpty)
+    assertEquals(Some(2L), imageUsages.get(publisher._id).flatMap(_.get("http://localhost/image1.jpg")))
+  }
+
   private def indexResources(resources: Seq[Resource]) = {
     Await.result(Future.sequence(resources.map(toIndexable)).flatMap { indexableResources =>
       elasticSearchIndexer.updateMultipleContentItems(indexableResources)
     }, TenSeconds)
   }
 
-  private def queryForResources(query: ResourceQuery, user: User = loggedInUser): Seq[Resource] = {
+  private def queryForResources(query: ResourceQuery, user: User = adminUser): Seq[Resource] = {
     Await.result(elasticSearchIndexer.getResources(query, loggedInUser = Some(user)).flatMap { rs =>
       Future.sequence(rs._1.map(_._id).map(mongoRepository.getResourceByObjectId)).map(_.flatten)
     }, TenSeconds)

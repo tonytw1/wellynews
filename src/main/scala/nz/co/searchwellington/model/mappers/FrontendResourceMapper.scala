@@ -120,7 +120,7 @@ import scala.concurrent.{ExecutionContext, Future}
             owner = owner.map(user => user.profilename.getOrElse(user._id.stringify)).orNull,
             tags = Some(indexTags),
             handTags = Some(handTags),
-            twitterImage = n.twitterImage.orNull,
+            twitterImage = n.twitterImage,
             publisherId = n.publisher
           )
         }
