@@ -10,6 +10,7 @@ import nz.co.searchwellington.permissions.EditPermissionService
 import nz.co.searchwellington.urls.UrlBuilder
 import nz.co.searchwellington.views.Errors
 import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.core.annotation.Order
 import org.springframework.stereotype.Controller
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.servlet.ModelAndView
@@ -17,6 +18,7 @@ import org.springframework.web.servlet.view.RedirectView
 
 import scala.concurrent.ExecutionContext.Implicits.global
 
+@Order(5)
 @Controller class AdminFeedController @Autowired()(feedReader: FeedReader,
                                                    urlBuilder: UrlBuilder,
                                                    editPermissionService: EditPermissionService,
