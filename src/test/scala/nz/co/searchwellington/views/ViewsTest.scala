@@ -22,7 +22,7 @@ class ViewsTest {
   @Test
   def shouldRenderTagPageHtmlViewsFromTemplate(): Unit = {
     val model = new ModelMap()
-    model.addAttribute("tag", new Tag(name = "transport", display_name = "Transport"))
+    model.addAttribute("tag", Tag(name = "transport", display_name = "Transport"))
     model.addAttribute("main_content", validNewsitems.asJava)
 
     val velocityEngine = getVelocityEngine
@@ -39,7 +39,7 @@ class ViewsTest {
   @Test
   def canRenderRssViews(): Unit = {
     val model = new ModelMap()
-    model.addAttribute("tag", new Tag(name = "transport", display_name = "Transport"))
+    model.addAttribute("tag", Tag(name = "transport", display_name = "Transport"))
     model.addAttribute("data", validNewsitems.asJava)
     val rssView: View = new RssView(new EtagGenerator(), "", "", "")
     val response = new MockHttpServletResponse()

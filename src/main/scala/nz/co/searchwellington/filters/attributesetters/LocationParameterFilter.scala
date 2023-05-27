@@ -1,4 +1,4 @@
-package nz.co.searchwellington.filters.attributesetters;
+package nz.co.searchwellington.filters.attributesetters
 
 import jakarta.servlet.http.HttpServletRequest
 import nz.co.searchwellington.filters.attributesetters.LocationParameterFilter.{LOCATION, RADIUS}
@@ -8,7 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
 import uk.co.eelpieconsulting.common.geo.model.{LatLong, Place}
 
-import scala.concurrent.Future;
+import scala.concurrent.Future
 
 @Component
 class LocationParameterFilter @Autowired()(geoCodeService: GeoCodeService, osmIdParser: OsmIdParser) extends AttributeSetter {
@@ -33,7 +33,7 @@ class LocationParameterFilter @Autowired()(geoCodeService: GeoCodeService, osmId
       osmId <- Option(osmIdParser.parseOsmId(osmIdString))
       resolvedPlace <- Option(geoCodeService.resolveOsmId(osmId))
     } yield {
-      log.debug("OSM id '" + osmId + "' resolved to: " + resolvedPlace);
+      log.debug("OSM id '" + osmId + "' resolved to: " + resolvedPlace)
       resolvedPlace
     }
 
@@ -42,7 +42,7 @@ class LocationParameterFilter @Autowired()(geoCodeService: GeoCodeService, osmId
       longitude <- Option(request.getParameter(LONGITUDE))
     } yield {
       val latLong = new LatLong(latitide.toDouble, longitude.toDouble)
-      val latLongLabel = latLong.getLatitude + ", " + latLong.getLongitude;
+      val latLongLabel = latLong.getLatitude + ", " + latLong.getLongitude
       new Place(latLongLabel, latLong, null)
     }
 
