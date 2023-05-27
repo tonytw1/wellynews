@@ -47,12 +47,12 @@ class MongoRepository @Autowired()(@Value("${mongo.uri}") mongoUri: String) exte
     connect()
   }
 
-  val resourceCollection: BSONCollection = db.collection("resource")
-  val suppressionCollection: BSONCollection = db.collection("supression") // TODO spelling
-  val tagCollection: BSONCollection = db.collection("tag")
-  val userCollection: BSONCollection = db.collection("user")
-  val discoveredFeedCollection: BSONCollection = db.collection("discovered_feed")
-  val snapshotCollection: BSONCollection = db.collection("snapshots")
+  private val resourceCollection: BSONCollection = db.collection("resource")
+  private val suppressionCollection: BSONCollection = db.collection("supression") // TODO spelling
+  private val tagCollection: BSONCollection = db.collection("tag")
+  private val userCollection: BSONCollection = db.collection("user")
+  private val discoveredFeedCollection: BSONCollection = db.collection("discovered_feed")
+  private val snapshotCollection: BSONCollection = db.collection("snapshots")
 
   {
     import scala.concurrent.ExecutionContext.Implicits.global
