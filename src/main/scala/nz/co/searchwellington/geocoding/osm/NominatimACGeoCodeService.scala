@@ -71,7 +71,7 @@ class NominatimACGeoCodeService @Autowired()(wsClient: WSClient) extends GeoCode
     Await.result(eventualPlace, TenSeconds) // TODO push up
   }
 
-  case class NominatimACPlace(address: String, osmId: Long, osmType: String, latlong: Option[NominatimACLatLong])
+  private case class NominatimACPlace(address: String, osmId: Long, osmType: String, latlong: Option[NominatimACLatLong])
 
   case class NominatimACLatLong(lat: Double, lon: Double)
 

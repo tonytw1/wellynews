@@ -8,7 +8,7 @@ import java.util
 @Component
 class ColumnSplitter[T <: AnyVal] {
 
-  val NUMBER_OF_COLUMNS: BigDecimal = new BigDecimal(2)
+  private val NUMBER_OF_COLUMNS: BigDecimal = new BigDecimal(2)
 
   def left(source: util.List[T]): util.List[T] = {
     source.subList(0, splitPointFor(source))

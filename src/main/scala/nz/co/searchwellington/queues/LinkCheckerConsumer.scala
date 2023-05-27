@@ -46,7 +46,7 @@ import scala.concurrent.{ExecutionContext, ExecutionContextExecutor}
     private def countMessages(channel: Channel): Double = {
       channel.messageCount(LinkCheckerQueue.QUEUE_NAME)
     }
-    val countMessagesToDoubleFunction: AsJavaToDoubleFunction[Channel] = new AsJavaToDoubleFunction(countMessages)
+    private val countMessagesToDoubleFunction: AsJavaToDoubleFunction[Channel] = new AsJavaToDoubleFunction(countMessages)
 
     registry.gauge("linkchecker_queue", channel, countMessagesToDoubleFunction)
 

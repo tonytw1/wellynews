@@ -162,9 +162,9 @@ class WhakaokoClient @Autowired()(@Value("${whakaoko.url}") whakaokoUrl: String,
     request.addHttpHeaders("Authorization" -> ("Bearer " + whakaokoToken))
   }
 
-  case class CreateSubscriptionRequest(url: String, channel: String, name: Option[String] = None)
+  private case class CreateSubscriptionRequest(url: String, channel: String, name: Option[String] = None)
 
-  case class SubscriptionUpdateRequest(name: String)
+  private case class SubscriptionUpdateRequest(name: String)
 
   private def startSpan(currentSpan: Span, spanName: String): Span = {
     SpanFactory.childOf(currentSpan, spanName).

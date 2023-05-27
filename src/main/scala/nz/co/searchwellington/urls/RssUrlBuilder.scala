@@ -141,11 +141,11 @@ import uk.co.eelpieconsulting.common.geo.model.{LatLong, OsmId, Place}
     heading + " - " + siteInformation.getSitename
   }
 
-  def getRssUrlForOsmId(osmId: OsmId): String = {
+  private def getRssUrlForOsmId(osmId: OsmId): String = {
     getRssUrlForGeotagged + "?osm=" + UrlParameterEncoder.encode(osmId.getId + "/" + osmId.getType)
   }
 
-  def getRssUrlForLatLong(latLong: LatLong): String = {
+  private def getRssUrlForLatLong(latLong: LatLong): String = {
     getRssUrlForGeotagged + "?latitude=" + latLong.getLatitude + "&longitude=" + latLong.getLongitude
   }
 

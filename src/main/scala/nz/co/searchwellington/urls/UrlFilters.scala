@@ -19,7 +19,7 @@ object UrlFilters {
 
   def hasHttpPrefix(url: String): Boolean = url.startsWith("http://") || url.startsWith("https://")
 
-  def addHttpPrefix(url: String): String = HTTP_PREFIX + url
+  private def addHttpPrefix(url: String): String = HTTP_PREFIX + url
 
   def stripPhpSession(url: URL): URL = removeQueryParametersFrom(url, PHPSESSION_PARAMETER)
 

@@ -185,7 +185,7 @@ class UrlBuilder @Autowired()(siteInformation: SiteInformation, urlWordsGenerato
     "/" + link.publisher.getUrlWords + "/" + renderYearMonth(link.interval)
   }
 
-  def getTagArchiveLinkUrl(link: TagArchiveLink): String = {
+  private def getTagArchiveLinkUrl(link: TagArchiveLink): String = {
      getTagUrl(link.tag) + "/" + renderYearMonth(link.interval)
   }
 

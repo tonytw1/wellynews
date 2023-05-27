@@ -27,7 +27,7 @@ import scala.concurrent.{ExecutionContext, Future}
 
   private val log = LogFactory.getLog(classOf[ContentRetrievalService])
 
-  val ALL_ITEMS = 1000
+  private val ALL_ITEMS = 1000
 
   private val feeds = Some(Set("F"))
   private val newsitems = Some(Set("N"))

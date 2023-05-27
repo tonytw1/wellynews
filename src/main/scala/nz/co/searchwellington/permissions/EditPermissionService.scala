@@ -22,7 +22,7 @@ class EditPermissionService @Autowired()() {
     isAdminOrOwner(resource, loggedInUser)
   }
 
-  def canAcceptAll(loggedInUser: Option[User]): Boolean = {
+  private def canAcceptAll(loggedInUser: Option[User]): Boolean = {
     isAdmin(loggedInUser)
   }
 

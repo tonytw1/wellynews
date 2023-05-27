@@ -140,7 +140,7 @@ trait FrontendResource extends RssFeedable with Serializable {
     }).orNull
   }
 
-  case class TagWithChildren(tag: Tag, children: Set[BSONObjectID])
+  private case class TagWithChildren(tag: Tag, children: Set[BSONObjectID])
 
   override def getFeatureName: String = {
     geocode.flatMap { place =>
