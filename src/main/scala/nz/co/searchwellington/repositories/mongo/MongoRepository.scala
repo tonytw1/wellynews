@@ -73,7 +73,7 @@ class MongoRepository @Autowired()(@Value("${mongo.uri}") mongoUri: String) exte
     val discoveredFeedsSeen = (discoveredFeedCollection, Index(Seq("seen" -> IndexType.Descending), name = Some("seen"), unique = false))
     val snapshotByUrl = (snapshotCollection, Index(Seq("url" -> IndexType.Ascending), name = Some("url"), unique = true))
 
-    val requiredIndexes = (Seq(resourceByTypeAndUrlWords, resourceByUrl, resourceById, suppressedUrls, discoveredFeedsSeen, snapshotByUrl))
+    val requiredIndexes = Seq(resourceByTypeAndUrlWords, resourceByUrl, resourceById, suppressedUrls, discoveredFeedsSeen, snapshotByUrl)
 
     requiredIndexes.foreach {
       case (collection, index) =>
