@@ -18,7 +18,7 @@ import org.springframework.web.servlet.view.RedirectView
 
 import scala.concurrent.ExecutionContext.Implicits.global
 
-@Order(5)
+@Order(6)
 @Controller class AdminFeedController @Autowired()(feedReader: FeedReader,
                                                    urlBuilder: UrlBuilder,
                                                    editPermissionService: EditPermissionService,

@@ -16,7 +16,7 @@ import org.springframework.web.servlet.ModelAndView
 
 import scala.concurrent.{Await, ExecutionContext}
 
-@Order(6)
+@Order(7)
 @Controller
 class ContentController @Autowired()(contentModelBuilderServiceFactory: ContentModelBuilderServiceFactory,
                                      urlStack: UrlStack,
