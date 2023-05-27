@@ -274,7 +274,7 @@ class ElasticSearchIndexer @Autowired()(val showBrokenDecisionService: ShowBroke
     client.execute(request).map { r =>
       val publishers = r.result.aggs.result[Terms]("publisher")
       publishers.buckets.map { b: TermBucket =>
-        val cardImageNestedAgg: Terms = b.terms("cardImage")
+        val cardImageNestedAgg: Terms = b.result[Terms]("cardImage")
         (BSONObjectID.parse(b.key).get, cardImageNestedAgg.buckets.map { b =>
           (b.key, b.docCount)
         }.toMap)
