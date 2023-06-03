@@ -24,10 +24,11 @@ import scala.concurrent.{ExecutionContext, Future}
       val previousHash: Option[String] = snapshotArchive.getLatestHashFor(checkResource.page)
       val currentHash: String = pageContentHasher.hashPageContent(pageContent)
       if (contentHasChanged(previousHash, currentHash)) {
-        log.info(s"Change in content checksum detected for $checkResource.page ($previousHash / $currentHash). Setting last changed and storing a snapshot.")
+        log.info(s"Change in content checksum detected for ${checkResource.page} ($previousHash / $currentHash). Setting last changed and storing a snapshot.")
         checkResource.setLastChanged(seen.toDate)
       }
       if (!previousHash.contains(currentHash)) {
+        log.info(s"Setting stored hash for £checkResource.page to $currentHash")
         snapshotArchive.storeHash(checkResource.page, currentHash)
       }
     }
