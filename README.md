@@ -48,12 +48,13 @@ Newsitems accepted from this feed will be attributed to this feed's publisher.
 
 ### Watchlist
 
-A page on a publishers website which is known to contain links to new newsitems.
+A page on a publishers website which is known to contain links to new news items.
 This might be a homepage or a news page.
 
-Used when a publisher with interesting content does not provide a feed.
+Watchlist items are used when a publisher with interesting content does not provide a feed 
+but their content is valuable enough to post manually.
 
-Polled regularly to detect changes which might indicate new newsitems.
+Watchlist items are polled regularly to detect changes which might indicate new news items.
 See detecting page changes (below)[(#detecting-changes)].
 
 
@@ -133,8 +134,8 @@ An item with a category of 'events' will be matched to the tag Events.
 Changes in pages can be detected by periodically downloading and checking them.
 Changes in content checksums indicate potential new content.
 
-Pages often contain elements such as timestamps which mean a pages checksum changes even if contains no new content.
-This should be filtered out before checksum pages.
+Pages often contain elements such as timestamps which make page's checksum unstable even if contains no new content.
+Only comparing the plain text content of a page helps to reduce these false positives.
 
 
 ### Accepted feed items view
