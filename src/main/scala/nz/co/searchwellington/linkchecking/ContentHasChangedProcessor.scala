@@ -28,7 +28,7 @@ import scala.concurrent.{ExecutionContext, Future}
         checkResource.setLastChanged(seen.toDate)
       }
       if (!previousHash.contains(currentHash)) {
-        log.info(s"Setting stored hash for £checkResource.page to $currentHash")
+        log.info(s"Setting stored hash for ${checkResource.page} to $currentHash")
         snapshotArchive.storeHash(checkResource.page, currentHash)
       }
     }
