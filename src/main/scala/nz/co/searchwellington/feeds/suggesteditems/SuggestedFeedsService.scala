@@ -14,14 +14,14 @@ import scala.concurrent.{ExecutionContext, Future}
 class SuggestedFeedsService @Autowired()(contentRetrievalService: ContentRetrievalService) extends ReasonableWaits {
 
   def getSuggestedFeedsOrderedByLatestFeeditemDate()(implicit ec: ExecutionContext, currentSpan: Span): Future[Seq[FrontendFeed]] = {
-    val eventualSuggestOnlyFeeds = contentRetrievalService.getFeeds(loggedInUser = None, acceptancePolicy = Some(FeedAcceptancePolicy.SUGGEST)).map { rs: Seq[FrontendResource] =>
+    val eventualSuggestOnlyFeeds = contentRetrievalService.getFeeds(loggedInUser = None, acceptancePolicy = Some(FeedAcceptancePolicy.SUGGEST)).map { rs =>
       rs.flatMap {
         case f: FrontendFeed => Some(f)
         case _ => None
       }
     }
     eventualSuggestOnlyFeeds.map { rs =>
-      rs.sortBy(_.latestItemDate).reverse
+      rs.filter(_.latestItemDate != null).sortBy(_.latestItemDate).reverse
     }
   }
 
