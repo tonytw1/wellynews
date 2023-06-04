@@ -1,7 +1,6 @@
 <!--
 <p>Sign in using your OpenID or your 
 	<a href="$siteInformation.url/openid/login?openid_claimed_identity=https://google.com/accounts/o8/id">Google</a>,
-	<a href="$siteInformation.url/openid/login?openid_claimed_identity=https://flickr.com">Flickr</a>
 	or <a href="$siteInformation.url/openid/login?openid_claimed_identity=https://me.yahoo.com/">Yahoo</a>
 	account (all of whom support OpenID):</p>
 	

@@ -20,14 +20,7 @@
 			
 		<p><label for="name">Statitics Tracking code: </label>
 		<textarea name="stats_tracking_code" cols="80" rows="10">$stats_tracking_code</textarea></p>
-		
-		<p><label for="flickr_pool_group_id">Flickr Pool: </label>
-		<input name="flickr_pool_group_id" 
-		#if ($flickr_pool_group_id) 
-		value="$flickr_pool_group_id"
-		#end
-		></p>
-		
+
 		<p><label for="clickthrough_tracking_select">Use clickthrough tracking: </label>
 		$clickthrough_tracking_select</p>
 		
