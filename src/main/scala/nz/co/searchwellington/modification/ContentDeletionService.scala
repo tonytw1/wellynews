@@ -36,7 +36,7 @@ import scala.concurrent.{Await, Future}
         case _ =>
       }
 
-      Await.result(elasticSearchIndexer.deleteResource(resource._id).flatMap { dr =>
+      Await.result(elasticSearchIndexer.deleteResource(resource._id).flatMap { _ =>
         mongoRepository.removeResource(resource)
       }, TenSeconds)
       true
