@@ -100,11 +100,12 @@ class EditWebsiteController @Autowired()(contentUpdateService: ContentUpdateServ
             if (result) {
               log.info("Updated website: " + withUpdatedTags)
               val tagsHaveChanged = w.resource_tags.map(_.tag_id).toSet != withUpdatedTags.resource_tags.map(_.tag_id).toSet
-              if (tagsHaveChanged) {
+              val geotagHasChanged = w.geocode != withUpdatedTags.geocode
+              if (tagsHaveChanged || geotagHasChanged) {
                 mongoRepository.getResourcesIdsForPublisher(w).flatMap { taggedResourceIds =>
                   elasticSearchIndexRebuildService.reindexResources(taggedResourceIds, totalResources = taggedResourceIds.size)
                 }.map { i =>
-                  log.info("Reindexed publisher resources after publisher tag change: " + i)
+                  log.info("Reindexed publisher resources after publisher tagging change: " + i)
                 }
               }
             }
