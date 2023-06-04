@@ -21,7 +21,6 @@ import scala.concurrent.Future
 class AdminFeedControllerTest {
   private val FEED_ID = UUID.randomUUID().toString
   private val adminUser = User(id = "273", admin = true)
-  private val feed = Feed(id = FEED_ID, title = "A feed")
 
   private val urlWordsGenerator = new UrlWordsGenerator(new DateFormatter(DateTimeZone.UTC))
   private val urlBuilder = new UrlBuilder(new SiteInformation("", "", "", "", ""), urlWordsGenerator)
