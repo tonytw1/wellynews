@@ -7,6 +7,7 @@ import nz.co.searchwellington.model.FeedAcceptancePolicy
 import nz.co.searchwellington.model.frontend.FrontendFeed
 import nz.co.searchwellington.model.mappers.FrontendResourceMapper
 import nz.co.searchwellington.repositories.mongo.MongoRepository
+import org.apache.commons.logging.LogFactory
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
 
@@ -15,6 +16,8 @@ import scala.concurrent.{ExecutionContext, Future}
 @Component
 class SuggestedFeedsService @Autowired()(mongoRepository: MongoRepository, whakaokoService: WhakaokoService, frontendResourceMapper: FrontendResourceMapper)
   extends ReasonableWaits {
+
+  private val log = LogFactory.getLog(classOf[SuggestedFeedsService])
 
   def getSuggestedFeedsOrderedByLatestFeeditemDate()(implicit ec: ExecutionContext, currentSpan: Span): Future[Seq[FrontendFeed]] = {
     val eventualMaybeWhakaokoSubscriptions = whakaokoService.getSubscriptions
@@ -42,7 +45,13 @@ class SuggestedFeedsService @Autowired()(mongoRepository: MongoRepository, whaka
           frontendResourceMapper.createFrontendResourceFrom(feed._1).map {
             case frontendFeed: FrontendFeed =>
               val subscription = feed._2
-              Some(frontendFeed.copy(latestItemDate = subscription.latestItemDate.map(_.toDate).orNull))
+              val fromSubscription = subscription.latestItemDate.map(_.toDate).orNull
+
+              if (fromSubscription != frontendFeed.latestItemDate) {
+                log.info(s"Overriding latest item date for ${frontendFeed.getHeadline} from ${frontendFeed.latestItemDate} to $fromSubscription")
+              }
+
+              Some(frontendFeed.copy(latestItemDate = fromSubscription))
             case _ =>
               None
           }
