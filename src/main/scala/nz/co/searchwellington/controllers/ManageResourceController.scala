@@ -55,11 +55,12 @@ import scala.concurrent.ExecutionContext.Implicits.global
               urlStack.setUrlStack(request, "")
             case _ =>
           }
+          new ModelAndView(new RedirectView(urlStack.getExitUrlFromStack(request)))
+
         } else {
           log.warn("Not allowed to delete resource: " + resource)
           NotAllowed
         }
-        new ModelAndView(new RedirectView(urlStack.getExitUrlFromStack(request)))
       }.getOrElse{
         NotFound
       }
