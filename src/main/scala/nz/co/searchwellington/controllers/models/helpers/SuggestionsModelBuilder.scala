@@ -3,7 +3,7 @@ package nz.co.searchwellington.controllers.models.helpers
 import io.opentelemetry.api.trace.Span
 import jakarta.servlet.http.HttpServletRequest
 import nz.co.searchwellington.ReasonableWaits
-import nz.co.searchwellington.feeds.suggesteditems.{SuggestedFeeditemsService, SuggestedFeedsService}
+import nz.co.searchwellington.feeds.suggesteditems.SuggestedFeeditemsService
 import nz.co.searchwellington.filters.RequestPath
 import nz.co.searchwellington.model.User
 import nz.co.searchwellington.repositories.ContentRetrievalService
@@ -16,7 +16,6 @@ import scala.concurrent.{ExecutionContext, Future}
 import scala.jdk.CollectionConverters._
 
 @Component class SuggestionsModelBuilder @Autowired()(suggestedFeeditemsService: SuggestedFeeditemsService,
-                                                      suggestedFeedsService: SuggestedFeedsService,
                                                       rssUrlBuilder: RssUrlBuilder, urlBuilder: UrlBuilder,
                                                       val contentRetrievalService: ContentRetrievalService,
                                                       commonAttributesModelBuilder: CommonAttributesModelBuilder) extends ModelBuilder with ReasonableWaits {
@@ -43,7 +42,7 @@ import scala.jdk.CollectionConverters._
 
   def populateExtraModelContent(request: HttpServletRequest, loggedInUser: Option[User])(implicit ec: ExecutionContext, currentSpan: Span): Future[ModelMap] = {
     for {
-      inboxFeeds <- suggestedFeedsService.getSuggestedFeedsOrderedByLatestFeeditemDate(loggedInUser)
+      inboxFeeds <- contentRetrievalService.getSuggestOnlyFeeds(loggedInUser = loggedInUser)
     } yield {
       new ModelMap().addAttribute("righthand_heading", "Suggest only feeds")
         .addAttribute("righthand_description", "Newsitems from these feeds are not automatically accepted.")
