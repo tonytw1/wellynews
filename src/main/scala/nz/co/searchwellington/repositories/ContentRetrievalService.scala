@@ -209,7 +209,7 @@ import scala.concurrent.{ExecutionContext, Future}
     }
   }
 
-  private def toFrontendResourceWithCount(t: (String, Long))(implicit ec: ExecutionContext, currentSpan: Span): Future[Option[(FrontendResource, Long)]] = {
+  private def toFrontendResourceWithCount(t: (String, Long))(implicit ec: ExecutionContext): Future[Option[(FrontendResource, Long)]] = {
     BSONObjectID.parse(t._1).map { bid =>
       mongoRepository.getResourceByObjectId(bid).flatMap { maybeResource =>
         maybeResource.map { resource: Resource =>
@@ -361,7 +361,7 @@ import scala.concurrent.{ExecutionContext, Future}
     mongoRepository.getDiscoveredFeeds(maxNumber)
   }
 
-  def getDiscoveredFeedsForPublisher(publisher: Website)(implicit ec: ExecutionContext, currentSpan: Span): Future[Seq[DiscoveredFeed]] = {
+  def getDiscoveredFeedsForPublisher(publisher: Website)(implicit ec: ExecutionContext): Future[Seq[DiscoveredFeed]] = {
     mongoRepository.getDiscoveredFeedsForPublisher(publisher._id, Integer.MAX_VALUE)
   }
 
@@ -438,7 +438,7 @@ import scala.concurrent.{ExecutionContext, Future}
      mongoRepository.getResourceByObjectIds(elasticResources.map(_._id))
   }
 
-  private def archiveLinksFromIntervals(intervals: Seq[(Interval, Long)])(implicit ec: ExecutionContext): Seq[ArchiveLink] = {
+  private def archiveLinksFromIntervals(intervals: Seq[(Interval, Long)]): Seq[ArchiveLink] = {
     intervals.map { i =>
       ArchiveLink(i._1, Some(i._2))
     }
