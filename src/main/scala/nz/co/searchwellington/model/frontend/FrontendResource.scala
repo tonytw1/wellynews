@@ -45,9 +45,7 @@ trait FrontendResource extends RssFeedable with Serializable {
   final def getUrl: String = url
 
   final def getHttpStatus: java.lang.Integer = {  // TODO Scala been less than useful here
-      httpStatus.map(i =>
-        new Integer(i)
-      ).orNull
+      httpStatus.map(Integer.valueOf).orNull
   }
 
   @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ssXXX")
