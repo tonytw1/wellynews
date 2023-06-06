@@ -7,7 +7,7 @@ import nz.co.searchwellington.ReasonableWaits
 import nz.co.searchwellington.controllers.submission.EndUserInputs
 import nz.co.searchwellington.feeds.whakaoko.WhakaokoService
 import nz.co.searchwellington.forms.NewFeed
-import nz.co.searchwellington.model.{Feed, UrlWordsGenerator}
+import nz.co.searchwellington.model.{Feed, UrlWordsGenerator, User}
 import nz.co.searchwellington.modification.ContentUpdateService
 import nz.co.searchwellington.repositories.mongo.MongoRepository
 import nz.co.searchwellington.urls.{UrlBuilder, UrlCleaner}
@@ -57,7 +57,7 @@ class NewFeedController @Autowired()(contentUpdateService: ContentUpdateService,
       withPublisherPrepopulated
     }
 
-    renderForm(newFeedForm)
+    renderForm(newFeedForm, loggedInUserFilter.getLoggedInUser)
   }
 
   @PostMapping(Array("/new-feed"))
@@ -130,22 +130,23 @@ class NewFeedController @Autowired()(contentUpdateService: ContentUpdateService,
 
         } else {
           log.warn("New feed submission has errors: " + result)
-          renderForm(newFeed)
+          renderForm(newFeed, loggedInUser)
         }
 
       } else {
         log.warn("New feed submission has errors: " + result)
-        renderForm(newFeed)
+        renderForm(newFeed, loggedInUser)
       }
 
     } else {
       log.warn("New feed submission has errors: " + result)
-      renderForm(newFeed)
+      renderForm(newFeed, loggedInUser)
     }
   }
 
-  private def renderForm(newFeed: NewFeed): ModelAndView = {
+  private def renderForm(newFeed: NewFeed, loggedInUser: Option[User]): ModelAndView = {
     new ModelAndView("newFeed").
+      addObject("loggedInUser", loggedInUser.orNull).
       addObject("heading", "Adding a feed").
       addObject("acceptancePolicyOptions", acceptancePolicyOptions.asJava).
       addObject("formObject", newFeed)

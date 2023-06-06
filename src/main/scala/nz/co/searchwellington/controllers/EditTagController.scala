@@ -53,7 +53,7 @@ class EditTagController @Autowired()(mongoRepository: MongoRepository, tagDAO: T
           editTag.setOsm(osmId.getOrElse(""))
         }
 
-        renderEditForm(tag, editTag)
+        renderEditForm(tag, editTag, loggedInUser)
 
       }.getOrElse {
         NotFound
@@ -90,7 +90,7 @@ class EditTagController @Autowired()(mongoRepository: MongoRepository, tagDAO: T
 
         if (result.hasErrors) {
           log.warn("Edit tag submission has errors: " + result)
-          renderEditForm(tag, editTag)
+          renderEditForm(tag, editTag, loggedInUser)
 
         } else {
           val hints = splitCommaDelimited(editTag.getAutotagHints)
@@ -134,9 +134,10 @@ class EditTagController @Autowired()(mongoRepository: MongoRepository, tagDAO: T
     requiringAdminUser(deleteTag)
   }
 
-  private def renderEditForm(tag: Tag, editTag: EditTag): ModelAndView = {
+  private def renderEditForm(tag: Tag, editTag: EditTag, loggedInUser: User): ModelAndView = {
     val possibleParents = Await.result(tagDAO.getAllTags, TenSeconds).filterNot(_ == tag)
     new ModelAndView("editTag").
+      addObject("loggedInUser", loggedInUser).
       addObject("tag", tag).
       addObject("parents", possibleParents.asJava).
       addObject("formObject", editTag)

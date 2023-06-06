@@ -43,7 +43,7 @@ class EditNewsitemController @Autowired()(contentUpdateService: ContentUpdateSer
   def prompt(@PathVariable id: String): ModelAndView = {
     def showForm(loggedInUser: User): ModelAndView = {
       getNewsitemById(id).map { newsitem =>
-        renderEditForm(newsitem, mapToForm(newsitem, loggedInUser))
+        renderEditForm(newsitem, mapToForm(newsitem, loggedInUser), loggedInUser)
       }.getOrElse {
         log.info("No newsitem found for id: " + id)
         NotFound
@@ -59,7 +59,7 @@ class EditNewsitemController @Autowired()(contentUpdateService: ContentUpdateSer
       getNewsitemById(id).map { newsitem =>
         if (result.hasErrors) {
           log.warn("Edit newsitem submission has errors: " + result)
-          renderEditForm(newsitem, formObject)
+          renderEditForm(newsitem, formObject, loggedInUser)
 
         } else {
           log.info("Got valid edit newsitem submission: " + formObject)
@@ -150,9 +150,10 @@ class EditNewsitemController @Autowired()(contentUpdateService: ContentUpdateSer
   }
 
 
-  private def renderEditForm(n: Newsitem, formObject: EditNewsitem): ModelAndView = {
+  private def renderEditForm(n: Newsitem, formObject: EditNewsitem, loggedInUser: User): ModelAndView = {
     new ModelAndView("editNewsitem").
       addObject("title", "Editing a newsitem").
+      addObject("loggedInUser", loggedInUser).
       addObject("newsitem", n).
       addObject("formObject", formObject).
       addObject("tags", Await.result(tagDAO.getAllTags, TenSeconds).asJava)

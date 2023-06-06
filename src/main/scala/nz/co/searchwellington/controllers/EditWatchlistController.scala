@@ -46,7 +46,7 @@ class EditWatchlistController @Autowired()(contentUpdateService: ContentUpdateSe
 
         editWatchlist.setTags(usersTags.map(_.tag_id.stringify).asJava)
 
-        renderEditForm(w, editWatchlist)
+        renderEditForm(w, editWatchlist, loggedInUser)
 
       }.getOrElse {
         NotFound
@@ -84,7 +84,7 @@ class EditWatchlistController @Autowired()(contentUpdateService: ContentUpdateSe
       getWatchlistById(id).map { w =>
         if (result.hasErrors) {
           log.warn("Edit watchlist submission has errors: " + result)
-          renderEditForm(w, editWatchlist)
+          renderEditForm(w, editWatchlist, loggedInUser)
 
         } else {
           log.info("Got valid edit watchlist submission: " + editWatchlist)
@@ -130,8 +130,9 @@ class EditWatchlistController @Autowired()(contentUpdateService: ContentUpdateSe
     }
   }
 
-  private def renderEditForm(w: Watchlist, editWatchlist: EditWatchlist): ModelAndView = {
+  private def renderEditForm(w: Watchlist, editWatchlist: EditWatchlist, loggedInUser: User): ModelAndView = {
     new ModelAndView("editWatchlist").
+      addObject("loggedInUser", loggedInUser).
       addObject("title", "Editing a watchlist").
       addObject("watchlist", w).
       addObject("formObject", editWatchlist).

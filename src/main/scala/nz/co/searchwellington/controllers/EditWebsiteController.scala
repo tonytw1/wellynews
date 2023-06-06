@@ -58,7 +58,7 @@ class EditWebsiteController @Autowired()(contentUpdateService: ContentUpdateServ
 
         editWebsite.setTags(usersTags.map(_.tag_id.stringify).asJava)
 
-        renderEditForm(w, editWebsite)
+        renderEditForm(w, editWebsite, loggedInUser)
 
       }.getOrElse {
         NotFound
@@ -74,7 +74,7 @@ class EditWebsiteController @Autowired()(contentUpdateService: ContentUpdateServ
       getWebsiteById(id).map { w =>
         if (result.hasErrors) {
           log.warn("Edit website submission has errors: " + result)
-          renderEditForm(w, editWebsite)
+          renderEditForm(w, editWebsite, loggedInUser)
 
         } else {
           log.info("Got valid edit website submission: " + editWebsite)
@@ -129,8 +129,9 @@ class EditWebsiteController @Autowired()(contentUpdateService: ContentUpdateServ
     }
   }
 
-  private def renderEditForm(w: Website, editWebsite: EditWebsite): ModelAndView = {
+  private def renderEditForm(w: Website, editWebsite: EditWebsite, loggedInUser: User): ModelAndView = {
     new ModelAndView("editWebsite").
+      addObject("loggedInUser", loggedInUser).
       addObject("title", "Editing a website").
       addObject("website", w).
       addObject("formObject", editWebsite).

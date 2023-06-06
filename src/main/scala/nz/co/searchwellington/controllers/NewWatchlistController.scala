@@ -5,7 +5,7 @@ import jakarta.validation.Valid
 import nz.co.searchwellington.ReasonableWaits
 import nz.co.searchwellington.controllers.submission.EndUserInputs
 import nz.co.searchwellington.forms.NewWatchlist
-import nz.co.searchwellington.model.{UrlWordsGenerator, Watchlist}
+import nz.co.searchwellington.model.{UrlWordsGenerator, User, Watchlist}
 import nz.co.searchwellington.modification.ContentUpdateService
 import nz.co.searchwellington.repositories.mongo.MongoRepository
 import nz.co.searchwellington.urls.{UrlBuilder, UrlCleaner}
@@ -34,7 +34,7 @@ class NewWatchlistController @Autowired()(contentUpdateService: ContentUpdateSer
 
   @GetMapping(Array("/new-watchlist"))
   def prompt(): ModelAndView = {
-    renderNewWatchlistForm(new NewWatchlist())
+    renderNewWatchlistForm(new NewWatchlist(), loggedInUserFilter.getLoggedInUser)
   }
 
   @PostMapping(Array("/new-watchlist"))
@@ -42,7 +42,7 @@ class NewWatchlistController @Autowired()(contentUpdateService: ContentUpdateSer
     val loggedInUser = loggedInUserFilter.getLoggedInUser
     if (result.hasErrors) {
       log.warn("New website submission has errors: " + result)
-      renderNewWatchlistForm(newWatchlist)
+      renderNewWatchlistForm(newWatchlist, loggedInUser)
 
     } else {
       log.info("Got valid new watchlist submission: " + newWatchlist)
@@ -71,13 +71,14 @@ class NewWatchlistController @Autowired()(contentUpdateService: ContentUpdateSer
         log.warn("Found existing watchlist site same url words: " + existing.title)
         result.addError(new ObjectError("newWatchlist",
           "Found existing watchlist with same name"))
-        renderNewWatchlistForm(newWatchlist)
+        renderNewWatchlistForm(newWatchlist, loggedInUser)
       }
     }
   }
 
-  private def renderNewWatchlistForm(newWatchlist: nz.co.searchwellington.forms.NewWatchlist): ModelAndView = {
+  private def renderNewWatchlistForm(newWatchlist: NewWatchlist, loggedInUser: Option[User]): ModelAndView = {
     new ModelAndView("newWatchlist").
+      addObject("loggedInUser", loggedInUser.orNull).
       addObject("heading", "Adding a watchlist item").
       addObject("formObject", newWatchlist)
   }

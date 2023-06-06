@@ -5,7 +5,7 @@ import jakarta.validation.Valid
 import nz.co.searchwellington.ReasonableWaits
 import nz.co.searchwellington.controllers.submission.EndUserInputs
 import nz.co.searchwellington.forms.NewWebsite
-import nz.co.searchwellington.model.{UrlWordsGenerator, Website}
+import nz.co.searchwellington.model.{UrlWordsGenerator, User, Website}
 import nz.co.searchwellington.modification.ContentUpdateService
 import nz.co.searchwellington.repositories.mongo.MongoRepository
 import nz.co.searchwellington.repositories.{HandTaggingService, TagDAO}
@@ -37,7 +37,7 @@ class NewWebsiteController @Autowired()(contentUpdateService: ContentUpdateServi
   private val log = LogFactory.getLog(classOf[NewWebsiteController])
 
   @GetMapping(Array("/new-website"))
-  def prompt(): ModelAndView = renderNewWebsiteForm(new NewWebsite())
+  def prompt(): ModelAndView = renderNewWebsiteForm(new NewWebsite(), loggedInUserFilter.getLoggedInUser)
 
   @PostMapping(Array("/new-website"))
   def submit(@Valid @ModelAttribute("formObject") formObject: NewWebsite, result: BindingResult, request: HttpServletRequest): ModelAndView = {
@@ -45,7 +45,7 @@ class NewWebsiteController @Autowired()(contentUpdateService: ContentUpdateServi
 
     if (result.hasErrors) {
       log.warn("New website submission has errors: " + result)
-      renderNewWebsiteForm(formObject)
+      renderNewWebsiteForm(formObject, loggedInUser)
 
     } else {
       log.info("Got valid new website submission: " + formObject)
@@ -76,7 +76,7 @@ class NewWebsiteController @Autowired()(contentUpdateService: ContentUpdateServi
           log.warn("Found existing website site same url words: " + existing.title)
           result.addError(new ObjectError("newWebsite",
             "Found existing website with same name"))
-          Future.successful(renderNewWebsiteForm(formObject))
+          Future.successful(renderNewWebsiteForm(formObject, loggedInUser))
         }
       }
 
@@ -84,8 +84,9 @@ class NewWebsiteController @Autowired()(contentUpdateService: ContentUpdateServi
     }
   }
 
-  private def renderNewWebsiteForm(newWebsite: nz.co.searchwellington.forms.NewWebsite): ModelAndView = {
+  private def renderNewWebsiteForm(newWebsite: NewWebsite, loggedInUser: Option[User]): ModelAndView = {
     new ModelAndView("newWebsite").
+      addObject("loggedInUser", loggedInUser.orNull).
       addObject("heading", "Adding a website").
       addObject("formObject", newWebsite).
       addObject("tags", Await.result(tagDAO.getAllTags, TenSeconds).asJava)

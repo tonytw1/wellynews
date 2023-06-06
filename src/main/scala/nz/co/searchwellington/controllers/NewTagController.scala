@@ -29,7 +29,7 @@ class NewTagController @Autowired()(mongoRepository: MongoRepository,
   @GetMapping(Array("/new-tag"))
   def prompt(): ModelAndView = {
     def showAddTagPrompt(loggedInUser: User): ModelAndView = {
-      renderForm(new NewTag())
+      renderForm(new NewTag(), loggedInUser)
     }
 
     requiringAdminUser(showAddTagPrompt)
@@ -58,20 +58,21 @@ class NewTagController @Autowired()(mongoRepository: MongoRepository,
 
         } else {
           result.addError(new ObjectError("displayName", "Found existing tag with same URL words"))
-          renderForm(newTag)
+          renderForm(newTag, loggedInUser)
         }
 
       } else {
         log.warn("New tag submission has errors: " + result)
-        renderForm(newTag)
+        renderForm(newTag, loggedInUser)
       }
     }
 
     requiringAdminUser(submitNewTag)
   }
 
-  private def renderForm(newTag: NewTag): ModelAndView = {
+  private def renderForm(newTag: NewTag, loggedInUser: User): ModelAndView = {
     new ModelAndView("newTag").
+      addObject("loggedInUser", loggedInUser).
       addObject("heading", "Adding a tag").
       addObject("formObject", newTag)
   }

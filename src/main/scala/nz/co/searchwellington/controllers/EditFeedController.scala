@@ -52,7 +52,7 @@ class EditFeedController @Autowired()(contentUpdateService: ContentUpdateService
         val usersTags = f.resource_tags.filter(_.user_id == loggedInUser._id)
         editFeed.setTags(usersTags.map(_.tag_id.stringify).asJava)
 
-        renderEditForm(f, editFeed)
+        renderEditForm(f, editFeed, loggedInUser)
 
       }.getOrElse {
         NotFound
@@ -68,7 +68,7 @@ class EditFeedController @Autowired()(contentUpdateService: ContentUpdateService
       getFeedById(id).map { f =>
         if (result.hasErrors) {
           log.warn("Edit feed submission has errors: " + result)
-          renderEditForm(f, formObject)
+          renderEditForm(f, formObject, loggedInUser)
 
         } else {
           log.info("Got valid edit feed submission: " + formObject)
@@ -135,8 +135,10 @@ class EditFeedController @Autowired()(contentUpdateService: ContentUpdateService
     }
   }
 
-  private def renderEditForm(f: Feed, formObject: EditFeed): ModelAndView = {
+  private def renderEditForm(f: Feed, formObject: EditFeed, loggedInUser: User): ModelAndView = {
     new ModelAndView("editFeed").
+      addObject("loggedInUser", loggedInUser).
+      addObject("title", "Editing a feed").
       addObject("feed", f).
       addObject("formObject", formObject).
       addObject("acceptancePolicyOptions", acceptancePolicyOptions.asJava).

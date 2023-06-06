@@ -6,7 +6,7 @@ import nz.co.searchwellington.ReasonableWaits
 import nz.co.searchwellington.controllers.submission.{EndUserInputs, GeotagParsing}
 import nz.co.searchwellington.forms.NewNewsitem
 import nz.co.searchwellington.geocoding.osm.GeoCodeService
-import nz.co.searchwellington.model.{Newsitem, Website}
+import nz.co.searchwellington.model.{Newsitem, User, Website}
 import nz.co.searchwellington.modification.ContentUpdateService
 import nz.co.searchwellington.repositories.mongo.MongoRepository
 import nz.co.searchwellington.urls.{UrlBuilder, UrlCleaner}
@@ -39,7 +39,7 @@ class NewNewsitemController @Autowired()(contentUpdateService: ContentUpdateServ
   def prompt(): ModelAndView = {
     val newNewsitem = new NewNewsitem()
     newNewsitem.setDate(dateFormatter.print(DateTime.now()))
-    renderNewNewsitemForm(newNewsitem)
+    renderNewNewsitemForm(newNewsitem, loggedInUserFilter.getLoggedInUser)
   }
 
   @PostMapping(Array("/new-newsitem"))
@@ -47,7 +47,7 @@ class NewNewsitemController @Autowired()(contentUpdateService: ContentUpdateServ
     val loggedInUser = loggedInUserFilter.getLoggedInUser
     if (result.hasErrors) {
       log.warn("New newsitem submission has errors: " + result)
-      renderNewNewsitemForm(formObject)
+      renderNewNewsitemForm(formObject, loggedInUser)
 
     } else {
       log.info("Got valid new newsitem submission: " + formObject)
@@ -97,8 +97,9 @@ class NewNewsitemController @Autowired()(contentUpdateService: ContentUpdateServ
     }
   }
 
-  private def renderNewNewsitemForm(newNewsitem: nz.co.searchwellington.forms.NewNewsitem): ModelAndView = {
+  private def renderNewNewsitemForm(newNewsitem: nz.co.searchwellington.forms.NewNewsitem, loggedInUser: Option[User]): ModelAndView = {
     new ModelAndView("newNewsitem").
+      addObject("loggedInUser", loggedInUser.orNull).
       addObject("heading", "Adding a newsitem").
       addObject("formObject", newNewsitem)
   }
