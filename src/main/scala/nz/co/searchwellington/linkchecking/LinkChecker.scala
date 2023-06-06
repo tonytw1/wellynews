@@ -84,7 +84,7 @@ import scala.util.Try
       }
       Right(status, Some(httpResult.body))
     }.recoverWith {
-      case e: UnknownHostException =>
+      case _: UnknownHostException =>
         log.warn(s"Link check http fetch failed with unknown host: $url")
         Future.successful(Left(-2))
       case e: Exception =>
