@@ -95,13 +95,13 @@ class ContentModelBuilderServiceTest extends ReasonableWaits {
   }
 
   @Test
-  def shouldReturnNullIfNoValidModelBuilderWasFoundForRequest(): Unit = {
+  def shouldReturnNoneIfNoValidModelBuilderWasFoundForRequest(): Unit = {
     when(validModelBuilder.isValid(request)).thenReturn(false)
     when(invalidModelBuilder.isValid(request)).thenReturn(false)
 
     val result = Await.result(contentModelBuilderService.buildModelAndView(request, response), TenSeconds)
 
-    assertEquals(None, result)
+    assertTrue(result.isEmpty)
   }
 
   @Test

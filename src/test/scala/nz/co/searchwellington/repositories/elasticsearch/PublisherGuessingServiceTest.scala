@@ -27,7 +27,7 @@ class PublisherGuessingServiceTest extends ReasonableWaits {
 
     val guess = Await.result(publisherGuessingService.guessPublisherBasedOnUrl("http://www.spammer.com", Some(adminUser)), TenSeconds)
 
-    assertEquals(None, guess)
+    assertTrue(guess.isEmpty)
   }
 
   @Test
@@ -65,7 +65,7 @@ class PublisherGuessingServiceTest extends ReasonableWaits {
 
     val guess = Await.result(publisherGuessingService.guessPublisherBasedOnUrl("http://homepages.ihug.co.nz/~spammer/", Some(adminUser)), TenSeconds)
 
-    assertEquals(None, guess)
+    assertTrue(guess.isEmpty)
   }
 
 }
