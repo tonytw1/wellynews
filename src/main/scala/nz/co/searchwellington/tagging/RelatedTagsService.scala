@@ -57,24 +57,14 @@ import scala.concurrent.{ExecutionContext, Future}
       elasticSearchIndexer.getPublisherAggregationFor(newsitemsForTag, loggedInUser, size = Some(maxItems))
     }
 
-    getPublishersForTag(tag, loggedInUser).flatMap { publisherFacetsForTag =>
-      Future.sequence(publisherFacetsForTag.map { publisherFacet =>
-        toPublisherContentCount(publisherFacet)
-      }).map(_.flatten)
-    }
+    getPublishersForTag(tag, loggedInUser).flatMap(hydratePublisherFacet)
   }
 
   def getRelatedPublishersForLocation(place: Place, radius: Double, loggedInUser: Option[User])(implicit ec: ExecutionContext, currentSpan: Span): Future[Seq[PublisherContentCount]] = {
-
     def getPublishersNear(latLong: LatLong, radius: Double, loggedInUser: Option[User]): Future[Seq[(String, Long)]] = {
       elasticSearchIndexer.getPublisherAggregationFor(nearbyNewsitemsQuery(latLong, radius), loggedInUser)
     }
-
-    getPublishersNear(place.getLatLong, radius, loggedInUser).flatMap { publisherFacetsNear =>
-      Future.sequence(publisherFacetsNear.map { publisherFacet =>
-        toPublisherContentCount(publisherFacet)
-      }).map(_.flatten)
-    }
+    getPublishersNear(place.getLatLong, radius, loggedInUser).flatMap(hydratePublisherFacet)
   }
 
   def getRelatedTagsForPublisher(publisher: Website, loggedInUser: Option[User])(implicit ec: ExecutionContext, currentSpan: Span): Future[Seq[TagContentCount]] = {
@@ -100,18 +90,24 @@ import scala.concurrent.{ExecutionContext, Future}
     }
   }
 
-  private def toPublisherContentCount(facet: (String, Long))(implicit ec: ExecutionContext): Future[Option[PublisherContentCount]] = {
-    val eventualMaybePublisher = mongoRepository.getResourceByObjectId(BSONObjectID.parse(facet._1).get)
-    eventualMaybePublisher.map { maybePublisher =>
-      maybePublisher.flatMap { resource =>
-        resource match {
-          case publisher: Website =>
-            Some(PublisherContentCount(publisher, facet._2))
-          case _ =>
-            None
+  private def hydratePublisherFacet(publisherFacet: Seq[(String, Long)])(implicit ec: ExecutionContext): Future[Seq[PublisherContentCount]] = {
+    def toPublisherContentCount(facet: (String, Long))(implicit ec: ExecutionContext): Future[Option[PublisherContentCount]] = {
+      val eventualMaybePublisher = mongoRepository.getResourceByObjectId(BSONObjectID.parse(facet._1).get)
+      eventualMaybePublisher.map { maybePublisher =>
+        maybePublisher.flatMap { resource =>
+          resource match {
+            case publisher: Website =>
+              Some(PublisherContentCount(publisher, facet._2))
+            case _ =>
+              None
+          }
         }
       }
     }
+
+    Future.sequence(publisherFacet.map { publisherFacet =>
+      toPublisherContentCount(publisherFacet)
+    }).map(_.flatten)
   }
 
   private def toTagContentCount(facet: (String, Long))(implicit ec: ExecutionContext): Future[Option[TagContentCount]] = {
