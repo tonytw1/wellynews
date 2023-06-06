@@ -54,7 +54,7 @@ import scala.concurrent.{ExecutionContext, Future}
 
     def getPublishersForTag(tag: Tag, loggedInUser: Option[User]): Future[Seq[(String, Long)]] = {
       val newsitemsForTag = ResourceQuery(`type` = newsitems, tags = Some(Set(tag)))
-      elasticSearchIndexer.getPublisherAggregationFor(newsitemsForTag, loggedInUser)
+      elasticSearchIndexer.getPublisherAggregationFor(newsitemsForTag, loggedInUser, size = Some(maxItems))
     }
 
     getPublishersForTag(tag, loggedInUser).flatMap { publisherFacetsForTag =>
