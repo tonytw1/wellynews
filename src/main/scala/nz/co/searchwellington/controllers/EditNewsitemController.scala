@@ -8,7 +8,7 @@ import nz.co.searchwellington.geocoding.osm.GeoCodeService
 import nz.co.searchwellington.model._
 import nz.co.searchwellington.modification.ContentUpdateService
 import nz.co.searchwellington.repositories.mongo.MongoRepository
-import nz.co.searchwellington.repositories.{HandTaggingService, TagDAO}
+import nz.co.searchwellington.repositories.{ContentRetrievalService, HandTaggingService, TagDAO}
 import nz.co.searchwellington.urls.UrlCleaner
 import nz.co.searchwellington.views.Errors
 import org.apache.commons.logging.LogFactory
@@ -29,6 +29,7 @@ class EditNewsitemController @Autowired()(contentUpdateService: ContentUpdateSer
                                           mongoRepository: MongoRepository,
                                           val loggedInUserFilter: LoggedInUserFilter,
                                           val tagDAO: TagDAO,
+                                          val contentRetrievalService: ContentRetrievalService,
                                           val geocodeService: GeoCodeService,
                                           handTaggingService: HandTaggingService,
                                           val urlCleaner: UrlCleaner)

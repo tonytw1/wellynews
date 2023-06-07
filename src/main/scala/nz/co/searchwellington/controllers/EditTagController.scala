@@ -8,8 +8,8 @@ import nz.co.searchwellington.forms.EditTag
 import nz.co.searchwellington.geocoding.osm.GeoCodeService
 import nz.co.searchwellington.model.{Tag, User}
 import nz.co.searchwellington.modification.TagModificationService
-import nz.co.searchwellington.repositories.TagDAO
 import nz.co.searchwellington.repositories.mongo.MongoRepository
+import nz.co.searchwellington.repositories.{ContentRetrievalService, TagDAO}
 import nz.co.searchwellington.urls.UrlBuilder
 import nz.co.searchwellington.utils.StringWrangling
 import nz.co.searchwellington.views.Errors
@@ -32,6 +32,7 @@ class EditTagController @Autowired()(mongoRepository: MongoRepository,
                                      urlBuilder: UrlBuilder,
                                      val loggedInUserFilter: LoggedInUserFilter,
                                      tagModificationService: TagModificationService,
+                                     val contentRetrievalService: ContentRetrievalService,
                                      val geocodeService: GeoCodeService)
   extends EditScreen with ReasonableWaits with Errors with InputParsing with GeotagParsing with RequiringLoggedInUser
     with StringWrangling {

@@ -4,15 +4,15 @@ import nz.co.searchwellington.forms.NewNewsitem
 import nz.co.searchwellington.geocoding.osm.GeoCodeService
 import nz.co.searchwellington.model.{Newsitem, Resource, User, Website}
 import nz.co.searchwellington.modification.ContentUpdateService
-import nz.co.searchwellington.repositories.TagDAO
+import nz.co.searchwellington.repositories.ContentRetrievalService
 import nz.co.searchwellington.repositories.mongo.MongoRepository
 import nz.co.searchwellington.urls.{UrlBuilder, UrlCleaner}
 import org.joda.time.DateTime
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
+import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.{mock, verify, when}
 import org.mockito.{ArgumentCaptor, ArgumentMatchers}
-import org.mockito.ArgumentMatchers.any
 import org.springframework.mock.web.MockHttpServletRequest
 import org.springframework.validation.BindingResult
 import reactivemongo.api.bson.BSONObjectID
@@ -28,10 +28,10 @@ class NewNewsitemControllerTest {
   private val anonUserService = mock(classOf[AnonUserService])
   private val urlCleaner = mock(classOf[UrlCleaner])
   private val geoCodeService = mock(classOf[GeoCodeService])
-  private val tagDAO = mock(classOf[TagDAO])
+  private val contentRetrievalService = mock(classOf[ContentRetrievalService])
   private val loggedInUserFilter = mock(classOf[LoggedInUserFilter])
 
-  val controller = new NewNewsitemController(contentUpdateService, mongoRepository, urlBuilder, anonUserService, urlCleaner, geoCodeService, tagDAO, loggedInUserFilter)
+  val controller = new NewNewsitemController(contentUpdateService, mongoRepository, urlBuilder, anonUserService, urlCleaner, geoCodeService, contentRetrievalService, loggedInUserFilter)
 
   @Test
   def shouldSubmitNewsitems(): Unit = {

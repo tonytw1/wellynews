@@ -8,7 +8,7 @@ import nz.co.searchwellington.model.{Feed, UrlWordsGenerator, User}
 import nz.co.searchwellington.modification.ContentUpdateService
 import nz.co.searchwellington.repositories.elasticsearch.ElasticSearchIndexRebuildService
 import nz.co.searchwellington.repositories.mongo.MongoRepository
-import nz.co.searchwellington.repositories.{HandTaggingService, TagDAO}
+import nz.co.searchwellington.repositories.{ContentRetrievalService, HandTaggingService, TagDAO}
 import nz.co.searchwellington.urls.{UrlBuilder, UrlCleaner}
 import nz.co.searchwellington.views.Errors
 import org.apache.commons.logging.LogFactory
@@ -19,8 +19,8 @@ import org.springframework.web.bind.annotation.{GetMapping, ModelAttribute, Path
 import org.springframework.web.servlet.ModelAndView
 import org.springframework.web.servlet.view.RedirectView
 
-import scala.concurrent.{Await, Future}
 import scala.concurrent.ExecutionContext.Implicits.global
+import scala.concurrent.{Await, Future}
 import scala.jdk.CollectionConverters._
 
 @Controller
@@ -30,6 +30,7 @@ class EditFeedController @Autowired()(contentUpdateService: ContentUpdateService
                                       urlBuilder: UrlBuilder,
                                       val loggedInUserFilter: LoggedInUserFilter,
                                       val tagDAO: TagDAO,
+                                      val contentRetrievalService: ContentRetrievalService,
                                       handTaggingService: HandTaggingService,
                                       elasticSearchIndexRebuildService: ElasticSearchIndexRebuildService,
                                       val urlCleaner: UrlCleaner) extends EditScreen with ReasonableWaits with AcceptancePolicyOptions

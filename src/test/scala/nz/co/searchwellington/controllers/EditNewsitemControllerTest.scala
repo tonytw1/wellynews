@@ -5,7 +5,7 @@ import nz.co.searchwellington.geocoding.osm.GeoCodeService
 import nz.co.searchwellington.model.{Newsitem, User, Website}
 import nz.co.searchwellington.modification.ContentUpdateService
 import nz.co.searchwellington.repositories.mongo.MongoRepository
-import nz.co.searchwellington.repositories.{HandTaggingService, TagDAO}
+import nz.co.searchwellington.repositories.{ContentRetrievalService, HandTaggingService, TagDAO}
 import nz.co.searchwellington.urls.UrlCleaner
 import org.joda.time.DateTime
 import org.junit.jupiter.api.Assertions.assertEquals
@@ -23,6 +23,7 @@ class EditNewsitemControllerTest {
   private val mongoRepository = mock(classOf[MongoRepository])
   private val loggedInUserFilter = mock(classOf[LoggedInUserFilter])
   private val tagDAO = mock(classOf[TagDAO])
+  private val contentRetrievalService: ContentRetrievalService = mock(classOf[ContentRetrievalService])
   private val geoCodeService = mock(classOf[GeoCodeService])
   private val handTaggingService = new HandTaggingService(contentUpdateService, mongoRepository)
   private val urlCleaner = mock(classOf[UrlCleaner])
@@ -30,7 +31,7 @@ class EditNewsitemControllerTest {
   private implicit val ec: ExecutionContext = scala.concurrent.ExecutionContext.Implicits.global
 
   private val controller = new EditNewsitemController(contentUpdateService, mongoRepository, loggedInUserFilter, tagDAO,
-    geoCodeService, handTaggingService, urlCleaner)
+    contentRetrievalService, geoCodeService, handTaggingService, urlCleaner)
 
   @Test
   def shouldUpdateExistingNewsitem(): Unit = {

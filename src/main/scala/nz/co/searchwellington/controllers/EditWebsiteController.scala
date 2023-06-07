@@ -9,7 +9,7 @@ import nz.co.searchwellington.model._
 import nz.co.searchwellington.modification.ContentUpdateService
 import nz.co.searchwellington.repositories.elasticsearch.ElasticSearchIndexRebuildService
 import nz.co.searchwellington.repositories.mongo.MongoRepository
-import nz.co.searchwellington.repositories.{HandTaggingService, TagDAO}
+import nz.co.searchwellington.repositories.{ContentRetrievalService, HandTaggingService, TagDAO}
 import nz.co.searchwellington.urls.{UrlBuilder, UrlCleaner}
 import nz.co.searchwellington.views.Errors
 import org.apache.commons.logging.LogFactory
@@ -30,6 +30,7 @@ class EditWebsiteController @Autowired()(contentUpdateService: ContentUpdateServ
                                          urlBuilder: UrlBuilder,
                                          val loggedInUserFilter: LoggedInUserFilter,
                                          val tagDAO: TagDAO,
+                                         val contentRetrievalService: ContentRetrievalService,
                                          val geocodeService: GeoCodeService,
                                          handTaggingService: HandTaggingService,
                                          elasticSearchIndexRebuildService: ElasticSearchIndexRebuildService,
