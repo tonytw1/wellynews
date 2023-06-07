@@ -8,6 +8,7 @@ import nz.co.searchwellington.forms.NewNewsitem
 import nz.co.searchwellington.geocoding.osm.GeoCodeService
 import nz.co.searchwellington.model.{Newsitem, User, Website}
 import nz.co.searchwellington.modification.ContentUpdateService
+import nz.co.searchwellington.repositories.TagDAO
 import nz.co.searchwellington.repositories.mongo.MongoRepository
 import nz.co.searchwellington.urls.{UrlBuilder, UrlCleaner}
 import org.apache.commons.logging.LogFactory
@@ -29,7 +30,8 @@ class NewNewsitemController @Autowired()(contentUpdateService: ContentUpdateServ
                                          val anonUserService: AnonUserService,
                                          val urlCleaner: UrlCleaner,
                                          val geocodeService: GeoCodeService,
-                                         loggedInUserFilter: LoggedInUserFilter) extends ReasonableWaits
+                                         val tagDAO: TagDAO,
+                                         loggedInUserFilter: LoggedInUserFilter) extends EditScreen with ReasonableWaits
                                          with EnsuredSubmitter with EndUserInputs with GeotagParsing {
 
   private val log = LogFactory.getLog(classOf[NewNewsitemController])
@@ -98,9 +100,7 @@ class NewNewsitemController @Autowired()(contentUpdateService: ContentUpdateServ
   }
 
   private def renderNewNewsitemForm(newNewsitem: nz.co.searchwellington.forms.NewNewsitem, loggedInUser: Option[User]): ModelAndView = {
-    new ModelAndView("newNewsitem").
-      addObject("loggedInUser", loggedInUser.orNull).
-      addObject("heading", "Adding a newsitem").
+    editScreen("newNewsitem", "Adding a newsitem", loggedInUser).
       addObject("formObject", newNewsitem)
   }
 

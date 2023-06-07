@@ -29,10 +29,10 @@ class EditFeedController @Autowired()(contentUpdateService: ContentUpdateService
                                       urlWordsGenerator: UrlWordsGenerator,
                                       urlBuilder: UrlBuilder,
                                       val loggedInUserFilter: LoggedInUserFilter,
-                                      tagDAO: TagDAO,
+                                      val tagDAO: TagDAO,
                                       handTaggingService: HandTaggingService,
                                       elasticSearchIndexRebuildService: ElasticSearchIndexRebuildService,
-                                      val urlCleaner: UrlCleaner) extends ReasonableWaits with AcceptancePolicyOptions
+                                      val urlCleaner: UrlCleaner) extends EditScreen with ReasonableWaits with AcceptancePolicyOptions
   with Errors with RequiringLoggedInUser with EndUserInputs with HeldSubmissions {
 
   private val log = LogFactory.getLog(classOf[EditFeedController])
@@ -136,13 +136,10 @@ class EditFeedController @Autowired()(contentUpdateService: ContentUpdateService
   }
 
   private def renderEditForm(f: Feed, formObject: EditFeed, loggedInUser: User): ModelAndView = {
-    new ModelAndView("editFeed").
-      addObject("loggedInUser", loggedInUser).
-      addObject("title", "Editing a feed").
+    editScreen("editFeed", "Editing a feed", Some(loggedInUser)).
       addObject("feed", f).
       addObject("formObject", formObject).
-      addObject("acceptancePolicyOptions", acceptancePolicyOptions.asJava).
-      addObject("tags", Await.result(tagDAO.getAllTags, TenSeconds).asJava)
+      addObject("acceptancePolicyOptions", acceptancePolicyOptions.asJava)
   }
 
 }

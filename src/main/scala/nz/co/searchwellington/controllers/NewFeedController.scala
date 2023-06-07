@@ -9,6 +9,7 @@ import nz.co.searchwellington.feeds.whakaoko.WhakaokoService
 import nz.co.searchwellington.forms.NewFeed
 import nz.co.searchwellington.model.{Feed, UrlWordsGenerator, User}
 import nz.co.searchwellington.modification.ContentUpdateService
+import nz.co.searchwellington.repositories.TagDAO
 import nz.co.searchwellington.repositories.mongo.MongoRepository
 import nz.co.searchwellington.urls.{UrlBuilder, UrlCleaner}
 import org.apache.commons.logging.LogFactory
@@ -27,12 +28,14 @@ import scala.jdk.CollectionConverters._
 @Controller
 class NewFeedController @Autowired()(contentUpdateService: ContentUpdateService,
                                      mongoRepository: MongoRepository,
-                                     urlWordsGenerator: UrlWordsGenerator, urlBuilder: UrlBuilder,
+                                     urlWordsGenerator: UrlWordsGenerator,
+                                     urlBuilder: UrlBuilder,
                                      whakaokoService: WhakaokoService,
                                      val anonUserService: AnonUserService,
                                      val urlCleaner: UrlCleaner,
-                                     loggedInUserFilter: LoggedInUserFilter) extends ReasonableWaits with EnsuredSubmitter
-  with AcceptancePolicyOptions with EndUserInputs {
+                                     val tagDAO: TagDAO,
+                                     loggedInUserFilter: LoggedInUserFilter) extends EditScreen
+  with ReasonableWaits with EnsuredSubmitter with AcceptancePolicyOptions with EndUserInputs {
 
   private val log = LogFactory.getLog(classOf[NewFeedController])
 
@@ -145,9 +148,7 @@ class NewFeedController @Autowired()(contentUpdateService: ContentUpdateService,
   }
 
   private def renderForm(newFeed: NewFeed, loggedInUser: Option[User]): ModelAndView = {
-    new ModelAndView("newFeed").
-      addObject("loggedInUser", loggedInUser.orNull).
-      addObject("heading", "Adding a feed").
+   editScreen("newFeed","Adding a feed", loggedInUser).
       addObject("acceptancePolicyOptions", acceptancePolicyOptions.asJava).
       addObject("formObject", newFeed)
   }

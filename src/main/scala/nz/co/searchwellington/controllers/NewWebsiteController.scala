@@ -29,10 +29,10 @@ class NewWebsiteController @Autowired()(contentUpdateService: ContentUpdateServi
                                         urlWordsGenerator: UrlWordsGenerator, urlBuilder: UrlBuilder,
                                         val anonUserService: AnonUserService,
                                         val urlCleaner: UrlCleaner,
-                                        tagDAO: TagDAO,
+                                        val tagDAO: TagDAO,
                                         handTaggingService: HandTaggingService,
-                                        loggedInUserFilter: LoggedInUserFilter) extends ReasonableWaits
-  with EnsuredSubmitter with EndUserInputs {
+                                        loggedInUserFilter: LoggedInUserFilter) extends EditScreen
+  with ReasonableWaits with EnsuredSubmitter with EndUserInputs {
 
   private val log = LogFactory.getLog(classOf[NewWebsiteController])
 
@@ -85,9 +85,7 @@ class NewWebsiteController @Autowired()(contentUpdateService: ContentUpdateServi
   }
 
   private def renderNewWebsiteForm(newWebsite: NewWebsite, loggedInUser: Option[User]): ModelAndView = {
-    new ModelAndView("newWebsite").
-      addObject("loggedInUser", loggedInUser.orNull).
-      addObject("heading", "Adding a website").
+   editScreen("newWebsite", "Adding a website", loggedInUser).
       addObject("formObject", newWebsite).
       addObject("tags", Await.result(tagDAO.getAllTags, TenSeconds).asJava)
   }

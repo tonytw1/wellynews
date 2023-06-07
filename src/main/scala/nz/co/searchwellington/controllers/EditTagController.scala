@@ -27,12 +27,13 @@ import scala.concurrent.ExecutionContext.Implicits.global
 import scala.jdk.CollectionConverters._
 
 @Controller
-class EditTagController @Autowired()(mongoRepository: MongoRepository, tagDAO: TagDAO,
+class EditTagController @Autowired()(mongoRepository: MongoRepository,
+                                     val tagDAO: TagDAO,
                                      urlBuilder: UrlBuilder,
                                      val loggedInUserFilter: LoggedInUserFilter,
                                      tagModificationService: TagModificationService,
                                      val geocodeService: GeoCodeService)
-  extends ReasonableWaits with Errors with InputParsing with GeotagParsing with RequiringLoggedInUser
+  extends EditScreen with ReasonableWaits with Errors with InputParsing with GeotagParsing with RequiringLoggedInUser
     with StringWrangling {
 
   private val log = LogFactory.getLog(classOf[EditTagController])
@@ -136,8 +137,7 @@ class EditTagController @Autowired()(mongoRepository: MongoRepository, tagDAO: T
 
   private def renderEditForm(tag: Tag, editTag: EditTag, loggedInUser: User): ModelAndView = {
     val possibleParents = Await.result(tagDAO.getAllTags, TenSeconds).filterNot(_ == tag)
-    new ModelAndView("editTag").
-      addObject("loggedInUser", loggedInUser).
+    editScreen("editTag", "Editing a tag", Some(loggedInUser)).
       addObject("tag", tag).
       addObject("parents", possibleParents.asJava).
       addObject("formObject", editTag)

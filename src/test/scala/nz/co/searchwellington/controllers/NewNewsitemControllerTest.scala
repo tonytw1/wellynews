@@ -4,6 +4,7 @@ import nz.co.searchwellington.forms.NewNewsitem
 import nz.co.searchwellington.geocoding.osm.GeoCodeService
 import nz.co.searchwellington.model.{Newsitem, Resource, User, Website}
 import nz.co.searchwellington.modification.ContentUpdateService
+import nz.co.searchwellington.repositories.TagDAO
 import nz.co.searchwellington.repositories.mongo.MongoRepository
 import nz.co.searchwellington.urls.{UrlBuilder, UrlCleaner}
 import org.joda.time.DateTime
@@ -27,9 +28,10 @@ class NewNewsitemControllerTest {
   private val anonUserService = mock(classOf[AnonUserService])
   private val urlCleaner = mock(classOf[UrlCleaner])
   private val geoCodeService = mock(classOf[GeoCodeService])
+  private val tagDAO = mock(classOf[TagDAO])
   private val loggedInUserFilter = mock(classOf[LoggedInUserFilter])
 
-  val controller = new NewNewsitemController(contentUpdateService, mongoRepository, urlBuilder, anonUserService, urlCleaner, geoCodeService, loggedInUserFilter)
+  val controller = new NewNewsitemController(contentUpdateService, mongoRepository, urlBuilder, anonUserService, urlCleaner, geoCodeService, tagDAO, loggedInUserFilter)
 
   @Test
   def shouldSubmitNewsitems(): Unit = {

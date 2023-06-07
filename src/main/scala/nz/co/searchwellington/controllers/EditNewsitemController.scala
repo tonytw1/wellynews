@@ -28,11 +28,11 @@ import scala.jdk.CollectionConverters._
 class EditNewsitemController @Autowired()(contentUpdateService: ContentUpdateService,
                                           mongoRepository: MongoRepository,
                                           val loggedInUserFilter: LoggedInUserFilter,
-                                          tagDAO: TagDAO,
+                                          val tagDAO: TagDAO,
                                           val geocodeService: GeoCodeService,
                                           handTaggingService: HandTaggingService,
                                           val urlCleaner: UrlCleaner)
-  extends ReasonableWaits with AcceptancePolicyOptions with Errors with GeotagParsing with RequiringLoggedInUser
+  extends EditScreen with ReasonableWaits with AcceptancePolicyOptions with Errors with GeotagParsing with RequiringLoggedInUser
   with EndUserInputs with HeldSubmissions {
 
   private val log = LogFactory.getLog(classOf[EditNewsitemController])
@@ -151,12 +151,9 @@ class EditNewsitemController @Autowired()(contentUpdateService: ContentUpdateSer
 
 
   private def renderEditForm(n: Newsitem, formObject: EditNewsitem, loggedInUser: User): ModelAndView = {
-    new ModelAndView("editNewsitem").
-      addObject("title", "Editing a newsitem").
-      addObject("loggedInUser", loggedInUser).
+    editScreen("editNewsitem", "Editing a newsitem", Some(loggedInUser)).
       addObject("newsitem", n).
-      addObject("formObject", formObject).
-      addObject("tags", Await.result(tagDAO.getAllTags, TenSeconds).asJava)
+      addObject("formObject", formObject)
   }
 
 }

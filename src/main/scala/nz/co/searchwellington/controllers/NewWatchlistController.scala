@@ -7,6 +7,7 @@ import nz.co.searchwellington.controllers.submission.EndUserInputs
 import nz.co.searchwellington.forms.NewWatchlist
 import nz.co.searchwellington.model.{UrlWordsGenerator, User, Watchlist}
 import nz.co.searchwellington.modification.ContentUpdateService
+import nz.co.searchwellington.repositories.TagDAO
 import nz.co.searchwellington.repositories.mongo.MongoRepository
 import nz.co.searchwellington.urls.{UrlBuilder, UrlCleaner}
 import org.apache.commons.logging.LogFactory
@@ -27,7 +28,8 @@ class NewWatchlistController @Autowired()(contentUpdateService: ContentUpdateSer
                                           urlWordsGenerator: UrlWordsGenerator, urlBuilder: UrlBuilder,
                                           val anonUserService: AnonUserService,
                                           val urlCleaner: UrlCleaner,
-                                          loggedInUserFilter: LoggedInUserFilter) extends ReasonableWaits
+                                          val tagDAO: TagDAO,
+                                          loggedInUserFilter: LoggedInUserFilter) extends EditScreen with ReasonableWaits
                                           with EnsuredSubmitter with EndUserInputs {
 
   private val log = LogFactory.getLog(classOf[NewWatchlistController])
@@ -77,9 +79,7 @@ class NewWatchlistController @Autowired()(contentUpdateService: ContentUpdateSer
   }
 
   private def renderNewWatchlistForm(newWatchlist: NewWatchlist, loggedInUser: Option[User]): ModelAndView = {
-    new ModelAndView("newWatchlist").
-      addObject("loggedInUser", loggedInUser.orNull).
-      addObject("heading", "Adding a watchlist item").
+    editScreen("newWatchlist", "Adding a watchlist item", loggedInUser).
       addObject("formObject", newWatchlist)
   }
 

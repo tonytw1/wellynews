@@ -4,6 +4,7 @@ import jakarta.validation.Valid
 import nz.co.searchwellington.ReasonableWaits
 import nz.co.searchwellington.forms.NewTag
 import nz.co.searchwellington.model.{Tag, UrlWordsGenerator, User}
+import nz.co.searchwellington.repositories.TagDAO
 import nz.co.searchwellington.repositories.mongo.MongoRepository
 import nz.co.searchwellington.urls.UrlBuilder
 import org.apache.commons.logging.LogFactory
@@ -21,8 +22,9 @@ import scala.concurrent.ExecutionContext.Implicits.global
 class NewTagController @Autowired()(mongoRepository: MongoRepository,
                                     urlWordsGenerator: UrlWordsGenerator,
                                     urlBuilder: UrlBuilder,
-                                    val loggedInUserFilter: LoggedInUserFilter) extends ReasonableWaits
-  with AcceptancePolicyOptions with InputParsing with RequiringLoggedInUser {
+                                    val tagDAO: TagDAO,
+                                    val loggedInUserFilter: LoggedInUserFilter) extends EditScreen
+  with ReasonableWaits with AcceptancePolicyOptions with InputParsing with RequiringLoggedInUser {
 
   private val log = LogFactory.getLog(classOf[NewTagController])
 
@@ -71,9 +73,7 @@ class NewTagController @Autowired()(mongoRepository: MongoRepository,
   }
 
   private def renderForm(newTag: NewTag, loggedInUser: User): ModelAndView = {
-    new ModelAndView("newTag").
-      addObject("loggedInUser", loggedInUser).
-      addObject("heading", "Adding a tag").
+    editScreen("newTag", "Adding a tag", Some(loggedInUser)).
       addObject("formObject", newTag)
   }
 

@@ -29,12 +29,12 @@ class EditWebsiteController @Autowired()(contentUpdateService: ContentUpdateServ
                                          mongoRepository: MongoRepository,
                                          urlBuilder: UrlBuilder,
                                          val loggedInUserFilter: LoggedInUserFilter,
-                                         tagDAO: TagDAO,
+                                         val tagDAO: TagDAO,
                                          val geocodeService: GeoCodeService,
                                          handTaggingService: HandTaggingService,
                                          elasticSearchIndexRebuildService: ElasticSearchIndexRebuildService,
                                          val urlCleaner: UrlCleaner
-                                        ) extends ReasonableWaits with AcceptancePolicyOptions with Errors with GeotagParsing
+                                        ) extends EditScreen with ReasonableWaits with AcceptancePolicyOptions with Errors with GeotagParsing
   with RequiringLoggedInUser with EndUserInputs with HeldSubmissions {
 
   private val log = LogFactory.getLog(classOf[EditWebsiteController])
@@ -130,12 +130,9 @@ class EditWebsiteController @Autowired()(contentUpdateService: ContentUpdateServ
   }
 
   private def renderEditForm(w: Website, editWebsite: EditWebsite, loggedInUser: User): ModelAndView = {
-    new ModelAndView("editWebsite").
-      addObject("loggedInUser", loggedInUser).
-      addObject("title", "Editing a website").
+   editScreen("editWebsite", "Editing a website", Some(loggedInUser)).
       addObject("website", w).
-      addObject("formObject", editWebsite).
-      addObject("tags", Await.result(tagDAO.getAllTags, TenSeconds).asJava)
+      addObject("formObject", editWebsite)
   }
 
 }

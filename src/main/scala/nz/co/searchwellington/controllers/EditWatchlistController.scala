@@ -28,11 +28,11 @@ class EditWatchlistController @Autowired()(contentUpdateService: ContentUpdateSe
                                            mongoRepository: MongoRepository,
                                            urlBuilder: UrlBuilder,
                                            val loggedInUserFilter: LoggedInUserFilter,
-                                           tagDAO: TagDAO,
+                                           val tagDAO: TagDAO,
                                            val geocodeService: GeoCodeService,
                                            handTaggingService: HandTaggingService,
                                            val urlCleaner: UrlCleaner
-                                        ) extends ReasonableWaits with AcceptancePolicyOptions with Errors with GeotagParsing
+                                        ) extends EditScreen with ReasonableWaits with AcceptancePolicyOptions with Errors with GeotagParsing
   with RequiringLoggedInUser with EndUserInputs with HeldSubmissions {
 
   private val log = LogFactory.getLog(classOf[EditWatchlistController])
@@ -131,12 +131,9 @@ class EditWatchlistController @Autowired()(contentUpdateService: ContentUpdateSe
   }
 
   private def renderEditForm(w: Watchlist, editWatchlist: EditWatchlist, loggedInUser: User): ModelAndView = {
-    new ModelAndView("editWatchlist").
-      addObject("loggedInUser", loggedInUser).
-      addObject("title", "Editing a watchlist").
+    editScreen("editWatchlist", "Editing a watchlist", Some(loggedInUser)).
       addObject("watchlist", w).
-      addObject("formObject", editWatchlist).
-      addObject("tags", Await.result(tagDAO.getAllTags, TenSeconds).asJava)
+      addObject("formObject", editWatchlist)
   }
 
 }
