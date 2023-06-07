@@ -5,7 +5,7 @@ import jakarta.validation.Valid
 import nz.co.searchwellington.ReasonableWaits
 import nz.co.searchwellington.forms.NewTag
 import nz.co.searchwellington.model.{Tag, UrlWordsGenerator, User}
-import nz.co.searchwellington.repositories.ContentRetrievalService
+import nz.co.searchwellington.repositories.{ContentRetrievalService, TagDAO}
 import nz.co.searchwellington.repositories.mongo.MongoRepository
 import nz.co.searchwellington.urls.UrlBuilder
 import org.apache.commons.logging.LogFactory
@@ -24,6 +24,7 @@ class NewTagController @Autowired()(mongoRepository: MongoRepository,
                                     urlWordsGenerator: UrlWordsGenerator,
                                     urlBuilder: UrlBuilder,
                                     val contentRetrievalService: ContentRetrievalService,
+                                    val tagDAO: TagDAO,
                                     val loggedInUserFilter: LoggedInUserFilter) extends EditScreen
   with ReasonableWaits with AcceptancePolicyOptions with InputParsing with RequiringLoggedInUser {
 

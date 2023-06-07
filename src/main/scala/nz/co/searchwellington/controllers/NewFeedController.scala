@@ -9,7 +9,7 @@ import nz.co.searchwellington.feeds.whakaoko.WhakaokoService
 import nz.co.searchwellington.forms.NewFeed
 import nz.co.searchwellington.model.{Feed, UrlWordsGenerator, User}
 import nz.co.searchwellington.modification.ContentUpdateService
-import nz.co.searchwellington.repositories.ContentRetrievalService
+import nz.co.searchwellington.repositories.{ContentRetrievalService, TagDAO}
 import nz.co.searchwellington.repositories.mongo.MongoRepository
 import nz.co.searchwellington.urls.{UrlBuilder, UrlCleaner}
 import org.apache.commons.logging.LogFactory
@@ -34,6 +34,7 @@ class NewFeedController @Autowired()(contentUpdateService: ContentUpdateService,
                                      val anonUserService: AnonUserService,
                                      val urlCleaner: UrlCleaner,
                                      val contentRetrievalService: ContentRetrievalService,
+                                     val tagDAO: TagDAO,
                                      loggedInUserFilter: LoggedInUserFilter) extends EditScreen
   with ReasonableWaits with EnsuredSubmitter with AcceptancePolicyOptions with EndUserInputs {
 

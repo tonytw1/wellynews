@@ -8,7 +8,7 @@ import nz.co.searchwellington.controllers.submission.EndUserInputs
 import nz.co.searchwellington.forms.NewWatchlist
 import nz.co.searchwellington.model.{UrlWordsGenerator, User, Watchlist}
 import nz.co.searchwellington.modification.ContentUpdateService
-import nz.co.searchwellington.repositories.ContentRetrievalService
+import nz.co.searchwellington.repositories.{ContentRetrievalService, TagDAO}
 import nz.co.searchwellington.repositories.mongo.MongoRepository
 import nz.co.searchwellington.urls.{UrlBuilder, UrlCleaner}
 import org.apache.commons.logging.LogFactory
@@ -30,6 +30,7 @@ class NewWatchlistController @Autowired()(contentUpdateService: ContentUpdateSer
                                           val anonUserService: AnonUserService,
                                           val urlCleaner: UrlCleaner,
                                           val contentRetrievalService: ContentRetrievalService,
+                                          val tagDAO: TagDAO,
                                           loggedInUserFilter: LoggedInUserFilter) extends EditScreen with ReasonableWaits
                                           with EnsuredSubmitter with EndUserInputs {
 

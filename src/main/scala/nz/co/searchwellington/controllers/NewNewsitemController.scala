@@ -9,7 +9,7 @@ import nz.co.searchwellington.forms.NewNewsitem
 import nz.co.searchwellington.geocoding.osm.GeoCodeService
 import nz.co.searchwellington.model.{Newsitem, User, Website}
 import nz.co.searchwellington.modification.ContentUpdateService
-import nz.co.searchwellington.repositories.ContentRetrievalService
+import nz.co.searchwellington.repositories.{ContentRetrievalService, TagDAO}
 import nz.co.searchwellington.repositories.mongo.MongoRepository
 import nz.co.searchwellington.urls.{UrlBuilder, UrlCleaner}
 import org.apache.commons.logging.LogFactory
@@ -32,6 +32,7 @@ class NewNewsitemController @Autowired()(contentUpdateService: ContentUpdateServ
                                          val urlCleaner: UrlCleaner,
                                          val geocodeService: GeoCodeService,
                                          val contentRetrievalService: ContentRetrievalService,
+                                         val tagDAO: TagDAO,
                                          loggedInUserFilter: LoggedInUserFilter) extends EditScreen with ReasonableWaits
                                          with EnsuredSubmitter with EndUserInputs with GeotagParsing {
 
