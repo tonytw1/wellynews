@@ -87,10 +87,7 @@ The source code is available for review on <a href="http://www.github.com/tonytw
 <div class="right">
 
 <div class="box">
-#parse("includes/latest_newsitems.vm")
-
-<br clear="all"/>
-
+	#parse("includes/latest_newsitems.vm")
 </div>
 
 

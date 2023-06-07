@@ -63,6 +63,12 @@
 
 	</div>
 
+    <div class="right">
+        <div class="box">
+            #parse("includes/latest_newsitems.vm")
+        </div>
+    </div>
+
 </div>
 
 #parse("includes/footer.vm")
