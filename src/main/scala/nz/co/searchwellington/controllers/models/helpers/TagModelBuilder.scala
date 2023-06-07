@@ -3,7 +3,7 @@ package nz.co.searchwellington.controllers.models.helpers
 import io.opentelemetry.api.trace.Span
 import jakarta.servlet.http.HttpServletRequest
 import nz.co.searchwellington.ReasonableWaits
-import nz.co.searchwellington.controllers.CommonModelObjectsService
+import nz.co.searchwellington.controllers.CommonModelObjects
 import nz.co.searchwellington.model.frontend.{Action, FrontendResource}
 import nz.co.searchwellington.model.{Resource, Tag, TagArchiveLink, User}
 import nz.co.searchwellington.permissions.EditPermissionService
@@ -25,7 +25,7 @@ import scala.jdk.CollectionConverters._
                                               tagDAO: TagDAO,
                                               editPermissionService: EditPermissionService,
                                               adminUrlBuilder: AdminUrlBuilder) extends ModelBuilder
-  with CommonSizes with ReasonableWaits with CommonModelObjectsService with ArchiveMonths {
+  with CommonSizes with ReasonableWaits with CommonModelObjects with ArchiveMonths {
 
   private val TAG = "tag"
   private val TAGS = "tags"

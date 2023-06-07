@@ -6,7 +6,7 @@ import org.springframework.web.servlet.ModelAndView
 
 import scala.concurrent.{Await, ExecutionContext}
 
-trait EditScreen extends CommonModelObjectsService with ReasonableWaits {
+trait EditScreen extends CommonModelObjects with ReasonableWaits {
 
   def editScreen(viewname: String, heading: String, loggedInUser: Option[User])(implicit ec: ExecutionContext): ModelAndView = {
     val commonModel = Await.result(commonLocal, TenSeconds)

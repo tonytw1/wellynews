@@ -3,7 +3,7 @@ package nz.co.searchwellington.controllers.admin
 import io.opentelemetry.api.trace.Span
 import jakarta.servlet.http.{HttpServletRequest, HttpServletResponse}
 import nz.co.searchwellington.ReasonableWaits
-import nz.co.searchwellington.controllers.{CommonModelObjectsService, LoggedInUserFilter, RequiringLoggedInUser}
+import nz.co.searchwellington.controllers.{CommonModelObjects, LoggedInUserFilter, RequiringLoggedInUser}
 import nz.co.searchwellington.model.frontend.FrontendResource
 import nz.co.searchwellington.model.mappers.FrontendResourceMapper
 import nz.co.searchwellington.model.{Resource, Tag, User}
@@ -32,7 +32,7 @@ class AutoTagController @Autowired()(mongoRepository: MongoRepository,
                                      handTaggingService: HandTaggingService,
                                      val contentRetrievalService: ContentRetrievalService,
                                      frontendResourceMapper: FrontendResourceMapper)
-  extends ReasonableWaits with CommonModelObjectsService with RequiringLoggedInUser with Errors {
+  extends ReasonableWaits with CommonModelObjects with RequiringLoggedInUser with Errors {
 
   private val log = LogFactory.getLog(classOf[AutoTagController])
 

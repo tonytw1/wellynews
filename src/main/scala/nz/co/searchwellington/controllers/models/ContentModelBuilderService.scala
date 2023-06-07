@@ -2,7 +2,7 @@ package nz.co.searchwellington.controllers.models
 
 import io.opentelemetry.api.trace.Span
 import jakarta.servlet.http.{HttpServletRequest, HttpServletResponse}
-import nz.co.searchwellington.controllers.CommonModelObjectsService
+import nz.co.searchwellington.controllers.CommonModelObjects
 import nz.co.searchwellington.controllers.models.helpers.{ContentFields, ModelBuilder}
 import nz.co.searchwellington.filters.RequestPath
 import nz.co.searchwellington.model.User
@@ -17,7 +17,7 @@ import scala.concurrent.{ExecutionContext, Future}
 
 class ContentModelBuilderService(viewFactory: ViewFactory,
                                  val contentRetrievalService: ContentRetrievalService,
-                                 modelBuilders: Seq[ModelBuilder]) extends CommonModelObjectsService with ContentFields {
+                                 modelBuilders: Seq[ModelBuilder]) extends CommonModelObjects with ContentFields {
 
   private val log = LogFactory.getLog(classOf[ContentModelBuilderService])
 

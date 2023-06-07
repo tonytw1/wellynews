@@ -2,7 +2,7 @@ package nz.co.searchwellington.signin
 
 import io.opentelemetry.api.trace.Span
 import jakarta.servlet.http.HttpServletRequest
-import nz.co.searchwellington.controllers.{CommonModelObjectsService, LoggedInUserFilter, UrlStack}
+import nz.co.searchwellington.controllers.{CommonModelObjects, LoggedInUserFilter, UrlStack}
 import nz.co.searchwellington.repositories.ContentRetrievalService
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Controller
@@ -15,7 +15,7 @@ import scala.concurrent.ExecutionContext.Implicits.global
 
 @Controller class LoginController @Autowired()(urlStack: UrlStack,
                                                val contentRetrievalService: ContentRetrievalService,
-                                               loggedInUserFilter: LoggedInUserFilter) extends CommonModelObjectsService {
+                                               loggedInUserFilter: LoggedInUserFilter) extends CommonModelObjects {
 
   @RequestMapping(Array("/signin")) def signin(request: HttpServletRequest): ModelAndView = {
     implicit val currentSpan: Span = Span.current()

@@ -3,7 +3,7 @@ package nz.co.searchwellington.controllers.admin
 import io.opentelemetry.api.trace.Span
 import jakarta.servlet.http.HttpServletRequest
 import nz.co.searchwellington.ReasonableWaits
-import nz.co.searchwellington.controllers.{CommonModelObjectsService, LoggedInUserFilter, RequiringLoggedInUser}
+import nz.co.searchwellington.controllers.{CommonModelObjects, LoggedInUserFilter, RequiringLoggedInUser}
 import nz.co.searchwellington.model._
 import nz.co.searchwellington.model.mappers.FrontendResourceMapper
 import nz.co.searchwellington.modification.ContentUpdateService
@@ -26,7 +26,7 @@ import scala.jdk.CollectionConverters._
                                                 val contentRetrievalService: ContentRetrievalService,
                                                 val frontendResourceMapper: FrontendResourceMapper,
                                                 val loggedInUserFilter: LoggedInUserFilter) extends
-  ReasonableWaits with CommonModelObjectsService with RequiringLoggedInUser {
+  ReasonableWaits with CommonModelObjects with RequiringLoggedInUser {
 
   private val log = LogFactory.getLog(classOf[GatherController])
 

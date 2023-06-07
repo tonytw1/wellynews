@@ -2,14 +2,14 @@ package nz.co.searchwellington.controllers.models.helpers
 
 import io.opentelemetry.api.trace.Span
 import jakarta.servlet.http.HttpServletRequest
-import nz.co.searchwellington.controllers.CommonModelObjectsService
+import nz.co.searchwellington.controllers.CommonModelObjects
 import nz.co.searchwellington.model.User
 import nz.co.searchwellington.repositories.ContentRetrievalService
 import org.springframework.ui.ModelMap
 
 import scala.concurrent.{ExecutionContext, Future}
 
-trait ModelBuilder extends ContentFields with CommonModelObjectsService {
+trait ModelBuilder extends ContentFields with CommonModelObjects {
 
   def contentRetrievalService: ContentRetrievalService
 

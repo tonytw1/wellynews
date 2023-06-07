@@ -9,7 +9,7 @@ import org.springframework.ui.ModelMap
 import scala.concurrent.{ExecutionContext, Future}
 import scala.jdk.CollectionConverters._
 
-trait CommonModelObjectsService extends ReasonableWaits {
+trait CommonModelObjects extends ReasonableWaits {
 
   def contentRetrievalService: ContentRetrievalService
 

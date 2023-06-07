@@ -18,7 +18,7 @@ import scala.jdk.CollectionConverters._
 @Controller
 class ProfileController @Autowired()(mongoRepository: MongoRepository, loggedInUserFilter: LoggedInUserFilter,
                                      val contentRetrievalService: ContentRetrievalService)
-  extends ReasonableWaits with CommonModelObjectsService {
+  extends ReasonableWaits with CommonModelObjects {
 
   @GetMapping(Array("/profile/edit")) def edit(): ModelAndView = {
     val loggedInUser = loggedInUserFilter.getLoggedInUser

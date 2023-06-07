@@ -27,7 +27,7 @@ import scala.jdk.CollectionConverters._
                                                      loggedInUserFilter: LoggedInUserFilter,
                                                      rssUrlBuilder: RssUrlBuilder,
                                                      commonAttributesModelBuilder: CommonAttributesModelBuilder)
-  extends ReasonableWaits with CommonModelObjectsService {
+  extends ReasonableWaits with CommonModelObjects {
 
   @GetMapping(value = Array("/about")) def about(request: HttpServletRequest): ModelAndView = {
     implicit val currentSpan: Span = Span.current()
