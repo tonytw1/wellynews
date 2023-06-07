@@ -1,5 +1,6 @@
 package nz.co.searchwellington.controllers
 
+import io.opentelemetry.api.trace.Span
 import jakarta.validation.Valid
 import nz.co.searchwellington.ReasonableWaits
 import nz.co.searchwellington.controllers.submission.{EndUserInputs, GeotagParsing}
@@ -41,6 +42,8 @@ class EditWatchlistController @Autowired()(contentUpdateService: ContentUpdateSe
   @GetMapping(Array("/edit-watchlist/{id}"))
   def prompt(@PathVariable id: String): ModelAndView = {
     def showForm(loggedInUser: User): ModelAndView = {
+      implicit val currentSpan: Span = Span.current()
+
       getWatchlistById(id).map { w =>
         val editWatchlist = mapToForm(w)
         val usersTags = w.resource_tags.filter(_.user_id == loggedInUser._id)
@@ -82,6 +85,8 @@ class EditWatchlistController @Autowired()(contentUpdateService: ContentUpdateSe
   @PostMapping(Array("/edit-watchlist/{id}"))
   def submit(@PathVariable id: String, @Valid @ModelAttribute("editWatchlist") editWatchlist: EditWatchlist, result: BindingResult): ModelAndView = {
     def handleSubmission(loggedInUser: User): ModelAndView = {
+      implicit val currentSpan: Span = Span.current()
+
       getWatchlistById(id).map { w =>
         if (result.hasErrors) {
           log.warn("Edit watchlist submission has errors: " + result)
@@ -131,7 +136,7 @@ class EditWatchlistController @Autowired()(contentUpdateService: ContentUpdateSe
     }
   }
 
-  private def renderEditForm(w: Watchlist, editWatchlist: EditWatchlist, loggedInUser: User): ModelAndView = {
+  private def renderEditForm(w: Watchlist, editWatchlist: EditWatchlist, loggedInUser: User)(implicit currentSpan: Span): ModelAndView = {
     editScreen("editWatchlist", "Editing a watchlist", Some(loggedInUser)).
       addObject("watchlist", w).
       addObject("formObject", editWatchlist)

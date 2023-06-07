@@ -1,5 +1,6 @@
 package nz.co.searchwellington.controllers
 
+import io.opentelemetry.api.trace.Span
 import jakarta.servlet.http.HttpServletRequest
 import jakarta.validation.Valid
 import nz.co.searchwellington.ReasonableWaits
@@ -38,11 +39,15 @@ class NewWebsiteController @Autowired()(contentUpdateService: ContentUpdateServi
   private val log = LogFactory.getLog(classOf[NewWebsiteController])
 
   @GetMapping(Array("/new-website"))
-  def prompt(): ModelAndView = renderNewWebsiteForm(new NewWebsite(), loggedInUserFilter.getLoggedInUser)
+  def prompt(): ModelAndView = {
+    implicit val currentSpan: Span = Span.current()
+    renderNewWebsiteForm(new NewWebsite(), loggedInUserFilter.getLoggedInUser)
+  }
 
   @PostMapping(Array("/new-website"))
   def submit(@Valid @ModelAttribute("formObject") formObject: NewWebsite, result: BindingResult, request: HttpServletRequest): ModelAndView = {
     val loggedInUser = loggedInUserFilter.getLoggedInUser
+    implicit val currentSpan: Span = Span.current()
 
     if (result.hasErrors) {
       log.warn("New website submission has errors: " + result)
@@ -85,7 +90,7 @@ class NewWebsiteController @Autowired()(contentUpdateService: ContentUpdateServi
     }
   }
 
-  private def renderNewWebsiteForm(newWebsite: NewWebsite, loggedInUser: Option[User]): ModelAndView = {
+  private def renderNewWebsiteForm(newWebsite: NewWebsite, loggedInUser: Option[User])(implicit currentSpan: Span): ModelAndView = {
    editScreen("newWebsite", "Adding a website", loggedInUser).
       addObject("formObject", newWebsite).
       addObject("tags", Await.result(tagDAO.getAllTags, TenSeconds).asJava)

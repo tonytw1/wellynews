@@ -1,5 +1,6 @@
 package nz.co.searchwellington.controllers
 
+import io.opentelemetry.api.trace.Span
 import jakarta.servlet.http.HttpServletRequest
 import jakarta.validation.Valid
 import nz.co.searchwellington.ReasonableWaits
@@ -39,6 +40,8 @@ class NewNewsitemController @Autowired()(contentUpdateService: ContentUpdateServ
 
   @GetMapping(Array("/new-newsitem"))
   def prompt(): ModelAndView = {
+    implicit val currentSpan: Span = Span.current()
+
     val newNewsitem = new NewNewsitem()
     newNewsitem.setDate(dateFormatter.print(DateTime.now()))
     renderNewNewsitemForm(newNewsitem, loggedInUserFilter.getLoggedInUser)
@@ -47,6 +50,8 @@ class NewNewsitemController @Autowired()(contentUpdateService: ContentUpdateServ
   @PostMapping(Array("/new-newsitem"))
   def submit(@Valid @ModelAttribute("formObject") formObject: NewNewsitem, result: BindingResult, request: HttpServletRequest): ModelAndView = {
     val loggedInUser = loggedInUserFilter.getLoggedInUser
+    implicit val currentSpan: Span = Span.current()
+
     if (result.hasErrors) {
       log.warn("New newsitem submission has errors: " + result)
       renderNewNewsitemForm(formObject, loggedInUser)
@@ -99,7 +104,7 @@ class NewNewsitemController @Autowired()(contentUpdateService: ContentUpdateServ
     }
   }
 
-  private def renderNewNewsitemForm(newNewsitem: nz.co.searchwellington.forms.NewNewsitem, loggedInUser: Option[User]): ModelAndView = {
+  private def renderNewNewsitemForm(newNewsitem: nz.co.searchwellington.forms.NewNewsitem, loggedInUser: Option[User])(implicit currentSpan: Span): ModelAndView = {
     editScreen("newNewsitem", "Adding a newsitem", loggedInUser).
       addObject("formObject", newNewsitem)
   }

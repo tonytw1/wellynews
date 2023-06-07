@@ -1,5 +1,6 @@
 package nz.co.searchwellington.controllers
 
+import io.opentelemetry.api.trace.Span
 import jakarta.servlet.http.HttpServletRequest
 import jakarta.validation.Valid
 import nz.co.searchwellington.ReasonableWaits
@@ -36,12 +37,15 @@ class NewWatchlistController @Autowired()(contentUpdateService: ContentUpdateSer
 
   @GetMapping(Array("/new-watchlist"))
   def prompt(): ModelAndView = {
+    implicit val currentSpan: Span = Span.current()
     renderNewWatchlistForm(new NewWatchlist(), loggedInUserFilter.getLoggedInUser)
   }
 
   @PostMapping(Array("/new-watchlist"))
   def submit(@Valid @ModelAttribute("formObject") newWatchlist: NewWatchlist, result: BindingResult, request: HttpServletRequest): ModelAndView = {
     val loggedInUser = loggedInUserFilter.getLoggedInUser
+    implicit val currentSpan: Span = Span.current()
+
     if (result.hasErrors) {
       log.warn("New website submission has errors: " + result)
       renderNewWatchlistForm(newWatchlist, loggedInUser)
@@ -78,7 +82,7 @@ class NewWatchlistController @Autowired()(contentUpdateService: ContentUpdateSer
     }
   }
 
-  private def renderNewWatchlistForm(newWatchlist: NewWatchlist, loggedInUser: Option[User]): ModelAndView = {
+  private def renderNewWatchlistForm(newWatchlist: NewWatchlist, loggedInUser: Option[User])(implicit currentSpan: Span): ModelAndView = {
     editScreen("newWatchlist", "Adding a watchlist item", loggedInUser).
       addObject("formObject", newWatchlist)
   }

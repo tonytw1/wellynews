@@ -1,5 +1,6 @@
 package nz.co.searchwellington.controllers
 
+import io.opentelemetry.api.trace.Span
 import jakarta.validation.Valid
 import nz.co.searchwellington.ReasonableWaits
 import nz.co.searchwellington.controllers.submission.EndUserInputs
@@ -41,6 +42,8 @@ class EditFeedController @Autowired()(contentUpdateService: ContentUpdateService
   @GetMapping(Array("/edit-feed/{id}"))
   def prompt(@PathVariable id: String): ModelAndView = {
     def showForm(loggedInUser: User): ModelAndView = {
+      implicit val currentSpan: Span = Span.current()
+
       getFeedById(id).map { f =>
         val publisher = f.publisher.flatMap(pid => Await.result(mongoRepository.getResourceByObjectId(pid), TenSeconds))
 
@@ -66,6 +69,8 @@ class EditFeedController @Autowired()(contentUpdateService: ContentUpdateService
   @PostMapping(Array("/edit-feed/{id}"))
   def submit(@PathVariable id: String, @Valid @ModelAttribute("formObject") formObject: EditFeed, result: BindingResult): ModelAndView = {
     def handleSubmission(loggedInUser: User): ModelAndView = {
+      implicit val currentSpan: Span = Span.current()
+
       getFeedById(id).map { f =>
         if (result.hasErrors) {
           log.warn("Edit feed submission has errors: " + result)
@@ -136,7 +141,7 @@ class EditFeedController @Autowired()(contentUpdateService: ContentUpdateService
     }
   }
 
-  private def renderEditForm(f: Feed, formObject: EditFeed, loggedInUser: User): ModelAndView = {
+  private def renderEditForm(f: Feed, formObject: EditFeed, loggedInUser: User)(implicit currentSpan: Span): ModelAndView = {
     editScreen("editFeed", "Editing a feed", Some(loggedInUser)).
       addObject("feed", f).
       addObject("formObject", formObject).

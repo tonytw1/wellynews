@@ -41,6 +41,8 @@ class NewFeedController @Autowired()(contentUpdateService: ContentUpdateService,
 
   @GetMapping(Array("/new-feed"))
   def prompt(publisher: String): ModelAndView = {
+    implicit val currentSpan: Span = Span.current()
+
     val prepopulatedPublisher = {
       Option(publisher).flatMap { p =>
         if (p.trim.nonEmpty) {
@@ -147,7 +149,7 @@ class NewFeedController @Autowired()(contentUpdateService: ContentUpdateService,
     }
   }
 
-  private def renderForm(newFeed: NewFeed, loggedInUser: Option[User]): ModelAndView = {
+  private def renderForm(newFeed: NewFeed, loggedInUser: Option[User])(implicit currentSpan: Span): ModelAndView = {
    editScreen("newFeed","Adding a feed", loggedInUser).
       addObject("acceptancePolicyOptions", acceptancePolicyOptions.asJava).
       addObject("formObject", newFeed)

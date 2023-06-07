@@ -1,5 +1,6 @@
 package nz.co.searchwellington.controllers
 
+import io.opentelemetry.api.trace.Span
 import jakarta.validation.Valid
 import nz.co.searchwellington.ReasonableWaits
 import nz.co.searchwellington.controllers.submission.{EndUserInputs, GeotagParsing}
@@ -43,6 +44,8 @@ class EditNewsitemController @Autowired()(contentUpdateService: ContentUpdateSer
   @GetMapping(value = Array("/edit-newsitem/{id}"))
   def prompt(@PathVariable id: String): ModelAndView = {
     def showForm(loggedInUser: User): ModelAndView = {
+      implicit val currentSpan: Span = Span.current()
+
       getNewsitemById(id).map { newsitem =>
         renderEditForm(newsitem, mapToForm(newsitem, loggedInUser), loggedInUser)
       }.getOrElse {
@@ -57,6 +60,8 @@ class EditNewsitemController @Autowired()(contentUpdateService: ContentUpdateSer
   @PostMapping(Array("/edit-newsitem/{id}"))
   def submit(@PathVariable id: String, @Valid @ModelAttribute("formObject") formObject: EditNewsitem, result: BindingResult): ModelAndView = {
     def handleSubmission(loggedInUser: User): ModelAndView = {
+      implicit val currentSpan: Span = Span.current()
+
       getNewsitemById(id).map { newsitem =>
         if (result.hasErrors) {
           log.warn("Edit newsitem submission has errors: " + result)
@@ -151,7 +156,7 @@ class EditNewsitemController @Autowired()(contentUpdateService: ContentUpdateSer
   }
 
 
-  private def renderEditForm(n: Newsitem, formObject: EditNewsitem, loggedInUser: User): ModelAndView = {
+  private def renderEditForm(n: Newsitem, formObject: EditNewsitem, loggedInUser: User)(implicit currentSpan: Span): ModelAndView = {
     editScreen("editNewsitem", "Editing a newsitem", Some(loggedInUser)).
       addObject("newsitem", n).
       addObject("formObject", formObject)

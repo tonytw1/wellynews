@@ -1,5 +1,6 @@
 package nz.co.searchwellington.controllers
 
+import io.opentelemetry.api.trace.Span
 import jakarta.validation.Valid
 import nz.co.searchwellington.ReasonableWaits
 import nz.co.searchwellington.controllers.submission.{EndUserInputs, GeotagParsing}
@@ -43,6 +44,8 @@ class EditWebsiteController @Autowired()(contentUpdateService: ContentUpdateServ
   @GetMapping(Array("/edit-website/{id}"))
   def prompt(@PathVariable id: String): ModelAndView = {
     def showForm(loggedInUser: User): ModelAndView = {
+      implicit val currentSpan: Span = Span.current()
+
       getWebsiteById(id).map { w =>
         val editWebsite = new EditWebsite()
         editWebsite.setTitle(w.title)
@@ -72,6 +75,8 @@ class EditWebsiteController @Autowired()(contentUpdateService: ContentUpdateServ
   @PostMapping(Array("/edit-website/{id}"))
   def submit(@PathVariable id: String, @Valid @ModelAttribute("formObject") editWebsite: EditWebsite, result: BindingResult): ModelAndView = {
     def handleSubmission(loggedInUser: User): ModelAndView = {
+      implicit val currentSpan: Span = Span.current()
+
       getWebsiteById(id).map { w =>
         if (result.hasErrors) {
           log.warn("Edit website submission has errors: " + result)
@@ -130,7 +135,7 @@ class EditWebsiteController @Autowired()(contentUpdateService: ContentUpdateServ
     }
   }
 
-  private def renderEditForm(w: Website, editWebsite: EditWebsite, loggedInUser: User): ModelAndView = {
+  private def renderEditForm(w: Website, editWebsite: EditWebsite, loggedInUser: User)(implicit currentSpan: Span): ModelAndView = {
    editScreen("editWebsite", "Editing a website", Some(loggedInUser)).
       addObject("website", w).
       addObject("formObject", editWebsite)

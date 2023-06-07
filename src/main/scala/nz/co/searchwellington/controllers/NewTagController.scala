@@ -1,5 +1,6 @@
 package nz.co.searchwellington.controllers
 
+import io.opentelemetry.api.trace.Span
 import jakarta.validation.Valid
 import nz.co.searchwellington.ReasonableWaits
 import nz.co.searchwellington.forms.NewTag
@@ -30,6 +31,8 @@ class NewTagController @Autowired()(mongoRepository: MongoRepository,
 
   @GetMapping(Array("/new-tag"))
   def prompt(): ModelAndView = {
+    implicit val currentSpan: Span = Span.current()
+
     def showAddTagPrompt(loggedInUser: User): ModelAndView = {
       renderForm(new NewTag(), loggedInUser)
     }
@@ -41,6 +44,8 @@ class NewTagController @Autowired()(mongoRepository: MongoRepository,
   def submit(@Valid @ModelAttribute("formObject") newTag: NewTag, result: BindingResult): ModelAndView = {
 
     def submitNewTag(loggedInUser: User): ModelAndView = {
+      implicit val currentSpan: Span = Span.current()
+
       if (!result.hasErrors) {
         log.info("Got valid new tag submission: " + newTag)
 
@@ -72,7 +77,7 @@ class NewTagController @Autowired()(mongoRepository: MongoRepository,
     requiringAdminUser(submitNewTag)
   }
 
-  private def renderForm(newTag: NewTag, loggedInUser: User): ModelAndView = {
+  private def renderForm(newTag: NewTag, loggedInUser: User)(implicit currentSpan: Span): ModelAndView = {
     editScreen("newTag", "Adding a tag", Some(loggedInUser)).
       addObject("formObject", newTag)
   }

@@ -1,5 +1,6 @@
 package nz.co.searchwellington.controllers
 
+import io.opentelemetry.api.trace.Span
 import jakarta.servlet.http.{HttpServletRequest, HttpServletResponse}
 import jakarta.validation.Valid
 import nz.co.searchwellington.ReasonableWaits
@@ -42,6 +43,8 @@ class EditTagController @Autowired()(mongoRepository: MongoRepository,
   @GetMapping(Array("/edit-tag/{id}"))
   def prompt(@PathVariable id: String): ModelAndView = {
     def promptForEditTag(loggedInUser: User): ModelAndView = {
+      implicit val currentSpan: Span = Span.current()
+
       Await.result(mongoRepository.getTagById(id), TenSeconds).map { tag =>
         val editTag = new EditTag(tag.display_name,
           tag.description.getOrElse(""),
@@ -68,6 +71,8 @@ class EditTagController @Autowired()(mongoRepository: MongoRepository,
   @PostMapping(Array("/edit-tag/{id}"))
   def submit(@PathVariable id: String, @Valid @ModelAttribute("formObject") editTag: EditTag, result: BindingResult): ModelAndView = {
     def submitEditTag(loggedInUser: User): ModelAndView = {
+      implicit val currentSpan: Span = Span.current()
+
       Await.result(mongoRepository.getTagById(id), TenSeconds).map { tag =>
         val parentTag = optionalBsonObjectId(editTag.getParent).flatMap { p =>
           val maybeTag = Await.result(tagDAO.loadTagByObjectId(p), TenSeconds)
@@ -136,7 +141,7 @@ class EditTagController @Autowired()(mongoRepository: MongoRepository,
     requiringAdminUser(deleteTag)
   }
 
-  private def renderEditForm(tag: Tag, editTag: EditTag, loggedInUser: User): ModelAndView = {
+  private def renderEditForm(tag: Tag, editTag: EditTag, loggedInUser: User)(implicit currentSpan: Span): ModelAndView = {
     val possibleParents = Await.result(tagDAO.getAllTags, TenSeconds).filterNot(_ == tag)
     editScreen("editTag", "Editing a tag", Some(loggedInUser)).
       addObject("tag", tag).
