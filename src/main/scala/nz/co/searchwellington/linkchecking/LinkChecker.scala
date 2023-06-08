@@ -80,7 +80,9 @@ import scala.util.Try
       val status = httpResult.status
       log.info("Http status for " + url + " set was: " + status)
 
-      if (status >= 300 && status < 400) {
+      val isRedirecting = status >= 300 && status < 400
+      val isMovedPermanently = status == 301  // TODO this is the useful signal we're really trying to capture here
+      if (isRedirecting) {
         httpFetcher.httpFetch(url).map { httpResult =>
           log.info(s"Retrying fetching of $url with follow redirects")
           Right(status, Some(httpResult.body))
