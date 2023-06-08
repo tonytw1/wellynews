@@ -76,10 +76,20 @@ import scala.util.Try
 
   // Given a URL load it and return the http status and the page contents
   private def httpCheck(url: URL)(implicit ec: ExecutionContext): Future[Either[Int, (Integer, Option[String])]] = {
-    httpFetcher.httpFetch(url).map { httpResult =>
-      log.info("Http status for " + url + " set was: " + httpResult.status)
-      var status = httpResult.status
-      Right(status, Some(httpResult.body))
+    httpFetcher.httpFetch(url, followRedirects = false).flatMap { httpResult =>
+      val status = httpResult.status
+      log.info("Http status for " + url + " set was: " + status)
+
+      if (status >= 300 && status < 400) {
+        httpFetcher.httpFetch(url).map { httpResult =>
+          log.info(s"Retrying fetching of $url with follow redirects")
+          Right(status, Some(httpResult.body))
+        }
+
+      } else {
+        Future.successful(Right(status, Some(httpResult.body)))
+      }
+
     }.recoverWith {
       case _: UnknownHostException =>
         log.warn(s"Link check http fetch failed with unknown host: $url")

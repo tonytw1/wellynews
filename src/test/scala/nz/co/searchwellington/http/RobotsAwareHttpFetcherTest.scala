@@ -34,8 +34,8 @@ class RobotsAwareHttpFetcherTest extends ReasonableWaits {
   @Test
   def testShouldCrawlIfFetcherSaysOk(): Unit = {
     when(robotExclusionService.isUrlCrawlable(TEST_URL, TEST_USER_AGENT)).thenReturn(true)
-    robotsAwareFetcher.httpFetch(TEST_URL)
-    verify(httpFetcher).httpFetch(TEST_URL)
+    robotsAwareFetcher.httpFetch(TEST_URL, true)
+    verify(httpFetcher).httpFetch(TEST_URL, true)
   }
 
   @Test

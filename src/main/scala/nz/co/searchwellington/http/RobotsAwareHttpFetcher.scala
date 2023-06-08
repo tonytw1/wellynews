@@ -16,10 +16,10 @@ class RobotsAwareHttpFetcher @Autowired()(robotExclusionService: RobotExclusionS
 
   private val excludedUrlPrefixes = Seq.empty
 
-  override def httpFetch(url: URL)(implicit ec: ExecutionContext): Future[HttpFetchResult] = {
+  override def httpFetch(url: URL, followRedirects: Boolean = true)(implicit ec: ExecutionContext): Future[HttpFetchResult] = {
     val ignoreRobotDotTxt = excludedUrlPrefixes.exists(e => url.toExternalForm.startsWith(e))
     if (ignoreRobotDotTxt || robotExclusionService.isUrlCrawlable(url, getUserAgent)) {
-      httpFetcher.httpFetch(url)
+      httpFetcher.httpFetch(url, followRedirects)
 
     } else {
       log.info("Url is not allowed to be crawled: " + url)

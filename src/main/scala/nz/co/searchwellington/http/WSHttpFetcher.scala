@@ -14,8 +14,8 @@ class WSHttpFetcher @Autowired()(siteInformation: SiteInformation, wsClient: WSC
 
   private val log = LogFactory.getLog(classOf[WSHttpFetcher])
 
-  override def httpFetch(url: URL)(implicit ec: ExecutionContext): Future[HttpFetchResult] = {
-    wsClient.wsClient.url(url.toExternalForm).withRequestTimeout(TenSeconds).get.map { r =>
+  override def httpFetch(url: URL, followRedirects: Boolean = true)(implicit ec: ExecutionContext): Future[HttpFetchResult] = {
+    wsClient.wsClient.url(url.toExternalForm).withRequestTimeout(TenSeconds).withFollowRedirects(followRedirects).get.map { r =>
       log.info("Got HTTP response code " + r.status + " for url: " + url)
       HttpFetchResult(r.status, r.body)
     }
