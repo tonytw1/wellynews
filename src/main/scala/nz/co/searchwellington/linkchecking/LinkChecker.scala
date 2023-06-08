@@ -79,9 +79,6 @@ import scala.util.Try
     httpFetcher.httpFetch(url).map { httpResult =>
       log.info("Http status for " + url + " set was: " + httpResult.status)
       var status = httpResult.status
-      if (url.getHost.equals("www.wellingtoncivictrust.org")) {
-        status = 200  // TODO interesting 500 status returns from this host
-      }
       Right(status, Some(httpResult.body))
     }.recoverWith {
       case _: UnknownHostException =>
