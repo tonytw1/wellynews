@@ -79,6 +79,7 @@ import scala.jdk.CollectionConverters._
         if (editPermissionService.canEdit(publisher, loggedInUser)) {
           val actions = Seq(
             Action("Edit", adminUrlBuilder.getResourceEditUrl(publisher)),
+            Action("Check", adminUrlBuilder.getResourceCheckUrl(frontendWebsite)),
             Action("Delete", adminUrlBuilder.getResourceDeleteUrl(frontendWebsite)),
             Action("Gather", adminUrlBuilder.getPublisherAutoGatherUrl(frontendWebsite.asInstanceOf[FrontendWebsite])),
             Action("New feed", urlBuilder.getNewFeedForPublisherUrl(frontendWebsite.asInstanceOf[FrontendWebsite])),
