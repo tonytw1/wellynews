@@ -85,7 +85,7 @@ import scala.util.Try
       if (isRedirecting) {
         httpFetcher.httpFetch(url).map { httpResult =>
           log.info(s"Retrying fetching of $url with follow redirects")
-          Right(status, isRedirecting, Some(httpResult.body))
+          Right(httpResult.status, isRedirecting, Some(httpResult.body))
         }
 
       } else {
