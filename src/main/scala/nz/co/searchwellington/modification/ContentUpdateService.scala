@@ -17,7 +17,6 @@ import scala.concurrent.{ExecutionContext, Future}
   private val log = LogFactory.getLog(classOf[ContentUpdateService])
 
   def update(resource: Resource)(implicit ec: ExecutionContext): Future[Boolean] = {
-    log.debug("Updating content for: " + resource.title + " - " + resource.http_status + " " + resource.page)
     try {
       /*
       var resourceUrlHasChanged = false
@@ -51,7 +50,6 @@ import scala.concurrent.{ExecutionContext, Future}
   }
 
   def create(resource: Resource)(implicit ec: ExecutionContext): Future[Boolean] = {
-    resource.setHttpStatus(0)
     log.debug("Creating resource: " + resource.page)
     println(resource)
     mongoRepository.saveResource(resource).flatMap { r =>

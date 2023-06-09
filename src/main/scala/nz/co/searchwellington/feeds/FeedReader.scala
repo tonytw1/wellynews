@@ -4,7 +4,7 @@ import io.opentelemetry.api.trace.Span
 import nz.co.searchwellington.ReasonableWaits
 import nz.co.searchwellington.feeds.whakaoko.WhakaokoFeedReader
 import nz.co.searchwellington.feeds.whakaoko.model.FeedItem
-import nz.co.searchwellington.model.{Feed, FeedAcceptancePolicy, Resource, User}
+import nz.co.searchwellington.model.{Feed, FeedAcceptancePolicy, HttpStatus, Resource, User}
 import nz.co.searchwellington.modification.ContentUpdateService
 import org.apache.commons.logging.LogFactory
 import org.joda.time.DateTime
@@ -48,10 +48,13 @@ import scala.concurrent.{ExecutionContext, Future}
             }
 
             val inferredHttpStatus = if (feedNewsitems.nonEmpty) 200 else -3
+
+            val newHttpStatus = feed.httpStatus.map(_.copy(status = inferredHttpStatus)).getOrElse(HttpStatus(inferredHttpStatus, redirecting = false))
+
             contentUpdateService.update(feed.copy(
               last_read = Some(DateTime.now.toDate),
               latestItemDate = latestPublicationDateOf(feedNewsitems),
-              http_status = inferredHttpStatus
+              httpStatus = Some(newHttpStatus)
             )).map { _ =>
               acceptedNewsitems.size
             }

@@ -162,7 +162,7 @@ class ElasticSearchIndexer @Autowired()(val showBrokenDecisionService: ShowBroke
         Some(Type -> resource.`type`),
         Some(Title -> resource.title),
         Some(TitleSort -> resource.title),
-        Some(HttpStatus -> resource.http_status.toString),
+        resource.httpStatus.map(s => HttpStatus -> s.status.toString),
         resource.description.map(d => Description -> d),
         resource.date.map(d => Date -> new DateTime(d)),
         Some(Tags, indexResource.indexTagIds),
