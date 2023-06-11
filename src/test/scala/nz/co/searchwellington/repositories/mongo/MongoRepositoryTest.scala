@@ -25,13 +25,14 @@ class MongoRepositoryTest extends ReasonableWaits {
 
   @Test
   def canPersistResources(): Unit = {
-    val newsitem = Newsitem(title = testName)
+    val newsitem = Newsitem(title = testName, httpStatus = Some(HttpStatus(200, redirecting = true)))
 
     Await.result(mongoRepository.saveResource(newsitem), TenSeconds)
 
     val reloaded = Await.result(mongoRepository.getResourceByObjectId(newsitem._id), TenSeconds)
     assertTrue(reloaded.nonEmpty)
     assertEquals(newsitem.title, reloaded.get.title)
+    assertTrue(reloaded.get.httpStatus.get.redirecting)
   }
 
   @Test
@@ -208,13 +209,13 @@ class MongoRepositoryTest extends ReasonableWaits {
     Await.result(mongoRepository.saveResource(newsitem), TenSeconds)
 
     val updatedTitle = title + " updated"
-    val updated = newsitem.copy(title = updatedTitle, http_status = 200)
+    val updated = newsitem.copy(title = updatedTitle, httpStatus = Some(HttpStatus(200)))
     Await.result(mongoRepository.saveResource(updated), TenSeconds)
 
     val reloaded = Await.result(mongoRepository.getResourceByObjectId(newsitem._id), TenSeconds).get
 
     assertEquals(updatedTitle, reloaded.title)
-    assertEquals(200, reloaded.http_status)
+    assertEquals(200, reloaded.httpStatus.get.status)
   }
 
   @Test

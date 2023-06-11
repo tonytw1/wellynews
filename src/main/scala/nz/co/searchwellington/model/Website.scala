@@ -11,7 +11,7 @@ case class Website(override val _id: BSONObjectID = BSONObjectID.generate,
                    override var title: String = "",
                    override var description: Option[String] = None,
                    override val page: String = "",
-                   override var http_status: Int = 0,
+                   override var httpStatus: Option[HttpStatus] = None,
                    override var date: Option[Date] = None,
                    override var last_scanned: Option[Date] = None,
                    override var last_changed: Option[Date] = None,
@@ -21,7 +21,8 @@ case class Website(override val _id: BSONObjectID = BSONObjectID.generate,
                    override var url_words: Option[String] = None,
                    override var geocode: Option[Geocode] = None,
                    override var owner: Option[BSONObjectID] = None,
-                   override val resource_tags: Seq[Tagging] = Seq()) extends Resource {
+                   override val resource_tags: Seq[Tagging] = Seq(),
+                  ) extends Resource {
 
   def getTitle: String = title
 

@@ -107,6 +107,9 @@ class MongoRepository @Autowired()(@Value("${mongo.uri}") mongoUri: String) exte
     }
   }
 
+  implicit def httpStatusReader: BSONDocumentReader[HttpStatus] = Macros.reader[HttpStatus]
+  implicit def httpStatusWriter: BSONDocumentWriter[HttpStatus] = Macros.writer[HttpStatus]
+
   implicit def taggingReader: BSONDocumentReader[Tagging] = Macros.reader[Tagging]
 
   implicit def latLongReader: BSONDocumentReader[LatLong] = Macros.reader[LatLong]

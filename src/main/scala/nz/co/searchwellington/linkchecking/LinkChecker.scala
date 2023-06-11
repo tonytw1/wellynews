@@ -39,7 +39,7 @@ import scala.util.Try
   // load the resource.
   // If it has a url fetch the url and process the loaded page
   // Update the last scanned timestamp
-  def scanResource(resourceId: String)(implicit ec: ExecutionContext): Unit = {
+  def scanResource(resourceId: String)(implicit ec: ExecutionContext): Future[Boolean] = {
     log.info("Scanning resource: " + resourceId)
     val objectId = BSONObjectID.parse(resourceId).get
 
@@ -71,11 +71,11 @@ import scala.util.Try
       result
     }
 
-    Await.result(eventualResult, OneMinute)
+    eventualResult
   }
 
   // Given a URL load it and return the http status and the page contents
-  private def httpCheck(url: URL)(implicit ec: ExecutionContext): Future[Either[Int, (Integer, Option[String])]] = {
+  private def httpCheck(url: URL)(implicit ec: ExecutionContext): Future[Either[Int, (Integer, Boolean, Option[String])]] = {
     httpFetcher.httpFetch(url, followRedirects = false).flatMap { httpResult =>
       val status = httpResult.status
       log.info("Http status for " + url + " set was: " + status)
@@ -85,11 +85,11 @@ import scala.util.Try
       if (isRedirecting) {
         httpFetcher.httpFetch(url).map { httpResult =>
           log.info(s"Retrying fetching of $url with follow redirects")
-          Right(status, Some(httpResult.body))
+          Right(httpResult.status, isRedirecting, Some(httpResult.body))
         }
 
       } else {
-        Future.successful(Right(status, Some(httpResult.body)))
+        Future.successful(Right(status, isRedirecting, Some(httpResult.body)))
       }
 
     }.recoverWith {
@@ -117,15 +117,15 @@ import scala.util.Try
       val eventualHttpCheckOutcome = httpCheck(url).flatMap { result =>
         result.fold({ left =>
           Future.successful {
-            resource.setHttpStatus(left)
+            resource.setHttpStatus(left, false)
             true
           }
 
         }, { right =>
-          resource.setHttpStatus(right._1)
+          resource.setHttpStatus(right._1, right._2)
           val eventualProcessorOutcomes = processors.asScala.map { processor =>
             log.debug("Running processor: " + processor.getClass.toString)
-            processor.process(resource, right._2, DateTime.now)
+            processor.process(resource, right._3, DateTime.now)
           }
 
           Future.sequence(eventualProcessorOutcomes).map { processorOutcomes =>
