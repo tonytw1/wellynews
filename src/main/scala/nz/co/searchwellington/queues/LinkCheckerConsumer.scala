@@ -19,19 +19,25 @@ import scala.concurrent.{ExecutionContext, ExecutionContextExecutor}
 
   private val pulledCounter = registry.counter("linkchecker_pulled")
 
+  private val maximumConcurrentChecks = 10
+
   {
     log.info("Starting link check listener")
     try {
       val connection = rabbitConnectionFactory.connect
+
       val channel = connection.createChannel
-      channel.basicQos(1)
+      // The consumer immediately dispatches each new message into a Future.
+      // There is no back pressure from the consumer to stop Rabbit flooding us.
+      // So we'll use the Rabbit channel maximum unacked messages / Qos as our flow control.
+      channel.basicQos(maximumConcurrentChecks)
 
       val ok = channel.queueDeclare(LinkCheckerQueue.QUEUE_NAME, false, false, false, null)
       log.info(s"Link checker queue declared; contains ${ok.getMessageCount} messages")
 
       val consumer = new LinkCheckerConsumer(channel)
       val consumerTag = channel.basicConsume(LinkCheckerQueue.QUEUE_NAME, false, consumer)
-      log.info(s"Link checker consumer thread started with consumer tag: $consumerTag")
+      log.info(s"Link checker consumer created with consumer tag: $consumerTag")
 
     } catch {
       case e: Exception =>
@@ -51,21 +57,19 @@ import scala.concurrent.{ExecutionContext, ExecutionContextExecutor}
     registry.gauge("linkchecker_queue", channel, countMessagesToDoubleFunction)
 
     override def handleDelivery(consumerTag: String, envelope: Envelope, properties: AMQP.BasicProperties, body: Array[Byte]): Unit = {
-
       try {
         log.debug(s"Link checker handling delivery with consumer tag: $consumerTag")
         val message = new String(body)
-        log.debug("Received link checker message: " + message)
         pulledCounter.increment()
-        linkChecker.scanResource(message)
+        linkChecker.scanResource(message).map { _ =>
+          channel.basicAck(envelope.getDeliveryTag, false)
+          logQueueCount(channel)
+        }
 
       } catch {
         case e: Exception =>
           log.error("Error while processing link checker message: ", e)
       }
-
-      channel.basicAck(envelope.getDeliveryTag, false)
-      logQueueCount(channel)
     }
   }
 

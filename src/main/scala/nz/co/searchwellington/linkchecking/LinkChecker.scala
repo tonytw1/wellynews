@@ -39,7 +39,7 @@ import scala.util.Try
   // load the resource.
   // If it has a url fetch the url and process the loaded page
   // Update the last scanned timestamp
-  def scanResource(resourceId: String)(implicit ec: ExecutionContext): Unit = {
+  def scanResource(resourceId: String)(implicit ec: ExecutionContext): Future[Boolean] = {
     log.info("Scanning resource: " + resourceId)
     val objectId = BSONObjectID.parse(resourceId).get
 
@@ -71,7 +71,7 @@ import scala.util.Try
       result
     }
 
-    Await.result(eventualResult, OneMinute)
+    eventualResult
   }
 
   // Given a URL load it and return the http status and the page contents
