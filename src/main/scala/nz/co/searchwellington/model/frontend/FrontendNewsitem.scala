@@ -2,7 +2,7 @@ package nz.co.searchwellington.model.frontend
 
 import com.fasterxml.jackson.annotation.JsonFormat
 import nz.co.searchwellington.model.geo.Geocode
-import nz.co.searchwellington.model.{Tag, User}
+import nz.co.searchwellington.model.{HttpStatus, Tag, User}
 import reactivemongo.api.bson.BSONObjectID
 import uk.co.eelpieconsulting.common.views.rss.RssFeedable
 
@@ -16,7 +16,7 @@ case class FrontendNewsitem(id: String,
                             `type`: String = null,
                             name: String = null,
                             url: String = null,
-                            httpStatus: Option[Int] = None,
+                            httpStatus: Option[HttpStatus] = None,
                             date: Date = null,
                             description: String = null,
                             liveTime: Date = null,

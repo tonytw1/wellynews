@@ -1,7 +1,7 @@
 package nz.co.searchwellington.model.frontend
 
 import java.util.Date
-import nz.co.searchwellington.model.Tag
+import nz.co.searchwellington.model.{HttpStatus, Tag}
 import nz.co.searchwellington.model.geo.Geocode
 
 @SerialVersionUID(1L)
@@ -10,7 +10,7 @@ case class FrontendWebsite(id: String,
                            `type`: String = null,
                            name: String = null,
                            url: String = null,
-                           httpStatus: Option[Int] = None,
+                           httpStatus: Option[HttpStatus] = None,
                            date: Date = null,
                            description: String = null,
                            liveTime: Date = null,

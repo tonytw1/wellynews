@@ -55,7 +55,7 @@ import scala.concurrent.{ExecutionContext, Future}
 
   def mapFrontendResource(contentItem: Resource, place: Option[Geocode], handTags: Seq[Tag], indexTags: Seq[Tag], loggedInUser: Option[User])(implicit ec: ExecutionContext): Future[FrontendResource] = {
     val httpStatus = if (editPermissionService.canEdit(contentItem, loggedInUser)) {
-      contentItem.httpStatus.map(_.status)
+      contentItem.httpStatus
     } else {
       None
     }

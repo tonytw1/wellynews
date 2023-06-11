@@ -28,12 +28,14 @@ class FrontendResourceMapperTest extends ReasonableWaits {
   private val urlBuilder = new UrlBuilder(new SiteInformation(), new UrlWordsGenerator(new DateFormatter(DateTimeZone.UTC)))
   private val adminUrlBuilder = new AdminUrlBuilder(urlBuilder, "")
 
+  private val ok = HttpStatus(200)
+
   private val frontendResourceMapper = new FrontendResourceMapper(indexTagsService, mongoRepository, adminUrlBuilder, taggingReturnsOfficerService, editPermissionService)
 
   @Test
   def shouldMapNewsitemsToFrontendNewsitems(): Unit = {
     val owner = User(BSONObjectID.generate(), name = Some(UUID.randomUUID().toString), profilename = Some(UUID.randomUUID().toString))
-    val newsitem = Newsitem(id = "123", httpStatus = Some(HttpStatus(200)), title = "Something happened today",
+    val newsitem = Newsitem(id = "123", httpStatus = Some(ok), title = "Something happened today",
       date = Some(new DateTime(2020, 10, 7, 12, 0, 0, 0).toDate),
       owner = Some(owner._id))
 
@@ -45,14 +47,14 @@ class FrontendResourceMapperTest extends ReasonableWaits {
     val frontendNewsitem = Await.result(frontendResourceMapper.createFrontendResourceFrom(newsitem), TenSeconds)
 
     assertEquals(newsitem.id, frontendNewsitem.id)
-    assertEquals(Some(200), frontendNewsitem.httpStatus)
+    assertEquals(Some(ok), frontendNewsitem.httpStatus)
     assertEquals(owner.profilename.get, frontendNewsitem.getOwner)
   }
 
   @Test
   def shouldMapNewsitemAndSuppliedComponentsToFrontendNewsitem(): Unit = {
     val owner = User(BSONObjectID.generate(), name = Some(UUID.randomUUID().toString), profilename = Some(UUID.randomUUID().toString))
-    val newsitem = Newsitem(id = "123", httpStatus = Some(HttpStatus(200)), title = "Something happened today",
+    val newsitem = Newsitem(id = "123", httpStatus = Some(ok), title = "Something happened today",
       date = Some(new DateTime(2020, 10, 7, 12, 0, 0, 0).toDate),
       owner = Some(owner._id))
 
@@ -69,7 +71,7 @@ class FrontendResourceMapperTest extends ReasonableWaits {
     val frontendNewsitem = Await.result(frontendResourceMapper.createFrontendResourceFrom(newsitem, None, None, handTags, indexTags), TenSeconds)
 
     assertEquals(newsitem.id, frontendNewsitem.id)
-    assertEquals(Some(200), frontendNewsitem.httpStatus)
+    assertEquals(Some(ok), frontendNewsitem.httpStatus)
     assertEquals(owner.profilename.get, frontendNewsitem.getOwner)
 
     assertEquals(aTag, frontendNewsitem.handTags.get.head)

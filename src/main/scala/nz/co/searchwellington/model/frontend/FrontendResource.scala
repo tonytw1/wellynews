@@ -2,7 +2,7 @@ package nz.co.searchwellington.model.frontend
 
 import com.fasterxml.jackson.annotation.JsonInclude.Include
 import com.fasterxml.jackson.annotation.{JsonFormat, JsonInclude}
-import nz.co.searchwellington.model.Tag
+import nz.co.searchwellington.model.{HttpStatus, Tag}
 import nz.co.searchwellington.model.geo.Geocode
 import reactivemongo.api.bson.BSONObjectID
 import uk.co.eelpieconsulting.common.geo.model
@@ -19,7 +19,7 @@ trait FrontendResource extends RssFeedable with Serializable {
   val `type`: String
   val name: String
   val url: String
-  val httpStatus: Option[Int]
+  val httpStatus: Option[HttpStatus]
   val date: Date
   val description: String
   val liveTime: Date
@@ -44,8 +44,8 @@ trait FrontendResource extends RssFeedable with Serializable {
 
   final def getUrl: String = url
 
-  final def getHttpStatus: java.lang.Integer = {  // TODO Scala been less than useful here
-      httpStatus.map(Integer.valueOf).orNull
+  final def getHttpStatus: HttpStatus = {
+      httpStatus.orNull
   }
 
   @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ssXXX")

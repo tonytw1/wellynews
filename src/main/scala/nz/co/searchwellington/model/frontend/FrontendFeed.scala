@@ -4,14 +4,14 @@ import com.fasterxml.jackson.annotation.JsonFormat
 import nz.co.searchwellington.model.geo.Geocode
 
 import java.util.Date
-import nz.co.searchwellington.model.{FeedAcceptancePolicy, Tag}
+import nz.co.searchwellington.model.{FeedAcceptancePolicy, HttpStatus, Tag}
 
 case class FrontendFeed(id: String,
                         urlWords: String = null,
                         `type`: String = null,
                         name: String = null,
                         url: String = null,
-                        httpStatus: Option[Int] = None,
+                        httpStatus: Option[HttpStatus] = None,
                         date: Date = null,
                         description: String = null,
                         liveTime: Date = null,
