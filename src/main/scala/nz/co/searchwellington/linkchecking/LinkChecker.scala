@@ -14,7 +14,8 @@ import org.springframework.stereotype.Component
 import reactivemongo.api.bson.BSONObjectID
 
 import java.net.{URL, UnknownHostException}
-import scala.concurrent.{Await, ExecutionContext, Future}
+import java.util.Date
+import scala.concurrent.{ExecutionContext, Future}
 import scala.jdk.CollectionConverters._
 import scala.util.Try
 
@@ -39,7 +40,7 @@ import scala.util.Try
   // load the resource.
   // If it has a url fetch the url and process the loaded page
   // Update the last scanned timestamp
-  def scanResource(resourceId: String)(implicit ec: ExecutionContext): Future[Boolean] = {
+  def scanResource(resourceId: String, idempotency: Option[Date])(implicit ec: ExecutionContext): Future[Boolean] = {
     log.info("Scanning resource: " + resourceId)
     val objectId = BSONObjectID.parse(resourceId).get
 
@@ -47,12 +48,21 @@ import scala.util.Try
       maybeResourceWithUrl <- mongoRepository.getResourceByObjectId(objectId)
       result <- maybeResourceWithUrl.map { resource =>
         log.info("Checking: " + resource.title + " (" + resource.page + ")")
-        checkResource(resource).flatMap { outcome =>
-          contentUpdateService.update(resource).map { _ =>
-            checkedCounter.increment()
-            log.info("Finished link checking")
-            outcome
+
+        if (resource.last_scanned == idempotency) {
+          log.info("Checking: " + resource.title + " (" + resource.page + ")")
+          checkResource(resource).flatMap { outcome =>
+            resource.last_scanned = Some(DateTime.now.toDate)
+            contentUpdateService.update(resource).map { _ =>
+              checkedCounter.increment()
+              log.info("Finished link checking")
+              outcome
+            }
           }
+
+        } else {
+          log.info("Skipping link check for " + resource.title + " as it has already been checked with idempotency: " + idempotency + " / " + resource.last_scanned)
+          Future.successful(false)
         }
 
       }.getOrElse {

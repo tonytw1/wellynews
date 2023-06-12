@@ -3,10 +3,9 @@ package nz.co.searchwellington.queues
 import io.micrometer.core.instrument.MeterRegistry
 import nz.co.searchwellington.linkchecking.LinkCheckRequest
 import org.apache.commons.logging.LogFactory
-import org.joda.time.DateTime
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
-import play.api.libs.json.{Json, OWrites, Writes}
+import play.api.libs.json.{Json, Writes}
 
 @Component
 class LinkCheckerQueue @Autowired()(val rabbitConnectionFactory: RabbitConnectionFactory, val registry: MeterRegistry) {
@@ -22,11 +21,11 @@ class LinkCheckerQueue @Autowired()(val rabbitConnectionFactory: RabbitConnectio
   }
 
   def add(request: LinkCheckRequest): Unit = try {
-    log.debug(s"Adding link check request to queue: $request")
 
-    implicit val dtw: Writes[DateTime] = Writes.DefaultJodaDateWrites
     implicit val lcrw: Writes[LinkCheckRequest] = Json.writes[LinkCheckRequest]
     val asJson = Json.stringify(Json.toJson(request))
+
+    log.info(s"Adding link check request to queue: $asJson")
     channel.basicPublish("", LinkCheckerQueue.QUEUE_NAME, null, asJson.getBytes)
     queuedCounter.increment()
 

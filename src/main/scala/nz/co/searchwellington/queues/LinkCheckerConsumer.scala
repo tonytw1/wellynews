@@ -4,7 +4,6 @@ import com.rabbitmq.client.{AMQP, Channel, DefaultConsumer, Envelope}
 import io.micrometer.core.instrument.MeterRegistry
 import nz.co.searchwellington.linkchecking.{LinkCheckRequest, LinkChecker}
 import org.apache.commons.logging.LogFactory
-import org.joda.time.{DateTime, LocalDate}
 import org.springframework.beans.factory.annotation.{Autowired, Qualifier}
 import org.springframework.core.task.TaskExecutor
 import org.springframework.stereotype.Component
@@ -61,15 +60,13 @@ import scala.concurrent.{ExecutionContext, ExecutionContextExecutor}
     override def handleDelivery(consumerTag: String, envelope: Envelope, properties: AMQP.BasicProperties, body: Array[Byte]): Unit = {
       try {
         log.debug(s"Link checker handling delivery with consumer tag: $consumerTag")
+        pulledCounter.increment()
+
         val asJson = new String(body)
-
-
-        implicit val dtr: Reads[DateTime] = Reads.DefaultJodaDateReads
         implicit val lcrr: Reads[LinkCheckRequest] = Json.reads[LinkCheckRequest]
         val request = Json.parse(asJson).as[LinkCheckRequest]
 
-        pulledCounter.increment()
-        linkChecker.scanResource(request.resourceId).map { _ =>
+        linkChecker.scanResource(request.resourceId, request.lastScanned).map { _ =>
           channel.basicAck(envelope.getDeliveryTag, false)
           logQueueCount(channel)
         }
