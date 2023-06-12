@@ -58,6 +58,35 @@ Watchlist items are polled regularly to detect changes which might indicate new 
 See detecting page changes (below)[(#detecting-changes)].
 
 
+### Feed acceptance policy
+
+Describes how the feed reader should treat feed items in a particular feed.
+Most feeds always contain relevant and approriate content which can be automatically accepted; some don't.
+The feed acceptance policy helps document which feeds require manual moderation.
+
+`ACCEPT`
+A trusted source of relevant content. All items can be automatically accepted.
+
+`ACCEPT_EVEN_WITHOUT_DATES`
+Accept even without dates
+
+`ACCEPT_IGNORING_DATE`
+Accept ignoring date
+
+Trusted sources with good content but questionable publication dates.
+These feed items can be automatically accepted we'll ignore the publication date.
+
+`SUGGEST`
+
+Feeds with a mix of relevant and irrelevant content. New feeds items should be suggested for manual moderation.
+The contents of suggested feeds appear on the feeds inbox screeb (below).
+
+`IGNORE`
+
+Feeds with no relevant content at the moment. Ignore the contents of these feeds.
+
+
+
 ## Tagging
 
 Been able to automatically arrange newsitems into meaningful categories like consultation and transport is something we really want.
@@ -144,6 +173,19 @@ Shows the news items which have been accepted from feeds on a particular day.
 This is useful for moderation and discovering items which could benefit from having additional tags applied.
 
 ![Accepted feed items](docs/accepted-feed-items.png)
+
+
+### Feeds inbox
+
+The feeds inbox shows the feed items currently available in suggested feeds.
+
+If a feed contains a mix of relevant and irrelevant items, we can't automatically accept all items from it.
+
+The feeds inbox screen is used to quickly scan the feed items available in the feeds with a suggest acceptance policy.
+
+Relevant items which can be manually accepted using the accept action.
+
+![Feeds inbox](docs/feeds-inbox.png)
 
 
 ### Social media Cards / Open Graph images
