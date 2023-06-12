@@ -1,5 +1,6 @@
 package nz.co.searchwellington.modification
 
+import nz.co.searchwellington.linkchecking.LinkCheckRequest
 import nz.co.searchwellington.model.Resource
 import nz.co.searchwellington.queues.LinkCheckerQueue
 import nz.co.searchwellington.repositories.elasticsearch.ElasticSearchIndexRebuildService
@@ -57,7 +58,7 @@ import scala.concurrent.{ExecutionContext, Future}
       println(r)
       if (r.writeErrors.isEmpty) {
         elasticSearchIndexRebuildService.index(resource).map { _ =>
-          linkCheckerQueue.add(resource._id.stringify)
+          linkCheckerQueue.add(LinkCheckRequest(resourceId = resource._id.stringify, lastScanned = resource.last_scanned))
           true
         }
       } else {
