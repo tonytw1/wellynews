@@ -3,6 +3,7 @@ package nz.co.searchwellington.linkchecking
 import io.micrometer.core.instrument.MeterRegistry
 import nz.co.searchwellington.ReasonableWaits
 import nz.co.searchwellington.http.RobotsAwareHttpFetcher
+import nz.co.searchwellington.linkchecking.processors.{ContentHasChangedProcessor, FeedAutodiscoveryProcessor, SocialImageProcessor}
 import nz.co.searchwellington.model.Website
 import nz.co.searchwellington.modification.ContentUpdateService
 import nz.co.searchwellington.repositories.mongo.MongoRepository
@@ -20,7 +21,7 @@ class LinkCheckerTest extends ReasonableWaits {
   private val contentUpdateService = mock(classOf[ContentUpdateService])
   private  val httpFetcher = mock(classOf[RobotsAwareHttpFetcher])
   private val feedAutodiscoveryProcessor = mock(classOf[FeedAutodiscoveryProcessor])
-  private val twitterPhotoDetector = mock(classOf[TwitterPhotoDetector])
+  private val twitterPhotoDetector = mock(classOf[SocialImageProcessor])
   private val contentHasChangedProcesser = mock(classOf[ContentHasChangedProcessor])
   private val meterRegistry = mock(classOf[MeterRegistry])
 

@@ -1,8 +1,9 @@
-package nz.co.searchwellington.linkchecking
+package nz.co.searchwellington.linkchecking.processors
 
+import nz.co.searchwellington.linkchecking.{PageContentHasher, SnapshotArchive}
 import nz.co.searchwellington.model.Watchlist
 import org.joda.time.DateTime
-import org.junit.jupiter.api.Assertions.{assertEquals, fail}
+import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
 import org.mockito.Mockito.{mock, verify, verifyNoMoreInteractions, when}
 

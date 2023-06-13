@@ -3,6 +3,7 @@ package nz.co.searchwellington.linkchecking
 import io.micrometer.core.instrument.MeterRegistry
 import nz.co.searchwellington.ReasonableWaits
 import nz.co.searchwellington.http.RobotsAwareHttpFetcher
+import nz.co.searchwellington.linkchecking.processors.LinkCheckerProcessor
 import nz.co.searchwellington.model.Resource
 import nz.co.searchwellington.modification.ContentUpdateService
 import nz.co.searchwellington.repositories.mongo.MongoRepository

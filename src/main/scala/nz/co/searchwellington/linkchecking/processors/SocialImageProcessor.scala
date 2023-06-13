@@ -1,4 +1,4 @@
-package nz.co.searchwellington.linkchecking
+package nz.co.searchwellington.linkchecking.processors
 
 import nz.co.searchwellington.ReasonableWaits
 import nz.co.searchwellington.linkchecking.cards.SocialImageDetector
@@ -12,10 +12,10 @@ import org.springframework.stereotype.Component
 import scala.concurrent.{Await, ExecutionContext, Future}
 
 @Component
-class TwitterPhotoDetector @Autowired()(mongoRepository: MongoRepository, socialImageDetector: SocialImageDetector)
+class SocialImageProcessor @Autowired()(mongoRepository: MongoRepository, socialImageDetector: SocialImageDetector)
   extends LinkCheckerProcessor with ReasonableWaits {
 
-  private val log = LogFactory.getLog(classOf[TwitterPhotoDetector])
+  private val log = LogFactory.getLog(classOf[SocialImageProcessor])
 
   override def process(checkResource: Resource, maybePageContent: Option[String], seen: DateTime)(implicit ec: ExecutionContext): Future[Boolean] = {
     val eventualImageDetectedImageUrls = maybePageContent.map { pageContent =>

@@ -1,5 +1,6 @@
-package nz.co.searchwellington.linkchecking
+package nz.co.searchwellington.linkchecking.processors
 
+import nz.co.searchwellington.linkchecking.{PageContentHasher, SnapshotArchive}
 import nz.co.searchwellington.model.Resource
 import org.apache.commons.logging.LogFactory
 import org.joda.time.DateTime

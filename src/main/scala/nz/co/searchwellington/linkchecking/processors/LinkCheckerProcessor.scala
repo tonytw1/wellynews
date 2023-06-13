@@ -1,4 +1,4 @@
-package nz.co.searchwellington.linkchecking
+package nz.co.searchwellington.linkchecking.processors
 
 import nz.co.searchwellington.model.Resource
 import org.joda.time.DateTime

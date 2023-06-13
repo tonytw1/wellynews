@@ -1,8 +1,8 @@
-package nz.co.searchwellington.queues
+package nz.co.searchwellington.linkchecking
 
 import com.rabbitmq.client.{AMQP, Channel, DefaultConsumer, Envelope}
 import io.micrometer.core.instrument.MeterRegistry
-import nz.co.searchwellington.linkchecking.{LinkCheckRequest, LinkChecker}
+import nz.co.searchwellington.queues.{LinkCheckerQueue, RabbitConnectionFactory}
 import org.apache.commons.logging.LogFactory
 import org.springframework.beans.factory.annotation.{Autowired, Qualifier}
 import org.springframework.core.task.TaskExecutor

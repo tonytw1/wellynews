@@ -8,8 +8,6 @@ import uk.co.eelpieconsulting.common.html.HtmlCleaner
 @Component
 class PageContentHasher {
 
-  private val htmlCleaner = new HtmlCleaner
-
   def hashPageContent(pageContent: String): String = {
     val pageText = Jsoup.parse(pageContent).text()
     DigestUtils.md5DigestAsHex(pageText.getBytes())

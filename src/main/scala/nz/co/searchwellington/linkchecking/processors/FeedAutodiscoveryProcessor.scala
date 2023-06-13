@@ -1,8 +1,9 @@
-package nz.co.searchwellington.linkchecking
+package nz.co.searchwellington.linkchecking.processors
 
 import nz.co.searchwellington.ReasonableWaits
 import nz.co.searchwellington.commentfeeds.CommentFeedDetectorService
 import nz.co.searchwellington.htmlparsing.RssLinkExtractor
+import nz.co.searchwellington.linkchecking.UrlWrangling
 import nz.co.searchwellington.model._
 import nz.co.searchwellington.repositories.mongo.MongoRepository
 import org.apache.commons.logging.LogFactory
