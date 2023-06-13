@@ -22,7 +22,7 @@ import scala.util.Try
 
   private val log = LogFactory.getLog(classOf[FeedAutodiscoveryProcessor])
 
-  override def process(checkResource: Resource, pageContent: Option[String], seen: DateTime)(implicit ec: ExecutionContext): Future[Boolean] = {
+  override def process(checkResource: Resource, pageContent: Option[String], seen: DateTime)(implicit ec: ExecutionContext): Future[Resource] = {
     if (!checkResource.`type`.equals("F")) {
       val pageUrl = new URL(checkResource.page) // TODO catch
 
@@ -76,11 +76,11 @@ import scala.util.Try
           ds.map { d =>
             recordDiscoveredFeedUrl(checkResource, d, seen)
           }
-        }.map { _ => true }
+        }.map { _ => checkResource }
       }
 
     } else {
-      Future.successful(false)
+      Future.successful(checkResource)
     }
   }
 
