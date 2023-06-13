@@ -87,7 +87,7 @@ import scala.util.Try
       log.info("Http status for " + url + " set was: " + status)
 
       val isRedirecting = status >= 300 && status < 400
-      val isMovedPermanently = status == 301 // TODO this is the useful signal we're really trying to capture here
+      // val isMovedPermanently = status == 301 // TODO this is the useful signal we're really trying to capture here
       if (isRedirecting) {
         httpFetcher.httpFetch(url).map { httpResult =>
           log.info(s"Retrying fetching of $url with follow redirects")
@@ -127,15 +127,14 @@ import scala.util.Try
             true
           }
 
-        }, { right =>
-          resource.setHttpStatus(right._1, right._2)
-
+        }, { case (status, redirecting, maybePageContent)  =>
+          resource.setHttpStatus(status, redirecting)
           // Run each processor in turn letting them create their side effects and mutate the resource.
           // Then save the mutated resource.
           val eventualCheckedResource = processors.asScala.foldLeft(Future.successful(resource)) { (resourceFuture, processor) =>
             resourceFuture.flatMap { resource =>
               log.info("Running processor: " + processor.getClass.toString + " on resource: " + resource.title)
-              processor.process(resource, right._3, DateTime.now)
+              processor.process(resource, maybePageContent, DateTime.now)
             }
           }
           eventualCheckedResource.flatMap { resource =>
