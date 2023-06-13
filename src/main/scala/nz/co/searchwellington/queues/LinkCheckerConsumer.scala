@@ -80,11 +80,8 @@ import scala.concurrent.{ExecutionContext, ExecutionContextExecutor}
 
   private def logQueueCount(channel: Channel): Unit = {
     try {
-      val ok = channel.queueDeclare(LinkCheckerQueue.QUEUE_NAME, false, false, false, null)
-      val countFromDeclare = ok.getMessageCount
       val countFromChannel = channel.messageCount(LinkCheckerQueue.QUEUE_NAME)
-
-      log.info(s"Link checker queue contains $countFromDeclare / $countFromChannel messages")
+      log.info(s"Link checker channel contains $countFromChannel ready to deliver messages")
     } catch {
       case e: Exception =>
         log.error("Error while counting messages: ", e)
