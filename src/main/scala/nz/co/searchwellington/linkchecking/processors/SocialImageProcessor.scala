@@ -17,7 +17,7 @@ class SocialImageProcessor @Autowired()(mongoRepository: MongoRepository, social
 
   private val log = LogFactory.getLog(classOf[SocialImageProcessor])
 
-  override def process(checkResource: Resource, maybePageContent: Option[String], seen: DateTime)(implicit ec: ExecutionContext): Future[Boolean] = {
+  override def process(checkResource: Resource, maybePageContent: Option[String], seen: DateTime)(implicit ec: ExecutionContext): Future[Resource] = {
     val eventualImageDetectedImageUrls = maybePageContent.map { pageContent =>
       socialImageDetector.extractSocialImageUrlsFrom(pageContent)
     }.getOrElse{
@@ -29,26 +29,24 @@ class SocialImageProcessor @Autowired()(mongoRepository: MongoRepository, social
         log.info("Found first social image: " + detectedImage)
         checkResource match {
           case newsitem: Newsitem =>
-
             // Pin this image
             val selectedImageUrl = detectedImage.url
-            val future = socialImageDetector.pin(selectedImageUrl).flatMap { pinned =>
+            socialImageDetector.pin(selectedImageUrl).flatMap { pinned =>
               if (pinned) {
                 newsitem.twitterImage = Some(selectedImageUrl)
-                mongoRepository.saveResource(newsitem).map { r =>
-                  r.writeErrors.isEmpty
+                mongoRepository.saveResource(newsitem).map { _ =>
+                  newsitem
                 }
               } else {
-                Future.successful(false)
+                Future.successful(checkResource)
               }
             }
-            Await.result(future, OneMinute)
-
           case _ =>
         }
       }
+
     }.map { _ =>
-      true
+      checkResource
     }
   }
 

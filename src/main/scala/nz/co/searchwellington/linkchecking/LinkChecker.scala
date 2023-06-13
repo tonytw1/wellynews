@@ -129,13 +129,19 @@ import scala.util.Try
 
         }, { right =>
           resource.setHttpStatus(right._1, right._2)
-          val eventualProcessorOutcomes = processors.asScala.map { processor =>
-            log.debug("Running processor: " + processor.getClass.toString)
-            processor.process(resource, right._3, DateTime.now)
-          }
 
-          Future.sequence(eventualProcessorOutcomes).map { processorOutcomes =>
-            processorOutcomes.forall(outcome => outcome)
+          // Run each processor in turn letting them create their side effects and mutate the resource.
+          // Then save the mutated resource.
+          val eventualCheckedResource = processors.asScala.foldLeft(Future.successful(resource)) { (resourceFuture, processor) =>
+            resourceFuture.flatMap { resource =>
+              log.info("Running processor: " + processor.getClass.toString + " on resource: " + resource.title)
+              processor.process(resource, right._3, DateTime.now)
+            }
+          }
+          eventualCheckedResource.flatMap { resource =>
+            contentUpdateService.update(resource)
+          }.map { _ =>
+            true
           }
         })
       }

@@ -13,9 +13,9 @@ import scala.concurrent.{ExecutionContext, Future}
 
   private val log = LogFactory.getLog(classOf[ContentHasChangedProcessor])
 
-  override def process(checkResource: Resource, pageContent: Option[String], seen: DateTime)(implicit ec: ExecutionContext): Future[Boolean] = {
+  override def process(checkResource: Resource, pageContent: Option[String], seen: DateTime)(implicit ec: ExecutionContext): Future[Resource] = {
     checkForChangeUsingSnapshots(checkResource, pageContent, seen)
-    Future.successful(false)
+    Future.successful(checkResource)
   }
 
   // TODO cleaning and filtering?
