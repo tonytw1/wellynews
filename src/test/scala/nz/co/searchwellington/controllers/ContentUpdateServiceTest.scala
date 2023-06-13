@@ -8,6 +8,7 @@ import nz.co.searchwellington.modification.ContentUpdateService
 import nz.co.searchwellington.queues.LinkCheckerQueue
 import nz.co.searchwellington.repositories.elasticsearch.ElasticSearchIndexRebuildService
 import nz.co.searchwellington.repositories.mongo.MongoRepository
+import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
 import org.mockito.Mockito.{mock, verify, when}
 import reactivemongo.api.commands.WriteResult
@@ -29,6 +30,7 @@ class ContentUpdateServiceTest extends ReasonableWaits {
 
   @Test
   def shouldPersistUpdatesInMongo(): Unit = {
+    when(mongoRepository.getResourceByObjectId(updatedResource._id)).thenReturn(Future.successful(None))
     when(mongoRepository.saveResource(updatedResource)).thenReturn(Future.successful(successfulUpdateResult))
     when(elasticSearchIndexRebuildService.index(updatedResource)).thenReturn(Future.successful(true))
 
@@ -39,6 +41,7 @@ class ContentUpdateServiceTest extends ReasonableWaits {
 
   @Test
   def shouldUpdateTheElasticsearchIndexWhenUpdating(): Unit = {
+    when(mongoRepository.getResourceByObjectId(updatedResource._id)).thenReturn(Future.successful(None))
     when(mongoRepository.saveResource(updatedResource)).thenReturn(Future.successful(successfulUpdateResult))
     when(elasticSearchIndexRebuildService.index(updatedResource)).thenReturn(Future.successful(true))
 
@@ -57,6 +60,21 @@ class ContentUpdateServiceTest extends ReasonableWaits {
     Await.result(service.create(newResource), TenSeconds)
 
     verify(linkCheckerQueue).add(LinkCheckRequest(newResource._id.stringify, None))
+  }
+
+  @Test
+  def shouldQueueUpdatedUrlsForLinkChecking(): Unit = {
+    val resource = Website(page = "http://localhost/old-url")
+    val updatedResource = resource.copy(page = "http://localhost/new-url")
+    when(mongoRepository.getResourceByObjectId(updatedResource._id)).thenReturn(Future.successful(Some(resource)))
+    when(mongoRepository.saveResource(updatedResource)).thenReturn(Future.successful(successfulUpdateResult))
+    when(elasticSearchIndexRebuildService.index(updatedResource)).thenReturn(Future.successful(true))
+    when(successfulUpdateResult.writeErrors).thenReturn(Seq.empty)
+
+    Await.result(service.update(updatedResource), TenSeconds)
+
+    assertEquals(resource._id, updatedResource._id)
+    verify(linkCheckerQueue).add(LinkCheckRequest(resource._id.stringify, None))
   }
 
 }
