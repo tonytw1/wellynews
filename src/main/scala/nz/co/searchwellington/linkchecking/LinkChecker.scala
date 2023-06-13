@@ -15,7 +15,7 @@ import reactivemongo.api.bson.BSONObjectID
 
 import java.net.{URL, UnknownHostException}
 import java.util.Date
-import scala.concurrent.{ExecutionContext, Future}
+import scala.concurrent.{Await, ExecutionContext, Future}
 import scala.jdk.CollectionConverters._
 import scala.util.Try
 
@@ -41,49 +41,42 @@ import scala.util.Try
   // load the resource.
   // If it has a url fetch the url and process the loaded page
   // Update the last scanned timestamp
-  def scanResource(resourceId: String, idempotency: Option[Date])(implicit ec: ExecutionContext): Future[Boolean] = {
+  def scanResource(resourceId: String, idempotencyValue: Option[Date])(implicit ec: ExecutionContext): Future[Boolean] = {
     log.info("Scanning resource: " + resourceId)
     val objectId = BSONObjectID.parse(resourceId).get
 
-    val eventualResult = for {
-      maybeResourceWithUrl <- mongoRepository.getResourceByObjectId(objectId)
-      result <- maybeResourceWithUrl.map { resource =>
+    // Load the resource and check it's idempotency value synchronously
+    // Dispatch a future after the idempotency check
+    val maybeResource = Await.result(mongoRepository.getResourceByObjectId(objectId), TenSeconds)
+
+    maybeResource.map { resource =>
+      val isNotDuplicateRequest = resource.last_scanned == idempotencyValue
+      if (isNotDuplicateRequest) {
         log.info("Checking: " + resource.title + " (" + resource.page + ")")
+        val now = Some(DateTime.now.toDate)
+        log.info("Marking idempotency value for: " + resource.title + " as: " + now)
+        resource.last_scanned = now
+        Await.result(contentUpdateService.update(resource), TenSeconds)
 
-        if (resource.last_scanned == idempotency) {
-          log.info("Checking: " + resource.title + " (" + resource.page + ")")
-          checkResource(resource).flatMap { outcome =>
-            resource.last_scanned = Some(DateTime.now.toDate)
-            contentUpdateService.update(resource).map { _ =>
-              checkedCounter.increment()
-              log.info("Finished link checking")
-              outcome
-            }
-          }
-
-        } else {
-          log.info("Skipping link check for " + resource.title + " as it has already been checked with idempotency: " + idempotency + " / " + resource.last_scanned)
-          duplicateCounter.increment()
-          Future.successful(false)
+        // Now that the idempotency value has been updated we can dispatch a future safe from duplicates
+        checkResource(resource).map { outcome =>
+          checkedCounter.increment()
+          log.info("Finished link checking")
+          outcome
         }
 
-      }.getOrElse {
-        log.warn("Link checker was past an unknown resource id: " + resourceId + " / " + objectId.stringify)
-        failedCounter.increment()
+      } else {
+        log.info("Skipping link check for " + resource.title + " as it has already been checked with idempotency: " + idempotencyValue + " / " + resource.last_scanned)
+        duplicateCounter.increment()
         Future.successful(false)
-
-      }.recoverWith {
-        case e: Exception =>
-          log.error("Link check failed: " + e.getMessage, e)
-          failedCounter.increment()
-          Future.successful(false)
       }
 
-    } yield {
-      result
+    }.getOrElse {
+      log.warn("Link checker was past an unknown resource id: " + resourceId + " / " + objectId.stringify)
+      failedCounter.increment()
+      Future.successful(false)
     }
 
-    eventualResult
   }
 
   // Given a URL load it and return the http status and the page contents
@@ -93,7 +86,7 @@ import scala.util.Try
       log.info("Http status for " + url + " set was: " + status)
 
       val isRedirecting = status >= 300 && status < 400
-      val isMovedPermanently = status == 301  // TODO this is the useful signal we're really trying to capture here
+      val isMovedPermanently = status == 301 // TODO this is the useful signal we're really trying to capture here
       if (isRedirecting) {
         httpFetcher.httpFetch(url).map { httpResult =>
           log.info(s"Retrying fetching of $url with follow redirects")
@@ -116,11 +109,11 @@ import scala.util.Try
 
   def checkResource(resource: Resource)(implicit ec: ExecutionContext): Future[Boolean] = {
     val parsedUrl = {
-      if (urlValidator.isValid(resource.page)) {  // java.net.URL's construct is too permissive; ie. http://// // TODO Apply this everywhere
+      if (urlValidator.isValid(resource.page)) { // java.net.URL's construct is too permissive; ie. http://// // TODO Apply this everywhere
         Try {
           new java.net.URL(resource.page)
         }.toOption
-     } else {
+      } else {
         None
       }
     }
