@@ -18,47 +18,31 @@ import scala.concurrent.{ExecutionContext, Future}
   private val log = LogFactory.getLog(classOf[ContentUpdateService])
 
   def update(resource: Resource)(implicit ec: ExecutionContext): Future[Boolean] = {
-    try {
-      /*
-      var resourceUrlHasChanged = false
-      val newSubmission = resource._id.isEmpty
-      if (!newSubmission) {
-        mongoRepository.getResourceByObjectId(resource._id.get).map { maybeExistingResource =>
-          maybeExistingResource.map { existingResource =>
-            resourceUrlHasChanged = resource.page.flatMap { rp =>
-              existingResource.page.map { ep =>
-                rp != ep
-              }
-            }.getOrElse(false)
-          }
-        }
-      }
-
-      if (newSubmission || resourceUrlHasChanged) {
-        resource.setHttpStatus(0)
-      }
-      */
-
-      mongoRepository.saveResource(resource).flatMap { _ =>
-        elasticSearchIndexRebuildService.index(resource)
+    val eventualUrlHasChanged: Future[Boolean] = mongoRepository.getResourceByObjectId(resource._id).map { maybeExistingResource =>
+      maybeExistingResource.forall { existingResource =>
+        resource.page != existingResource.page
       }
     }
-    catch {
-      case e: Exception =>
-        log.error("Error: ", e)
-        Future.failed(e)
+
+    eventualUrlHasChanged.flatMap { urlHasChanged =>
+      mongoRepository.saveResource(resource).flatMap { _ =>
+        elasticSearchIndexRebuildService.index(resource).map { r =>
+          if (urlHasChanged) {
+            queueLinkCheck(resource)
+          }
+          r
+        }
+      }
     }
   }
 
   def create(resource: Resource)(implicit ec: ExecutionContext): Future[Boolean] = {
     log.debug("Creating resource: " + resource.page)
-    println(resource)
     mongoRepository.saveResource(resource).flatMap { r =>
       log.debug("Result of save for " + resource._id + " " + resource.page + ": " + r)
-      println(r)
       if (r.writeErrors.isEmpty) {
         elasticSearchIndexRebuildService.index(resource).map { _ =>
-          linkCheckerQueue.add(LinkCheckRequest(resourceId = resource._id.stringify, lastScanned = resource.last_scanned))
+          queueLinkCheck(resource)
           true
         }
       } else {
@@ -67,4 +51,7 @@ import scala.concurrent.{ExecutionContext, Future}
     }
   }
 
+  private def queueLinkCheck(resource: Resource): Unit = {
+    linkCheckerQueue.add(LinkCheckRequest(resourceId = resource._id.stringify, lastScanned = resource.last_scanned))
+  }
 }
