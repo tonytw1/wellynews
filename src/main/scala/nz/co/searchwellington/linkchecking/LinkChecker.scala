@@ -31,6 +31,7 @@ import scala.util.Try
 
   private val checkedCounter = registry.counter("linkchecker_checked")
   private val failedCounter = registry.counter("linkchecker_failed")
+  private val duplicateCounter = registry.counter("linkchecker_duplicate")
 
   {
     log.info("Autowired " + processors.asScala.size + " link checker processors: " + processors.asScala.map(_.getClass.getCanonicalName).mkString(", "))
@@ -62,6 +63,7 @@ import scala.util.Try
 
         } else {
           log.info("Skipping link check for " + resource.title + " as it has already been checked with idempotency: " + idempotency + " / " + resource.last_scanned)
+          duplicateCounter.increment()
           Future.successful(false)
         }
 
