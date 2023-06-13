@@ -120,14 +120,14 @@ import scala.util.Try
     }
 
     parsedUrl.map { url =>
-      val eventualHttpCheckOutcome = httpCheck(url).flatMap { result =>
+      httpCheck(url).flatMap { result =>
         result.fold({ left =>
           Future.successful {
             resource.setHttpStatus(left, false)
             true
           }
 
-        }, { case (status, redirecting, maybePageContent)  =>
+        }, { case (status, redirecting, maybePageContent) =>
           resource.setHttpStatus(status, redirecting)
           // Run each processor in turn letting them create their side effects and mutate the resource.
           // Then save the mutated resource.
@@ -144,7 +144,6 @@ import scala.util.Try
           }
         })
       }
-      eventualHttpCheckOutcome
 
     }.getOrElse {
       log.warn("Resource had an unparsable url: " + resource.page)
