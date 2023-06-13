@@ -2,11 +2,12 @@ package nz.co.searchwellington.queues
 
 import com.rabbitmq.client.{AMQP, Channel, DefaultConsumer, Envelope}
 import io.micrometer.core.instrument.MeterRegistry
-import nz.co.searchwellington.linkchecking.LinkChecker
+import nz.co.searchwellington.linkchecking.{LinkCheckRequest, LinkChecker}
 import org.apache.commons.logging.LogFactory
 import org.springframework.beans.factory.annotation.{Autowired, Qualifier}
 import org.springframework.core.task.TaskExecutor
 import org.springframework.stereotype.Component
+import play.api.libs.json.{Json, Reads}
 
 import scala.compat.java8.functionConverterImpls.AsJavaToDoubleFunction
 import scala.concurrent.{ExecutionContext, ExecutionContextExecutor}
@@ -59,9 +60,13 @@ import scala.concurrent.{ExecutionContext, ExecutionContextExecutor}
     override def handleDelivery(consumerTag: String, envelope: Envelope, properties: AMQP.BasicProperties, body: Array[Byte]): Unit = {
       try {
         log.debug(s"Link checker handling delivery with consumer tag: $consumerTag")
-        val message = new String(body)
         pulledCounter.increment()
-        linkChecker.scanResource(message).map { _ =>
+
+        val asJson = new String(body)
+        implicit val lcrr: Reads[LinkCheckRequest] = Json.reads[LinkCheckRequest]
+        val request = Json.parse(asJson).as[LinkCheckRequest]
+
+        linkChecker.scanResource(request.resourceId, request.lastScanned).map { _ =>
           channel.basicAck(envelope.getDeliveryTag, false)
           logQueueCount(channel)
         }
@@ -75,11 +80,8 @@ import scala.concurrent.{ExecutionContext, ExecutionContextExecutor}
 
   private def logQueueCount(channel: Channel): Unit = {
     try {
-      val ok = channel.queueDeclare(LinkCheckerQueue.QUEUE_NAME, false, false, false, null)
-      val countFromDeclare = ok.getMessageCount
       val countFromChannel = channel.messageCount(LinkCheckerQueue.QUEUE_NAME)
-
-      log.info(s"Link checker queue contains $countFromDeclare / $countFromChannel messages")
+      log.info(s"Link checker channel contains $countFromChannel ready to deliver messages")
     } catch {
       case e: Exception =>
         log.error("Error while counting messages: ", e)

@@ -61,7 +61,7 @@ See detecting page changes (below)[(#detecting-changes)].
 ### Feed acceptance policy
 
 Describes how the feed reader should treat feed items in a particular feed.
-Most feeds always contain relevant and approriate content which can be automatically accepted; some don't.
+Most feeds always contain relevant and appropriate content which can be automatically accepted; some don't.
 The feed acceptance policy helps document which feeds require manual moderation.
 
 `ACCEPT`

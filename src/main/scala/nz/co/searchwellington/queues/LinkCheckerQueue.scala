@@ -1,9 +1,11 @@
 package nz.co.searchwellington.queues
 
 import io.micrometer.core.instrument.MeterRegistry
+import nz.co.searchwellington.linkchecking.LinkCheckRequest
 import org.apache.commons.logging.LogFactory
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
+import play.api.libs.json.{Json, Writes}
 
 @Component
 class LinkCheckerQueue @Autowired()(val rabbitConnectionFactory: RabbitConnectionFactory, val registry: MeterRegistry) {
@@ -18,10 +20,15 @@ class LinkCheckerQueue @Autowired()(val rabbitConnectionFactory: RabbitConnectio
     channel.queueDeclare(LinkCheckerQueue.QUEUE_NAME, false, false, false, null)
   }
 
-  def add(id: String): Unit = try {
-    log.debug("Adding resource id to queue: " + id)
-    channel.basicPublish("", LinkCheckerQueue.QUEUE_NAME, null, id.getBytes)
+  def add(request: LinkCheckRequest): Unit = try {
+
+    implicit val lcrw: Writes[LinkCheckRequest] = Json.writes[LinkCheckRequest]
+    val asJson = Json.stringify(Json.toJson(request))
+
+    log.info(s"Adding link check request to queue: $asJson")
+    channel.basicPublish("", LinkCheckerQueue.QUEUE_NAME, null, asJson.getBytes)
     queuedCounter.increment()
+
   } catch {
     case e: Exception =>
      log.error("Failed to add to link checker queue", e)

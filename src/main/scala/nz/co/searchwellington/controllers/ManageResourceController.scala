@@ -2,6 +2,7 @@ package nz.co.searchwellington.controllers
 
 import jakarta.servlet.http.HttpServletRequest
 import nz.co.searchwellington.ReasonableWaits
+import nz.co.searchwellington.linkchecking.LinkCheckRequest
 import nz.co.searchwellington.model.{Resource, User}
 import nz.co.searchwellington.modification.ContentDeletionService
 import nz.co.searchwellington.permissions.EditPermissionService
@@ -32,7 +33,7 @@ import scala.concurrent.ExecutionContext.Implicits.global
     def checkResource(loggedInUser: User): ModelAndView = {
       getResourceById(id).map { resource =>
         log.info("Adding resource to queue: " + resource.id + "(" + resource._id.stringify + ")")
-        queue.add(resource._id.stringify)
+        queue.add(new LinkCheckRequest(resourceId = resource._id.stringify, lastScanned = resource.last_scanned))
         new ModelAndView(new RedirectView(urlStack.getExitUrlFromStack(request)))
       }
     }.getOrElse {

@@ -1,6 +1,8 @@
 package nz.co.searchwellington.jobs
 
 import nz.co.searchwellington.ReasonableWaits
+import nz.co.searchwellington.linkchecking.LinkCheckRequest
+import nz.co.searchwellington.model.Resource
 import nz.co.searchwellington.queues.LinkCheckerQueue
 import nz.co.searchwellington.repositories.mongo.MongoRepository
 import org.apache.commons.logging.LogFactory
@@ -40,7 +42,7 @@ import scala.concurrent.{Await, Future}
   }
 
   private def enqueue(selectors: Seq[Future[Seq[BSONObjectID]]], numberOfItemsToQueue: Int): Seq[String] = {
-    val eventualIdsToQueue = Future.sequence(selectors).map(_.flatten.take(numberOfItemsToQueue))
+    val eventualIdsToQueue = Future.sequence(selectors).map(_.flatten.take(numberOfItemsToQueue)) // TODO this flatten should be redundant
 
     val eventuallyQueued = eventualIdsToQueue.map { idsToQueue =>
       idsToQueue.foreach { id =>
@@ -52,12 +54,14 @@ import scala.concurrent.{Await, Future}
     Await.result(eventuallyQueued, TenSeconds)
   }
 
-  private def queueBsonID(r: BSONObjectID): Future[String] = {
-    val stringify = r.stringify
-    log.info("Queuing for scheduled checking: " + stringify)
-    linkCheckerQueue.add(stringify)
-    mongoRepository.setLastScanned(r, DateTime.now.toDate).map { _ =>
-      stringify
+  private def queueBsonID(r: BSONObjectID): Future[Option[String]] = {
+    mongoRepository.getResourceByObjectId(r).map { maybeResource: Option[Resource] =>
+      maybeResource.map { resource =>
+        val request = LinkCheckRequest(resourceId = resource._id.stringify, lastScanned = resource.last_scanned)
+        log.info("Queuing for scheduled checking: " + request)
+        linkCheckerQueue.add(request)
+        resource._id.stringify
+      }
     }
   }
 

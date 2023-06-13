@@ -2,6 +2,7 @@ package nz.co.searchwellington.controllers
 
 import java.util.UUID
 import nz.co.searchwellington.ReasonableWaits
+import nz.co.searchwellington.linkchecking.LinkCheckRequest
 import nz.co.searchwellington.model.{Newsitem, Website}
 import nz.co.searchwellington.modification.ContentUpdateService
 import nz.co.searchwellington.queues.LinkCheckerQueue
@@ -55,7 +56,7 @@ class ContentUpdateServiceTest extends ReasonableWaits {
 
     Await.result(service.create(newResource), TenSeconds)
 
-    verify(linkCheckerQueue).add(newResource._id.stringify)
+    verify(linkCheckerQueue).add(LinkCheckRequest(newResource._id.stringify, None))
   }
 
 }
