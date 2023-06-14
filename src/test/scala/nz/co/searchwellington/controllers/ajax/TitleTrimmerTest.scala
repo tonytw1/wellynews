@@ -17,6 +17,9 @@ class TitleTrimmerTest {
 
     val trimmedNdash = trimmer.trimTitleSuffix("THE WASP – Circa Theatre", "Circa Theatre")
     assertEquals("THE WASP", trimmedNdash)
+
+    val trimmedDot = trimmer.trimTitleSuffix("Saving the orchids • Ōtari-Wilton’s Bush Trust", "Ōtari-Wilton’s Bush Trust")
+    assertEquals("Saving the orchids", trimmedDot)
   }
 
 }
