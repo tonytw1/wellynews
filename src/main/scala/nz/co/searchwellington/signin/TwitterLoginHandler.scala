@@ -30,13 +30,14 @@ import scala.concurrent.ExecutionContext.Implicits.global
         val callbackUrl = urlBuilder.getTwitterCallbackUrl
         log.info("Getting request token with callback url: " + callbackUrl)
 
-        val requestToken = twitterApiFactory.oauthAuthentication.getOAuthRequestToken(callbackUrl)
+        val authentication = twitterApiFactory.oauthAuthentication
+        val requestToken: RequestToken = authentication.getOAuthRequestToken(callbackUrl)
 
         log.info("Got request token: " + requestToken.getToken)
         tokens.put(requestToken.getToken, requestToken)
-        val authorizeUrl: String = requestToken.getAuthenticationURL
-        log.info("Redirecting user to authorize url : " + authorizeUrl)
-        new ModelAndView(new RedirectView(authorizeUrl))
+        val authenticationUrl = requestToken.getAuthenticationURL
+        log.info("Redirecting user to authentication url : " + authenticationUrl)
+        new ModelAndView(new RedirectView(authenticationUrl))
 
       } catch {
         case e: Exception =>
