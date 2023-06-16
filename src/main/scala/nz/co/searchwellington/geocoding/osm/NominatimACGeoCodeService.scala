@@ -9,15 +9,15 @@ import org.springframework.stereotype.Component
 import play.api.libs.json.{Json, Reads}
 import uk.co.eelpieconsulting.common.geo.model.{LatLong, OsmId, OsmType, Place}
 
-import scala.concurrent.Await
 import scala.concurrent.ExecutionContext.Implicits.global
+import scala.concurrent.Future
 
 @Component
 class NominatimACGeoCodeService @Autowired()(wsClient: WSClient) extends GeoCodeService with ReasonableWaits {
 
   private val log = LogFactory.getLog(classOf[NominatimACGeoCodeService])
 
-  override def resolveOsmId(osmId: OsmId): Place = {
+  override def resolveOsmId(osmId: OsmId): Future[Option[Place]] = {
     val url = "https://nominatim-ac.eelpieconsulting.co.uk/places/" + osmId.getId + osmId.getType.toString.take(1)
 
     val eventualPlace = wsClient.wsClient.url(url).
@@ -60,19 +60,20 @@ class NominatimACGeoCodeService @Autowired()(wsClient: WSClient) extends GeoCode
           )
 
           log.info("Place: " + place)
-          place
+          Some(place)
 
         case _ =>
           log.warn("NominatimAC call to " + url + " failed with status: " + result.status)
-          null
+          None
       }
     }
 
-    Await.result(eventualPlace, TenSeconds) // TODO push up
+    eventualPlace
   }
+
 
   private case class NominatimACPlace(address: String, osmId: Long, osmType: String, latlong: Option[NominatimACLatLong])
 
-  case class NominatimACLatLong(lat: Double, lon: Double)
+  private case class NominatimACLatLong(lat: Double, lon: Double)
 
 }

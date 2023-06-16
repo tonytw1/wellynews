@@ -1,20 +1,21 @@
 package nz.co.searchwellington.controllers.submission
 
+import nz.co.searchwellington.ReasonableWaits
 import nz.co.searchwellington.geocoding.osm.GeoCodeService
 import nz.co.searchwellington.model.geo.{Geocode, LatLong, OsmId}
-import uk.co.eelpieconsulting.common.geo.model.OsmType
+import uk.co.eelpieconsulting.common.geo.model.{OsmType, Place}
 
-import scala.concurrent.ExecutionContext
+import scala.concurrent.{Await, ExecutionContext}
 
-trait GeotagParsing {
+trait GeotagParsing extends ReasonableWaits {
 
   def geocodeService: GeoCodeService
 
   def parseGeotag(address: String, osmId: String)(implicit ec: ExecutionContext): Option[Geocode] = {
     if (osmId.nonEmpty) {
       parseOsmId(osmId).flatMap { osm: uk.co.eelpieconsulting.common.geo.model.OsmId =>
-        val resolvedPlace = geocodeService.resolveOsmId(osm)
-        Option(resolvedPlace).map { rp =>
+        val resolvedPlace: Option[Place] = Await.result(geocodeService.resolveOsmId(osm), TenSeconds)
+        resolvedPlace.map { rp =>
           val resolvedLatLong = Option(rp.getLatLong).map { ll =>
             LatLong(ll.getLatitude, ll.getLongitude)
           }
@@ -40,7 +41,7 @@ trait GeotagParsing {
         t.name() == `type`
       }
       osmType.map { osmType =>
-          new uk.co.eelpieconsulting.common.geo.model.OsmId(
+        new uk.co.eelpieconsulting.common.geo.model.OsmId(
           id, osmType
         )
       }

@@ -8,6 +8,8 @@ import org.mockito.Mockito.{mock, when}
 import uk.co.eelpieconsulting.common.geo.model
 import uk.co.eelpieconsulting.common.geo.model.{OsmType, Place}
 
+import scala.concurrent.Future
+
 class GeotagParsingTest extends GeotagParsing {
 
   val geocodeService: GeoCodeService = mock(classOf[GeoCodeService])
@@ -27,7 +29,9 @@ class GeotagParsingTest extends GeotagParsing {
   def shouldParseUserInputToPlace(): Unit = {
     import scala.concurrent.ExecutionContext.Implicits.global
 
-    when(geocodeService.resolveOsmId(new model.OsmId(456L, OsmType.RELATION))).thenReturn(new Place(null, new uk.co.eelpieconsulting.common.geo.model.LatLong(51.0, -0.3), null))
+    when(geocodeService.resolveOsmId(new model.OsmId(456L, OsmType.RELATION))).thenReturn(
+      Future.successful(Some(new Place(null, new uk.co.eelpieconsulting.common.geo.model.LatLong(51.0, -0.3), null)))
+    )
 
     val result = parseGeotag("Somewhere", "456/RELATION")
 

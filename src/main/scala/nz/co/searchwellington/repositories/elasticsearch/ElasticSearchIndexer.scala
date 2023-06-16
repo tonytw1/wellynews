@@ -228,9 +228,11 @@ class ElasticSearchIndexer @Autowired()(val showBrokenDecisionService: ShowBroke
               }
             }
 
-            val maybeOsmId = fields.get("osmId").map { asString =>
-              val parsed = osmIdParser.parseOsmId(asString.asInstanceOf[String]) // TODO use one Osm id class; even if it means working out enums in Mongo
-              OsmId(parsed.getId, parsed.getType.toString)
+            val maybeOsmId = fields.get("osmId").flatMap { asString =>
+              val maybeParsed = osmIdParser.parseOsmId(asString.asInstanceOf[String]) // TODO use one Osm id class; even if it means working out enums in Mongo
+              maybeParsed.map { parsed =>
+                OsmId(parsed.getId, parsed.getType.toString)
+              }
             }
             val address = maybeAddress.map(_.asInstanceOf[String])
 

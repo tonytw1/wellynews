@@ -9,7 +9,7 @@ import org.mockito.Mockito.when
 import org.springframework.mock.web.MockHttpServletRequest
 import uk.co.eelpieconsulting.common.geo.model.{LatLong, OsmId, OsmType, Place}
 
-import scala.concurrent.Await
+import scala.concurrent.{Await, Future}
 
 class LocationParameterFilterTest extends ReasonableWaits {
   private val VALID_LOCATION_NAME = "Petone Station"
@@ -22,7 +22,7 @@ class LocationParameterFilterTest extends ReasonableWaits {
   def canResolveOsmIdAsLocation() = {
     val request = new MockHttpServletRequest
     request.setParameter("osm", "123/NODE")
-    when(geocodeService.resolveOsmId(petoneStation.getOsmId)).thenReturn(petoneStation)
+    when(geocodeService.resolveOsmId(petoneStation.getOsmId)).thenReturn(Future.successful(Some(petoneStation)))
 
     val attributes = Await.result(filter.setAttributes(request), TenSeconds)
 
