@@ -32,9 +32,6 @@ import scala.concurrent.{ExecutionContext, ExecutionContextExecutor}
       // So we'll use the Rabbit channel maximum unacked messages / Qos as our flow control.
       channel.basicQos(maximumConcurrentChecks)
 
-      val ok = channel.queueDeclare(LinkCheckerQueue.QUEUE_NAME, false, false, false, null)
-      log.info(s"Link checker queue declared; contains ${ok.getMessageCount} messages")
-
       implicit val executionContext: ExecutionContextExecutor = ExecutionContext.fromExecutor(linkCheckerTaskExecutor)
 
       val deliverCallback: DeliverCallback = (consumerTag: String, message: Delivery) => {
