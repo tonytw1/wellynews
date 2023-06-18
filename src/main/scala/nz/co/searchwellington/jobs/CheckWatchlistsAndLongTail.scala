@@ -57,9 +57,8 @@ import scala.concurrent.{Await, Future}
   private def queueBsonID(r: BSONObjectID): Future[Option[String]] = {
     mongoRepository.getResourceByObjectId(r).map { maybeResource: Option[Resource] =>
       maybeResource.map { resource =>
-        val request = LinkCheckRequest(resourceId = resource._id.stringify, lastScanned = resource.last_scanned)
-        log.info("Queuing for scheduled checking: " + request)
-        linkCheckerQueue.add(request)
+        log.info("Queuing for scheduled checking: " + resource._id.stringify)
+        linkCheckerQueue.add(resource)
         resource._id.stringify
       }
     }

@@ -52,6 +52,6 @@ import scala.concurrent.{ExecutionContext, Future}
   }
 
   private def queueLinkCheck(resource: Resource): Unit = {
-    linkCheckerQueue.add(LinkCheckRequest(resourceId = resource._id.stringify, lastScanned = resource.last_scanned))
+    linkCheckerQueue.add(resource)
   }
 }

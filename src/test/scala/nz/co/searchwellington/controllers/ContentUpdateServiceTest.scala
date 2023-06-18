@@ -59,7 +59,7 @@ class ContentUpdateServiceTest extends ReasonableWaits {
 
     Await.result(service.create(newResource), TenSeconds)
 
-    verify(linkCheckerQueue).add(LinkCheckRequest(newResource._id.stringify, None))
+    verify(linkCheckerQueue).add(newResource)
   }
 
   @Test
@@ -74,7 +74,7 @@ class ContentUpdateServiceTest extends ReasonableWaits {
     Await.result(service.update(updatedResource), TenSeconds)
 
     assertEquals(resource._id, updatedResource._id)
-    verify(linkCheckerQueue).add(LinkCheckRequest(resource._id.stringify, None))
+    verify(linkCheckerQueue).add(resource)
   }
 
 }
