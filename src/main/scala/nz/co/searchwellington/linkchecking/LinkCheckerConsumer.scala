@@ -1,6 +1,6 @@
 package nz.co.searchwellington.linkchecking
 
-import com.rabbitmq.client.{AMQP, Channel, DefaultConsumer, Envelope}
+import com.rabbitmq.client.{CancelCallback, Channel, DeliverCallback, Delivery}
 import io.micrometer.core.instrument.MeterRegistry
 import nz.co.searchwellington.queues.{LinkCheckerQueue, RabbitConnectionFactory}
 import org.apache.commons.logging.LogFactory
@@ -9,7 +9,6 @@ import org.springframework.core.task.TaskExecutor
 import org.springframework.stereotype.Component
 import play.api.libs.json.{Json, Reads}
 
-import scala.compat.java8.functionConverterImpls.AsJavaToDoubleFunction
 import scala.concurrent.{ExecutionContext, ExecutionContextExecutor}
 
 @Component class LinkCheckerConsumer @Autowired()(linkChecker: LinkChecker, rabbitConnectionFactory: RabbitConnectionFactory,
@@ -36,45 +35,39 @@ import scala.concurrent.{ExecutionContext, ExecutionContextExecutor}
       val ok = channel.queueDeclare(LinkCheckerQueue.QUEUE_NAME, false, false, false, null)
       log.info(s"Link checker queue declared; contains ${ok.getMessageCount} messages")
 
-      val consumer = new LinkCheckerConsumer(channel)
-      val consumerTag = channel.basicConsume(LinkCheckerQueue.QUEUE_NAME, false, consumer)
+      implicit val executionContext: ExecutionContextExecutor = ExecutionContext.fromExecutor(linkCheckerTaskExecutor)
+
+      val deliverCallback: DeliverCallback = (consumerTag: String, message: Delivery) => {
+        try {
+          log.debug(s"Link checker handling delivery with consumer tag: $consumerTag")
+          pulledCounter.increment()
+          val body = message.getBody
+          val asJson = new String(body)
+          implicit val lcrr: Reads[LinkCheckRequest] = Json.reads[LinkCheckRequest]
+          val request = Json.parse(asJson).as[LinkCheckRequest]
+
+          linkChecker.scanResource(request.resourceId, request.lastScanned).map { _ =>
+            channel.basicAck(message.getEnvelope.getDeliveryTag, false)
+            logQueueCount(channel)
+          }
+
+        }
+        catch {
+          case e: Exception =>
+            log.error("Error while processing link checker message: ", e)
+        }
+      }
+
+      val cancelCallback: CancelCallback = (consumerTag: String) => {
+        log.info(s"Consumer cancelled: $consumerTag")
+      }
+
+      val consumerTag = channel.basicConsume(LinkCheckerQueue.QUEUE_NAME, false, deliverCallback, cancelCallback)
       log.info(s"Link checker consumer created with consumer tag: $consumerTag")
 
     } catch {
       case e: Exception =>
         log.error(e)
-    }
-  }
-
-  class LinkCheckerConsumer(channel: Channel) extends DefaultConsumer(channel: Channel) {
-
-    private implicit val executionContext: ExecutionContextExecutor = ExecutionContext.fromExecutor(linkCheckerTaskExecutor)
-
-    private def countMessages(channel: Channel): Double = {
-      channel.messageCount(LinkCheckerQueue.QUEUE_NAME)
-    }
-    private val countMessagesToDoubleFunction: AsJavaToDoubleFunction[Channel] = new AsJavaToDoubleFunction(countMessages)
-
-    registry.gauge("linkchecker_queue", channel, countMessagesToDoubleFunction)
-
-    override def handleDelivery(consumerTag: String, envelope: Envelope, properties: AMQP.BasicProperties, body: Array[Byte]): Unit = {
-      try {
-        log.debug(s"Link checker handling delivery with consumer tag: $consumerTag")
-        pulledCounter.increment()
-
-        val asJson = new String(body)
-        implicit val lcrr: Reads[LinkCheckRequest] = Json.reads[LinkCheckRequest]
-        val request = Json.parse(asJson).as[LinkCheckRequest]
-
-        linkChecker.scanResource(request.resourceId, request.lastScanned).map { _ =>
-          channel.basicAck(envelope.getDeliveryTag, false)
-          logQueueCount(channel)
-        }
-
-      } catch {
-        case e: Exception =>
-          log.error("Error while processing link checker message: ", e)
-      }
     }
   }
 
