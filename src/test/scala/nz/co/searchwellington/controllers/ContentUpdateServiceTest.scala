@@ -74,7 +74,7 @@ class ContentUpdateServiceTest extends ReasonableWaits {
     Await.result(service.update(updatedResource), TenSeconds)
 
     assertEquals(resource._id, updatedResource._id)
-    verify(linkCheckerQueue).add(resource)
+    verify(linkCheckerQueue).add(updatedResource)
   }
 
 }
