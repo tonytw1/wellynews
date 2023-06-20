@@ -58,33 +58,6 @@ Watchlist items are polled regularly to detect changes which might indicate new 
 See detecting page changes (below)[(#detecting-changes)].
 
 
-### Feed acceptance policy
-
-Describes how the feed reader should treat feed items in a particular feed.
-Most feeds always contain relevant and appropriate content which can be automatically accepted; some don't.
-The feed acceptance policy helps document which feeds require manual moderation.
-
-`ACCEPT`
-A trusted source of relevant content. All items can be automatically accepted.
-
-`ACCEPT_EVEN_WITHOUT_DATES`
-Accept even without dates
-
-`ACCEPT_IGNORING_DATE`
-Accept ignoring date
-
-Trusted sources with good content but questionable publication dates.
-These feed items can be automatically accepted we'll ignore the publication date.
-
-`SUGGEST`
-
-Feeds with a mix of relevant and irrelevant content. New feeds items should be suggested for manual moderation.
-The contents of suggested feeds appear on the feeds inbox screeb (below).
-
-`IGNORE`
-
-Feeds with no relevant content at the moment. Ignore the contents of these feeds.
-
 
 
 ## Tags
@@ -183,6 +156,45 @@ Changes in content checksums indicate potential new content.
 
 Pages often contain elements such as timestamps which make page's checksum unstable even if contains no new content.
 Only comparing the plain text content of a page helps to reduce these false positives.
+
+
+
+## Feed reading
+
+Most news items are accepted from publisher's RSS feeds. Feed reading is the process of periodically polling these feeds 
+and deciding which items to accept and distribute.
+
+
+### Feed acceptance policy
+
+Each publisher feed is assigned a feed acceptance policy which describes how we should treat feed items in that particular feed.
+
+Most feeds always contain relevant and appropriate content which can be automatically accepted; some don't.
+The feed acceptance policy helps document which feeds require manual moderation.
+
+`ACCEPT`
+A trusted source of relevant content. All items can be automatically accepted.
+
+`ACCEPT_EVEN_WITHOUT_DATES`
+Accept even without dates
+
+`ACCEPT_IGNORING_DATE`
+Accept ignoring date
+
+Trusted sources with good content but questionable publication dates.
+These feed items can be automatically accepted we'll ignore the publication date.
+
+`SUGGEST`
+
+Feeds with a mix of relevant and irrelevant content. New feeds items should be suggested for manual moderation.
+The contents of suggested feeds appear on the feeds inbox screeb (below).
+
+`IGNORE`
+
+Feeds with no relevant content at the moment. Ignore the contents of these feeds.
+
+
+
 
 
 ### Accepted feed items view
