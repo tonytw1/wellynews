@@ -87,10 +87,7 @@ Feeds with no relevant content at the moment. Ignore the contents of these feeds
 
 
 
-## Tagging
-
-Been able to automatically arrange newsitems into meaningful categories like consultation and transport is something we really want.
-We use tags todo this.
+## Tags
 
 Tags have a name and an optional parent tag.
 
@@ -142,6 +139,27 @@ Been tagged as Trains implies that this newsitem is related to Transport.
 
 Votes which contribute to the visible location of a newsitem. Could be an explict geocode of could be inferred from the
 newsitems tags or publisher
+
+
+## Tagging votes
+
+Been able to automatically arrange news items into meaningful categories like consultation and transport is something we really wanted.
+We can infer alot about a news item by considering where it came from and who published it.
+
+These signals are combined in a tagging vote to determine a news items visible tags.
+
+ie. This example news item talks about an exhibition at a cafe in Newtown.
+
+![News items tags](docs/tagged-as.png)
+
+The tagging votes show how we arrived at this set of tags.
+
+![Tagging votes](docs/tagging-votes.png)
+
+- We know which suburb it's in because the publisher is tagged with Newtown.
+- We have a geotagged location because the publisher has a geotag.
+- We know it's about an exhibition because it was accepted a feed tagged exhibition.
+- We know it's about art because exhibitions is a child ot art.
 
 
 ### Autotagging
