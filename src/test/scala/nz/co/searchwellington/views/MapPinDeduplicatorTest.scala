@@ -43,4 +43,12 @@ class MapPinDeduplicatorTest {
     assertFalse(deduped.contains(firstNewsitem), "Expected item to survive because it has the most recent date")
   }
 
+  @Test
+  def shouldGracefullyHandleNewsitemsWithNoDate(): Unit = {
+    val withNoLatLong = firstNewsitem.copy(date = null)
+    val deduped = mapPinDeduplicator.dedupe((geocoded :+ withNoLatLong).asJava)
+
+    assertFalse(deduped.contains(withNoLatLong), "Expected item to survive because it has the most recent date")
+  }
+
 }

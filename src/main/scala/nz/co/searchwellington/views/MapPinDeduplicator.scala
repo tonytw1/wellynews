@@ -6,6 +6,7 @@ import org.springframework.stereotype.Component
 import uk.co.eelpieconsulting.common.geo.DistanceMeasuringService
 import uk.co.eelpieconsulting.common.geo.model.LatLong
 
+import java.util.Date
 import scala.jdk.CollectionConverters._
 
 @Component
@@ -17,8 +18,7 @@ class MapPinDeduplicator() {
 
   def dedupe(geocoded: java.util.List[FrontendResource]): java.util.List[FrontendResource] = {
     var deduped: Seq[FrontendResource] = Seq.empty
-
-    val byDateDescending = geocoded.asScala.sortBy(r => r.date).reverse
+    val byDateDescending = geocoded.asScala.sortBy(r => Option(r.date).getOrElse(new Date(0L))).reverse
 
     byDateDescending.foreach { resource =>
       resource.geocode.foreach { p =>
