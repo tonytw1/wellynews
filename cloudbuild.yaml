@@ -13,4 +13,6 @@ steps:
   args: [ '-f', 'docker/docker-compose.yml', 'down' ]
 images:
   - 'eu.gcr.io/$PROJECT_ID/wellynews'
+options:
+  machineType: 'E2_HIGHCPU_8'
 timeout: 600s
