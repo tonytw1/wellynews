@@ -89,6 +89,11 @@ import scala.concurrent.{ExecutionContext, Future}
     toFrontendResourcesWithTotalCount(elasticSearchIndexer.getResources(withPagination, order = byRelevance, loggedInUser = loggedInUser), loggedInUser)
   }
 
+  def getWithNoDate(loggedInUser: Option[User])(implicit ec: ExecutionContext, currentSpan: Span): Future[(Seq[FrontendResource], Long)] = {
+    val withPagination = ResourceQuery(hasDate = Some(false)).copy(startIndex = 0, maxItems = 1000)
+    toFrontendResourcesWithTotalCount(elasticSearchIndexer.getResources(withPagination, order = byRelevance, loggedInUser = loggedInUser), loggedInUser)
+  }
+
   def getNewsitemKeywordSearchRelatedTags(keywords: String, loggedInUser: Option[User])(implicit ec: ExecutionContext, currentSpan: Span): Future[Seq[TagContentCount]] = {
     val newsitemsByKeywords = ResourceQuery(`type` = newsitems, q = Some(keywords), publisher = None, tags = None)
 

@@ -13,6 +13,8 @@
 
 	<p><a href="/admin/rebuild-index">Rebuild elastic search index</a></p>
 
+	<h2>Backfill dates</h2>
+	#parse("includes/main_content.vm")
 </div>
 
 <div class="right">
