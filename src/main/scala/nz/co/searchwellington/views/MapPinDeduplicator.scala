@@ -1,7 +1,6 @@
 package nz.co.searchwellington.views
 
 import nz.co.searchwellington.model.frontend.FrontendResource
-import nz.co.searchwellington.model.geo.Geocode
 import org.springframework.stereotype.Component
 import uk.co.eelpieconsulting.common.geo.DistanceMeasuringService
 import uk.co.eelpieconsulting.common.geo.model.LatLong
@@ -21,10 +20,7 @@ class MapPinDeduplicator() {
     val byDateDescending = geocoded.asScala.sortBy(r => Option(r.date).getOrElse(new Date(0L))).reverse
 
     byDateDescending.foldLeft(Seq.empty[FrontendResource]) { (deduplicated, resource) =>
-      val isUniquePoint = resource.geocode.exists { geocode =>
-        !listAlreadyContainsResourceWithThisLocation(deduplicated, geocode)
-      }
-      if (isUniquePoint) {
+      if (isUniqueLocation(deduplicated, resource)) {
         deduplicated :+ resource
       } else {
         deduplicated
@@ -32,18 +28,18 @@ class MapPinDeduplicator() {
     }.asJava
   }
 
-  private def listAlreadyContainsResourceWithThisLocation(deduped: Seq[FrontendResource], geocode: Geocode): Boolean = {
-    deduped.exists { r =>
-      r.geocode.forall { rp =>
-        areSameOrOverlappingLocations(rp, geocode)
-      }
+  private def isUniqueLocation(existing: Seq[FrontendResource], resource: FrontendResource): Boolean = {
+    !existing.exists { e =>
+      areSameOrOverlappingLocations(e, resource)
     }
   }
 
-  private def areSameOrOverlappingLocations(here: Geocode, there: Geocode): Boolean = {
-    def latLongFor(geocode: Geocode): Option[LatLong] = {
-      geocode.latLong.map { ll =>
-        new uk.co.eelpieconsulting.common.geo.model.LatLong(ll.latitude, ll.longitude)
+  private def areSameOrOverlappingLocations(here: FrontendResource, there: FrontendResource): Boolean = {
+    def latLongFor(resource: FrontendResource): Option[LatLong] = {
+      resource.geocode.flatMap { geocode =>
+        geocode.latLong.map { ll =>
+          new uk.co.eelpieconsulting.common.geo.model.LatLong(ll.latitude, ll.longitude)
+        }
       }
     }
 
