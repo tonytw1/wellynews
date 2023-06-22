@@ -17,18 +17,19 @@ class MapPinDeduplicator() {
   private val distanceMeasuringService = new DistanceMeasuringService
 
   def dedupe(geocoded: java.util.List[FrontendResource]): java.util.List[FrontendResource] = {
-    var deduped: Seq[FrontendResource] = Seq.empty
+    // Allow most recent items to trump older items with the same location.
     val byDateDescending = geocoded.asScala.sortBy(r => Option(r.date).getOrElse(new Date(0L))).reverse
 
-    byDateDescending.foreach { resource =>
-      resource.geocode.foreach { p =>
-        val isUnique = !listAlreadyContainsResourceWithThisLocation(deduped, p)
-        if (isUnique) {
-          deduped = deduped :+ resource
-        }
+    byDateDescending.foldLeft(Seq.empty[FrontendResource]) { (deduplicated, resource) =>
+      val isUniquePoint = resource.geocode.exists { geocode =>
+        !listAlreadyContainsResourceWithThisLocation(deduplicated, geocode)
       }
-    }
-    deduped.asJava
+      if (isUniquePoint) {
+        deduplicated :+ resource
+      } else {
+        deduplicated
+      }
+    }.asJava
   }
 
   private def listAlreadyContainsResourceWithThisLocation(deduped: Seq[FrontendResource], geocode: Geocode): Boolean = {
