@@ -6,7 +6,7 @@ import nz.co.searchwellington.model.Resource
 import org.apache.commons.logging.LogFactory
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
-import play.api.libs.json.{Json, Writes}
+import play.api.libs.json.Json
 
 @Component
 class LinkCheckerQueue @Autowired()(val rabbitConnectionFactory: RabbitConnectionFactory, val registry: MeterRegistry) {
@@ -22,7 +22,6 @@ class LinkCheckerQueue @Autowired()(val rabbitConnectionFactory: RabbitConnectio
   }
 
   def add(resource: Resource): Unit = try {
-    implicit val lcrw: Writes[LinkCheckRequest] = Json.writes[LinkCheckRequest]
     val request = LinkCheckRequest(resourceId = resource._id.stringify, lastScanned = resource.last_scanned)
     val asJson = Json.stringify(Json.toJson(request))
 

@@ -7,7 +7,7 @@ import org.apache.commons.logging.LogFactory
 import org.springframework.beans.factory.annotation.{Autowired, Qualifier}
 import org.springframework.core.task.TaskExecutor
 import org.springframework.stereotype.Component
-import play.api.libs.json.{Json, Reads}
+import play.api.libs.json.Json
 
 import scala.concurrent.{ExecutionContext, ExecutionContextExecutor}
 
@@ -40,7 +40,6 @@ import scala.concurrent.{ExecutionContext, ExecutionContextExecutor}
           pulledCounter.increment()
           val body = message.getBody
           val asJson = new String(body)
-          implicit val lcrr: Reads[LinkCheckRequest] = Json.reads[LinkCheckRequest]
           val request = Json.parse(asJson).as[LinkCheckRequest]
 
           linkChecker.scanResource(request.resourceId, request.lastScanned).map { _ =>
