@@ -16,8 +16,7 @@ class TagHintAutoTagger @Autowired()(tagDAO: TagDAO) {
 
   def suggestTags(resource: Resource)(implicit ec: ExecutionContext): Future[Set[Tag]] = {
     val resourceContent = resource.title + " " + resource.description
-    val resourceTokens = tokenise(resourceContent.toLowerCase())
-
+    val resourceTokens = tokenise(resourceContent)
     tagDAO.getAllTags.map { allTags =>
       allTags.filter(tag => matches(tag.hints, resourceTokens)).toSet
     }
@@ -42,13 +41,14 @@ class TagHintAutoTagger @Autowired()(tagDAO: TagDAO) {
 
   private def matches(hints: Seq[String], resourceTokens: Seq[String]): Boolean = {
     hints.exists { hint =>
-      val hintTokens = tokenise(hint.toLowerCase)
+      val hintTokens = tokenise(hint)
       resourceTokens.containsSlice(hintTokens)
     }
   }
 
-  private def tokenise(resourceContent: String): Seq[String] = {
-    val standardTokenizer = new StringTokenizer(resourceContent)
+  private def tokenise(content: String): Seq[String] = {
+    val normalised = content.toLowerCase().replaceAll("[^a-z0-9 ]", "")
+    val standardTokenizer = new StringTokenizer(normalised)
     val tokens: mutable.ListBuffer[String] = ListBuffer.empty
     val iterator = standardTokenizer.asIterator()
     while (iterator.hasNext) {
