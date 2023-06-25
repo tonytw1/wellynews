@@ -53,7 +53,7 @@ class AdminUrlBuilder @Autowired()(urlBuilder: UrlBuilder, @Value("${whakaoko.ur
   }
 
   def getFeednewsItemAcceptUrl(feed: Feed, feedItem: FrontendFeedItem): String = {
-    "/accept-feed-item?feed=" + feed.url_words + "&url=" + UrlParameterEncoder.encode(feedItem.getUrl)
+    "/accept-feed-item?feed=" + feed.url_words.get + "&url=" + UrlParameterEncoder.encode(feedItem.getUrl)
   }
 
   def getAcceptAllFromFeed(feed: FrontendFeed): String = {
