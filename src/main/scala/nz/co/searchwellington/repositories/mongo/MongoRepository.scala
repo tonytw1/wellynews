@@ -345,11 +345,6 @@ class MongoRepository @Autowired()(@Value("${mongo.uri}") mongoUri: String) exte
     resourceCollection.find(selector, Some(idOnlyProjection)).cursor[BSONDocument]().collect[List](maxDocs = maxItems, err = Cursor.FailOnError[List[BSONDocument]]()).map { r =>
       r.flatMap(i => i.getAsOpt[BSONObjectID]("_id"))
     }
-
-    //return sessionFactory.getCurrentSession.createCriteria(classOf[Resource]).
-    // add(Restrictions.gt("liveTime", launchedDate)).
-    // add(Restrictions.lt("lastScanned", lastScanned)).
-    // addOrder(Order.asc("lastScanned")).setMaxResults(maxItems).list.asInstanceOf[List[Resource]]
   }
 
   def getAllFeeds()(implicit ec: ExecutionContext): Future[Seq[Feed]] = {

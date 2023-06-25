@@ -86,7 +86,6 @@ import scala.concurrent.{ExecutionContext, Future}
             httpStatus = None,
             lastScanned = None,
             lastChanged = None,
-            liveTime = null,
             handTags = None,
             tags = None,
             owner = null,

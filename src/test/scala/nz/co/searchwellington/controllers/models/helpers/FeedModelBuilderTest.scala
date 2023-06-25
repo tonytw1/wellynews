@@ -123,7 +123,6 @@ class FeedModelBuilderTest extends ReasonableWaits with ContentFields {
       httpStatus = None,
       lastScanned = None,
       lastChanged = None,
-      liveTime = null,
       handTags = None,
       tags = None,
       owner = null,
