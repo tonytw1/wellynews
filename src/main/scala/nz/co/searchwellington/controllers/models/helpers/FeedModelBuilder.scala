@@ -4,6 +4,7 @@ import io.opentelemetry.api.trace.Span
 import jakarta.servlet.http.HttpServletRequest
 import nz.co.searchwellington.ReasonableWaits
 import nz.co.searchwellington.controllers.models.GeotaggedNewsitemExtractor
+import nz.co.searchwellington.feeds.whakaoko.model.FeedItem
 import nz.co.searchwellington.feeds.whakaoko.{WhakaokoFeedReader, WhakaokoService}
 import nz.co.searchwellington.feeds.{FeedItemActionDecorator, FeeditemToNewsitemService}
 import nz.co.searchwellington.filters.attributesetters.FeedAttributeSetter
@@ -24,7 +25,6 @@ import scala.jdk.CollectionConverters._
                                                feedNewsItemLocalCopyDecorator: FeedItemActionDecorator,
                                                frontendResourceMapper: FrontendResourceMapper,
                                                commonAttributesModelBuilder: CommonAttributesModelBuilder,
-                                               feeditemToNewsitemService: FeeditemToNewsitemService,
                                                whakaokoFeedReader: WhakaokoFeedReader,
                                                whakaokoService: WhakaokoService) extends ModelBuilder with ReasonableWaits {
 
@@ -48,17 +48,16 @@ import scala.jdk.CollectionConverters._
       whakaokoFeedReader.fetchFeedItems(feed).flatMap { feedItemsForFeed =>
         feedItemsForFeed.fold({ l =>
           Future.successful(Left(l))
-        }, { feedItems =>
-            val feedNewsitems = feedItems._1.flatMap(i => feeditemToNewsitemService.makeNewsitemFromFeedItem(i, feed))
+        }, { feedItems: (Seq[FeedItem], Long) =>
             val totalCount = feedItems._2
 
-            val eventualFrontendFeedNewitems = Future.sequence {
-              feedNewsitems.map { r =>
-                frontendResourceMapper.mapFrontendResource(r, r.geocode, Seq.empty, Seq.empty, loggedInUser)
+            val eventualFrontendFeedItems = Future.sequence {
+              feedItems._1.map { r =>
+                Future.successful(r)
               }
             }
 
-            val eventualWithSuppressionAndLocalCopyInformation: Future[Seq[FrontendResource]] = eventualFrontendFeedNewitems.flatMap { feedItems =>
+            val eventualWithSuppressionAndLocalCopyInformation: Future[Seq[FrontendResource]] = eventualFrontendFeedItems.flatMap { feedItems =>
               feedNewsItemLocalCopyDecorator.withFeedItemSpecificActions(feedItems, loggedInUser).map{ feedItems =>
                 // Remove tags
                 feedItems.map { feedItem: FrontendResource =>

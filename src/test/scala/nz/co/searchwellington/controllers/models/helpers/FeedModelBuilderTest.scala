@@ -3,17 +3,16 @@ package nz.co.searchwellington.controllers.models.helpers
 import io.opentelemetry.api.trace.Span
 import nz.co.searchwellington.ReasonableWaits
 import nz.co.searchwellington.controllers.models.GeotaggedNewsitemExtractor
+import nz.co.searchwellington.feeds.FeedItemActionDecorator
 import nz.co.searchwellington.feeds.whakaoko.model.{FeedItem, Subscription}
 import nz.co.searchwellington.feeds.whakaoko.{WhakaokoFeedReader, WhakaokoService}
-import nz.co.searchwellington.feeds.{FeedItemActionDecorator, FeeditemToNewsitemService}
 import nz.co.searchwellington.model.frontend.{FrontendFeed, FrontendNewsitem}
 import nz.co.searchwellington.model.geo.Geocode
 import nz.co.searchwellington.model.mappers.FrontendResourceMapper
 import nz.co.searchwellington.model.{Feed, Newsitem}
 import nz.co.searchwellington.repositories.ContentRetrievalService
 import org.junit.jupiter.api.Assertions.{assertEquals, assertTrue}
-import org.junit.jupiter.api.Test
-import org.junit.jupiter.api.BeforeEach
+import org.junit.jupiter.api.{BeforeEach, Test}
 import org.mockito.ArgumentMatchers
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.{mock, when}
@@ -30,7 +29,6 @@ class FeedModelBuilderTest extends ReasonableWaits with ContentFields {
   private val geotaggedNewsitemExtractor = new GeotaggedNewsitemExtractor()
   private val feedItemActionDecorator = mock(classOf[FeedItemActionDecorator])
   private val frontendResourceMapper = mock(classOf[FrontendResourceMapper])
-  private val feeditemToNewsitemService = mock(classOf[FeeditemToNewsitemService])
   private val commonAttributesModelBuilder = mock(classOf[CommonAttributesModelBuilder])
   private val whakaokoService = mock(classOf[WhakaokoService])
 
@@ -61,20 +59,17 @@ class FeedModelBuilderTest extends ReasonableWaits with ContentFields {
   private implicit val currentSpan: Span = Span.current()
 
   val modelBuilder = new FeedModelBuilder(contentRetrievalService, geotaggedNewsitemExtractor,
-    feedItemActionDecorator, frontendResourceMapper, commonAttributesModelBuilder, feeditemToNewsitemService,
+    feedItemActionDecorator, frontendResourceMapper, commonAttributesModelBuilder,
     whakaokoFeedReader, whakaokoService)
 
   @BeforeEach
   def setUp(): Unit = {
     when(whakaokoFeedReader.fetchFeedItems(feed)).thenReturn(Future.successful(Right((feeditems, feeditems.size.toLong))))
 
-    when(feeditemToNewsitemService.makeNewsitemFromFeedItem(feedItem, feed)).thenReturn(Some(newsItem))
-    when(feeditemToNewsitemService.makeNewsitemFromFeedItem(anotherFeedItem, feed)).thenReturn(Some(anotherNewsitem))
-
     when(frontendResourceMapper.mapFrontendResource(newsItem, newsItem.geocode, Seq.empty, Seq.empty, loggedInUser)).thenReturn(Future.successful(frontendNewsitem))
     when(frontendResourceMapper.mapFrontendResource(anotherNewsitem, newsItem.geocode, Seq.empty, Seq.empty, loggedInUser)).thenReturn(Future.successful(anotherFrontendNewsitem))
 
-    when(feedItemActionDecorator.withFeedItemSpecificActions(Seq(frontendNewsitem, anotherFrontendNewsitem), None)).
+    when(feedItemActionDecorator.withFeedItemSpecificActions(feeditems, None)).
       thenReturn(Future.successful(Seq(frontendNewsitemWithActions, anotherFrontendNewsitemWithActions)))
 
     request.setAttribute("feedAttribute", feed)

@@ -56,7 +56,8 @@ class FeedItemAcceptorTest {
   def shouldOverrideTheFeedItemDateIfFeedAcceptancePolicyIsToIgnoreFeedItemsDates(): Unit = {
     // Some feeds contains items with dates that refer to an event date in the future rather than news item publication date.
     // These items can clog up the head of the main feed so we should set their dates to the acceptance time rather than the state date.
-    val feedItemWithFutureDate = FeedItem(id = "", title = Some("A headline"), url = "http://localhost/blah", subscriptionId = "a-subscription", date = Some(DateTime.now.plusMonths(1)))
+    val feedItemWithFutureDate = FeedItem(id = "", title = Some("A headline"), url = "http://localhost/blah", subscriptionId = "a-subscription",
+      date = Some(DateTime.now.plusMonths(1).toDate))
     val feedWithIgnoreDatesAcceptancePolicy = Feed(publisher = Some(BSONObjectID.generate), acceptance = FeedAcceptancePolicy.ACCEPT_IGNORING_DATE)
     when(urlCleaner.cleanSubmittedItemUrl(new URL("http://localhost/blah"))).thenReturn(new URL("http://localhost/blah"))
 

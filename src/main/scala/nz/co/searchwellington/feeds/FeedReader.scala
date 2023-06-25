@@ -96,7 +96,7 @@ import scala.concurrent.{ExecutionContext, Future}
   }
 
   private def latestPublicationDateOf(feedItems: Seq[FeedItem]): Option[Date] = {
-    val publicationDates = feedItems.flatMap(fi => fi.date.map(_.toDate))
+    val publicationDates = feedItems.flatMap(fi => fi.date)
     if (publicationDates.nonEmpty) {
       Some(publicationDates.max)
     } else {

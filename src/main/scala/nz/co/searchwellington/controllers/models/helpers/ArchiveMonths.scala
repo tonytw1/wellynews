@@ -28,11 +28,11 @@ trait ArchiveMonths {
   }
 
   def monthOfLastItem(resources: Seq[FrontendResource]): Option[Interval] = resources.lastOption.map { r =>
-    new YearMonth(new DateTime(r.date)).toInterval()
+    new YearMonth(new DateTime(r.date.get)).toInterval()
   }
 
   def dayOfLastItem(resources: Seq[FrontendResource]): Option[LocalDate] = resources.lastOption.map { r =>
-    LocalDate.ofInstant(r.date.toInstant, ZoneOffset.UTC) // TODO timezone
+    LocalDate.ofInstant(r.date.get.toInstant, ZoneOffset.UTC) // TODO timezone
   }
 
 }

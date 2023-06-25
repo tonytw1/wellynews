@@ -23,7 +23,7 @@ class AdminUrlBuilderTest {
   @Test
   def canBuildEditUrlForNewsitems(): Unit = {
     val frontendNewsitem = FrontendNewsitem(id = "123", name = "A news item", publisherName = None,
-      date = new DateTime(2011, 5, 20, 0, 0, 0, 0).toDate)
+      date = Some(new DateTime(2011, 5, 20, 0, 0, 0, 0).toDate))
     assertEquals("/edit-newsitem/123", adminUrlBuilder.getResourceEditUrl(frontendNewsitem))
   }
 

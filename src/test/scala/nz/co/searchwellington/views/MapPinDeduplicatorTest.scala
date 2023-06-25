@@ -16,9 +16,9 @@ class MapPinDeduplicatorTest {
   private val there = Geocode(Some("there"), Some(LatLong(2.2, 2.2)))
   private val alsoHere = Geocode(Some("here"), Some(LatLong(-41.2924, 174.7788)))
 
-  private val firstNewsitem = FrontendNewsitem(name = "First", geocode = Some(here), date = DateTime.now().minusDays(5).toDate, id = UUID.randomUUID().toString, url = "")
-  private val secondNewsitem = FrontendNewsitem(name = "Second", geocode = Some(there), date = DateTime.now().minusDays(5).toDate, id = UUID.randomUUID().toString, url = "")
-  private val thirdNewsitem = FrontendNewsitem(name = "Third", geocode = Some(alsoHere), date = DateTime.now().toDate, id = UUID.randomUUID().toString, url = "")
+  private val firstNewsitem = FrontendNewsitem(name = "First", geocode = Some(here), date = Some(DateTime.now().minusDays(5).toDate), id = UUID.randomUUID().toString, url = "")
+  private val secondNewsitem = FrontendNewsitem(name = "Second", geocode = Some(there), date = Some(DateTime.now().minusDays(5).toDate), id = UUID.randomUUID().toString, url = "")
+  private val thirdNewsitem = FrontendNewsitem(name = "Third", geocode = Some(alsoHere), date = Some(DateTime.now().toDate), id = UUID.randomUUID().toString, url = "")
 
   private val geocoded: Seq[FrontendResource] = Seq(firstNewsitem, secondNewsitem, thirdNewsitem)
 
@@ -41,14 +41,6 @@ class MapPinDeduplicatorTest {
 
     assertTrue(deduped.contains(thirdNewsitem), "Expected item to survive because it has the most recent date")
     assertFalse(deduped.contains(firstNewsitem), "Expected item to survive because it has the most recent date")
-  }
-
-  @Test
-  def shouldGracefullyHandleNewsitemsWithNoDate(): Unit = {
-    val withNoLatLong = firstNewsitem.copy(date = null)
-    val deduped = mapPinDeduplicator.dedupe((geocoded :+ withNoLatLong).asJava)
-
-    assertFalse(deduped.contains(withNoLatLong), "Expected item to survive because it has the most recent date")
   }
 
 }

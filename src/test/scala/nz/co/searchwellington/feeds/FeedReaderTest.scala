@@ -23,13 +23,12 @@ class FeedReaderTest extends ReasonableWaits {
   private val contentUpdateService = mock(classOf[ContentUpdateService])
   private val feedReaderUpdateService = mock(classOf[FeedReaderUpdateService])
   private val whakaokoFeedReader = mock(classOf[WhakaokoFeedReader])
-  private val feeditemToNewsItemService = mock(classOf[FeeditemToNewsitemService])
 
   private val suggestedFeed = Feed(acceptance = FeedAcceptancePolicy.SUGGEST)
   private val loggedInUser = User()
 
   private val firstFeedItem = FeedItem(id = UUID.randomUUID().toString, subscriptionId = UUID.randomUUID().toString,
-    url = "http://localhost/1", date = Some(DateTime.now))
+    url = "http://localhost/1", date = Some(DateTime.now.toDate))
   private val feedItems = Seq(firstFeedItem)
 
   private implicit val currentSpan = Span.current()
@@ -56,7 +55,7 @@ class FeedReaderTest extends ReasonableWaits {
     val updatedFeed: ArgumentCaptor[Feed] = ArgumentCaptor.forClass(classOf[Feed])
     verify(contentUpdateService).update(updatedFeed.capture)(any())
     assertTrue(updatedFeed.getValue.last_read.nonEmpty)
-    assertEquals(firstFeedItem.date.map(_.toDate), updatedFeed.getValue.latestItemDate)
+    assertEquals(firstFeedItem.date, updatedFeed.getValue.latestItemDate)
   }
 
 }

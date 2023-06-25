@@ -17,7 +17,7 @@ case class FrontendNewsitem(id: String,
                             name: String = null,
                             url: String = null,
                             httpStatus: Option[HttpStatus] = None,
-                            date: Date = null,
+                            date: Option[Date] = None,
                             description: String = null,
                             liveTime: Date = null,
                             tags: Option[Seq[Tag]] = Some(Seq.empty),
@@ -29,7 +29,7 @@ case class FrontendNewsitem(id: String,
                             publisherUrlWords: Option[String] = None,
                             acceptedFrom: Option[FrontendFeed] = None,
                             acceptedBy: Option[User] = None, // TODO Frontend user
-                            accepted: Date = null,
+                            accepted: Option[Date] = None,
                             image: FrontendImage = null,
                             lastScanned: Option[Date] = None,
                             lastChanged: Option[Date] = None,
@@ -46,7 +46,7 @@ case class FrontendNewsitem(id: String,
   def getAcceptedByProfilename: String = acceptedBy.flatMap(_.profilename).orNull
 
   @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ssXXX")
-  def getAccepted: Date = accepted
+  def getAccepted: Date = accepted.orNull
 
   override def getAuthor: String = getPublisherName
 

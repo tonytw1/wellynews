@@ -48,7 +48,7 @@ class AcceptedModelBuilderTest extends ReasonableWaits with CommonSizes {
     val request = new MockHttpServletRequest
     val secondOfSeptember = new LocalDate(2022, 9, 2)
     request.setParameter("date", secondOfSeptember.toString)
-    val acceptedOnThe2nd = Seq(FrontendNewsitem(id = UUID.randomUUID().toString, accepted = new DateTime(2022, 9, 2, 12, 23, 0).toDate))
+    val acceptedOnThe2nd = Seq(FrontendNewsitem(id = UUID.randomUUID().toString, accepted = Some(new DateTime(2022, 9, 2, 12, 23, 0).toDate)))
     when(contentRetrievalService.getAcceptedNewsitems(maxItems = MAX_NEWSITEMS, loggedInUser = None, acceptedDate = Some(secondOfSeptember))).thenReturn(Future.successful(acceptedOnThe2nd, acceptedOnThe2nd.size))
 
     val model = Await.result(builder.populateContentModel(request, loggedInUser = None), TenSeconds).get

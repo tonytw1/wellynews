@@ -23,7 +23,7 @@ class FeeditemToNewsitemService @Autowired()(placeToGeocodeMapper: PlaceToGeocod
         title = feedItem.title.map(processTitle).getOrElse(feedItem.url),
         page = url.toExternalForm,
         description = Some(composeDescription(feedItem)),
-        date = feedItem.date.map(_.toDate).getOrElse(DateTime.now.toDate),  // TODO incorrect for feed items with no date!
+        date = feedItem.date.getOrElse(DateTime.now.toDate),  // TODO incorrect for feed items with no date!
         feed = Some(feed._id),
         publisher = feed.publisher,
         geocode = feedItem.place.map(placeToGeocodeMapper.mapPlaceToGeocode)

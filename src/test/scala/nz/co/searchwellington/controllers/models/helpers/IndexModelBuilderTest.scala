@@ -2,10 +2,11 @@ package nz.co.searchwellington.controllers.models.helpers
 
 import io.opentelemetry.api.trace.Span
 import nz.co.searchwellington.ReasonableWaits
-import nz.co.searchwellington.model.frontend.FrontendResource
+import nz.co.searchwellington.model.frontend.FrontendNewsitem
 import nz.co.searchwellington.model.helpers.ArchiveLinksService
 import nz.co.searchwellington.repositories.ContentRetrievalService
 import nz.co.searchwellington.urls.{RssUrlBuilder, UrlBuilder}
+import org.joda.time.DateTime
 import org.junit.jupiter.api.Assertions.{assertEquals, assertTrue}
 import org.junit.jupiter.api.Test
 import org.mockito.Mockito.{mock, when}
@@ -29,8 +30,8 @@ class IndexModelBuilderTest extends ReasonableWaits with ContentFields {
     request
   }
 
-  private val newsitem = mock(classOf[FrontendResource])
-  private val anotherNewsitem = mock(classOf[FrontendResource])
+  private val newsitem = FrontendNewsitem(id = "123", name = "Newsitem title", date =Some(DateTime.now.toDate))
+  private val anotherNewsitem = FrontendNewsitem(id = "456", name = "Newsitem title", date =Some(DateTime.now.toDate))
   private val latestNewsitems = Seq(newsitem, anotherNewsitem)
 
   private val loggedInUser = None

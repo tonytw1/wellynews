@@ -20,7 +20,7 @@ trait FrontendResource extends RssFeedable with Serializable {
   val name: String
   val url: String
   val httpStatus: Option[HttpStatus]
-  val date: Date
+  val date: Option[Date]
   val description: String
   val liveTime: Date
   val tags: Option[Seq[Tag]]
@@ -49,7 +49,7 @@ trait FrontendResource extends RssFeedable with Serializable {
   }
 
   @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ssXXX")
-  final def getDate: Date = date
+  final def getDate: Date = date.orNull
 
   final def getDescription: String = description
 

@@ -23,7 +23,8 @@ class FeedItemAcceptanceDeciderTest extends ReasonableWaits {
 
   @Test
   def feeditemsWithNoProblemsShouldGenerateNoObjections(): Unit = {
-    val feedItem = FeedItem(id = UUID.randomUUID().toString, title = Some("A feeditem"), url = "http://localhost/foo", date = Some(DateTime.now), subscriptionId = "")
+    val feedItem = FeedItem(id = UUID.randomUUID().toString, title = Some("A feeditem"), url = "http://localhost/foo",
+      date = Some(DateTime.now.toDate), subscriptionId = "")
 
     when(suppressionDAO.isSupressed(feedItem.url)).thenReturn(Future.successful(false))
     when(mongoRepository.getResourceByUrl(feedItem.url)).thenReturn(Future.successful(None))
@@ -75,7 +76,7 @@ class FeedItemAcceptanceDeciderTest extends ReasonableWaits {
   @Test
   def shouldRejectFeeditemsWithDatesWayInTheFuture(): Unit = {
     val newsitemWithFuturePublicationDate = FeedItem(id = UUID.randomUUID().toString, title = Some("A feeditem"),
-      url = "http://localhost/foo", date = Some(DateTime.now.plusDays(10)), subscriptionId = "")
+      url = "http://localhost/foo", date = Some(DateTime.now.plusDays(10).toDate), subscriptionId = "")
 
     when(suppressionDAO.isSupressed(newsitemWithFuturePublicationDate.url)).thenReturn(Future.successful(false))
     when(mongoRepository.getResourceByUrl(newsitemWithFuturePublicationDate.url)).thenReturn(Future.successful(None))

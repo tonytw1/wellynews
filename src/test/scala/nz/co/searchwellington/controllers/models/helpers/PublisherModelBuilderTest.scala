@@ -70,7 +70,7 @@ class PublisherModelBuilderTest extends ReasonableWaits with ContentFields {
 
     val maxedOutPublisherNewsitems = Range(1, 20).map { i =>
       val d = new DateTime(2022, 1, 30, 0, 0, 0)
-      FrontendNewsitem(id = i.toString, date = d.minusDays(i).toDate)
+      FrontendNewsitem(id = i.toString, date = Some(d.minusDays(i).toDate))
     }
 
     when(frontendResourceMapper.createFrontendResourceFrom(publisher)).thenReturn(Future.successful(frontendPublisher))
