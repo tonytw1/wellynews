@@ -15,7 +15,7 @@
 		<h5 #if ($item.type == "N" || $item.type == "FNI") itemprop="headline" #end><a href="$itemUrl">$item.name</a></h5>
 
 		<ul>
-			#if ($item.date && ($item.type == "N" || $item.type == "FNI" || $item.type == "S") && $dateFormatter)
+			#if ($item.date)
 				<li class="date"><time datetime="$dateFormatter.isoDate($item.date)">$dateFormatter.dayMonthYear($item.date)</time></li>
 			#end
 
