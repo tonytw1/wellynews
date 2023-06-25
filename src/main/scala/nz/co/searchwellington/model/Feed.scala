@@ -1,6 +1,7 @@
 package nz.co.searchwellington.model
 
 import nz.co.searchwellington.model.geo.Geocode
+import org.joda.time.DateTime
 
 import java.util.{Date, UUID}
 import reactivemongo.api.bson.BSONObjectID
@@ -12,7 +13,7 @@ case class Feed(override val _id: BSONObjectID = BSONObjectID.generate,
                 override var description: Option[String] = None,
                 override val page: String = "",
                 override var httpStatus: Option[HttpStatus] = None,
-                override var date: Option[Date] = None,
+                override var date: Date = DateTime.now.toDate,
                 override var last_scanned: Option[Date] = None,
                 override var last_changed: Option[Date] = None,
                 override var live_time: Option[Date] = None,

@@ -191,11 +191,11 @@ class ElasticSearchIndexerTest extends IndexableResource with ReasonableWaits {
 
   @Test
   def canGetNewsitemMonthlyCounts(): Unit = {
-    val newsitem = Newsitem(date = Some(new DateTime(2019, 1, 1, 0, 0, 0).toDate))
+    val newsitem = Newsitem(date = new DateTime(2019, 1, 1, 0, 0, 0).toDate)
     Await.result(mongoRepository.saveResource(newsitem), TenSeconds)
-    val anotherNewsitem = Newsitem(date = Some(new DateTime(2018, 3, 7, 0, 0, 0).toDate))
+    val anotherNewsitem = Newsitem(date = new DateTime(2018, 3, 7, 0, 0, 0).toDate)
     Await.result(mongoRepository.saveResource(anotherNewsitem), TenSeconds)
-    val yetAnotherNewsitem = Newsitem(date = Some(new DateTime(2017, 7, 8, 0, 0, 0).toDate))
+    val yetAnotherNewsitem = Newsitem(date = new DateTime(2017, 7, 8, 0, 0, 0).toDate)
     Await.result(mongoRepository.saveResource(yetAnotherNewsitem), TenSeconds)
 
     indexResources(Seq(newsitem, anotherNewsitem, yetAnotherNewsitem))
@@ -212,10 +212,10 @@ class ElasticSearchIndexerTest extends IndexableResource with ReasonableWaits {
   @Test
   def canGetNewsitemsAcceptedByDaysCounts(): Unit = {
     val acceptedNewsitem = Newsitem(
-      date = Some(new DateTime(2022, 6, 1, 0, 0, 0).toDate),
+      date = new DateTime(2022, 6, 1, 0, 0, 0).toDate,
       accepted = Some(new DateTime(2022, 6, 2, 11, 23, 5).toDate))
     Await.result(mongoRepository.saveResource(acceptedNewsitem), TenSeconds)
-    val anotherAcceptedNewsitem = Newsitem(date = Some(new DateTime(2022, 6, 2, 0, 0, 0).toDate),
+    val anotherAcceptedNewsitem = Newsitem(date = new DateTime(2022, 6, 2, 0, 0, 0).toDate,
       accepted = Some(new DateTime(2022, 6, 2, 17, 23, 5).toDate)
     )
     Await.result(mongoRepository.saveResource(anotherAcceptedNewsitem), TenSeconds)
@@ -230,9 +230,9 @@ class ElasticSearchIndexerTest extends IndexableResource with ReasonableWaits {
 
   @Test
   def canFilterNewsitemsByDateRange(): Unit = {
-    val newsitem = Newsitem(date = Some(new DateTime(2016, 2, 10, 0, 0, 0).toDate))
+    val newsitem = Newsitem(date = new DateTime(2016, 2, 10, 0, 0, 0).toDate)
     Await.result(mongoRepository.saveResource(newsitem), TenSeconds)
-    val anotherNewsitem = Newsitem(date = Some(new DateTime(2016, 3, 1, 0, 0, 0).toDate))
+    val anotherNewsitem = Newsitem(date = new DateTime(2016, 3, 1, 0, 0, 0).toDate)
     Await.result(mongoRepository.saveResource(anotherNewsitem), TenSeconds)
 
     indexResources(Seq(newsitem, anotherNewsitem))
@@ -243,14 +243,14 @@ class ElasticSearchIndexerTest extends IndexableResource with ReasonableWaits {
     def monthNewsitems = queryForResources(ResourceQuery(`type` = Some(Set("N")), interval = Some(month)))
 
     eventually(timeout(TenSeconds), interval(TenMilliSeconds))(monthNewsitems.contains(newsitem) mustBe true)
-    assertTrue(monthNewsitems.forall(n => month.contains(n.date.get.getTime)))
+    assertTrue(monthNewsitems.forall(n => month.contains(n.date.getTime)))
   }
 
   @Test
   def canPersistTheGeotagVoteSoThatItDoesNotNeedToBeRecalcuatedOnRender(): Unit = {
     val geotagged = Newsitem(
       title = "Geotagged " + UUID.randomUUID().toString,
-      date = Some(new DateTime(2019, 3, 10, 0, 0, 0).toDate),
+      date = new DateTime(2019, 3, 10, 0, 0, 0).toDate,
       geocode = Some(wellingtonCentralLibrary)
     )
     Await.result(mongoRepository.saveResource(geotagged), TenSeconds)
@@ -276,7 +276,7 @@ class ElasticSearchIndexerTest extends IndexableResource with ReasonableWaits {
 
     val geotaggedNewsitem = Newsitem(
       title = "Geotagged " + UUID.randomUUID().toString,
-      date = Some(new DateTime(2019, 3, 10, 0, 0, 0).toDate),
+      date = new DateTime(2019, 3, 10, 0, 0, 0).toDate,
       geocode = Some(wellingtonCentralLibrary),
       resource_tags = Seq(Tagging(tag_id = tag._id, user_id = taggingUser._id))
     )
@@ -284,7 +284,7 @@ class ElasticSearchIndexerTest extends IndexableResource with ReasonableWaits {
 
     val nonGeotaggedNewsitem = Newsitem(
       title = "Non geotagged " + UUID.randomUUID().toString,
-      date = Some(new DateTime(2019, 3, 10, 0, 0, 0).toDate),
+      date = new DateTime(2019, 3, 10, 0, 0, 0).toDate,
       resource_tags = Seq(Tagging(tag_id = tag._id, user_id = taggingUser._id))
     )
     Await.result(mongoRepository.saveResource(nonGeotaggedNewsitem), TenSeconds)

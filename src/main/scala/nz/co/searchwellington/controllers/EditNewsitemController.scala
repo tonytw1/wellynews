@@ -94,7 +94,7 @@ class EditNewsitemController @Autowired()(contentUpdateService: ContentUpdateSer
             page = formObject.getUrl,
             publisher = publisher.map(_._id),
             description = Some(formObject.getDescription),
-            date = Some(date),
+            date = date,
             geocode = geocode,
             held = submissionShouldBeHeld(loggedInUser)
           ))
@@ -145,9 +145,7 @@ class EditNewsitemController @Autowired()(contentUpdateService: ContentUpdateSer
       formObject.setOsm(osmId.getOrElse(""))
     }
 
-    n.date.foreach { d =>
-      formObject.setDate(formDateFormat.print(d.getTime))
-    }
+    formObject.setDate(formDateFormat.print(n.date.getTime))
 
     val usersTags = n.resource_tags.filter(_.user_id == loggedInUser._id)
     formObject.setTags(usersTags.map(_.tag_id.stringify).asJava)

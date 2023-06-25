@@ -60,7 +60,7 @@ class NewWatchlistController @Autowired()(contentUpdateService: ContentUpdateSer
 
       val w = Watchlist(title = processTitle(newWatchlist.getTitle),
         page = url,
-        date = Some(DateTime.now.toDate),
+        date = DateTime.now.toDate,
         publisher = maybePublisher.map(_._id)
       )
       val urlWords = urlWordsGenerator.makeUrlWordsFor(w)

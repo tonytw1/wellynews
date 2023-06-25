@@ -14,7 +14,7 @@ trait Resource extends Tagged {
   var description: Option[String]
   val page: String
   var httpStatus: Option[HttpStatus]
-  var date: Option[Date]  // TODO backfill ~ 100 records with no date and make mandatory
+  var date: Date
   var last_scanned: Option[Date]
   var last_changed: Option[Date]
   var live_time: Option[Date]

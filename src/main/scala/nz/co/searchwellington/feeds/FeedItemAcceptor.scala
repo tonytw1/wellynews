@@ -18,10 +18,10 @@ import org.springframework.stereotype.Component
       val now = DateTime.now.toDate
       val dateToApply = feed.acceptance match {
         case FeedAcceptancePolicy.ACCEPT_IGNORING_DATE => now
-        case _ => newsitem.date.getOrElse(feedItem.accepted.map(_.toDate).getOrElse(now))
+        case _ => newsitem.date
       }
       newsitem.copy(
-        date = Some(dateToApply),
+        date = dateToApply,
         accepted = Some(now),
         acceptedBy = Some(acceptingUser._id),
         owner = Some(acceptingUser._id)

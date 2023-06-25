@@ -58,7 +58,7 @@ class EditNewsitemControllerTest {
     verify(contentUpdateService).update(updatedNewsitem.capture)(ArgumentMatchers.eq(ec))
 
     assertEquals("New title", updatedNewsitem.getValue.title)
-    assertEquals(Some(new DateTime(2020, 6, 17, 0, 0, 0).toDate), updatedNewsitem.getValue.date)
+    assertEquals(new DateTime(2020, 6, 17, 0, 0, 0).toDate, updatedNewsitem.getValue.date)
     assertEquals(Some(anotherPublisher._id), updatedNewsitem.getValue.getPublisher)
   }
 

@@ -23,7 +23,7 @@ class UrlWordsGeneratorTest {
   @Test
   def shouldProduceCorrectUrlBasedOnPublisherDateAndHeadline(): Unit = {
     val publisher = Website(title = "Island Bay school")
-    val newsitemWithPublisher = Newsitem(title = "Something happened at the school", date = Some(april2010), publisher = Some(publisher._id))
+    val newsitemWithPublisher = Newsitem(title = "Something happened at the school", date = april2010, publisher = Some(publisher._id))
 
     val urlWords = urlWordsGenerator.makeUrlWordsFor(newsitemWithPublisher, Some(publisher))
 
@@ -32,7 +32,7 @@ class UrlWordsGeneratorTest {
 
   @Test
   def urlWordshouldBeDateAndHeadlineIfPublisherIsNotSet(): Unit = {
-    val newsitemWithNoPublisher = Newsitem(title = "Something-happening", date = Some(april2010))
+    val newsitemWithNoPublisher = Newsitem(title = "Something-happening", date = april2010)
 
     val urlWords = urlWordsGenerator.makeUrlWordsFor(newsitemWithNoPublisher)
 

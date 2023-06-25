@@ -21,9 +21,7 @@ import uk.co.eelpieconsulting.common.dates.DateFormatter
     val publisherComponent = publisher.map { p =>
       makeUrlWordsFromName(p.title)
     }
-    val dateComponent = newsitem.date.map { d =>
-      dateFormatter.yearMonthDayUrlStub(d)
-    }
+    val dateComponent = Some(dateFormatter.yearMonthDayUrlStub(newsitem.date))
     val titleComponent = Some(makeUrlWordsFromName(newsitem.title))
 
     Seq(publisherComponent, dateComponent, titleComponent).flatten.mkString("/")

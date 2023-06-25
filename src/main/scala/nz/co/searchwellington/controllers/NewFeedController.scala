@@ -88,7 +88,7 @@ class NewFeedController @Autowired()(contentUpdateService: ContentUpdateService,
           page = url,
           publisher = maybePublisher.map(_._id),
           acceptance = newFeed.getAcceptancePolicy,
-          date = Some(DateTime.now.toDate),
+          date = DateTime.now.toDate,
         )
 
         val urlWords = urlWordsGenerator.makeUrlWordsFor(f, maybePublisher)

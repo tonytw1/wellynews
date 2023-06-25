@@ -4,6 +4,7 @@ import nz.co.searchwellington.controllers.submission.EndUserInputs
 import nz.co.searchwellington.feeds.whakaoko.model.FeedItem
 import nz.co.searchwellington.model.{Feed, Newsitem}
 import nz.co.searchwellington.urls.UrlCleaner
+import org.joda.time.DateTime
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
 
@@ -22,7 +23,7 @@ class FeeditemToNewsitemService @Autowired()(placeToGeocodeMapper: PlaceToGeocod
         title = feedItem.title.map(processTitle).getOrElse(feedItem.url),
         page = url.toExternalForm,
         description = Some(composeDescription(feedItem)),
-        date = feedItem.date.map(_.toDate),
+        date = feedItem.date.map(_.toDate).getOrElse(DateTime.now.toDate),  // TODO incorrect for feed items with no date!
         feed = Some(feed._id),
         publisher = feed.publisher,
         geocode = feedItem.place.map(placeToGeocodeMapper.mapPlaceToGeocode)

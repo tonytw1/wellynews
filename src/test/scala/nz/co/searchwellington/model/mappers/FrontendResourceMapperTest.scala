@@ -36,7 +36,7 @@ class FrontendResourceMapperTest extends ReasonableWaits {
   def shouldMapNewsitemsToFrontendNewsitems(): Unit = {
     val owner = User(BSONObjectID.generate(), name = Some(UUID.randomUUID().toString), profilename = Some(UUID.randomUUID().toString))
     val newsitem = Newsitem(id = "123", httpStatus = Some(ok), title = "Something happened today",
-      date = Some(new DateTime(2020, 10, 7, 12, 0, 0, 0).toDate),
+      date = new DateTime(2020, 10, 7, 12, 0, 0, 0).toDate,
       owner = Some(owner._id))
 
     when(taggingReturnsOfficerService.getTaggingsVotesForResource(newsitem)).thenReturn(Future.successful(Seq.empty))
@@ -55,7 +55,7 @@ class FrontendResourceMapperTest extends ReasonableWaits {
   def shouldMapNewsitemAndSuppliedComponentsToFrontendNewsitem(): Unit = {
     val owner = User(BSONObjectID.generate(), name = Some(UUID.randomUUID().toString), profilename = Some(UUID.randomUUID().toString))
     val newsitem = Newsitem(id = "123", httpStatus = Some(ok), title = "Something happened today",
-      date = Some(new DateTime(2020, 10, 7, 12, 0, 0, 0).toDate),
+      date = new DateTime(2020, 10, 7, 12, 0, 0, 0).toDate,
       owner = Some(owner._id))
 
     when(taggingReturnsOfficerService.getTaggingsVotesForResource(newsitem)).thenReturn(Future.successful(Seq.empty))

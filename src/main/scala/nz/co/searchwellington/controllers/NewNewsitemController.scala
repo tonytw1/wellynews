@@ -81,7 +81,7 @@ class NewNewsitemController @Autowired()(contentUpdateService: ContentUpdateServ
           val newsitem = Newsitem(
             title = processTitle(formObject.getTitle),
             page = url,
-            date = Some(parsedDate.toDate),
+            date = parsedDate.toDate,
             publisher = maybePublisher.map(_._id),
             description = Some(formObject.getDescription.trim),
             geocode = geocode

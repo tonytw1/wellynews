@@ -66,7 +66,7 @@ class NewWebsiteController @Autowired()(contentUpdateService: ContentUpdateServi
           val withTags = handTaggingService.setUsersTagging(submittingUser, submittedTags.map(_._id),
             Website(title = title,
               page = url,
-              date = Some(DateTime.now.toDate),
+              date = DateTime.now.toDate,
               url_words = Some(urlWords),
               owner = Some(submittingUser._id),
               held = submissionShouldBeHeld(Some(submittingUser)))
