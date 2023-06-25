@@ -1,6 +1,7 @@
 package nz.co.searchwellington.model.mappers
 
 import nz.co.searchwellington.ReasonableWaits
+import nz.co.searchwellington.feeds.whakaoko.model.FeedItem
 import nz.co.searchwellington.model._
 import nz.co.searchwellington.model.frontend._
 import nz.co.searchwellington.model.geo.Geocode
@@ -232,6 +233,9 @@ import scala.concurrent.{ExecutionContext, Future}
             handTags = Some(handTags)
           )
         }
+
+      case fi: FeedItem =>
+        Future.successful(fi)
 
       case _ =>
         throw new RuntimeException("Unknown type")
