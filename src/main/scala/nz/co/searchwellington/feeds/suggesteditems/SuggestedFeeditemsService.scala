@@ -2,12 +2,11 @@ package nz.co.searchwellington.feeds.suggesteditems
 
 import io.opentelemetry.api.trace.Span
 import nz.co.searchwellington.ReasonableWaits
+import nz.co.searchwellington.feeds.FeedItemActionDecorator
 import nz.co.searchwellington.feeds.whakaoko.WhakaokoService
 import nz.co.searchwellington.feeds.whakaoko.model.FeedItem
-import nz.co.searchwellington.feeds.{FeedItemActionDecorator, FeeditemToNewsitemService}
-import nz.co.searchwellington.model.frontend.FrontendResource
-import nz.co.searchwellington.model.mappers.FrontendResourceMapper
-import nz.co.searchwellington.model.{Feed, FeedAcceptancePolicy, Newsitem, User}
+import nz.co.searchwellington.model.frontend.{FrontendFeedItem, FrontendResource}
+import nz.co.searchwellington.model.{Feed, FeedAcceptancePolicy, User}
 import nz.co.searchwellington.repositories.SuppressionDAO
 import nz.co.searchwellington.repositories.mongo.MongoRepository
 import org.apache.commons.logging.LogFactory
@@ -17,8 +16,6 @@ import org.springframework.stereotype.Component
 import scala.concurrent.{ExecutionContext, Future}
 
 @Component class SuggestedFeeditemsService @Autowired()(feedItemActionDecorator: FeedItemActionDecorator,
-                                                        feeditemToNewsitemService: FeeditemToNewsitemService,
-                                                        frontendResourceMapper: FrontendResourceMapper,
                                                         mongoRepository: MongoRepository,
                                                         whakaokoService: WhakaokoService,
                                                         suppressionDAO: SuppressionDAO) extends
@@ -36,16 +33,16 @@ import scala.concurrent.{ExecutionContext, Future}
    */
   def getSuggestionFeednewsitems(maxItems: Int, loggedInUser: Option[User])(implicit ec: ExecutionContext, currentSpan: Span): Future[Seq[FrontendResource]] = {
 
-    def paginateChannelFeedItems(page: Int = 1, output: Seq[Newsitem] = Seq.empty, feeds: Seq[Feed]): Future[Seq[Newsitem]] = {
+    def paginateChannelFeedItems(page: Int = 1, output: Seq[(FeedItem, Feed)] = Seq.empty, feeds: Seq[Feed]): Future[Seq[(FeedItem, Feed)]] = {
       log.info("Fetching filter page: " + page + "/" + output.size)
       getChannelFeedItemsDecoratedWithFeeds(page, feeds).flatMap { channelFeedItems =>
         log.info("Found " + channelFeedItems.size + " channel newsitems on page " + page)
 
-        val suggestedChannelNewsitems = channelFeedItems.flatMap(i => feeditemToNewsitemService.makeNewsitemFromFeedItem(i._1, i._2))
+        val suggestedChannelNewsitems: Seq[(FeedItem, Feed)] = channelFeedItems
 
-        val eventuallyFiltered = suggestedChannelNewsitems.map { newsitem =>
-          val eventuallyLocalCopy = mongoRepository.getResourceByUrl(newsitem.page)
-          val eventuallyIsSuppressed = suppressionDAO.isSupressed(newsitem.page)
+        val eventuallyFiltered = suggestedChannelNewsitems.map { tuple =>
+          val eventuallyLocalCopy = mongoRepository.getResourceByUrl(tuple._1.url)
+          val eventuallyIsSuppressed = suppressionDAO.isSupressed(tuple._1.url)
           for {
             localCopy <- eventuallyLocalCopy
             isSuppressed <- eventuallyIsSuppressed
@@ -53,7 +50,7 @@ import scala.concurrent.{ExecutionContext, Future}
             if (localCopy.nonEmpty || isSuppressed) {
               None
             } else {
-              Some(newsitem)
+              Some(tuple)
             }
           }
         }
@@ -74,9 +71,39 @@ import scala.concurrent.{ExecutionContext, Future}
     for {
       feeds <- mongoRepository.getAllFeeds()
       suggestedFeeds = feeds.filter(feed => feed.acceptance == FeedAcceptancePolicy.SUGGEST)
-      suggestedFeedItems <- paginateChannelFeedItems(feeds = suggestedFeeds)
-      frontendResources <- Future.sequence(suggestedFeedItems.map(r => frontendResourceMapper.mapFrontendResource(r, r.geocode, Seq.empty, Seq.empty, loggedInUser)))
-      withActions <- feedItemActionDecorator.withFeedItemSpecificActions(frontendResources, loggedInUser)
+      suggestedFeedItems: Seq[(FeedItem, Feed)] <- paginateChannelFeedItems(feeds = suggestedFeeds)
+      frontendFeedItems: Seq[(FrontendFeedItem, Feed)] = {
+        suggestedFeedItems.map { tuple =>
+          val (feedItem, feed) = tuple
+          val fi = feedItem
+          val frontendFeedItem = FrontendFeedItem(
+            id = fi.id,
+            name = fi.title.getOrElse(fi.url),
+            url = fi.url,
+            date = fi.date,
+            description = fi.body.orNull,
+            urlWords = null,
+            httpStatus = None,
+            lastScanned = None,
+            lastChanged = None,
+            liveTime = null,
+            handTags = None,
+            tags = None,
+            owner = null,
+            geocode = None,
+            held = false,
+            actions = Seq.empty
+          )
+          (frontendFeedItem, feed)
+        }
+      }
+      withActions: Seq[FrontendResource] <- Future.sequence {
+        frontendFeedItems.map { tuple =>
+          val (feedItem, feed) = tuple
+          feedItemActionDecorator.withFeedItemSpecificActions(feed, feedItem, loggedInUser)
+        }
+      }
+
     } yield {
       withActions
     }

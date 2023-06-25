@@ -4,9 +4,9 @@ import io.opentelemetry.api.trace.Span
 import nz.co.searchwellington.ReasonableWaits
 import nz.co.searchwellington.controllers.models.GeotaggedNewsitemExtractor
 import nz.co.searchwellington.feeds.FeedItemActionDecorator
-import nz.co.searchwellington.feeds.whakaoko.model.{FeedItem, Subscription}
+import nz.co.searchwellington.feeds.whakaoko.model.{FeedItem, LatLong, Place, Subscription}
 import nz.co.searchwellington.feeds.whakaoko.{WhakaokoFeedReader, WhakaokoService}
-import nz.co.searchwellington.model.frontend.{FrontendFeed, FrontendNewsitem}
+import nz.co.searchwellington.model.frontend.{FrontendFeed, FrontendFeedItem}
 import nz.co.searchwellington.model.geo.Geocode
 import nz.co.searchwellington.model.mappers.FrontendResourceMapper
 import nz.co.searchwellington.model.{Feed, Newsitem}
@@ -35,20 +35,21 @@ class FeedModelBuilderTest extends ReasonableWaits with ContentFields {
   private val whakaokoSubscription = Subscription(id = "a-whakaoko-subscription-id", name = None, channelId = "", url = "http://somewhere/rss", lastRead = None, latestItemDate = None)
   private val feed = Feed(id = UUID.randomUUID().toString, page = "http://localhost/a-feed", whakaokoSubscription = Some("a-whakaoko-subscription-id"))
 
-  private val feedItem = mock(classOf[FeedItem])
-  private val anotherFeedItem = mock(classOf[FeedItem])
+  private val somePlace = Some(Place(latLong = Some(nz.co.searchwellington.feeds.whakaoko.model.LatLong(52.0, 0.0))))
+
+  private val feedItem = FeedItem(id = UUID.randomUUID().toString, subscriptionId = "a-whakaoko-subscription-id", url = "http://localhost/a-feeditem", title = Some("A feed item"), place = somePlace)
+  private val anotherFeedItem = FeedItem(id = UUID.randomUUID().toString, subscriptionId = "a-whakaoko-subscription-id", url = "http://localhost/another-feeditem", title = Some("A feed item"))
   private val feeditems = Seq(feedItem, anotherFeedItem)
 
-  private val somePlace = Some(Geocode())
 
   private val newsItem = Newsitem()
   private val anotherNewsitem = Newsitem()
 
-  private val frontendNewsitem = FrontendNewsitem(id = UUID.randomUUID().toString)
-  private val anotherFrontendNewsitem = FrontendNewsitem(id = UUID.randomUUID().toString, geocode = somePlace)
+  private val frontendNewsitem = toFrontendFeedItem(feedItem)
+  private val anotherFrontendNewsitem = toFrontendFeedItem(anotherFeedItem)
 
-  private val frontendNewsitemWithActions = FrontendNewsitem(id = UUID.randomUUID().toString, tags = None, handTags = None) // TODO better example with actions
-  private val anotherFrontendNewsitemWithActions = FrontendNewsitem(id = UUID.randomUUID().toString, geocode = somePlace, tags = None, handTags = None)
+  private val feedItemWithActions =  toFrontendFeedItem(feedItem)
+  private val anotherFeedItemWithActions =  toFrontendFeedItem(anotherFeedItem)
 
   private val frontendFeed = mock(classOf[FrontendFeed])
 
@@ -69,8 +70,8 @@ class FeedModelBuilderTest extends ReasonableWaits with ContentFields {
     when(frontendResourceMapper.mapFrontendResource(newsItem, newsItem.geocode, Seq.empty, Seq.empty, loggedInUser)).thenReturn(Future.successful(frontendNewsitem))
     when(frontendResourceMapper.mapFrontendResource(anotherNewsitem, newsItem.geocode, Seq.empty, Seq.empty, loggedInUser)).thenReturn(Future.successful(anotherFrontendNewsitem))
 
-    when(feedItemActionDecorator.withFeedItemSpecificActions(feeditems, None)).
-      thenReturn(Future.successful(Seq(frontendNewsitemWithActions, anotherFrontendNewsitemWithActions)))
+    when(feedItemActionDecorator.withFeedItemSpecificActions(feed, feedItemWithActions, None)).thenReturn(Future.successful(feedItemWithActions))
+    when(feedItemActionDecorator.withFeedItemSpecificActions(feed, anotherFrontendNewsitem, None)).thenReturn(Future.successful(anotherFeedItemWithActions))
 
     request.setAttribute("feedAttribute", feed)
     request.setRequestURI("/feed/someonesfeed")
@@ -99,7 +100,7 @@ class FeedModelBuilderTest extends ReasonableWaits with ContentFields {
 
     val mv = Await.result(modelBuilder.populateContentModel(request), TenSeconds).get
 
-    assertEquals(Seq(frontendNewsitemWithActions, anotherFrontendNewsitemWithActions).asJava, mv.get(MAIN_CONTENT))
+    assertEquals(Seq(feedItemWithActions, anotherFeedItemWithActions).asJava, mv.get(MAIN_CONTENT))
   }
 
   @Test
@@ -112,8 +113,34 @@ class FeedModelBuilderTest extends ReasonableWaits with ContentFields {
 
     modelBuilder.populateExtraModelContent(request, None)
 
-    assertEquals(Seq(anotherFrontendNewsitemWithActions).asJava, mv.get("geocoded"))
+    assertEquals(Seq(feedItemWithActions).asJava, mv.get("geocoded"))
     assertEquals(whakaokoSubscription, mv.get("subscription"), "Expected whakaoko subscription to be shown")
   }
 
+  private def toFrontendFeedItem(fi: FeedItem) = {  // TODO
+    println(fi)
+    println(fi.place)
+    FrontendFeedItem(
+      id = fi.id,
+      name = fi.title.getOrElse(fi.url),
+      url = fi.url,
+      date = fi.date,
+      description = fi.body.orNull,
+      urlWords = null,
+      httpStatus = None,
+      lastScanned = None,
+      lastChanged = None,
+      liveTime = null,
+      handTags = None,
+      tags = None,
+      owner = null,
+      geocode = fi.place.map { p: Place =>
+        Geocode(latLong = p.latLong.map { ll: LatLong =>
+          nz.co.searchwellington.model.geo.LatLong(latitude = ll.latitude, longitude = ll.longitude)
+        })
+      },
+      held = false,
+      actions = Seq.empty
+    )
+  }
 }

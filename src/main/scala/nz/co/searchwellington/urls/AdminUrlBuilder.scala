@@ -1,6 +1,6 @@
 package nz.co.searchwellington.urls
 
-import nz.co.searchwellington.feeds.whakaoko.model.Subscription
+import nz.co.searchwellington.feeds.whakaoko.model.{FeedItem, Subscription}
 import nz.co.searchwellington.model._
 import nz.co.searchwellington.model.frontend._
 import org.springframework.beans.factory.annotation.{Autowired, Value}
@@ -52,8 +52,8 @@ class AdminUrlBuilder @Autowired()(urlBuilder: UrlBuilder, @Value("${whakaoko.ur
     "/" + resource.getUrlWords + "/viewsnapshot"
   }
 
-  def getFeednewsItemAcceptUrl(feed: FrontendFeed, newsitem: FrontendNewsitem): String = {
-    "/accept-feed-item?feed=" + feed.urlWords + "&url=" + UrlParameterEncoder.encode(newsitem.getUrl)
+  def getFeednewsItemAcceptUrl(feed: Feed, feedItem: FrontendFeedItem): String = {
+    "/accept-feed-item?feed=" + feed.url_words + "&url=" + UrlParameterEncoder.encode(feedItem.getUrl)
   }
 
   def getAcceptAllFromFeed(feed: FrontendFeed): String = {
@@ -64,8 +64,8 @@ class AdminUrlBuilder @Autowired()(urlBuilder: UrlBuilder, @Value("${whakaoko.ur
     "/suppress/suppress?url=" + UrlParameterEncoder.encode(newsitem.getUrl)
   }
 
-  def getFeedNewsitemUnsuppressUrl(newsitem: FrontendNewsitem): String = {
-    "/suppress/unsuppress?url=" + UrlParameterEncoder.encode(newsitem.getUrl)
+  def getFeedNewsitemUnsuppressUrl(feedItem: FrontendFeedItem): String = {
+    "/suppress/unsuppress?url=" + UrlParameterEncoder.encode(feedItem.getUrl)
   }
 
   def getPublisherAutoGatherUrl(publisher: FrontendWebsite): String = {
