@@ -45,7 +45,7 @@ import scala.concurrent.{ExecutionContext, ExecutionContextExecutor, Future}
         implicit val currentSpan: Span = Span.current()
 
         try {
-          log.info(s"Read feed handling delivery with consumer tag: $consumerTag")
+          log.debug(s"Read feed handling delivery with consumer tag: $consumerTag")
           pulledCounter.increment()
           val body = message.getBody
           val asJson = new String(body)

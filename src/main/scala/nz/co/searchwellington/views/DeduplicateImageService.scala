@@ -10,6 +10,7 @@ import org.springframework.stereotype.Component
 import reactivemongo.api.bson.BSONObjectID
 
 import scala.concurrent.ExecutionContext.Implicits.global
+import scala.concurrent.Future
 
 @Component
 class DeduplicateImageService @Autowired()(elasticSearchIndexer: ElasticSearchIndexer) extends ReasonableWaits {
@@ -51,7 +52,7 @@ class DeduplicateImageService @Autowired()(elasticSearchIndexer: ElasticSearchIn
   }
 
   @Scheduled(fixedRate = 600000, initialDelay = 10000)
-  def reindexImages() = {
+  def reindexImages(): Future[Unit] = {
     // Update a map of image url usages grouped by publisher
     elasticSearchIndexer.buildImageUsagesMap(loggedInUser = None).map { usages =>
       this.usages = usages
