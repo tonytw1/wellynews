@@ -3,9 +3,10 @@ package nz.co.searchwellington.controllers.admin
 import io.opentelemetry.api.trace.Span
 import nz.co.searchwellington.ReasonableWaits
 import nz.co.searchwellington.controllers.{LoggedInUserFilter, RequiringLoggedInUser}
-import nz.co.searchwellington.feeds.FeedReader
+import nz.co.searchwellington.feeds.reading.ReadFeedRequest
 import nz.co.searchwellington.model.{FeedAcceptancePolicy, User}
 import nz.co.searchwellington.permissions.EditPermissionService
+import nz.co.searchwellington.queues.ReadFeedQueue
 import nz.co.searchwellington.repositories.mongo.MongoRepository
 import nz.co.searchwellington.urls.UrlBuilder
 import nz.co.searchwellington.views.Errors
@@ -20,7 +21,7 @@ import scala.concurrent.Await
 import scala.concurrent.ExecutionContext.Implicits.global
 
 @Order(6)
-@Controller class AdminFeedController @Autowired()(feedReader: FeedReader,
+@Controller class AdminFeedController @Autowired()(readFeedQueue: ReadFeedQueue,
                                                    urlBuilder: UrlBuilder,
                                                    editPermissionService: EditPermissionService,
                                                    mongoRepository: MongoRepository,
@@ -35,7 +36,7 @@ import scala.concurrent.ExecutionContext.Implicits.global
       val eventualResult = mongoRepository.getFeedByUrlwords(urlWords).map { maybeFeed =>
         maybeFeed.map { feed =>
           if (editPermissionService.canAcceptAllFrom(feed, Some(loggedInUser))) {
-            feedReader.processFeed(feed, loggedInUser, Some(FeedAcceptancePolicy.ACCEPT_EVEN_WITHOUT_DATES))
+            readFeedQueue.add(ReadFeedRequest(feed._id.stringify, loggedInUser._id.stringify, Some(FeedAcceptancePolicy.ACCEPT_EVEN_WITHOUT_DATES.toString), feed.last_read))
             new ModelAndView(new RedirectView(urlBuilder.getFeedUrl(feed)))
           } else {
             NotAllowed

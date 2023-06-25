@@ -4,7 +4,7 @@ import com.rabbitmq.client.{CancelCallback, DeliverCallback, Delivery}
 import io.micrometer.core.instrument.MeterRegistry
 import io.opentelemetry.api.trace.Span
 import nz.co.searchwellington.feeds.FeedReader
-import nz.co.searchwellington.model.{Feed, User}
+import nz.co.searchwellington.model.{Feed, FeedAcceptancePolicy, User}
 import nz.co.searchwellington.queues.{RabbitConnectionFactory, ReadFeedQueue}
 import nz.co.searchwellington.repositories.mongo.MongoRepository
 import org.apache.commons.logging.LogFactory
@@ -25,7 +25,6 @@ import scala.concurrent.{ExecutionContext, ExecutionContextExecutor, Future}
   private val log = LogFactory.getLog(classOf[ReadFeedConsumer])
 
   private val pulledCounter = registry.counter("readfeed_pulled")
-  private val FEED_READER_PROFILE_NAME = "feedreader"
 
   private val maximumConcurrentChecks = 3
 
@@ -52,7 +51,9 @@ import scala.concurrent.{ExecutionContext, ExecutionContextExecutor, Future}
           val asJson = new String(body)
           val request = Json.parse(asJson).as[ReadFeedRequest]
 
-          val eventualMaybeFeedReaderUser: Future[Option[User]] = mongoRepository.getUserByProfilename(FEED_READER_PROFILE_NAME)
+          val maybeSpecificAcceptancePolicy = request.acceptedPolicy.map(FeedAcceptancePolicy.valueOf)
+
+          val eventualMaybeFeedReaderUser = mongoRepository.getUserByObjectId(BSONObjectID.parse(request.asUserId).get)
           val eventualMaybeFeed = mongoRepository.getResourceByObjectId(BSONObjectID.parse(request.feedId).get).map {
             case f: Some[Feed] =>
               f
@@ -69,9 +70,9 @@ import scala.concurrent.{ExecutionContext, ExecutionContextExecutor, Future}
             }
           }
 
-          val eventualEventualInt: Future[Int] = eventualEventualMaybeTuple.flatMap { maybeTuple =>
+          val eventualAcceptedCount = eventualEventualMaybeTuple.flatMap { maybeTuple =>
             maybeTuple.map { case (feed, feedReaderUser) =>
-              feedReader.processFeed(feed, feedReaderUser)
+              feedReader.processFeed(feed, feedReaderUser, maybeSpecificAcceptancePolicy)
 
             }.getOrElse {
               log.warn("Failed to find feed or feed reader user")
@@ -80,7 +81,7 @@ import scala.concurrent.{ExecutionContext, ExecutionContextExecutor, Future}
           }
 
 
-          eventualEventualInt.map { accepted =>
+          eventualAcceptedCount.map { accepted =>
             log.info(s"Read feed accepted $accepted items")
             channel.basicAck(message.getEnvelope.getDeliveryTag, false)
 
