@@ -12,6 +12,10 @@ public class EditFeed {
     private String title, url;
     private String publisher;
 
+    @NotBlank
+    private String date;
+
+
     private FeedAcceptancePolicy acceptancePolicy;
 
     private List<String> tags = Lists.newArrayList();
@@ -54,6 +58,14 @@ public class EditFeed {
 
     public void setTags(List<String> tags) {
         this.tags = tags;
+    }
+
+    public String getDate() {
+        return date;
+    }
+
+    public void setDate(String date) {
+        this.date = date;
     }
 
     @Override

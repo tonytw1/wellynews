@@ -13,6 +13,7 @@ import nz.co.searchwellington.repositories.{ContentRetrievalService, HandTagging
 import nz.co.searchwellington.urls.{UrlBuilder, UrlCleaner}
 import nz.co.searchwellington.views.Errors
 import org.apache.commons.logging.LogFactory
+import org.joda.time.format.ISODateTimeFormat
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Controller
 import org.springframework.validation.BindingResult
@@ -38,6 +39,8 @@ class EditFeedController @Autowired()(contentUpdateService: ContentUpdateService
   with Errors with RequiringLoggedInUser with EndUserInputs with HeldSubmissions {
 
   private val log = LogFactory.getLog(classOf[EditFeedController])
+
+  private val formDateFormat = ISODateTimeFormat.basicDate
 
   @GetMapping(Array("/edit-feed/{id}"))
   def prompt(@PathVariable id: String): ModelAndView = {
@@ -79,6 +82,8 @@ class EditFeedController @Autowired()(contentUpdateService: ContentUpdateService
         } else {
           log.info("Got valid edit feed submission: " + formObject)
 
+          val date = formDateFormat.parseLocalDate(formObject.getDate).toDate
+
           val publisherName = if (formObject.getPublisher.trim.nonEmpty) {
             log.info("Publisher is: " + formObject.getPublisher.trim)
             Some(formObject.getPublisher.trim)
@@ -92,6 +97,7 @@ class EditFeedController @Autowired()(contentUpdateService: ContentUpdateService
           log.info("Resolved publisher: " + publisher)
 
           val uf = f.copy(
+            date = Some(date),
             title = formObject.getTitle,
             page = formObject.getUrl,
             publisher = publisher.map(_._id),

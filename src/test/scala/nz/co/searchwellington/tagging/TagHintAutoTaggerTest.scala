@@ -7,8 +7,9 @@ import nz.co.searchwellington.repositories.TagDAO
 import org.junit.jupiter.api.Assertions.{assertEquals, assertFalse, assertTrue}
 import org.junit.jupiter.api.Test
 import org.mockito.Mockito.{mock, when}
+import reactivemongo.api.bson.BSONObjectID
 
-import java.util.UUID
+import java.util.{Date, UUID}
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.{Await, Future}
 
@@ -82,6 +83,12 @@ class TagHintAutoTaggerTest extends ReasonableWaits {
     val feedItemCategories = Seq(Category(value = "Events", domain = None))
 
     val suggestions = Await.result(tagHintAutoTagger.suggestFeedCategoryTags(feedItemCategories), TenSeconds)
+
+    val objectId: BSONObjectID = BSONObjectID.parse("5cba504f4542db0001dca074").get
+    println("Date from id: " + new Date(objectId.time))
+    // Date from id: Sun Jun 25 11:30:07 BST 2023
+
+
 
     assertEquals("events", suggestions.head.name)
   }
