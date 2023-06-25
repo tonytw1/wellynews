@@ -55,7 +55,7 @@ class DeduplicateImageService @Autowired()(elasticSearchIndexer: ElasticSearchIn
     // Update a map of image url usages grouped by publisher
     elasticSearchIndexer.buildImageUsagesMap(loggedInUser = None).map { usages =>
       this.usages = usages
-      log.info("Updated image usages: " + usages)
+      log.info("Updated image usages: " + usages.size)
     }
   }
 
