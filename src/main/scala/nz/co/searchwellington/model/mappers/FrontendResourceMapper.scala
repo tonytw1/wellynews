@@ -11,7 +11,9 @@ import nz.co.searchwellington.tagging.{IndexTagsService, TaggingReturnsOfficerSe
 import nz.co.searchwellington.urls.AdminUrlBuilder
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
+import reactivemongo.api.bson.BSONObjectID
 
+import java.util.Date
 import scala.concurrent.{ExecutionContext, Future}
 
 @Component class FrontendResourceMapper @Autowired()(indexTagsService: IndexTagsService,
@@ -60,6 +62,10 @@ import scala.concurrent.{ExecutionContext, Future}
       None
     }
 
+    val date = contentItem.date.getOrElse{
+      new Date(contentItem._id.time)
+    }
+
     contentItem match {
       case n: Newsitem =>
         val eventualPublisher = n.publisher.map { pid =>
@@ -104,7 +110,7 @@ import scala.concurrent.{ExecutionContext, Future}
             `type` = n.`type`,
             name = n.title,
             url = n.page,
-            date = n.date.orNull,
+            date = date,
             description = n.description.orNull,
             geocode = place,
             acceptedFrom = feed,
@@ -153,7 +159,7 @@ import scala.concurrent.{ExecutionContext, Future}
             name = f.title,
             url = f.page,
             urlWords = f.url_words.orNull,
-            date = f.date.orNull,
+            date = date,
             description = f.description.orNull,
             geocode = place,
             latestItemDate = f.getLatestItemDate,
@@ -191,7 +197,7 @@ import scala.concurrent.{ExecutionContext, Future}
             `type` = l.`type`,
             name = l.title,
             url = l.page,
-            date = l.date.orNull,
+            date = date,
             publisherName = publisher.map(_.title),
             publisherUrlWords = publisher.flatMap(_.url_words),
             description = l.description.orNull,
@@ -224,7 +230,7 @@ import scala.concurrent.{ExecutionContext, Future}
             description = w.description.getOrElse(""),
             geocode = w.geocode,
             httpStatus = httpStatus,
-            date = w.date.orNull,
+            date = date,
             lastScanned = w.last_scanned,
             lastChanged = w.last_changed,
             owner = owner.map(user => user.profilename.getOrElse(user._id.stringify)).orNull,
