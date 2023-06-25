@@ -58,14 +58,7 @@ import scala.jdk.CollectionConverters._
             }
 
             val eventualWithSuppressionAndLocalCopyInformation: Future[Seq[FrontendResource]] = eventualFrontendFeedItems.flatMap { feedItems =>
-              feedNewsItemLocalCopyDecorator.withFeedItemSpecificActions(feedItems, loggedInUser).map{ feedItems =>
-                // Remove tags
-                feedItems.map { feedItem: FrontendResource =>
-                  feedItem match {
-                    case n: FrontendNewsitem => n.copy(tags = None, handTags = None)
-                  }
-                }
-              }
+              feedNewsItemLocalCopyDecorator.withFeedItemSpecificActions(feedItems, loggedInUser)
             }
 
             eventualWithSuppressionAndLocalCopyInformation.map { i =>
