@@ -6,10 +6,10 @@ import nz.co.searchwellington.controllers.models.GeotaggedNewsitemExtractor
 import nz.co.searchwellington.feeds.FeedItemActionDecorator
 import nz.co.searchwellington.feeds.whakaoko.model.{FeedItem, LatLong, Place, Subscription}
 import nz.co.searchwellington.feeds.whakaoko.{WhakaokoFeedReader, WhakaokoService}
+import nz.co.searchwellington.model.Feed
 import nz.co.searchwellington.model.frontend.{FrontendFeed, FrontendFeedItem}
 import nz.co.searchwellington.model.geo.Geocode
 import nz.co.searchwellington.model.mappers.FrontendResourceMapper
-import nz.co.searchwellington.model.{Feed, Newsitem}
 import nz.co.searchwellington.repositories.ContentRetrievalService
 import org.junit.jupiter.api.Assertions.{assertEquals, assertTrue}
 import org.junit.jupiter.api.{BeforeEach, Test}
@@ -41,12 +41,8 @@ class FeedModelBuilderTest extends ReasonableWaits with ContentFields {
   private val anotherFeedItem = FeedItem(id = UUID.randomUUID().toString, subscriptionId = "a-whakaoko-subscription-id", url = "http://localhost/another-feeditem", title = Some("A feed item"))
   private val feeditems = Seq(feedItem, anotherFeedItem)
 
-
-  private val newsItem = Newsitem()
-  private val anotherNewsitem = Newsitem()
-
-  private val frontendNewsitem = toFrontendFeedItem(feedItem)
-  private val anotherFrontendNewsitem = toFrontendFeedItem(anotherFeedItem)
+  private val frontendFeedItem = toFrontendFeedItem(feedItem)
+  private val anotherFrontendFeedItem = toFrontendFeedItem(anotherFeedItem)
 
   private val feedItemWithActions =  toFrontendFeedItem(feedItem)
   private val anotherFeedItemWithActions =  toFrontendFeedItem(anotherFeedItem)
@@ -67,11 +63,8 @@ class FeedModelBuilderTest extends ReasonableWaits with ContentFields {
   def setUp(): Unit = {
     when(whakaokoFeedReader.fetchFeedItems(feed)).thenReturn(Future.successful(Right((feeditems, feeditems.size.toLong))))
 
-    when(frontendResourceMapper.mapFrontendResource(newsItem, newsItem.geocode, Seq.empty, Seq.empty, loggedInUser)).thenReturn(Future.successful(frontendNewsitem))
-    when(frontendResourceMapper.mapFrontendResource(anotherNewsitem, newsItem.geocode, Seq.empty, Seq.empty, loggedInUser)).thenReturn(Future.successful(anotherFrontendNewsitem))
-
-    when(feedItemActionDecorator.withFeedItemSpecificActions(feed, feedItemWithActions, None)).thenReturn(Future.successful(feedItemWithActions))
-    when(feedItemActionDecorator.withFeedItemSpecificActions(feed, anotherFrontendNewsitem, None)).thenReturn(Future.successful(anotherFeedItemWithActions))
+    when(feedItemActionDecorator.withFeedItemSpecificActions(feed, frontendFeedItem, None)).thenReturn(Future.successful(feedItemWithActions))
+    when(feedItemActionDecorator.withFeedItemSpecificActions(feed, anotherFrontendFeedItem, None)).thenReturn(Future.successful(anotherFeedItemWithActions))
 
     request.setAttribute("feedAttribute", feed)
     request.setRequestURI("/feed/someonesfeed")
