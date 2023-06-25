@@ -32,6 +32,17 @@ class TagHintAutoTaggerTest extends ReasonableWaits {
   }
 
   @Test
+  def shouldBeFlexibleOnPunctuation(): Unit = {
+    val lgwm = Tag(hints = Seq("LGWM", "Let's Get Wellington Moving"))
+    when(tagDAO.getAllTags).thenReturn(Future.successful(Seq(lgwm)))
+    val resource = Newsitem(id = UUID.randomUUID().toString, title = "Let’s Get Wellington Moving: please, councillors, keep your eyes on the prize")
+
+    val suggestions = Await.result(tagHintAutoTagger.suggestTags(resource), TenSeconds)
+
+    assertTrue(suggestions.contains(lgwm))
+  }
+
+  @Test
   def shouldMatchForMultiwordHints(): Unit = {
     val tag = Tag(hints = Seq("Central Library"))
     when(tagDAO.getAllTags).thenReturn(Future.successful(Seq(tag)))
