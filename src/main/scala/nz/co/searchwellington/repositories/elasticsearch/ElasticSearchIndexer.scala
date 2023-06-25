@@ -201,12 +201,12 @@ class ElasticSearchIndexer @Autowired()(val showBrokenDecisionService: ShowBroke
   }
 
   def getResources(query: ResourceQuery, order: SearchRequest => SearchRequest = byDateDescending, loggedInUser: Option[User])(implicit ec: ExecutionContext, currentSpan: Span): Future[(Seq[ElasticResource], Long)] = {
+    val request = order(search(Index) query composeQueryFor(query, loggedInUser)) start query.startIndex limit query.maxItems
+
     val span = SpanFactory.childOf(currentSpan, "executeResourceQuery").
       setAttribute("database", "elasticsearch").
       setAttribute("query", query.toString). // TODO human readable
       startSpan()
-
-    val request = order(search(Index) query composeQueryFor(query, loggedInUser)) start query.startIndex limit query.maxItems
 
     val start = DateTime.now()
     val eventualTuple = client.execute(request).map { r =>
@@ -418,13 +418,6 @@ class ElasticSearchIndexer @Autowired()(val showBrokenDecisionService: ShowBroke
       },
       query.notPublishedBy.map { p =>
         not(matchQuery(Publisher, p._id.stringify))
-      },
-      query.hasDate.map { b =>
-        if (b) {
-          existsQuery(Date)
-        } else {
-          not(existsQuery(Date))
-        }
       }
     ).flatten
 

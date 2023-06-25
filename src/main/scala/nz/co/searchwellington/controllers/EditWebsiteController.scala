@@ -14,7 +14,6 @@ import nz.co.searchwellington.repositories.{ContentRetrievalService, HandTagging
 import nz.co.searchwellington.urls.{UrlBuilder, UrlCleaner}
 import nz.co.searchwellington.views.Errors
 import org.apache.commons.logging.LogFactory
-import org.joda.time.format.ISODateTimeFormat
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Controller
 import org.springframework.validation.BindingResult
@@ -41,8 +40,6 @@ class EditWebsiteController @Autowired()(contentUpdateService: ContentUpdateServ
   with RequiringLoggedInUser with EndUserInputs with HeldSubmissions {
 
   private val log = LogFactory.getLog(classOf[EditWebsiteController])
-
-  private val formDateFormat = ISODateTimeFormat.basicDate
 
   @GetMapping(Array("/edit-website/{id}"))
   def prompt(@PathVariable id: String): ModelAndView = {
@@ -94,10 +91,7 @@ class EditWebsiteController @Autowired()(contentUpdateService: ContentUpdateServ
             }
           }
 
-          val date = formDateFormat.parseLocalDate(editWebsite.getDate).toDate
-
           val updated = w.copy(
-            date = Some(date),
             title = processTitle(editWebsite.getTitle),
             page = editWebsite.getUrl,
             description = Some(editWebsite.getDescription),

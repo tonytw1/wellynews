@@ -14,9 +14,6 @@ public class EditWebsite {
 
     private String geocode, osm;
 
-    @NotBlank
-    private String date;
-
     private List<String> tags = Lists.newArrayList();
 
     public String getTitle() {
@@ -65,14 +62,6 @@ public class EditWebsite {
 
     public void setTags(List<String> tags) {
         this.tags = tags;
-    }
-
-    public String getDate() {
-        return date;
-    }
-
-    public void setDate(String date) {
-        this.date = date;
     }
 
     @Override
