@@ -22,4 +22,10 @@ case class FrontendFeedItem( id: String,
                              lastScanned: Option[Date] = None,
                              publisherName: Option[String] = None,
                              publisherUrlWords: Option[String] = None,
-                             actions: Seq[Action] = Seq.empty) extends FrontendResource
+                             actions: Seq[Action] = Seq.empty) extends FrontendResource {
+
+  def getPublisherName: String = publisherName.orNull
+
+  def getPublisherUrlWords: String = publisherUrlWords.orNull
+
+}
