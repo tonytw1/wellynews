@@ -6,7 +6,7 @@ import nz.co.searchwellington.model.geo.Geocode
 import java.util.Date
 
 case class FrontendFeedItem( id: String,
-                            `type`: String = "FI",
+                            `type`: String = "FNI",
                              urlWords: String = "",
                              name: String = "",
                              url: String = "",
