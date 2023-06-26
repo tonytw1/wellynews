@@ -4,7 +4,7 @@ import io.opentelemetry.api.trace.Span
 import nz.co.searchwellington.ReasonableWaits
 import nz.co.searchwellington.controllers.models.GeotaggedNewsitemExtractor
 import nz.co.searchwellington.feeds.FeedItemActionDecorator
-import nz.co.searchwellington.feeds.whakaoko.model.{FeedItem, LatLong, Place, Subscription}
+import nz.co.searchwellington.feeds.whakaoko.model.{FeedItem, Place, Subscription}
 import nz.co.searchwellington.feeds.whakaoko.{WhakaokoFeedReader, WhakaokoService}
 import nz.co.searchwellington.model.Feed
 import nz.co.searchwellington.model.frontend.{FrontendFeed, FrontendFeedItem}
@@ -82,8 +82,8 @@ class FeedModelBuilderTest extends ReasonableWaits with ContentFields {
   @Test
   def shouldPopulateFrontendFeedFromRequestAttribute(): Unit = {
     when(frontendResourceMapper.createFrontendResourceFrom(feed, None)).thenReturn(Future.successful(frontendFeed))
-    when(frontendResourceMapper.mapFeedItem(feedItem)).thenReturn(frontendFeedItem)
-    when(frontendResourceMapper.mapFeedItem(anotherFeedItem)).thenReturn(anotherFrontendFeedItem)
+    when(frontendResourceMapper.mapFeedItem(feed, feedItem)).thenReturn(Future.successful(frontendFeedItem))
+    when(frontendResourceMapper.mapFeedItem(feed, anotherFeedItem)).thenReturn(Future.successful(anotherFrontendFeedItem))
     when(whakaokoService.getSubscription(ArgumentMatchers.eq("a-whakaoko-subscription-id"))(any(), any())).thenReturn(Future.successful(Right(Some(whakaokoSubscription))))
 
     val mv = Await.result(modelBuilder.populateContentModel(request), TenSeconds).get
@@ -94,8 +94,8 @@ class FeedModelBuilderTest extends ReasonableWaits with ContentFields {
   @Test
   def shouldPopulateMainContentWithFeedItemsDecoratedWithLocalCopySuppressionInformation(): Unit = {
     when(frontendResourceMapper.createFrontendResourceFrom(feed, None)).thenReturn(Future.successful(frontendFeed))
-    when(frontendResourceMapper.mapFeedItem(feedItem)).thenReturn(frontendFeedItem)
-    when(frontendResourceMapper.mapFeedItem(anotherFeedItem)).thenReturn(anotherFrontendFeedItem)
+    when(frontendResourceMapper.mapFeedItem(feed, feedItem)).thenReturn(Future.successful(frontendFeedItem))
+    when(frontendResourceMapper.mapFeedItem(feed, anotherFeedItem)).thenReturn(Future.successful(anotherFrontendFeedItem))
 
     when(whakaokoFeedReader.fetchFeedItems(feed)).thenReturn(Future.successful(Right((feeditems, feeditems.size.toLong))))
     when(whakaokoService.getSubscription(ArgumentMatchers.eq("a-whakaoko-subscription-id"))(any(), any())).thenReturn(Future.successful(Right(Some(whakaokoSubscription))))
@@ -108,8 +108,8 @@ class FeedModelBuilderTest extends ReasonableWaits with ContentFields {
   @Test
   def shouldPushGeotaggedFeeditemsOntoTheModelAsFrontendNewsitemsSeperately(): Unit = {
     when(frontendResourceMapper.createFrontendResourceFrom(feed, None)).thenReturn(Future.successful(frontendFeed))
-    when(frontendResourceMapper.mapFeedItem(feedItem)).thenReturn(frontendFeedItem)
-    when(frontendResourceMapper.mapFeedItem(anotherFeedItem)).thenReturn(anotherFrontendFeedItem)
+    when(frontendResourceMapper.mapFeedItem(feed, feedItem)).thenReturn(Future.successful(frontendFeedItem))
+    when(frontendResourceMapper.mapFeedItem(feed, anotherFeedItem)).thenReturn(Future.successful(anotherFrontendFeedItem))
     when(contentRetrievalService.getAllFeedsOrderedByLatestItemDate(loggedInUser)).thenReturn(Future.successful(Seq()))
     when(whakaokoService.getSubscription(ArgumentMatchers.eq("a-whakaoko-subscription-id"))(any(), any())).thenReturn(Future.successful(Right(Some(whakaokoSubscription))))
 

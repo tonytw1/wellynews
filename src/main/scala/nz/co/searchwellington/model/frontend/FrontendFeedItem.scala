@@ -20,4 +20,6 @@ case class FrontendFeedItem( id: String,
                              held: Boolean = false,
                              lastChanged: Option[Date] = None,
                              lastScanned: Option[Date] = None,
+                             publisherName: Option[String] = None,
+                             publisherUrlWords: Option[String] = None,
                              actions: Seq[Action] = Seq.empty) extends FrontendResource

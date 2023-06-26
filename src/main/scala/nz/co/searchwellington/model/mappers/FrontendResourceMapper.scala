@@ -54,28 +54,39 @@ import scala.concurrent.{ExecutionContext, Future}
     }
   }
 
-  def mapFeedItem(feedItem: FeedItem) = {
-    FrontendFeedItem(
-      id = feedItem.id,
-      name = feedItem.title.getOrElse(feedItem.url),
-      url = feedItem.url,
-      date = feedItem.date,
-      description = feedItem.body.orNull,
-      urlWords = null,
-      httpStatus = None,
-      lastScanned = None,
-      lastChanged = None,
-      handTags = None,
-      tags = None,
-      owner = null,
-      geocode = feedItem.place.map { p =>
-        Geocode(latLong = p.latLong.map { ll =>
-          nz.co.searchwellington.model.geo.LatLong(latitude = ll.latitude, longitude = ll.longitude)
-        })
-      },
-      held = false,
-      actions = Seq.empty
-    )
+  def mapFeedItem(feed: Feed, feedItem: FeedItem)(implicit ec: ExecutionContext) = {
+    val eventualPublisher = feed.publisher.map { pid =>
+      mongoRepository.getResourceByObjectId(pid)
+    }.getOrElse {
+      Future.successful(None)
+    }
+    for {
+      publisher <- eventualPublisher
+    } yield {
+      FrontendFeedItem(
+        id = feedItem.id,
+        name = feedItem.title.getOrElse(feedItem.url),
+        url = feedItem.url,
+        date = feedItem.date,
+        description = feedItem.body.orNull,
+        urlWords = null,
+        httpStatus = None,
+        lastScanned = None,
+        lastChanged = None,
+        handTags = None,
+        tags = None,
+        owner = null,
+        geocode = feedItem.place.map { p =>
+          Geocode(latLong = p.latLong.map { ll =>
+            nz.co.searchwellington.model.geo.LatLong(latitude = ll.latitude, longitude = ll.longitude)
+          })
+        },
+        held = false,
+        publisherName = publisher.map(_.title),
+        publisherUrlWords = publisher.flatMap(_.url_words),
+        actions = Seq.empty
+      )
+    }
   }
 
   def mapFrontendResource(contentItem: Resource, place: Option[Geocode], handTags: Seq[Tag], indexTags: Seq[Tag], loggedInUser: Option[User])(implicit ec: ExecutionContext): Future[FrontendResource] = {

@@ -74,11 +74,15 @@ import scala.concurrent.{ExecutionContext, Future}
       feeds <- mongoRepository.getAllFeeds()
       suggestedFeeds = feeds.filter(feed => feed.acceptance == FeedAcceptancePolicy.SUGGEST)
       suggestedFeedItems: Seq[(FeedItem, Feed)] <- paginateChannelFeedItems(feeds = suggestedFeeds)
-      frontendFeedItems: Seq[(FrontendFeedItem, Feed)] = {
-        suggestedFeedItems.map { tuple =>
-          val (feedItem, feed) = tuple
-          val frontendFeedItem = frontendResourceMapper.mapFeedItem(feedItem)
-          (frontendFeedItem, feed)
+      frontendFeedItems: Seq[(FrontendFeedItem, Feed)] <-{
+        Future.sequence {
+          suggestedFeedItems.map { tuple =>
+            val (feedItem, feed) = tuple
+            val eventualFrontendFeedItem = frontendResourceMapper.mapFeedItem(feed, feedItem)
+            eventualFrontendFeedItem.map { frontendFeedItem =>
+              (frontendFeedItem, feed)
+            }
+          }
         }
       }
       withActions: Seq[FrontendResource] <- Future.sequence {
