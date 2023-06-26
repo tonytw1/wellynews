@@ -6,6 +6,7 @@ import nz.co.searchwellington.feeds.FeedItemActionDecorator
 import nz.co.searchwellington.feeds.whakaoko.WhakaokoService
 import nz.co.searchwellington.feeds.whakaoko.model.FeedItem
 import nz.co.searchwellington.model.frontend.{FrontendFeedItem, FrontendResource}
+import nz.co.searchwellington.model.mappers.FrontendResourceMapper
 import nz.co.searchwellington.model.{Feed, FeedAcceptancePolicy, User}
 import nz.co.searchwellington.repositories.SuppressionDAO
 import nz.co.searchwellington.repositories.mongo.MongoRepository
@@ -18,6 +19,7 @@ import scala.concurrent.{ExecutionContext, Future}
 @Component class SuggestedFeeditemsService @Autowired()(feedItemActionDecorator: FeedItemActionDecorator,
                                                         mongoRepository: MongoRepository,
                                                         whakaokoService: WhakaokoService,
+                                                        frontendResourceMapper: FrontendResourceMapper,
                                                         suppressionDAO: SuppressionDAO) extends
   ReasonableWaits {
 
@@ -75,24 +77,7 @@ import scala.concurrent.{ExecutionContext, Future}
       frontendFeedItems: Seq[(FrontendFeedItem, Feed)] = {
         suggestedFeedItems.map { tuple =>
           val (feedItem, feed) = tuple
-          val fi = feedItem
-          val frontendFeedItem = FrontendFeedItem(
-            id = fi.id,
-            name = fi.title.getOrElse(fi.url),
-            url = fi.url,
-            date = fi.date,
-            description = fi.body.orNull,
-            urlWords = null,
-            httpStatus = None,
-            lastScanned = None,
-            lastChanged = None,
-            handTags = None,
-            tags = None,
-            owner = null,
-            geocode = None,
-            held = false,
-            actions = Seq.empty
-          )
+          val frontendFeedItem = frontendResourceMapper.mapFeedItem(feedItem)
           (frontendFeedItem, feed)
         }
       }

@@ -41,11 +41,15 @@ class FeedModelBuilderTest extends ReasonableWaits with ContentFields {
   private val anotherFeedItem = FeedItem(id = UUID.randomUUID().toString, subscriptionId = "a-whakaoko-subscription-id", url = "http://localhost/another-feeditem", title = Some("A feed item"))
   private val feeditems = Seq(feedItem, anotherFeedItem)
 
-  private val frontendFeedItem = toFrontendFeedItem(feedItem)
-  private val anotherFrontendFeedItem = toFrontendFeedItem(anotherFeedItem)
+  private val frontendFeedItem = FrontendFeedItem(id = UUID.randomUUID().toString, name = "A feed item", url = "http://localhost/a-feeditem", date = None,
+    geocode = Some(Geocode(latLong = Some(nz.co.searchwellington.model.geo.LatLong(52.0, 0.0))))
+  )
+  private val anotherFrontendFeedItem = FrontendFeedItem(id = UUID.randomUUID().toString, name = "Another feed item", url = "http://localhost/a-feeditem", date = None)
 
-  private val feedItemWithActions =  toFrontendFeedItem(feedItem)
-  private val anotherFeedItemWithActions =  toFrontendFeedItem(anotherFeedItem)
+  private val feedItemWithActions =  FrontendFeedItem(id = UUID.randomUUID().toString, name = "A feed item", url = "http://localhost/a-feeditem", date = None,
+    geocode = Some(Geocode(latLong = Some(nz.co.searchwellington.model.geo.LatLong(52.0, 0.0))))
+  )
+  private val anotherFeedItemWithActions = FrontendFeedItem(id = UUID.randomUUID().toString, name = "Another feed item", url = "http://localhost/a-feeditem", date = None)
 
   private val frontendFeed = mock(classOf[FrontendFeed])
 
@@ -78,6 +82,8 @@ class FeedModelBuilderTest extends ReasonableWaits with ContentFields {
   @Test
   def shouldPopulateFrontendFeedFromRequestAttribute(): Unit = {
     when(frontendResourceMapper.createFrontendResourceFrom(feed, None)).thenReturn(Future.successful(frontendFeed))
+    when(frontendResourceMapper.mapFeedItem(feedItem)).thenReturn(frontendFeedItem)
+    when(frontendResourceMapper.mapFeedItem(anotherFeedItem)).thenReturn(anotherFrontendFeedItem)
     when(whakaokoService.getSubscription(ArgumentMatchers.eq("a-whakaoko-subscription-id"))(any(), any())).thenReturn(Future.successful(Right(Some(whakaokoSubscription))))
 
     val mv = Await.result(modelBuilder.populateContentModel(request), TenSeconds).get
@@ -88,6 +94,9 @@ class FeedModelBuilderTest extends ReasonableWaits with ContentFields {
   @Test
   def shouldPopulateMainContentWithFeedItemsDecoratedWithLocalCopySuppressionInformation(): Unit = {
     when(frontendResourceMapper.createFrontendResourceFrom(feed, None)).thenReturn(Future.successful(frontendFeed))
+    when(frontendResourceMapper.mapFeedItem(feedItem)).thenReturn(frontendFeedItem)
+    when(frontendResourceMapper.mapFeedItem(anotherFeedItem)).thenReturn(anotherFrontendFeedItem)
+
     when(whakaokoFeedReader.fetchFeedItems(feed)).thenReturn(Future.successful(Right((feeditems, feeditems.size.toLong))))
     when(whakaokoService.getSubscription(ArgumentMatchers.eq("a-whakaoko-subscription-id"))(any(), any())).thenReturn(Future.successful(Right(Some(whakaokoSubscription))))
 
@@ -99,6 +108,8 @@ class FeedModelBuilderTest extends ReasonableWaits with ContentFields {
   @Test
   def shouldPushGeotaggedFeeditemsOntoTheModelAsFrontendNewsitemsSeperately(): Unit = {
     when(frontendResourceMapper.createFrontendResourceFrom(feed, None)).thenReturn(Future.successful(frontendFeed))
+    when(frontendResourceMapper.mapFeedItem(feedItem)).thenReturn(frontendFeedItem)
+    when(frontendResourceMapper.mapFeedItem(anotherFeedItem)).thenReturn(anotherFrontendFeedItem)
     when(contentRetrievalService.getAllFeedsOrderedByLatestItemDate(loggedInUser)).thenReturn(Future.successful(Seq()))
     when(whakaokoService.getSubscription(ArgumentMatchers.eq("a-whakaoko-subscription-id"))(any(), any())).thenReturn(Future.successful(Right(Some(whakaokoSubscription))))
 
@@ -110,29 +121,4 @@ class FeedModelBuilderTest extends ReasonableWaits with ContentFields {
     assertEquals(whakaokoSubscription, mv.get("subscription"), "Expected whakaoko subscription to be shown")
   }
 
-  private def toFrontendFeedItem(fi: FeedItem) = {  // TODO
-    println(fi)
-    println(fi.place)
-    FrontendFeedItem(
-      id = fi.id,
-      name = fi.title.getOrElse(fi.url),
-      url = fi.url,
-      date = fi.date,
-      description = fi.body.orNull,
-      urlWords = null,
-      httpStatus = None,
-      lastScanned = None,
-      lastChanged = None,
-      handTags = None,
-      tags = None,
-      owner = null,
-      geocode = fi.place.map { p: Place =>
-        Geocode(latLong = p.latLong.map { ll: LatLong =>
-          nz.co.searchwellington.model.geo.LatLong(latitude = ll.latitude, longitude = ll.longitude)
-        })
-      },
-      held = false,
-      actions = Seq.empty
-    )
-  }
 }

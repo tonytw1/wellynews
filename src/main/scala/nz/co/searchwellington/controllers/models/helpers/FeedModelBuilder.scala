@@ -52,7 +52,7 @@ import scala.jdk.CollectionConverters._
         }, { feedItems: (Seq[FeedItem], Long) =>
           val totalCount = feedItems._2
 
-          val frontendFeedItems = feedItems._1.map(toFrontendFeedItem)
+          val frontendFeedItems = feedItems._1.map(frontendResourceMapper.mapFeedItem)
           val eventualWithActions = Future.sequence {
             frontendFeedItems.map { feedItem =>
               feedNewsItemLocalCopyDecorator.withFeedItemSpecificActions(feed, feedItem, loggedInUser)
@@ -106,30 +106,6 @@ import scala.jdk.CollectionConverters._
     }.getOrElse {
       Future.successful(None)
     }
-  }
-
-  private def toFrontendFeedItem(fi: FeedItem) = {
-    FrontendFeedItem(
-      id = fi.id,
-      name = fi.title.getOrElse(fi.url),
-      url = fi.url,
-      date = fi.date,
-      description = fi.body.orNull,
-      urlWords = null,
-      httpStatus = None,
-      lastScanned = None,
-      lastChanged = None,
-      handTags = None,
-      tags = None,
-      owner = null,
-      geocode = fi.place.map { p: Place =>
-        Geocode(latLong = p.latLong.map { ll: LatLong =>
-          nz.co.searchwellington.model.geo.LatLong(latitude = ll.latitude, longitude = ll.longitude)
-        })
-      },
-      held = false,
-      actions = Seq.empty
-    )
   }
 
   def populateExtraModelContent(request: HttpServletRequest, loggedInUser: Option[User])(implicit ec: ExecutionContext, currentSpan: Span): Future[ModelMap] = {

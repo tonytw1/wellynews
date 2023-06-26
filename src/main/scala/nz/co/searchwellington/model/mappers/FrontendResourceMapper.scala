@@ -1,6 +1,7 @@
 package nz.co.searchwellington.model.mappers
 
 import nz.co.searchwellington.ReasonableWaits
+import nz.co.searchwellington.feeds.whakaoko.model.FeedItem
 import nz.co.searchwellington.model._
 import nz.co.searchwellington.model.frontend._
 import nz.co.searchwellington.model.geo.Geocode
@@ -51,6 +52,30 @@ import scala.concurrent.{ExecutionContext, Future}
         case w: FrontendWebsite => w.copy(actions = actions)
       }
     }
+  }
+
+  def mapFeedItem(feedItem: FeedItem) = {
+    FrontendFeedItem(
+      id = feedItem.id,
+      name = feedItem.title.getOrElse(feedItem.url),
+      url = feedItem.url,
+      date = feedItem.date,
+      description = feedItem.body.orNull,
+      urlWords = null,
+      httpStatus = None,
+      lastScanned = None,
+      lastChanged = None,
+      handTags = None,
+      tags = None,
+      owner = null,
+      geocode = feedItem.place.map { p =>
+        Geocode(latLong = p.latLong.map { ll =>
+          nz.co.searchwellington.model.geo.LatLong(latitude = ll.latitude, longitude = ll.longitude)
+        })
+      },
+      held = false,
+      actions = Seq.empty
+    )
   }
 
   def mapFrontendResource(contentItem: Resource, place: Option[Geocode], handTags: Seq[Tag], indexTags: Seq[Tag], loggedInUser: Option[User])(implicit ec: ExecutionContext): Future[FrontendResource] = {
