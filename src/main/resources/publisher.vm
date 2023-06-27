@@ -15,7 +15,7 @@
 #parse("includes/rss_widget.vm")
 </div>
 
-#if ($publisher) 
+#if ($publisher)
 	<h2><a href="$publisher.url">$heading</a></h2>
 
 	#set($page_content = $publisher)
@@ -23,6 +23,10 @@
         <p>$publisher.description</p>
     #end
     #parse("includes/page_content_hand_tags.vm")
+
+    <ul>
+        #parse("includes/content_element_admin_links.vm")
+    </ul>
 
     #parse("includes/actions.vm")
 
@@ -35,10 +39,10 @@
 
 #parse("includes/search_widget.vm")
 
-	#if($geocoded) 
-		<div id="map" style="width: 520px; height: 520px"></div>	
+	#if($geocoded)
+		<div id="map" style="width: 520px; height: 520px"></div>
 		#parse("includes/geocodedjs.vm")
-		<p>	
+		<p>
 	#end
 
     #if($main_content)
@@ -53,7 +57,7 @@
 		#set($secondary_heading = "Feeds")
 		#set($secondary_content = $feeds)
 		#parse("includes/secondary_content.vm")
-	
+
 		#parse("includes/publisher_watchlist.vm")
 	</div>
 
