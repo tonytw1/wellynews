@@ -25,6 +25,7 @@
     #parse("includes/page_content_hand_tags.vm")
 
     <ul>
+        #set($item = $publisher)
         #parse("includes/content_element_admin_links.vm")
     </ul>
 
