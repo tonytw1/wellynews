@@ -23,10 +23,8 @@ Specific concerns have been pushed into these potentially reusable services:
 
 - [Whakaoko](https://github.com/tonytw1/whakaoko) for RSS feed polling and aggregation.
 - [Cards](https://github.com/tonytw1/cards) for decorating news items with social media images.
-- [Brownbag](https://github.com/tonytw1/brownbag) for screen scraping interesting content into RSS feeds for easier ingression
-- [Nominatim AC](https://nominatim-ac.eelpieconsulting.co.uk/) for OpenStreetName place name lookups.
+- [Nominatim AC](https://github.com/tonytw1/nominatim-ac/) for OpenStreetName place name lookups.
 - [RSS to Twitter](https://github.com/tonytw1/rsstotwitter) for automatic publishing to Mastodon and Twitter.
-
 
 ## Model
 
