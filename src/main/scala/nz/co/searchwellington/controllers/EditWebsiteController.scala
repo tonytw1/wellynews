@@ -105,15 +105,7 @@ class EditWebsiteController @Autowired()(contentUpdateService: ContentUpdateServ
           contentUpdateService.update(withUpdatedTags).map { result =>
             if (result) {
               log.info("Updated website: " + withUpdatedTags)
-              val tagsHaveChanged = w.resource_tags.map(_.tag_id).toSet != withUpdatedTags.resource_tags.map(_.tag_id).toSet
-              val geotagHasChanged = w.geocode != withUpdatedTags.geocode
-              if (tagsHaveChanged || geotagHasChanged) {
-                mongoRepository.getResourcesIdsForPublisher(w).flatMap { taggedResourceIds =>
-                  elasticSearchIndexRebuildService.reindexResources(taggedResourceIds, totalResources = taggedResourceIds.size)
-                }.map { i =>
-                  log.info("Reindexed publisher resources after publisher tagging change: " + i)
-                }
-              }
+              reindexForTagChanges(w, withUpdatedTags)
             }
           }
 
@@ -124,6 +116,19 @@ class EditWebsiteController @Autowired()(contentUpdateService: ContentUpdateServ
     }
 
     requiringAdminUser(handleSubmission)
+  }
+
+  // Trying to get this generalised
+  private def reindexForTagChanges(w: Website, withUpdatedTags: Resource) = {
+    val tagsHaveChanged = w.resource_tags.map(_.tag_id).toSet != withUpdatedTags.resource_tags.map(_.tag_id).toSet
+    val geotagHasChanged = w.geocode != withUpdatedTags.geocode
+    if (tagsHaveChanged || geotagHasChanged) {
+      mongoRepository.getResourcesIdsForPublisher(w).flatMap { taggedResourceIds =>
+        elasticSearchIndexRebuildService.reindexResources(taggedResourceIds, totalResources = taggedResourceIds.size)
+      }.map { i =>
+        log.info("Reindexed publisher resources after publisher tagging change: " + i)
+      }
+    }
   }
 
   private def getWebsiteById(id: String): Option[Website] = {

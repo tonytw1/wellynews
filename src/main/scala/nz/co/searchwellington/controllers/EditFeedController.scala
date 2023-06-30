@@ -5,7 +5,7 @@ import jakarta.validation.Valid
 import nz.co.searchwellington.ReasonableWaits
 import nz.co.searchwellington.controllers.submission.EndUserInputs
 import nz.co.searchwellington.forms.EditFeed
-import nz.co.searchwellington.model.{Feed, UrlWordsGenerator, User}
+import nz.co.searchwellington.model.{Feed, Resource, UrlWordsGenerator, User}
 import nz.co.searchwellington.modification.ContentUpdateService
 import nz.co.searchwellington.repositories.elasticsearch.ElasticSearchIndexRebuildService
 import nz.co.searchwellington.repositories.mongo.MongoRepository
@@ -106,20 +106,7 @@ class EditFeedController @Autowired()(contentUpdateService: ContentUpdateService
             log.info("Update result was: " + result)
             if (result) {
               log.info("Updated feed: " + withUpdatedTags)
-              val tagsHaveChanged = f.resource_tags.map(_.tag_id).toSet != withUpdatedTags.resource_tags.map(_.tag_id).toSet
-              val publisherHasChanged = f.publisher != updatedFeed.publisher
-              if (tagsHaveChanged || publisherHasChanged) {
-                // TODO is the feed url has changed we will need to update Whakaoko
-                // This would be easier of the feed knew it's whakaoko subscription id
-                mongoRepository.getResourcesIdsAcceptedFrom(f).flatMap { taggedResourceIds =>
-                  elasticSearchIndexRebuildService.reindexResources(taggedResourceIds, totalResources = taggedResourceIds.size)
-                }.map { i =>
-                  log.info("Reindexed feed newsitems after feed tag or publisher change: " + i)
-                  true
-                }
-              } else {
-                Future.successful(false)
-              }
+              reindexForTagChanges(f, updatedFeed, withUpdatedTags)
             } else {
               Future.successful(true)
             }
@@ -130,6 +117,25 @@ class EditFeedController @Autowired()(contentUpdateService: ContentUpdateService
     }
 
     requiringAdminUser(handleSubmission)
+  }
+
+  // Trying to get this generalised
+  private def reindexForTagChanges(feed: Feed, updatedFeed: Feed, withUpdatedTags: Resource): Future[Boolean] = {
+    // TODO withUpdatedTags is a smell.
+    val tagsHaveChanged = feed.resource_tags.map(_.tag_id).toSet != withUpdatedTags.resource_tags.map(_.tag_id).toSet
+    val publisherHasChanged = feed.publisher != updatedFeed.publisher
+    if (tagsHaveChanged || publisherHasChanged) {
+      // TODO is the feed url has changed we will need to update Whakaoko
+      // This would be easier of the feed knew it's whakaoko subscription id
+      mongoRepository.getResourcesIdsAcceptedFrom(feed).flatMap { taggedResourceIds =>
+        elasticSearchIndexRebuildService.reindexResources(taggedResourceIds, totalResources = taggedResourceIds.size)
+      }.map { i =>
+        log.info("Reindexed feed newsitems after feed tag or publisher change: " + i)
+        true
+      }
+    } else {
+      Future.successful(false)
+    }
   }
 
   private def getFeedById(id: String): Option[Feed] = {
