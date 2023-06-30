@@ -230,6 +230,14 @@ Relevant items which can be manually accepted using the accept action.
 ![Feeds inbox](docs/feeds-inbox.png)
 
 
+
+### RSS output
+
+Example output RSS feed item including tags, media element and geotag.
+
+![Example RSS feed item](docs/rss-item.png)
+
+
 ### Social media Cards / Open Graph images
 
 News items are decorated with Twitter Cards and Open Graph social media images
