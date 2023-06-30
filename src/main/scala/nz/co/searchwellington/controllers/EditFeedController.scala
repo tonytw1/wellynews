@@ -122,9 +122,14 @@ class EditFeedController @Autowired()(contentUpdateService: ContentUpdateService
   // Trying to get this generalised
   private def reindexForTagChanges(feed: Feed, updatedFeed: Feed, withUpdatedTags: Resource): Future[Boolean] = {
     // TODO withUpdatedTags is a smell.
-    val tagsHaveChanged = feed.resource_tags.map(_.tag_id).toSet != withUpdatedTags.resource_tags.map(_.tag_id).toSet
-    val publisherHasChanged = feed.publisher != updatedFeed.publisher
-    if (tagsHaveChanged || publisherHasChanged) {
+
+    def changeEffectsChildren: Boolean = {
+      val tagsHaveChanged = feed.resource_tags.map(_.tag_id).toSet != withUpdatedTags.resource_tags.map(_.tag_id).toSet
+      val publisherHasChanged = feed.publisher != updatedFeed.publisher
+      tagsHaveChanged || publisherHasChanged
+    }
+
+    if (changeEffectsChildren) {
       // TODO is the feed url has changed we will need to update Whakaoko
       // This would be easier of the feed knew it's whakaoko subscription id
       mongoRepository.getResourcesIdsAcceptedFrom(feed).flatMap { taggedResourceIds =>
