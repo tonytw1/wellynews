@@ -1,9 +1,6 @@
 package nz.co.searchwellington.repositories.elasticsearch
 
-import com.sksamuel.elastic4s.Response
-import com.sksamuel.elastic4s.requests.bulk.BulkResponse
 import nz.co.searchwellington.ReasonableWaits
-import nz.co.searchwellington.model.Resource
 import nz.co.searchwellington.repositories.mongo.MongoRepository
 import nz.co.searchwellington.tagging.IndexTagsService
 import nz.co.searchwellington.urls.UrlParser
@@ -24,15 +21,7 @@ import scala.concurrent.{ExecutionContext, Future}
 
   private val BATCH_COMMIT_SIZE = 100
 
-  def index(resource: Resource)(implicit ec: ExecutionContext): Future[Boolean] = {
-    toIndexable(resource).flatMap { toIndex =>
-      elasticSearchIndexer.updateMultipleContentItems(Seq(toIndex))
-    }.map { r: Response[BulkResponse] =>
-      !r.result.hasFailures
-    }
-  }
-
-  def reindexResources(resourcesToIndex: Seq[BSONObjectID], i: Int = 0, totalResources: Int)(implicit ec: ExecutionContext): Future[Int] = {
+  protected[elasticsearch] def reindexResources(resourcesToIndex: Seq[BSONObjectID], i: Int = 0, totalResources: Int)(implicit ec: ExecutionContext): Future[Int] = {
     val remaining = resourcesToIndex.size
 
     def indexBatch(batch: Seq[BSONObjectID], i: Int): Future[Int] = {
