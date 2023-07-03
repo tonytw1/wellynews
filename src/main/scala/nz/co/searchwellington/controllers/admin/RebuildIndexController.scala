@@ -2,7 +2,7 @@ package nz.co.searchwellington.controllers.admin
 
 import nz.co.searchwellington.ReasonableWaits
 import nz.co.searchwellington.controllers.{AcceptFeedItemController, LoggedInUserFilter, RequiringLoggedInUser}
-import nz.co.searchwellington.repositories.elasticsearch.ElasticSearchIndexRebuildService
+import nz.co.searchwellington.queues.ElasticIndexQueue
 import nz.co.searchwellington.repositories.mongo.MongoRepository
 import nz.co.searchwellington.urls.AdminUrlBuilder
 import org.apache.commons.logging.LogFactory
@@ -17,7 +17,7 @@ import scala.concurrent.ExecutionContext.Implicits.global
 
 @Order(2)
 @Controller class RebuildIndexController @Autowired()(mongoRepository: MongoRepository,
-                                                      elasticSearchIndexRebuildService: ElasticSearchIndexRebuildService,
+                                                      elasticIndexQueue: ElasticIndexQueue,
                                                       val loggedInUserFilter: LoggedInUserFilter,
                                                       adminUrlBuilder: AdminUrlBuilder) extends ReasonableWaits
   with RequiringLoggedInUser {
@@ -26,10 +26,14 @@ import scala.concurrent.ExecutionContext.Implicits.global
 
   @RequestMapping(value = Array("/admin/rebuild-index"), method = Array(RequestMethod.GET))
   def prompt(): ModelAndView = {
-      val eventualResult = mongoRepository.getAllResourceIds().flatMap { resourceIds =>
-        elasticSearchIndexRebuildService.reindexResources(resourceIds, totalResources = resourceIds.size)
+      val eventualResult = mongoRepository.getAllResourceIds().map { resourceIds =>
+        resourceIds.foreach { rid =>
+          elasticIndexQueue.add(rid)
+        }
+        resourceIds.size
+
       }.map { i =>
-        log.info("Reindexed " + i + " resources.")
+        log.info("Requested reindex of " + i + " resources.")
         i
       }
 
