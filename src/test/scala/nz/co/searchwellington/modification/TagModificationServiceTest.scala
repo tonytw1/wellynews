@@ -1,18 +1,18 @@
 package nz.co.searchwellington.modification
 
+import nz.co.searchwellington.ReasonableWaits
 import nz.co.searchwellington.model.geo.Geocode
 import nz.co.searchwellington.model.{Newsitem, Tag}
 import nz.co.searchwellington.queues.ElasticIndexQueue
-import nz.co.searchwellington.repositories.elasticsearch.ElasticSearchIndexRebuildService
 import nz.co.searchwellington.repositories.mongo.MongoRepository
 import nz.co.searchwellington.repositories.{HandTaggingService, TagDAO}
 import org.junit.jupiter.api.Test
 import org.mockito.Mockito.{mock, verify, when}
 
 import scala.concurrent.ExecutionContext.Implicits.global
-import scala.concurrent.Future
+import scala.concurrent.{Await, Future}
 
-class TagModificationServiceTest {
+class TagModificationServiceTest extends ReasonableWaits {
 
   private val tagDAO = mock(classOf[TagDAO])
   private val handTaggingService = mock(classOf[HandTaggingService])
@@ -50,7 +50,7 @@ class TagModificationServiceTest {
 
     when(mongoRepository.getResourceIdsByTag(tag)).thenReturn(Future.successful(Seq(taggedResource._id)))
 
-    tagModificationService.updateAffectedResources(tag, updatedWithGeocode)
+    Await.result(tagModificationService.updateAffectedResources(tag, updatedWithGeocode), TenSeconds)
 
     verify(elasticIndexQueue).add(taggedResource._id)
   }
