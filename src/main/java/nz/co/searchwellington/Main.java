@@ -71,6 +71,15 @@ public class Main {
         return new DateRegexCommentFeedDetector();
     }
 
+    @Bean("elasticIndexTaskExecutor")
+    public TaskExecutor elasticIndexTaskExecutor() {
+        ThreadPoolTaskExecutor threadPoolTaskExecutor = new ThreadPoolTaskExecutor();
+        threadPoolTaskExecutor.setCorePoolSize(1);
+        threadPoolTaskExecutor.setMaxPoolSize(2);
+        threadPoolTaskExecutor.setQueueCapacity(50000);
+        return threadPoolTaskExecutor;
+    }
+
     @Bean("feedReaderTaskExecutor")
     public TaskExecutor feedReaderTaskExecutor() {
         ThreadPoolTaskExecutor threadPoolTaskExecutor = new ThreadPoolTaskExecutor();
