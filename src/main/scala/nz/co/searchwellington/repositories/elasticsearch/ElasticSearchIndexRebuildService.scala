@@ -3,8 +3,7 @@ package nz.co.searchwellington.repositories.elasticsearch
 import com.sksamuel.elastic4s.Response
 import com.sksamuel.elastic4s.requests.bulk.BulkResponse
 import nz.co.searchwellington.ReasonableWaits
-import nz.co.searchwellington.model.geo.LatLong
-import nz.co.searchwellington.model.{Feed, Newsitem, Resource, Watchlist, Website}
+import nz.co.searchwellington.model.Resource
 import nz.co.searchwellington.repositories.mongo.MongoRepository
 import nz.co.searchwellington.tagging.IndexTagsService
 import nz.co.searchwellington.urls.UrlParser
@@ -13,7 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
 import reactivemongo.api.bson.BSONObjectID
 
-import scala.concurrent.{Await, ExecutionContext, Future}
+import scala.concurrent.{ExecutionContext, Future}
 
 @Component class ElasticSearchIndexRebuildService @Autowired()(mongoRepository: MongoRepository,
                                                                elasticSearchIndexer: ElasticSearchIndexer,
@@ -37,7 +36,7 @@ import scala.concurrent.{Await, ExecutionContext, Future}
     val remaining = resourcesToIndex.size
 
     def indexBatch(batch: Seq[BSONObjectID], i: Int): Future[Int] = {
-      log.info("Processing batch: " + batch.size + " - " + i + " / " + remaining)
+      log.debug("Processing batch: " + batch.size + " - " + i + " / " + remaining)
 
       val eventualResources = Future.sequence(batch.map(i => mongoRepository.getResourceByObjectId(i))).map(_.flatten)
       val eventualWithIndexTags = eventualResources.flatMap { rs =>
@@ -45,9 +44,13 @@ import scala.concurrent.{Await, ExecutionContext, Future}
       }
 
       eventualWithIndexTags.flatMap { rs =>
-        log.debug("Submitting batch for indexing")
         elasticSearchIndexer.updateMultipleContentItems(rs).map { r =>
-          i + r.result.successes.size
+          if (r.isSuccess) {
+            r.result.successes.size
+          } else {
+            log.warn(s"Got Elastic failure with status: ${r.status}")
+            0
+          }
         }
       }
     }
