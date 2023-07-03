@@ -8,7 +8,7 @@ import nz.co.searchwellington.forms.EditWebsite
 import nz.co.searchwellington.geocoding.osm.GeoCodeService
 import nz.co.searchwellington.model._
 import nz.co.searchwellington.modification.ContentUpdateService
-import nz.co.searchwellington.repositories.elasticsearch.ElasticSearchIndexRebuildService
+import nz.co.searchwellington.queues.ElasticIndexQueue
 import nz.co.searchwellington.repositories.mongo.MongoRepository
 import nz.co.searchwellington.repositories.{ContentRetrievalService, HandTaggingService, TagDAO}
 import nz.co.searchwellington.urls.{UrlBuilder, UrlCleaner}
@@ -34,7 +34,7 @@ class EditWebsiteController @Autowired()(contentUpdateService: ContentUpdateServ
                                          val contentRetrievalService: ContentRetrievalService,
                                          val geocodeService: GeoCodeService,
                                          handTaggingService: HandTaggingService,
-                                         elasticSearchIndexRebuildService: ElasticSearchIndexRebuildService,
+                                         elasticIndexQueue: ElasticIndexQueue,
                                          val urlCleaner: UrlCleaner
                                         ) extends EditScreen with ReasonableWaits with AcceptancePolicyOptions with Errors with GeotagParsing
   with RequiringLoggedInUser with EndUserInputs with HeldSubmissions {
@@ -123,8 +123,8 @@ class EditWebsiteController @Autowired()(contentUpdateService: ContentUpdateServ
     val tagsHaveChanged = w.resource_tags.map(_.tag_id).toSet != withUpdatedTags.resource_tags.map(_.tag_id).toSet
     val geotagHasChanged = w.geocode != withUpdatedTags.geocode
     if (tagsHaveChanged || geotagHasChanged) {
-      mongoRepository.getResourcesIdsForPublisher(w).flatMap { taggedResourceIds =>
-        elasticSearchIndexRebuildService.reindexResources(taggedResourceIds, totalResources = taggedResourceIds.size)
+      mongoRepository.getResourcesIdsForPublisher(w).map { taggedResourceIds =>
+        taggedResourceIds.forall(elasticIndexQueue.add)
       }.map { i =>
         log.info("Reindexed publisher resources after publisher tagging change: " + i)
       }

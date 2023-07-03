@@ -7,7 +7,7 @@ import nz.co.searchwellington.controllers.submission.EndUserInputs
 import nz.co.searchwellington.forms.EditFeed
 import nz.co.searchwellington.model.{Feed, Resource, UrlWordsGenerator, User}
 import nz.co.searchwellington.modification.ContentUpdateService
-import nz.co.searchwellington.repositories.elasticsearch.ElasticSearchIndexRebuildService
+import nz.co.searchwellington.queues.ElasticIndexQueue
 import nz.co.searchwellington.repositories.mongo.MongoRepository
 import nz.co.searchwellington.repositories.{ContentRetrievalService, HandTaggingService, TagDAO}
 import nz.co.searchwellington.urls.{UrlBuilder, UrlCleaner}
@@ -33,7 +33,7 @@ class EditFeedController @Autowired()(contentUpdateService: ContentUpdateService
                                       val tagDAO: TagDAO,
                                       val contentRetrievalService: ContentRetrievalService,
                                       handTaggingService: HandTaggingService,
-                                      elasticSearchIndexRebuildService: ElasticSearchIndexRebuildService,
+                                      elasticIndexQueue: ElasticIndexQueue,
                                       val urlCleaner: UrlCleaner) extends EditScreen with ReasonableWaits with AcceptancePolicyOptions
   with Errors with RequiringLoggedInUser with EndUserInputs with HeldSubmissions {
 
@@ -132,8 +132,8 @@ class EditFeedController @Autowired()(contentUpdateService: ContentUpdateService
     if (changeEffectsChildren) {
       // TODO is the feed url has changed we will need to update Whakaoko
       // This would be easier of the feed knew it's whakaoko subscription id
-      mongoRepository.getResourcesIdsAcceptedFrom(feed).flatMap { taggedResourceIds =>
-        elasticSearchIndexRebuildService.reindexResources(taggedResourceIds, totalResources = taggedResourceIds.size)
+      mongoRepository.getResourcesIdsAcceptedFrom(feed).map { taggedResourceIds =>
+        taggedResourceIds.forall(elasticIndexQueue.add)
       }.map { i =>
         log.info("Reindexed feed newsitems after feed tag or publisher change: " + i)
         true
