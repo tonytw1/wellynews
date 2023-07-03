@@ -7,6 +7,7 @@ import org.apache.commons.logging.LogFactory
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
 import play.api.libs.json.Json
+import reactivemongo.api.bson.BSONObjectID
 
 @Component
 class ElasticIndexQueue @Autowired()(val rabbitConnectionFactory: RabbitConnectionFactory, val registry: MeterRegistry) {
@@ -22,7 +23,11 @@ class ElasticIndexQueue @Autowired()(val rabbitConnectionFactory: RabbitConnecti
   }
 
   def add(resource: Resource): Boolean = try {
-    val request = ElasticIndexRequest(resourceId = resource._id.stringify)
+    add(resource._id)
+  }
+
+  def add(resourceId: BSONObjectID): Boolean = try {
+    val request = ElasticIndexRequest(resourceId = resourceId.stringify)
     val asJson = Json.stringify(Json.toJson(request))
 
     log.info(s"Adding elastic index request to queue: $asJson")

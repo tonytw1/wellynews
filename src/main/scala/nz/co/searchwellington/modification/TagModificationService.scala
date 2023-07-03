@@ -2,7 +2,7 @@ package nz.co.searchwellington.modification
 
 import nz.co.searchwellington.ReasonableWaits
 import nz.co.searchwellington.model.Tag
-import nz.co.searchwellington.repositories.elasticsearch.ElasticSearchIndexRebuildService
+import nz.co.searchwellington.queues.ElasticIndexQueue
 import nz.co.searchwellington.repositories.mongo.MongoRepository
 import nz.co.searchwellington.repositories.{HandTaggingService, TagDAO}
 import org.apache.commons.logging.LogFactory
@@ -14,7 +14,7 @@ import scala.concurrent.{Await, ExecutionContext, Future}
 @Component class TagModificationService @Autowired()(tagDAO: TagDAO,
                                                      handTaggingService: HandTaggingService,
                                                      mongoRepository: MongoRepository,
-                                                     elasticSearchIndexRebuildService: ElasticSearchIndexRebuildService)
+                                                     elasticIndexQueue: ElasticIndexQueue)
   extends ReasonableWaits {
 
   private val log = LogFactory.getLog(classOf[TagModificationService])
@@ -37,10 +37,13 @@ import scala.concurrent.{Await, ExecutionContext, Future}
     val geocodeChanged = tag.geocode != updatedTag.geocode
     val needToUpdateTagsResource = parentHasChanged || geocodeChanged
     if (needToUpdateTagsResource) {
-      mongoRepository.getResourceIdsByTag(tag).flatMap { taggedResourceIds =>
-        elasticSearchIndexRebuildService.reindexResources(taggedResourceIds, totalResources = taggedResourceIds.size)
+      mongoRepository.getResourceIdsByTag(tag).map { taggedResourceIds =>
+        taggedResourceIds.foreach { rid =>
+          elasticIndexQueue.add(rid)
+        }
+        taggedResourceIds.size
       }.map { numberReindexed =>
-        log.info("Reindexed resource after tag parent change: " + numberReindexed)
+        log.info(s"Reindexed $numberReindexed resource after tag parent change")
         numberReindexed
       }
     } else {
