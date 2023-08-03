@@ -1,8 +1,7 @@
 package nz.co.searchwellington.forms;
 
 import com.google.common.collect.Lists;
-import org.hibernate.validator.constraints.NotBlank;
-
+import jakarta.validation.constraints.NotBlank;
 import java.util.List;
 
 public class EditNewsitem {

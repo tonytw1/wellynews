@@ -1,6 +1,6 @@
 package nz.co.searchwellington.forms;
 
-import org.hibernate.validator.constraints.NotBlank;
+import jakarta.validation.constraints.NotBlank;
 
 public class NewWatchlist {
 

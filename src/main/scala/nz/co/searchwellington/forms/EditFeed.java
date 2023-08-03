@@ -2,7 +2,7 @@ package nz.co.searchwellington.forms;
 
 import com.google.common.collect.Lists;
 import nz.co.searchwellington.model.FeedAcceptancePolicy;
-import org.hibernate.validator.constraints.NotBlank;
+import jakarta.validation.constraints.NotBlank;
 
 import java.util.List;
 

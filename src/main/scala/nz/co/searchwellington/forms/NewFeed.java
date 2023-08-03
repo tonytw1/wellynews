@@ -1,7 +1,7 @@
 package nz.co.searchwellington.forms;
 
 import nz.co.searchwellington.model.FeedAcceptancePolicy;
-import org.hibernate.validator.constraints.NotBlank;
+import jakarta.validation.constraints.NotBlank;
 
 public class NewFeed {
 
