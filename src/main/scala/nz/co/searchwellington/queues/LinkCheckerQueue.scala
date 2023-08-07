@@ -18,7 +18,7 @@ class LinkCheckerQueue @Autowired()(val rabbitConnectionFactory: RabbitConnectio
   private val queuedCounter = registry.counter("linkchecker_queued")
 
   {
-    channel.queueDeclare(LinkCheckerQueue.QUEUE_NAME, false, false, false, null)
+    channel.queueDeclare(LinkCheckerQueue.QUEUE_NAME, true, false, false, null)
   }
 
   def add(resource: Resource): Unit = try {
