@@ -9,6 +9,8 @@ import nz.co.searchwellington.urls.{RssUrlBuilder, UrlBuilder}
 import org.joda.time.DateTime
 import org.junit.jupiter.api.Assertions.{assertEquals, assertTrue}
 import org.junit.jupiter.api.Test
+import org.mockito.ArgumentMatchers
+import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.{mock, when}
 import org.springframework.mock.web.MockHttpServletRequest
 
@@ -63,7 +65,12 @@ class IndexModelBuilderTest extends ReasonableWaits with ContentFields {
   @Test
   def indexPageMainContentIsTheLatestNewsitems(): Unit = {
     when(contentRetrievalService.getLatestNewsitems(30, loggedInUser)).thenReturn(Future.successful(latestNewsitems))
-
+    when(contentRetrievalService.getAcceptedNewsitems(
+      ArgumentMatchers.eq(30),
+      ArgumentMatchers.eq(loggedInUser),
+      ArgumentMatchers.eq(None),
+      ArgumentMatchers.any())(any, any)).
+      thenReturn(Future.successful((Seq.empty, 0L)))
     val mv = Await.result(modelBuilder.populateContentModel(request), TenSeconds).get
 
     assertEquals(latestNewsitems.asJava, mv.get(MAIN_CONTENT))
@@ -72,7 +79,14 @@ class IndexModelBuilderTest extends ReasonableWaits with ContentFields {
   @Test
   def recentlyAcceptedItemsLessThanOneWeekOldArePrioritisedSoThatTheyArePickedUpByFeedReaders(): Unit = {
     val recentlyAcceptedItem = FrontendNewsitem(id = "123", name = s"Recently accepted but older publication date",
-      date = Some(new DateTime(latestNewsitems.last.date.get).minusDays(1).toDate), accepted = Some(DateTime.now.toDate))
+        date = Some(new DateTime(latestNewsitems.last.date.get).minusDays(1).toDate), accepted = Some(DateTime.now.toDate))
+
+    when(contentRetrievalService.getAcceptedNewsitems(
+      ArgumentMatchers.eq(30),
+      ArgumentMatchers.eq(loggedInUser),
+      ArgumentMatchers.eq(None),
+      ArgumentMatchers.any())(any, any)).
+      thenReturn(Future.successful((Seq(recentlyAcceptedItem), 1L)))
 
     when(contentRetrievalService.getLatestNewsitems(30, loggedInUser)).thenReturn(Future.successful(latestNewsitems))
 
@@ -80,6 +94,7 @@ class IndexModelBuilderTest extends ReasonableWaits with ContentFields {
 
     val mainContent = mv.get(MAIN_CONTENT).asInstanceOf[util.List[FrontendResource]].asScala.toSeq
     assertTrue(mainContent.contains(recentlyAcceptedItem))
+    assertEquals(31L, mainContent.size)  // TODO we can live with this
   }
 
 }

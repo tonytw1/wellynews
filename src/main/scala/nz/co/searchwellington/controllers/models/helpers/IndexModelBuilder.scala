@@ -9,6 +9,7 @@ import nz.co.searchwellington.model.frontend.{Action, FrontendResource}
 import nz.co.searchwellington.model.helpers.ArchiveLinksService
 import nz.co.searchwellington.repositories.ContentRetrievalService
 import nz.co.searchwellington.urls.{RssUrlBuilder, UrlBuilder}
+import org.joda.time.DateTime
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
 import org.springframework.ui.ModelMap
@@ -32,14 +33,20 @@ import scala.jdk.CollectionConverters._
   }
 
   def populateContentModel(request: HttpServletRequest, loggedInUser: Option[User])(implicit ec: ExecutionContext, currentSpan: Span): Future[Option[ModelMap]] = {
+    val eventualLatestNewsitems = contentRetrievalService.getLatestNewsitems(MAX_NEWSITEMS, loggedInUser = loggedInUser)
+    val eventualRecentlyAccepted = contentRetrievalService.getAcceptedNewsitems(MAX_NEWSITEMS, loggedInUser = loggedInUser, acceptedDate = None, acceptedAfter = Some(DateTime.now.minusDays(1)))
     for {
-      latestNewsitems <- contentRetrievalService.getLatestNewsitems(MAX_NEWSITEMS, loggedInUser = loggedInUser)
+      latestNewsitems <- eventualLatestNewsitems
+      recentlyAccepted <- eventualRecentlyAccepted
     } yield {
+      val recentlyAcceptedToPromote = recentlyAccepted._1.filterNot(latestNewsitems.contains)
+      val mainNewsitems = latestNewsitems ++ recentlyAcceptedToPromote
+
       val mv = new ModelMap().
         addAttribute("heading", "Wellynews").
         addAttribute("description", "Wellington related newsitems").
         addAttribute("link", urlBuilder.fullyQualified(urlBuilder.getHomeUri)).
-        addAttribute(MAIN_CONTENT, latestNewsitems.asJava)
+        addAttribute(MAIN_CONTENT, mainNewsitems.asJava)
 
       monthOfLastItem(latestNewsitems).map { month =>
         mv.addAttribute("main_content_moreurl", urlBuilder.getIntervalUrl(month))
@@ -103,7 +110,7 @@ import scala.jdk.CollectionConverters._
   }
 
   def getViewName(mv: ModelMap, loggedInUser: Option[User]): String = "index"
-  
+
   private def populateGeocoded(geocoded: Seq[FrontendResource]): ModelMap = {
     if (geocoded.nonEmpty) {
       new ModelMap().addAttribute("geocoded", geocoded.asJava)
