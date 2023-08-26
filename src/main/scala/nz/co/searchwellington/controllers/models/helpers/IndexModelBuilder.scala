@@ -39,7 +39,9 @@ import scala.jdk.CollectionConverters._
       latestNewsitems <- eventualLatestNewsitems
       recentlyAccepted <- eventualRecentlyAccepted
     } yield {
-      val recentlyAcceptedToPromote = recentlyAccepted._1.filterNot(latestNewsitems.contains)
+      val recentlyAcceptedToPromote = recentlyAccepted._1.filterNot(latestNewsitems.contains).filter { fni =>
+        fni.date.exists(_.after(DateTime.now().minusWeeks(2).toDate)) // TODO push to query
+      }
       val mainNewsitems = latestNewsitems ++ recentlyAcceptedToPromote
 
       val mv = new ModelMap().
