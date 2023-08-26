@@ -30,9 +30,6 @@ class IndexModelBuilderTest extends ReasonableWaits with ContentFields {
     request
   }
 
-  private val newsitem = FrontendNewsitem(id = "123", name = "Newsitem title", date =Some(DateTime.now.toDate))
-  private val anotherNewsitem = FrontendNewsitem(id = "456", name = "Newsitem title", date =Some(DateTime.now.toDate))
-  private val latestNewsitems = Seq(newsitem, anotherNewsitem)
 
   private val loggedInUser = None
 
@@ -59,6 +56,12 @@ class IndexModelBuilderTest extends ReasonableWaits with ContentFields {
 
   @Test
   def indexPageMainContentIsTheLatestNewsitems(): Unit = {
+    val latestNewsitems = {
+      Range.inclusive(1, 30).map { i =>
+        FrontendNewsitem(id = i.toString, name = s"Newsitem title $i", date = Some(DateTime.now.minusDays(i).toDate))
+      }
+    }
+
     when(contentRetrievalService.getLatestNewsitems(30, loggedInUser)).thenReturn(Future.successful(latestNewsitems))
 
     val mv = Await.result(modelBuilder.populateContentModel(request), TenSeconds).get
