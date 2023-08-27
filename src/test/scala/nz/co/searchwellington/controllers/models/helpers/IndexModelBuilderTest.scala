@@ -6,12 +6,12 @@ import nz.co.searchwellington.model.frontend.{FrontendNewsitem, FrontendResource
 import nz.co.searchwellington.model.helpers.ArchiveLinksService
 import nz.co.searchwellington.repositories.ContentRetrievalService
 import nz.co.searchwellington.urls.{RssUrlBuilder, UrlBuilder}
-import org.joda.time.DateTime
+import org.joda.time.{DateTime, Duration}
 import org.junit.jupiter.api.Assertions.{assertEquals, assertTrue}
 import org.junit.jupiter.api.Test
-import org.mockito.ArgumentMatchers
 import org.mockito.ArgumentMatchers.any
-import org.mockito.Mockito.{mock, when}
+import org.mockito.Mockito.{mock, verify, when}
+import org.mockito.{ArgumentCaptor, ArgumentMatchers}
 import org.springframework.mock.web.MockHttpServletRequest
 
 import java.util
@@ -43,7 +43,7 @@ class IndexModelBuilderTest extends ReasonableWaits with ContentFields {
 
   private implicit val currentSpan: Span = Span.current()
 
-  private val modelBuilder =  new IndexModelBuilder(contentRetrievalService, rssUrlBuilder, urlBuilder, archiveLinksService, commonAttributesModelBuilder)
+  private val modelBuilder = new IndexModelBuilder(contentRetrievalService, rssUrlBuilder, urlBuilder, archiveLinksService, commonAttributesModelBuilder)
 
   @Test
   def isValidForHomePageUrl(): Unit = {
@@ -81,14 +81,14 @@ class IndexModelBuilderTest extends ReasonableWaits with ContentFields {
   @Test
   def recentlyAcceptedItemsLessThanOneWeekOldArePrioritisedSoThatTheyArePickedUpByFeedReaders(): Unit = {
     val recentlyAcceptedItem = FrontendNewsitem(id = "123", name = s"Recently accepted but older publication date",
-        date = Some(new DateTime(latestNewsitems.last.date.get).minusDays(1).toDate), accepted = Some(DateTime.now.toDate))
+      date = Some(new DateTime(latestNewsitems.last.date.get).minusDays(1).toDate), accepted = Some(DateTime.now.toDate))
 
     when(contentRetrievalService.getAcceptedNewsitems(
       ArgumentMatchers.eq(30),
       ArgumentMatchers.eq(loggedInUser),
       ArgumentMatchers.eq(None),
-      ArgumentMatchers.any(), // TODO assert
-      ArgumentMatchers.any()  // TODO assert
+      ArgumentMatchers.any(),
+      ArgumentMatchers.any()
     )(any, any)).
       thenReturn(Future.successful((Seq(recentlyAcceptedItem), 1L)))
 
@@ -97,8 +97,23 @@ class IndexModelBuilderTest extends ReasonableWaits with ContentFields {
     val mv = Await.result(modelBuilder.populateContentModel(request), TenSeconds).get
 
     val mainContent = mv.get(MAIN_CONTENT).asInstanceOf[util.List[FrontendResource]].asScala.toSeq
+
+    val acceptedAfter: ArgumentCaptor[Option[DateTime]] = ArgumentCaptor.forClass(classOf[Option[DateTime]])
+    val publishedAfter: ArgumentCaptor[Option[DateTime]] = ArgumentCaptor.forClass(classOf[Option[DateTime]])
+
+    verify(contentRetrievalService).getAcceptedNewsitems(
+      ArgumentMatchers.eq(30),
+      ArgumentMatchers.eq(loggedInUser),
+      ArgumentMatchers.eq(None),
+      acceptedAfter.capture(),
+      publishedAfter.capture()
+    )(any, any)
+
+    assertTrue(Math.abs(new Duration(DateTime.now.minusDays(1), acceptedAfter.getValue.get).getMillis) < 1000)
+    assertTrue(Math.abs(new Duration(DateTime.now.minusWeeks(2), publishedAfter.getValue.get).getMillis) < 1000)
+
     assertTrue(mainContent.contains(recentlyAcceptedItem))
-    assertEquals(31L, mainContent.size)  // TODO we can live with this
+    assertEquals(31L, mainContent.size) // TODO we can live with this
   }
 
 }
