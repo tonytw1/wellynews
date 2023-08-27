@@ -378,13 +378,15 @@ class ElasticSearchIndexer @Autowired()(val showBrokenDecisionService: ShowBroke
       query.before.map { d =>
         rangeQuery(Date) lt d.getMillis
       },
+      query.after.map { d =>
+        rangeQuery(Date) gt d.getMillis
+      },
       query.acceptedDate.map { a: LocalDate =>
         val asInterval = a.toInterval() // TODO probably want to make this parameter an Interval to push the timezone decision up
         rangeQuery(AcceptedDate) gte asInterval.getStartMillis lt asInterval.getEndMillis
       },
-      query.acceptedAfter.map { a: LocalDate =>
-        val asInterval = a.toInterval() // TODO probably want to make this parameter an Interval to push the timezone decision up
-        rangeQuery(AcceptedDate) gte asInterval.getStartMillis
+      query.acceptedAfter.map { a: DateTime =>
+        rangeQuery(AcceptedDate) gte a.getMillis
       },
       query.q.map { qt =>
         val titleMatches = matchQuery(Title, qt).boost(5)

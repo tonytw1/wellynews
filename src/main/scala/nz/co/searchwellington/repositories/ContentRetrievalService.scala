@@ -229,9 +229,9 @@ import scala.concurrent.{ExecutionContext, Future}
     elasticSearchIndexer.getResources(latestWebsites, loggedInUser = loggedInUser).flatMap(r => buildFrontendResourcesFor(r, loggedInUser))
   }
 
-  def getAcceptedNewsitems(maxItems: Int, loggedInUser: Option[User], acceptedDate: Option[LocalDate] = None)(implicit ec: ExecutionContext, currentSpan: Span): Future[(Seq[FrontendResource], Long)] = {
-    val acceptNewsitems = ResourceQuery(`type` = newsitems, maxItems = maxItems, acceptedDate = acceptedDate) // TODO needs not null clause
-    elasticSearchIndexer.getResources(acceptNewsitems, elasticSearchIndexer.byAcceptedDate, loggedInUser = loggedInUser).flatMap(r => buildFrontendResourcesFor(r, loggedInUser))
+  def getAcceptedNewsitems(maxItems: Int, loggedInUser: Option[User], acceptedDate: Option[LocalDate] = None, acceptedAfter: Option[DateTime] = None, publishedAfter: Option[DateTime] = None)(implicit ec: ExecutionContext, currentSpan: Span): Future[(Seq[FrontendResource], Long)] = {
+    val acceptedNewsitems = ResourceQuery(`type` = newsitems, maxItems = maxItems, acceptedDate = acceptedDate, acceptedAfter = acceptedAfter, after = publishedAfter)
+    elasticSearchIndexer.getResources(acceptedNewsitems, elasticSearchIndexer.byAcceptedDate, loggedInUser = loggedInUser).flatMap(r => buildFrontendResourcesFor(r, loggedInUser))
   }
 
   def getOwnedBy(user: User, loggedInUser: Option[User], maxItems: Int)(implicit ec: ExecutionContext, currentSpan: Span): Future[(Seq[FrontendResource], Long)] = {
@@ -264,7 +264,7 @@ import scala.concurrent.{ExecutionContext, Future}
   }
 
   def getAcceptedDates(loggedInUser: Option[User])(implicit ec: ExecutionContext, currentSpan: Span): Future[Seq[(java.time.LocalDate, Long)]] = {
-      val twoWeeksAgo = DateTime.now.toLocalDate.minusWeeks(2)
+      val twoWeeksAgo = DateTime.now.toLocalDate.minusWeeks(2).toDateTimeAtStartOfDay
       val allNewsitemsAcceptedInTheLastTwoWeeks = allNewsitems.copy(acceptedAfter = Some(twoWeeksAgo))
       elasticSearchIndexer.createdAcceptedDateAggregationFor(allNewsitemsAcceptedInTheLastTwoWeeks, loggedInUser)
   }
