@@ -230,6 +230,18 @@ Relevant items which can be manually accepted using the accept action.
 ![Feeds inbox](docs/feeds-inbox.png)
 
 
+### Promotion of recently accepted news items
+
+The main news items page and RSS feed contains the most recent 30 news items ordered by publication date.
+
+Reviewing the suggested feeds items is an infrequent activity and good content may mess out on been surfaced in the main feed
+if it's publication date is not recent.
+
+If a news items is manually accepted from a suggested feed and has a publication date which is not recent enough
+to show in the main feed and is within the last 2 weeks it will be appended to the main feed for 1 day.
+
+This makes manually accepted content visible to feed consumers.
+
 
 ### RSS output
 
