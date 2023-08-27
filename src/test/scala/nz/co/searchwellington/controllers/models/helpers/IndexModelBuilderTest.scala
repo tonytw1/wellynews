@@ -69,7 +69,9 @@ class IndexModelBuilderTest extends ReasonableWaits with ContentFields {
       ArgumentMatchers.eq(30),
       ArgumentMatchers.eq(loggedInUser),
       ArgumentMatchers.eq(None),
-      ArgumentMatchers.any())(any, any)).
+      ArgumentMatchers.any(),
+      ArgumentMatchers.any()
+    )(any, any)).
       thenReturn(Future.successful((Seq.empty, 0L)))
     val mv = Await.result(modelBuilder.populateContentModel(request), TenSeconds).get
 
@@ -85,7 +87,9 @@ class IndexModelBuilderTest extends ReasonableWaits with ContentFields {
       ArgumentMatchers.eq(30),
       ArgumentMatchers.eq(loggedInUser),
       ArgumentMatchers.eq(None),
-      ArgumentMatchers.any())(any, any)).
+      ArgumentMatchers.any(), // TODO assert
+      ArgumentMatchers.any()  // TODO assert
+    )(any, any)).
       thenReturn(Future.successful((Seq(recentlyAcceptedItem), 1L)))
 
     when(contentRetrievalService.getLatestNewsitems(30, loggedInUser)).thenReturn(Future.successful(latestNewsitems))

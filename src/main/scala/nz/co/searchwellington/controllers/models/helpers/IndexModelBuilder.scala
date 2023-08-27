@@ -34,14 +34,15 @@ import scala.jdk.CollectionConverters._
 
   def populateContentModel(request: HttpServletRequest, loggedInUser: Option[User])(implicit ec: ExecutionContext, currentSpan: Span): Future[Option[ModelMap]] = {
     val eventualLatestNewsitems = contentRetrievalService.getLatestNewsitems(MAX_NEWSITEMS, loggedInUser = loggedInUser)
-    val eventualRecentlyAccepted = contentRetrievalService.getAcceptedNewsitems(MAX_NEWSITEMS, loggedInUser = loggedInUser, acceptedDate = None, acceptedAfter = Some(DateTime.now.minusDays(1)))
+    val eventualRecentlyAccepted = contentRetrievalService.getAcceptedNewsitems(MAX_NEWSITEMS, loggedInUser = loggedInUser, acceptedDate = None,
+      acceptedAfter = Some(DateTime.now.minusDays(1)),
+      publishedAfter = Some(DateTime.now.minusWeeks(2))
+    )
     for {
       latestNewsitems <- eventualLatestNewsitems
       recentlyAccepted <- eventualRecentlyAccepted
     } yield {
-      val recentlyAcceptedToPromote = recentlyAccepted._1.filterNot(latestNewsitems.contains).filter { fni =>
-        fni.date.exists(_.after(DateTime.now().minusWeeks(2).toDate)) // TODO push to query
-      }
+      val recentlyAcceptedToPromote = recentlyAccepted._1.filterNot(latestNewsitems.contains)
       val mainNewsitems = latestNewsitems ++ recentlyAcceptedToPromote
 
       val mv = new ModelMap().

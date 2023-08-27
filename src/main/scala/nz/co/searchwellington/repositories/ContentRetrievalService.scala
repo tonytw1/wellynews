@@ -229,8 +229,8 @@ import scala.concurrent.{ExecutionContext, Future}
     elasticSearchIndexer.getResources(latestWebsites, loggedInUser = loggedInUser).flatMap(r => buildFrontendResourcesFor(r, loggedInUser))
   }
 
-  def getAcceptedNewsitems(maxItems: Int, loggedInUser: Option[User], acceptedDate: Option[LocalDate] = None, acceptedAfter: Option[DateTime] = None)(implicit ec: ExecutionContext, currentSpan: Span): Future[(Seq[FrontendResource], Long)] = {
-    val acceptedNewsitems = ResourceQuery(`type` = newsitems, maxItems = maxItems, acceptedDate = acceptedDate, acceptedAfter = acceptedAfter)
+  def getAcceptedNewsitems(maxItems: Int, loggedInUser: Option[User], acceptedDate: Option[LocalDate] = None, acceptedAfter: Option[DateTime] = None, publishedAfter: Option[DateTime] = None)(implicit ec: ExecutionContext, currentSpan: Span): Future[(Seq[FrontendResource], Long)] = {
+    val acceptedNewsitems = ResourceQuery(`type` = newsitems, maxItems = maxItems, acceptedDate = acceptedDate, acceptedAfter = acceptedAfter, after = publishedAfter)
     elasticSearchIndexer.getResources(acceptedNewsitems, elasticSearchIndexer.byAcceptedDate, loggedInUser = loggedInUser).flatMap(r => buildFrontendResourcesFor(r, loggedInUser))
   }
 
