@@ -44,22 +44,15 @@ import scala.jdk.CollectionConverters._
             taggingVotes <- eventualTaggingVotes
 
           } yield {
-            val mv = new ModelMap().
-              addAttribute("item", frontendResource).
-              addAttribute("heading", resource.title)
-
-            val handTaggingVotes = taggingVotes.filter { vote =>
-              vote match {
-                case h: HandTagging => true
-                case _ => false
-              }
-            }
-
+            val handTaggingVotes = taggingVotes.collect { case h: HandTagging => h }
             val otherTaggingVotes = taggingVotes.filterNot(handTaggingVotes.contains(_))
 
-            mv.addAttribute("hand_tagging_votes", handTaggingVotes.asJava)
-            mv.addAttribute("other_tagging_votes", otherTaggingVotes.asJava)
-            mv.addAttribute("geotag_votes", geotagVotes.asJava)
+            val mv = new ModelMap().
+              addAttribute("item", frontendResource).
+              addAttribute("heading", resource.title).
+              addAttribute("hand_tagging_votes", handTaggingVotes.asJava).
+              addAttribute("other_tagging_votes", otherTaggingVotes.asJava).
+              addAttribute("geotag_votes", geotagVotes.asJava)
 
             frontendResource.geocode.foreach { _ =>
               mv.addAttribute("geocoded", List(frontendResource).asJava)
