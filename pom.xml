@@ -9,7 +9,7 @@
     <description>Wellynews website</description>
 
     <properties>
-        <scala.version>2.13.11</scala.version>
+        <scala.version>2.13.12</scala.version>
         <elastic4s.version>8.9.1</elastic4s.version>
         <jackson.version>2.13.4</jackson.version>
         <playWsStandalone.version>2.1.10</playWsStandalone.version>
