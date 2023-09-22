@@ -12,7 +12,7 @@
         <scala.version>2.13.12</scala.version>
         <elastic4s.version>8.9.1</elastic4s.version>
         <jackson.version>2.13.4</jackson.version>
-        <playWsStandalone.version>2.1.10</playWsStandalone.version>
+        <playWsStandalone.version>2.2.2</playWsStandalone.version>
         <!-- 2.6 is the last version of akka with a free licence; must not be increased above 2.6 -->
         <akka.version>2.6.10</akka.version>
         <maven.compiler.source>17</maven.compiler.source>
