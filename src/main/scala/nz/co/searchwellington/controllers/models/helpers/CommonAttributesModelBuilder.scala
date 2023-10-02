@@ -2,14 +2,12 @@ package nz.co.searchwellington.controllers.models.helpers
 
 import nz.co.searchwellington.ReasonableWaits
 import nz.co.searchwellington.model.frontend.FrontendResource
-import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
 import org.springframework.ui.ModelMap
-import org.springframework.web.servlet.ModelAndView
 
 import scala.jdk.CollectionConverters._
 
-@Component class CommonAttributesModelBuilder @Autowired()() extends CommonSizes
+@Component class CommonAttributesModelBuilder extends CommonSizes
   with ReasonableWaits {
 
   def setRss(mv: ModelMap, title: String, url: String): Unit = {

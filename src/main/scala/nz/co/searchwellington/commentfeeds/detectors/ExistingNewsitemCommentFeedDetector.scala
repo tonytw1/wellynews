@@ -3,14 +3,12 @@ package nz.co.searchwellington.commentfeeds.detectors
 import nz.co.searchwellington.ReasonableWaits
 import nz.co.searchwellington.model.{Newsitem, Resource}
 import org.apache.commons.logging.LogFactory
-import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
 
 import java.net.URL
 
 @Component
-class ExistingNewsitemCommentFeedDetector @Autowired()()
-  extends CommentFeedDetector with ReasonableWaits {
+class ExistingNewsitemCommentFeedDetector extends CommentFeedDetector with ReasonableWaits {
 
   private val log = LogFactory.getLog(classOf[ExistingNewsitemCommentFeedDetector])
 

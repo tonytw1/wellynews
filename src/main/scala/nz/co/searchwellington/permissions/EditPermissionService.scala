@@ -1,14 +1,12 @@
 package nz.co.searchwellington.permissions
 
 import com.google.common.base.Strings
-import nz.co.searchwellington.controllers.LoggedInUserFilter
 import nz.co.searchwellington.model._
 import nz.co.searchwellington.model.frontend.FrontendResource
-import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
 
 @Component
-class EditPermissionService @Autowired()() {
+class EditPermissionService {
 
   def canEdit(resource: Resource, loggedInUser: Option[User]): Boolean = {
     isAdminOrOwner(resource, loggedInUser)
