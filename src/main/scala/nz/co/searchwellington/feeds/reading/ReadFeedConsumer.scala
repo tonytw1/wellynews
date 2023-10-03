@@ -5,7 +5,7 @@ import io.micrometer.core.instrument.MeterRegistry
 import io.opentelemetry.api.trace.Span
 import nz.co.searchwellington.feeds.FeedReader
 import nz.co.searchwellington.model.{Feed, FeedAcceptancePolicy, User}
-import nz.co.searchwellington.queues.{RabbitConnectionFactory, ReadFeedQueue}
+import nz.co.searchwellington.queues.{RabbitConnectionFactory, ReadFeedQueue, RestrainedRabbitConnection}
 import nz.co.searchwellington.repositories.mongo.MongoRepository
 import org.apache.commons.logging.LogFactory
 import org.springframework.beans.factory.annotation.{Autowired, Qualifier}
@@ -16,11 +16,11 @@ import reactivemongo.api.bson.BSONObjectID
 
 import scala.concurrent.{ExecutionContext, ExecutionContextExecutor, Future}
 
-@Component class ReadFeedConsumer @Autowired()(rabbitConnectionFactory: RabbitConnectionFactory,
+@Component class ReadFeedConsumer @Autowired()(val rabbitConnectionFactory: RabbitConnectionFactory,
                                                @Qualifier("feedReaderTaskExecutor") feedReaderTaskExecutor: TaskExecutor,
                                                feedReader: FeedReader,
                                                mongoRepository: MongoRepository,
-                                               registry: MeterRegistry) {
+                                               registry: MeterRegistry) extends RestrainedRabbitConnection {
 
   private val log = LogFactory.getLog(classOf[ReadFeedConsumer])
 
@@ -31,13 +31,7 @@ import scala.concurrent.{ExecutionContext, ExecutionContextExecutor, Future}
   {
     log.info("Starting read feed listener")
     try {
-      val connection = rabbitConnectionFactory.connect
-
-      val channel = connection.createChannel
-      // The consumer immediately dispatches each new message into a Future.
-      // There is no back pressure from the consumer to stop Rabbit flooding us.
-      // So we'll use the Rabbit channel maximum unacked messages / Qos as our flow control.
-      channel.basicQos(maximumConcurrentChecks)
+      val channel = channelWithMaximumConcurrentChecks(maximumConcurrentChecks)
 
       implicit val executionContext: ExecutionContextExecutor = ExecutionContext.fromExecutor(feedReaderTaskExecutor)
 

@@ -2,7 +2,7 @@ package nz.co.searchwellington.repositories.elasticsearch
 
 import com.rabbitmq.client.{CancelCallback, Channel, DeliverCallback, Delivery}
 import io.micrometer.core.instrument.MeterRegistry
-import nz.co.searchwellington.queues.{ElasticIndexQueue, ElasticIndexRequest, RabbitConnectionFactory}
+import nz.co.searchwellington.queues.{ElasticIndexQueue, ElasticIndexRequest, RabbitConnectionFactory, RestrainedRabbitConnection}
 import org.apache.commons.logging.LogFactory
 import org.springframework.beans.factory.annotation.{Autowired, Qualifier}
 import org.springframework.core.task.TaskExecutor
@@ -14,9 +14,9 @@ import scala.concurrent.{ExecutionContext, ExecutionContextExecutor}
 
 @Component
 class ElasticIndexConsumer @Autowired()(elasticSearchIndexRebuildService: ElasticSearchIndexRebuildService,
-                                        rabbitConnectionFactory: RabbitConnectionFactory,
+                                        val rabbitConnectionFactory: RabbitConnectionFactory,
                                         @Qualifier("elasticIndexTaskExecutor") taskExecutor: TaskExecutor,
-                                        registry: MeterRegistry) {
+                                        registry: MeterRegistry) extends RestrainedRabbitConnection {
 
   private val log = LogFactory.getLog(classOf[ElasticIndexConsumer])
 
@@ -27,13 +27,7 @@ class ElasticIndexConsumer @Autowired()(elasticSearchIndexRebuildService: Elasti
   {
     log.info("Starting elastic index listener")
     try {
-      val connection = rabbitConnectionFactory.connect
-
-      val channel = connection.createChannel
-      // The consumer immediately dispatches each new message into a Future.
-      // There is no back pressure from the consumer to stop Rabbit flooding us.
-      // So we'll use the Rabbit channel maximum unacked messages / Qos as our flow control.
-      channel.basicQos(maximumConcurrentChecks)
+      val channel = channelWithMaximumConcurrentChecks(maximumConcurrentChecks)
 
       implicit val executionContext: ExecutionContextExecutor = ExecutionContext.fromExecutor(taskExecutor)
 
