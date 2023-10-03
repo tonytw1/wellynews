@@ -19,7 +19,7 @@ import scala.concurrent.{ExecutionContext, Future}
   }
 
   // TODO cleaning and filtering?
-  private def checkForChangeUsingSnapshots(checkResource: Resource, pageContent: Option[String], seen: DateTime)(implicit ec: ExecutionContext) = {
+  private def checkForChangeUsingSnapshots(checkResource: Resource, pageContent: Option[String], seen: DateTime)(implicit ec: ExecutionContext): Unit = {
     log.debug("Comparing content before and after snapshots from content change.")
     pageContent.foreach { pageContent =>
       val previousHash: Option[String] = snapshotArchive.getLatestHashFor(checkResource.page)
