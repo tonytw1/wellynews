@@ -45,7 +45,8 @@ import scala.concurrent.{ExecutionContext, ExecutionContextExecutor}
         }
         catch {
           case e: Exception =>
-            log.error("Error while processing link checker message: ", e)
+            log.error("Error while processing; rejecting message ", e)
+            channel.basicReject(message.getEnvelope.getDeliveryTag, false)
         }
       }
 
