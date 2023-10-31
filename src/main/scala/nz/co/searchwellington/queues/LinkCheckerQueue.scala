@@ -2,7 +2,6 @@ package nz.co.searchwellington.queues
 
 import io.micrometer.core.instrument.MeterRegistry
 import nz.co.searchwellington.linkchecking.LinkCheckRequest
-import nz.co.searchwellington.model.Resource
 import org.apache.commons.logging.LogFactory
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
@@ -21,10 +20,8 @@ class LinkCheckerQueue @Autowired()(val rabbitConnectionFactory: RabbitConnectio
     channel.queueDeclare(LinkCheckerQueue.QUEUE_NAME, true, false, false, null)
   }
 
-  def add(resource: Resource): Unit = try {
-    val request = LinkCheckRequest(resourceId = resource._id.stringify, lastScanned = resource.last_scanned)
+  def add(request: LinkCheckRequest): Unit = try {
     val asJson = Json.stringify(Json.toJson(request))
-
     log.info(s"Adding link check request to queue: $asJson")
     channel.basicPublish("", LinkCheckerQueue.QUEUE_NAME, null, asJson.getBytes)
     queuedCounter.increment()

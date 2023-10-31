@@ -33,7 +33,7 @@ import scala.concurrent.ExecutionContext.Implicits.global
     def checkResource(loggedInUser: User): ModelAndView = {
       getResourceById(id).map { resource =>
         log.info("Adding resource to queue: " + resource.id + "(" + resource._id.stringify + ")")
-        queue.add(resource)
+        queue.add(LinkCheckRequest(resource._id.stringify, resource.last_scanned))
         new ModelAndView(new RedirectView(urlStack.getExitUrlFromStack(request)))
       }
     }.getOrElse {

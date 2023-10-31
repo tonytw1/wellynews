@@ -1,5 +1,6 @@
 package nz.co.searchwellington.modification
 
+import nz.co.searchwellington.linkchecking.LinkCheckRequest
 import nz.co.searchwellington.model.Resource
 import nz.co.searchwellington.queues.{ElasticIndexQueue, LinkCheckerQueue}
 import nz.co.searchwellington.repositories.mongo.MongoRepository
@@ -48,6 +49,6 @@ import scala.concurrent.{ExecutionContext, Future}
   }
 
   private def queueLinkCheck(resource: Resource): Unit = {
-    linkCheckerQueue.add(resource)
+    linkCheckerQueue.add(LinkCheckRequest(resource._id.stringify, resource.last_scanned))
   }
 }

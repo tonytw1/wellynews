@@ -1,6 +1,7 @@
 package nz.co.searchwellington.jobs
 
 import nz.co.searchwellington.ReasonableWaits
+import nz.co.searchwellington.linkchecking.LinkCheckRequest
 import nz.co.searchwellington.model.Resource
 import nz.co.searchwellington.queues.LinkCheckerQueue
 import nz.co.searchwellington.repositories.mongo.MongoRepository
@@ -57,7 +58,7 @@ import scala.concurrent.{Await, Future}
     mongoRepository.getResourceByObjectId(r).map { maybeResource: Option[Resource] =>
       maybeResource.map { resource =>
         log.info("Queuing for scheduled checking: " + resource._id.stringify)
-        linkCheckerQueue.add(resource)
+        linkCheckerQueue.add(LinkCheckRequest(resourceId = resource._id.stringify, lastScanned = resource.last_scanned))
         resource._id.stringify
       }
     }

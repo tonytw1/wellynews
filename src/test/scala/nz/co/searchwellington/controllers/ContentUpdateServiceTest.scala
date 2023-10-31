@@ -1,10 +1,12 @@
 package nz.co.searchwellington.controllers
 
 import nz.co.searchwellington.ReasonableWaits
+import nz.co.searchwellington.linkchecking.LinkCheckRequest
 import nz.co.searchwellington.model.{Newsitem, Website}
 import nz.co.searchwellington.modification.ContentUpdateService
 import nz.co.searchwellington.queues.{ElasticIndexQueue, LinkCheckerQueue}
 import nz.co.searchwellington.repositories.mongo.MongoRepository
+import org.joda.time.DateTime
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
 import org.mockito.Mockito.{mock, verify, when}
@@ -57,12 +59,12 @@ class ContentUpdateServiceTest extends ReasonableWaits {
 
     Await.result(service.create(newResource), TenSeconds)
 
-    verify(linkCheckerQueue).add(newResource)
+    verify(linkCheckerQueue).add(LinkCheckRequest(newResource._id.stringify, None))
   }
 
   @Test
   def shouldQueueUpdatedUrlsForLinkChecking(): Unit = {
-    val resource = Website(page = "http://localhost/old-url")
+    val resource = Website(page = "http://localhost/old-url", last_scanned = Some(DateTime.now().toDate))
     val updatedResource = resource.copy(page = "http://localhost/new-url")
     when(mongoRepository.getResourceByObjectId(updatedResource._id)).thenReturn(Future.successful(Some(resource)))
     when(mongoRepository.saveResource(updatedResource)).thenReturn(Future.successful(successfulUpdateResult))
@@ -72,7 +74,7 @@ class ContentUpdateServiceTest extends ReasonableWaits {
     Await.result(service.update(updatedResource), TenSeconds)
 
     assertEquals(resource._id, updatedResource._id)
-    verify(linkCheckerQueue).add(updatedResource)
+    verify(linkCheckerQueue).add(LinkCheckRequest(updatedResource._id.stringify, updatedResource.last_scanned))
   }
 
 }
