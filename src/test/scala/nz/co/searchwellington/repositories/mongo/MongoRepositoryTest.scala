@@ -47,7 +47,7 @@ class MongoRepositoryTest extends ReasonableWaits {
     }
     val ids = resources.map(_._id)
 
-    val reread = Await.result(mongoRepository.getResourceByObjectIds(ids), TenSeconds)
+    val reread = Await.result(mongoRepository.getResourcesByObjectIds(ids), TenSeconds)
 
     assertEquals(3, reread.size)
   }

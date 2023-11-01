@@ -435,7 +435,7 @@ import scala.concurrent.{ExecutionContext, Future}
   }
 
   private def fetchResourcesForElasticResources(elasticResources: Seq[ElasticResource])(implicit ec: ExecutionContext): Future[Seq[Resource]] = {
-     mongoRepository.getResourceByObjectIds(elasticResources.map(_._id))
+     mongoRepository.getResourcesByObjectIds(elasticResources.map(_._id))
   }
 
   private def archiveLinksFromIntervals(intervals: Seq[(Interval, Long)]): Seq[ArchiveLink] = {
