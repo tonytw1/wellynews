@@ -336,14 +336,20 @@ class MongoRepository @Autowired()(@Value("${mongo.uri}") mongoUri: String) exte
     }
   }
 
-  def getNotCheckedSince(lastScanned: DateTime, maxItems: Int)(implicit ec: ExecutionContext): Future[Seq[BSONObjectID]] = {
+  def getNotCheckedSince(lastScanned: DateTime, maxItems: Int)(implicit ec: ExecutionContext): Future[Seq[(BSONObjectID, Option[Date])]] = {
     val selector = BSONDocument(
       "last_scanned" -> BSONDocument(
         "$lt" -> BSONDateTime(lastScanned.getMillis)
       )
     )
-    resourceCollection.find(selector, Some(idOnlyProjection)).cursor[BSONDocument]().collect[List](maxDocs = maxItems, err = Cursor.FailOnError[List[BSONDocument]]()).map { r =>
-      r.flatMap(i => i.getAsOpt[BSONObjectID]("_id"))
+    resourceCollection.find(selector, Some(idAndLastScannedOnlyProjection)).cursor[BSONDocument]().collect[List](maxDocs = maxItems, err = Cursor.FailOnError[List[BSONDocument]]()).map { rs =>
+      rs.flatMap { r =>
+        for {
+          id <- r.getAsOpt[BSONObjectID]("_id")
+        } yield {
+          (id, r.getAsOpt[Date]("last_scanned"))
+        }
+      }
     }
   }
 
@@ -477,4 +483,6 @@ class MongoRepository @Autowired()(@Value("${mongo.uri}") mongoUri: String) exte
 
   private val noProjection: Option[BSONDocument] = None
   private val idOnlyProjection = BSONDocument("_id" -> 1)
+  private val idAndLastScannedOnlyProjection = BSONDocument("_id" -> 1, "last_scanned" -> 1)
+
 }

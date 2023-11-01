@@ -36,7 +36,8 @@ import scala.concurrent.{Await, Future}
 
     log.info("Queuing items")
     def neverScanned = mongoRepository.getNeverScanned(numberOfItemsToQueue)
-    def lastScannedOverAMonthAgo = mongoRepository.getNotCheckedSince(DateTime.now.minusMonths(1), numberOfItemsToQueue)
+    def lastScannedOverAMonthAgo = mongoRepository.getNotCheckedSince(DateTime.now.minusMonths(1), numberOfItemsToQueue).map(rs => rs.map(_._1))
+
     val queued = enqueue(Seq(neverScanned, lastScannedOverAMonthAgo), numberOfItemsToQueue)
     log.info("Queued: " + queued.flatten.size)
   }

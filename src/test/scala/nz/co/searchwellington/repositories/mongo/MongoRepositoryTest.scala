@@ -53,6 +53,22 @@ class MongoRepositoryTest extends ReasonableWaits {
   }
 
   @Test
+  def canFetchLongTailWithLastScannedDates(): Unit = {
+    val newsitem = Newsitem(title = testName, last_scanned = Some(DateTime.now.minusWeeks(7).toDate))
+    val anotherNewsitem = Newsitem(title = testName, last_scanned = Some(DateTime.now.minusWeeks(8).toDate))
+    val yetAnotherNewsitem = Newsitem(title = testName, last_scanned = Some(DateTime.now.minusWeeks(9).toDate))
+    val resources = Seq(newsitem, anotherNewsitem, yetAnotherNewsitem)
+
+    resources.foreach { resource =>
+      Await.result(mongoRepository.saveResource(resource), TenSeconds)
+    }
+
+    val reread = Await.result(mongoRepository.getNotCheckedSince(DateTime.now.minusWeeks(4), 10), TenSeconds)
+
+    assertEquals(3, reread.size)
+  }
+
+  @Test
   def canPersistTags(): Unit = {
     val tag = Tag(name = "Test " + UUID.randomUUID().toString)
 
