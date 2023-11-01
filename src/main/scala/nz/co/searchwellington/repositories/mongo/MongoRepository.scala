@@ -321,19 +321,22 @@ class MongoRepository @Autowired()(@Value("${mongo.uri}") mongoUri: String) exte
     }
   }
 
-  def getNeverScanned(maxItems: Int)(implicit ec: ExecutionContext): Future[List[BSONObjectID]] = {
+  def getNeverScanned(maxItems: Int)(implicit ec: ExecutionContext): Future[Seq[(BSONObjectID, Option[Date])]] = { // TODO is this an ordering edge of getNotCheckedSince?
     val selector = BSONDocument(
       "last_scanned" -> BSONDocument(
         "$exists" -> false
       )
     )
-
-    // TODO time window to prevent race for new items
-
-    resourceCollection.find(selector, Some(idOnlyProjection)).cursor[BSONDocument]().
-      collect[List](maxDocs = maxItems, err = Cursor.FailOnError[List[BSONDocument]]()).map { r =>
-      r.flatMap(i => i.getAsOpt[BSONObjectID]("_id"))
-    }
+    resourceCollection.find(selector, Some(idAndLastScannedOnlyProjection)).cursor[BSONDocument]().
+      collect[List](maxDocs = maxItems, err = Cursor.FailOnError[List[BSONDocument]]()).map { rs =>
+        rs.flatMap { r =>
+          for {
+            id <- r.getAsOpt[BSONObjectID]("_id")
+          } yield {
+            (id, r.getAsOpt[Date]("last_scanned"))
+          }
+        }
+      }
   }
 
   def getNotCheckedSince(lastScanned: DateTime, maxItems: Int)(implicit ec: ExecutionContext): Future[Seq[(BSONObjectID, Option[Date])]] = {
