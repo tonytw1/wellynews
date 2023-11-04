@@ -24,6 +24,7 @@
 		crossorigin="anonymous"></script>
 
 <script type="text/javascript" src="$urlBuilder.getStaticUrl('autocomplete.js')"></script>
+<script type="text/javascript" src="$urlBuilder.getStaticUrl('tagging.js')"></script>
 
 <link rel="stylesheet" href="$urlBuilder.getStaticUrl('leaflet-0.7.7/leaflet.css')" />
 <script src="$urlBuilder.getStaticUrl('leaflet-0.7.7/leaflet.js')"></script>
