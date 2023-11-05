@@ -17,8 +17,7 @@ $(function() {
                 if (optionLabel === tagName) {
                     $(option).prop("selected", true);
                     $(option)[0].scrollIntoView();
-					console.log($(option));
-					tagList.append('<li data-tag="' + selectedTagId + '">' + tagName + "</li>");
+					tagList.append('<li data-tag="' + selectedTagId + '">' + tagName + "<span class=\"removeTag\" data-tag=\"" + selectedTagId + "\">X</span></li>");
 				}
             });
             $("#tagName").val("");

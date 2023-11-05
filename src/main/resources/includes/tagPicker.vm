@@ -9,7 +9,9 @@
 </select>
 <ul id="tagList">
     #foreach($tag in $tags)
-        <li data-tag="$tag.getBSONId()">$tag.displayName</li>
+        <li data-tag="$tag.getBSONId()">$tag.displayName
+            <span class="removeTag" data-tag="$tag.getBSONId()">X</span>
+        </li>
     #end
 </ul>
 #foreach($error in $status.errorMessages)
