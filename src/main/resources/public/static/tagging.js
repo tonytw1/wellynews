@@ -6,6 +6,8 @@ $(function() {
 	
 	if ($('#addTag').length) {
 		$("#addTag").click(function() {
+			var tagList = $('#tagList');
+
 			var tagName = $('#tagName').val();
 		    $("#tags option").each(function( index ) {
                 var option = $("#tags option")[index];
@@ -13,12 +15,11 @@ $(function() {
                 if (optionLabel == tagName) {
                     $(option).prop("selected", true);
                     $(option)[0].scrollIntoView();
-                }
+
+					tagList.append('<l data-tag="' + $(option)[0] + '">' + tagName + "</li>");
+				}
             });
             $("#tagName").val("");
-
-			var tagList = $('#tagList');
-			tagList.append("<li>" + tagName + "</li>");
 		});
 	}
 
