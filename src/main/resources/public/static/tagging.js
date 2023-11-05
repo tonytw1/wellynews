@@ -16,7 +16,7 @@ $(function() {
                     $(option).prop("selected", true);
                     $(option)[0].scrollIntoView();
 					console.log($(option));
-					tagList.append('<l data-tag="' + $(option)[0] + '">' + tagName + "</li>");
+					tagList.append('<li data-tag="' + $(option)[0] + '">' + tagName + "</li>");
 				}
             });
             $("#tagName").val("");
