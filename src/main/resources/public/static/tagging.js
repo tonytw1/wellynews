@@ -16,6 +16,9 @@ $(function() {
                 }
             });
             $("#tagName").val("");
+
+			var tagList = $('#tagList');
+			tagList.append("<li>" + tagName + "</li>");
 		});
 	}
 

@@ -7,6 +7,7 @@
         <option value="$tag.id" #if($status.actualValue.contains($tag.getBSONId())) SELECTED #end>$tag.displayName</option>
     #end
 </select>
+<ul id="tagList"></ul>
 #foreach($error in $status.errorMessages)
     <div class="alert">$error</div>
 #end
