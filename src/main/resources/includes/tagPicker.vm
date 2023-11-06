@@ -9,14 +9,12 @@
 </select>
 <ul id="tagList">
     #foreach($tag in $tags)
-        <li data-tag="$tag.getBSONId()">$tag.displayName
-            <span class="removeTag" data-tag="$tag.getBSONId()">X</span>
-        </li>
+        #if($status.actualValue.contains($tag.getBSONId()))
+            <li data-tag="$tag.getBSONId()">$tag.displayName<span class="removeTag" data-tag="$tag.getBSONId()">X</span></li>
+        #end
     #end
 </ul>
 #foreach($error in $status.errorMessages)
-    #if($status.actualValue.contains($tag.getBSONId()))
-        <div class="alert">$error</div>
-    #end
+    <div class="alert">$error</div>
 #end
 <br/>
