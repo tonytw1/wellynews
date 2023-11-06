@@ -30,4 +30,8 @@ $(function() {
 		});
 	}
 
+	$(".removeTag").click(function() {
+		console.log("Remove");
+	});
+
 });
