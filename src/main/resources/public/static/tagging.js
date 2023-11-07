@@ -30,7 +30,7 @@ $(function() {
 		});
 	}
 
-	$(".removeTag").on('click', function(event) {
+	$(".editForm").on('click', '.removeTag',function(event) {
 		console.log("Remove");
 	});
 
