@@ -31,7 +31,9 @@ $(function() {
 	}
 
 	$(".editForm").on('click', '.removeTag',function(event) {
-		console.log("Remove");
+		console.log(this);
+		var selectedTagId = $this.attr("data-tag");
+		console.log("Remove " + selectedTagId);
 	});
 
 });
