@@ -31,7 +31,7 @@ $(function() {
 
 	$(".editForm").on('click', '.removeTag',function(event) {
 		console.log(this);
-		var selectedTagId = this.attr("data-tag");
+		var selectedTagId = $(this).attr("data-tag");
 		console.log("Remove " + selectedTagId);
 		$("#tags option").each(function( index ) {
 			var option = $("#tags option")[index];
@@ -40,7 +40,7 @@ $(function() {
 				$(option).prop("selected", false);
 			}
 		});
-		this.remove();
+		$(this).remove();
 	});
 
 });
