@@ -10,7 +10,7 @@
 <ul id="tagList">
     #foreach($tag in $tags)
         #if($status.actualValue.contains($tag.getBSONId()))
-            <li data-tag="$tag.getBSONId()">$tag.displayName<span class="removeTag" data-tag="$tag.getBSONId()">X</span></li>
+            <li data-tag="$tag.id">$tag.displayName<span class="removeTag" data-tag="$tag.id">X</span></li>
         #end
     #end
 </ul>
