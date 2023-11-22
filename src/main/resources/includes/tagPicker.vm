@@ -2,7 +2,7 @@
 <label for="${status.expression}">Tags:</label>
 <input id="tagName" name="tagName" class="title" value="" />
 <input type="button" value="Add" id="addTag"/>
-<select name="${status.expression}" id="tags" multiple >
+<select name="${status.expression}" id="tags" multiple hidden >
     #foreach($tag in $tags)
         <option value="$tag.id" #if($status.actualValue.contains($tag.getBSONId())) SELECTED #end>$tag.displayName</option>
     #end
