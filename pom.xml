@@ -14,7 +14,7 @@
         <jackson.version>2.13.5</jackson.version>
         <playWsStandalone.version>2.2.2</playWsStandalone.version>
         <!-- 2.6 is the last version of akka with a free licence; must not be increased above 2.6 -->
-        <akka.version>2.6.10</akka.version>
+        <akka.version>2.6.20</akka.version>
         <maven.compiler.source>17</maven.compiler.source>
         <maven.compiler.target>17</maven.compiler.target>
     </properties>
