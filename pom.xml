@@ -10,8 +10,8 @@
 
     <properties>
         <scala.version>2.13.12</scala.version>
-        <elastic4s.version>8.9.1</elastic4s.version>
-        <jackson.version>2.13.4</jackson.version>
+        <elastic4s.version>8.9.5</elastic4s.version>
+        <jackson.version>2.13.5</jackson.version>
         <playWsStandalone.version>2.2.2</playWsStandalone.version>
         <!-- 2.6 is the last version of akka with a free licence; must not be increased above 2.6 -->
         <akka.version>2.6.10</akka.version>
@@ -22,7 +22,7 @@
     <parent>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
-        <version>3.1.4</version>
+        <version>3.1.6</version>
     </parent>
 
     <repositories>
