@@ -102,8 +102,8 @@ class EditTagController @Autowired()(mongoRepository: MongoRepository,
         } else {
           val hints = splitCommaDelimited(editTag.getAutotagHints)
           val updatedTag = tag.copy(
-            display_name = editTag.getDisplayName,
-            description = Option(editTag.getDescription),
+            display_name = editTag.getDisplayName.trim,
+            description = Option(editTag.getDescription.trim),
             parent = parentTag.map(_._id),
             featured = editTag.getFeatured,
             geocode = resolvedGeocode,

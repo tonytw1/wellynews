@@ -51,8 +51,8 @@ class NewTagController @Autowired()(mongoRepository: MongoRepository,
         log.info("Got valid new tag submission: " + newTag)
 
         val tag = Tag(
-          display_name = newTag.getDisplayName,
-          description = optionalInputString(newTag.getDescription)
+          display_name = newTag.getDisplayName.trim,
+          description = optionalInputString(newTag.getDescription.trim)
         )
 
         val urlWordsFromDisplayName = urlWordsGenerator.makeUrlWordsForTag(tag)
