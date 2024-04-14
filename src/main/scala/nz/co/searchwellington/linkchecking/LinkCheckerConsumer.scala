@@ -59,7 +59,7 @@ import scala.concurrent.{ExecutionContext, ExecutionContextExecutor}
 
     } catch {
       case e: Exception =>
-        log.error(e)
+        log.error("Link checker listener exception: ", e)
     }
   }
 
