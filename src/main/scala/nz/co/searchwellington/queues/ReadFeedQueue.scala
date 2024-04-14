@@ -16,7 +16,7 @@ class ReadFeedQueue @Autowired()(val rabbitConnectionFactory: RabbitConnectionFa
   private val queuedCounter = registry.counter("readfeed_queued")
 
   {
-    channel.queueDeclare(ReadFeedQueue.QUEUE_NAME, false, false, false, null)
+    channel.queueDeclare(ReadFeedQueue.QUEUE_NAME, true, false, false, null)
   }
 
   def add(request: ReadFeedRequest): Unit = try {

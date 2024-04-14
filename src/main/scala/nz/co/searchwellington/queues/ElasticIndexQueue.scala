@@ -19,7 +19,7 @@ class ElasticIndexQueue @Autowired()(val rabbitConnectionFactory: RabbitConnecti
   private val queuedCounter = registry.counter("elasticindex_queued")
 
   {
-    channel.queueDeclare(ElasticIndexQueue.QUEUE_NAME, false, false, false, null)
+    channel.queueDeclare(ElasticIndexQueue.QUEUE_NAME, true, false, false, null)
   }
 
   def add(resource: Resource): Boolean = try {
