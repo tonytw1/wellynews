@@ -37,7 +37,7 @@ import scala.jdk.CollectionConverters._
     val eventualRecentlyAccepted = contentRetrievalService.getAcceptedNewsitems(MAX_NEWSITEMS, loggedInUser = loggedInUser, acceptedDate = None,
       acceptedAfter = Some(DateTime.now.minusDays(1)),
       publishedAfter = Some(DateTime.now.minusWeeks(2))
-    )
+    ).map(a => (a._1.sortBy(_.date), a._2))
     for {
       latestNewsitems <- eventualLatestNewsitems
       recentlyAccepted <- eventualRecentlyAccepted
