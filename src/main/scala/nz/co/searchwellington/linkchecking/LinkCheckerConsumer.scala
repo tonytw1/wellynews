@@ -44,7 +44,7 @@ import scala.concurrent.{ExecutionContext, ExecutionContextExecutor}
 
         }
         catch {
-          case e: Exception =>
+          case e: Throwable =>
             log.error("Error while processing; rejecting message ", e)
             channel.basicReject(message.getEnvelope.getDeliveryTag, false)
         }
@@ -58,7 +58,7 @@ import scala.concurrent.{ExecutionContext, ExecutionContextExecutor}
       log.info(s"Link checker consumer created with consumer tag: $consumerTag")
 
     } catch {
-      case e: Exception =>
+      case e: Throwable =>
         log.error("Link checker listener exception: ", e)
     }
   }
