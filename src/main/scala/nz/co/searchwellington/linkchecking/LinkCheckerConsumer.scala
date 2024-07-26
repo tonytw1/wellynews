@@ -2,6 +2,7 @@ package nz.co.searchwellington.linkchecking
 
 import com.rabbitmq.client.{CancelCallback, Channel, DeliverCallback, Delivery}
 import io.micrometer.core.instrument.MeterRegistry
+import nz.co.searchwellington.ReasonableWaits
 import nz.co.searchwellington.queues.{LinkCheckerQueue, RabbitConnectionFactory, RestrainedRabbitConnection}
 import org.apache.commons.logging.LogFactory
 import org.springframework.beans.factory.annotation.{Autowired, Qualifier}
@@ -9,12 +10,13 @@ import org.springframework.core.task.TaskExecutor
 import org.springframework.stereotype.Component
 import play.api.libs.json.Json
 
-import scala.concurrent.{ExecutionContext, ExecutionContextExecutor}
+import scala.concurrent.{Await, ExecutionContext, ExecutionContextExecutor}
 
 @Component class LinkCheckerConsumer @Autowired()(linkChecker: LinkChecker,
                                                   val rabbitConnectionFactory: RabbitConnectionFactory,
                                                   @Qualifier("linkCheckerTaskExecutor") linkCheckerTaskExecutor: TaskExecutor,
-                                                  registry: MeterRegistry) extends RestrainedRabbitConnection {
+                                                  registry: MeterRegistry) extends RestrainedRabbitConnection
+                                                  with ReasonableWaits {
 
   private val log = LogFactory.getLog(classOf[LinkCheckerConsumer])
 
@@ -37,11 +39,11 @@ import scala.concurrent.{ExecutionContext, ExecutionContextExecutor}
           val asJson = new String(body)
           val request = Json.parse(asJson).as[LinkCheckRequest]
 
-          linkChecker.scanResource(request.resourceId, request.lastScanned).map { _ =>
-            channel.basicAck(message.getEnvelope.getDeliveryTag, false)
-            logQueueCount(channel)
-          }
+          val eventualScanResult = linkChecker.scanResource(request.resourceId, request.lastScanned)
 
+          Await.result(eventualScanResult, TenSeconds)
+          channel.basicAck(message.getEnvelope.getDeliveryTag, false)
+          logQueueCount(channel)
         }
         catch {
           case e: Throwable =>

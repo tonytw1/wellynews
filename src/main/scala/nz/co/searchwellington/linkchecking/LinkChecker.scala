@@ -46,38 +46,36 @@ import scala.util.Try
     log.info("Scanning resource: " + resourceId)
     val objectId = BSONObjectID.parse(resourceId).get
 
-    // Load the resource and check it's idempotency value synchronously
-    // Dispatch a future after the idempotency check
-    val maybeResource = Await.result(mongoRepository.getResourceByObjectId(objectId), TenSeconds)
-
-    maybeResource.map { resource =>
+    mongoRepository.getResourceByObjectId(objectId).flatMap { maybeResource =>
+      maybeResource.map { resource =>
+        // Load the resource and check it's idempotency value
       val isNotDuplicateRequest = resource.last_scanned == idempotencyValue
-      if (isNotDuplicateRequest) {
-        log.info("Checking: " + resource.title + " (" + resource.page + ")")
-        val now = Some(DateTime.now.toDate)
-        log.info("Marking idempotency value for: " + resource.title + " as: " + now)
-        resource.last_scanned = now
-        Await.result(contentUpdateService.update(resource), TenSeconds)
+        if (isNotDuplicateRequest) {
+          log.info("Checking: " + resource.title + " (" + resource.page + ")")
+          val now = Some(DateTime.now.toDate)
+          log.info("Marking idempotency value for: " + resource.title + " as: " + now)
+          resource.last_scanned = now
+          Await.result(contentUpdateService.update(resource), TenSeconds)
 
-        // Now that the idempotency value has been updated we can dispatch a future safe from duplicates
-        checkResource(resource).map { outcome =>
-          checkedCounter.increment()
-          log.info("Finished link checking")
-          outcome
+          // Now that the idempotency value has been updated we can dispatch a future safe from duplicates
+          checkResource(resource).map { outcome =>
+            checkedCounter.increment()
+            log.info("Finished link checking")
+            outcome
+          }
+
+        } else {
+          log.info("Skipping link check for " + resource.title + " as it has already been checked with idempotency: " + idempotencyValue + " / " + resource.last_scanned)
+          duplicateCounter.increment()
+          Future.successful(false)
         }
 
-      } else {
-        log.info("Skipping link check for " + resource.title + " as it has already been checked with idempotency: " + idempotencyValue + " / " + resource.last_scanned)
-        duplicateCounter.increment()
+      }.getOrElse {
+        log.warn("Link checker was past an unknown resource id: " + resourceId + " / " + objectId.stringify)
+        failedCounter.increment()
         Future.successful(false)
       }
-
-    }.getOrElse {
-      log.warn("Link checker was past an unknown resource id: " + resourceId + " / " + objectId.stringify)
-      failedCounter.increment()
-      Future.successful(false)
     }
-
   }
 
   // Given a URL load it and return the http status and the page contents
