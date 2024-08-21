@@ -25,6 +25,7 @@
 				The newslog is also available as an <a href="rssfeeds">RSS feed</a> or via
 				<a href="https://mastodon.wellington.gen.nz/@wellynews">Mastodon</a> and <a href="https://twitter.com/wellynews">Twitter</a>.
 			</p>
+			<p>If you're a community group who'd like your content distributed outside the wall gardens of Facebook and Twitter then providing an RSS feed of your news items is a great way to this. (Find out <a href="https://aboutfeeds.com">more about RSS feeds</a>)</p>
 
 			#parse("includes/main_content.vm")
 		</div>
