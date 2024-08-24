@@ -10,7 +10,7 @@
 
     <properties>
         <scala.version>2.13.14</scala.version>
-        <elastic4s.version>8.9.5</elastic4s.version>
+        <elastic4s.version>8.11.5</elastic4s.version>
         <jackson.version>2.13.5</jackson.version>
         <playWsStandalone.version>2.2.2</playWsStandalone.version>
         <!-- 2.6 is the last version of akka with a free licence; must not be increased above 2.6 -->
@@ -43,7 +43,7 @@
             <plugin>
                 <groupId>net.alchim31.maven</groupId>
                 <artifactId>scala-maven-plugin</artifactId>
-                <version>4.8.1</version>
+                <version>4.9.2</version>
                 <executions>
                     <execution>
                         <id>scala-compile-first</id>
