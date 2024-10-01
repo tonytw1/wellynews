@@ -110,6 +110,12 @@
         </dependency>
 
         <dependency>
+            <groupId>com.github.fd4s</groupId>
+            <artifactId>fs2-kafka_2.13</artifactId>
+            <version>3.5.1</version>
+        </dependency>
+
+        <dependency>
             <groupId>org.reactivemongo</groupId>
             <artifactId>reactivemongo_2.13</artifactId>
             <version>1.1.0-RC13</version>
