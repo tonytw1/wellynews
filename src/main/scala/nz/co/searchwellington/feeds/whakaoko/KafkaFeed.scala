@@ -21,6 +21,8 @@ class KafkaFeed {
   config.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, "org.apache.kafka.common.serialization.StringDeserializer")
   config.put(ConsumerConfig.AUTO_OFFSET_RESET_CONFIG, "earliest")
 
+  // TODO blocks start up!
+  /*
   private val consumer: KafkaConsumer[String, String] = new KafkaConsumer(config)
   log.info("Subscribing")
   consumer.subscribe(Collections.singletonList("test"))
@@ -31,5 +33,6 @@ class KafkaFeed {
       log.info(s"Got value from ${r.topic}: " + r.value())
     }
   }
+ */
 
 }
