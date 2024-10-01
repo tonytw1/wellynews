@@ -16,7 +16,8 @@ class KafkaFeed {
       .withBootstrapServers("10.0.46.10:32192")
       .withGroupId("wellynews")
 
-  def processRecord(record: ConsumerRecord[String, String]): IO[Unit] = {
+  private def processRecord(record: ConsumerRecord[String, String]): IO[Unit] = {
+    log.info("Got record from topic: " + record.topic)
     IO(log.info(s"Processing Kafka record: $record"))
   }
 
@@ -25,7 +26,7 @@ class KafkaFeed {
     val stream =
       KafkaConsumer
         .stream(consumerSettings)
-        .subscribeTo("whakaoko.wellynews")
+        .subscribeTo("test")
         .partitionedRecords
         .map { partitionStream =>
           partitionStream.evalMap { committable =>
