@@ -110,14 +110,9 @@
         </dependency>
 
         <dependency>
-            <groupId>com.github.fd4s</groupId>
-            <artifactId>fs2-kafka_2.13</artifactId>
-            <version>3.5.1</version>
-        </dependency>
-        <dependency>
-            <groupId>org.typelevel</groupId>
-            <artifactId>cats-core_2.13</artifactId>
-            <version>2.12.0</version>
+            <groupId>org.apache.kafka</groupId>
+            <artifactId>kafka-clients</artifactId>
+            <version>3.3.1</version>
         </dependency>
 
         <dependency>

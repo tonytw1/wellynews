@@ -1,41 +1,35 @@
 package nz.co.searchwellington.feeds.whakaoko
 
-import cats.effect.IO
-import fs2.kafka._
 import org.apache.commons.logging.LogFactory
+import org.apache.kafka.clients.consumer.{ConsumerConfig, KafkaConsumer}
 import org.springframework.stereotype.Component
+
+import java.time.Duration
+import java.util.{Collections, Properties}
+import scala.jdk.CollectionConverters.IterableHasAsScala
 
 @Component
 class KafkaFeed {
 
   private val log = LogFactory.getLog(classOf[KafkaFeed])
 
-  private val consumerSettings =
-    ConsumerSettings[IO, String, String]
-      .withAutoOffsetReset(AutoOffsetReset.Earliest)
-      .withBootstrapServers("10.0.46.10:32192")
-      .withGroupId("wellynews")
+  val config = new Properties();
+  config.put("client.id", java.util.UUID.randomUUID().toString)
+  config.put("group.id", "wellynews")
+  config.put("bootstrap.servers", "10.0.46.10:32192")
+  config.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, "org.apache.kafka.common.serialization.StringDeserializer")
+  config.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, "org.apache.kafka.common.serialization.StringDeserializer")
+  config.put(ConsumerConfig.AUTO_OFFSET_RESET_CONFIG, "earliest")
 
-  private def processRecord(record: ConsumerRecord[String, String]): IO[Unit] = {
-    log.info("Got record from topic: " + record.topic)
-    IO(log.info(s"Processing Kafka record: $record"))
-  }
-
-  val run: IO[Unit] = {
-    log.info("Building stream")
-    val stream =
-      KafkaConsumer
-        .stream(consumerSettings)
-        .subscribeTo("test")
-        .partitionedRecords
-        .map { partitionStream =>
-          partitionStream.evalMap { committable =>
-            processRecord(committable.record)
-          }
-
-        }.parJoinUnbounded
-
-    stream.compile.drain
+  private val consumer: KafkaConsumer[String, String] = new KafkaConsumer(config)
+  log.info("Subscribing")
+  consumer.subscribe(Collections.singletonList("test"))
+  while (true) {
+    log.info("Polling")
+    val records = consumer.poll(Duration.ofSeconds(10)).asScala
+    records.foreach { r =>
+      log.info(s"Got value from ${r.topic}: " + r.value())
+    }
   }
 
 }
