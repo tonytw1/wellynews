@@ -7,10 +7,9 @@ import nz.co.searchwellington.http.WSClient
 import nz.co.searchwellington.instrumentation.SpanFactory
 import org.apache.commons.logging.LogFactory
 import org.apache.http.HttpStatus
-import org.joda.time.DateTime
 import org.springframework.beans.factory.annotation.{Autowired, Value}
 import org.springframework.stereotype.Component
-import play.api.libs.json.{JodaReads, Json, OWrites, Reads}
+import play.api.libs.json.{Json, OWrites}
 import play.api.libs.ws.JsonBodyWritables.writeableOf_JsValue
 import play.api.libs.ws.StandaloneWSRequest
 
@@ -25,13 +24,6 @@ class WhakaokoClient @Autowired()(@Value("${whakaoko.url}") whakaokoUrl: String,
   private val log = LogFactory.getLog(classOf[WhakaokoClient])
 
   private val ApplicationJsonHeader = "Content-Type" -> "application/json; charset=UTF8"
-
-  private implicit val dr: Reads[DateTime] = JodaReads.DefaultJodaDateTimeReads
-  private implicit val llr: Reads[LatLong] = Json.reads[LatLong]
-  private implicit val pr: Reads[Place] = Json.reads[Place]
-  private implicit val cr: Reads[Category] = Json.reads[Category]
-  private implicit val fir: Reads[FeedItem] = Json.reads[FeedItem]
-  private implicit val sr: Reads[Subscription] = Json.reads[Subscription]
 
   private val pageSize = 30
 
