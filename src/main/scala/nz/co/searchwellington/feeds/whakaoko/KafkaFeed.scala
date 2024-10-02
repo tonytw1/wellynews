@@ -14,8 +14,9 @@ import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.{Await, Future}
 
 @Component
-class KafkaFeed(mongoRepository: MongoRepository, feedItemAcceptanceDecider: FeedItemAcceptanceDecider, feedReaderUpdateService: FeedReaderUpdateService)
-  extends ReasonableWaits {
+class KafkaFeed(mongoRepository: MongoRepository,
+                feedItemAcceptanceDecider: FeedItemAcceptanceDecider,
+                feedReaderUpdateService: FeedReaderUpdateService) extends ReasonableWaits {
 
   private val log = LogFactory.getLog(classOf[KafkaFeed])
 
@@ -45,11 +46,11 @@ class KafkaFeed(mongoRepository: MongoRepository, feedItemAcceptanceDecider: Fee
           feedItemAcceptanceDecider.getAcceptanceErrors(feedItem, feed.getAcceptancePolicy).flatMap { acceptanceErrors =>
             if (acceptanceErrors.isEmpty) {
               feedReaderUpdateService.acceptFeeditem(feedReaderUser, feedItem, feed, feedItem.categories.getOrElse(Seq.empty)).map { acceptedNewsitem =>
-                log.info("Feed item would have been accepted as news item: " + acceptedNewsitem)
+                log.info("Feed item accepted as news item: " + acceptedNewsitem)
                 acceptedNewsitem
               }.recover {
                 case e: Exception =>
-                  log.error("Error while accepting feeditem", e)
+                  log.error("Error while accepting feed item", e)
                   None
               }
             } else {
@@ -62,7 +63,7 @@ class KafkaFeed(mongoRepository: MongoRepository, feedItemAcceptanceDecider: Fee
       val flatten: Future[Option[Newsitem]] = x.flatten
 
       val maybeNewsitem = Await.result(flatten, TenSeconds)
-      log.info("Message mapped to accepted newsitems: " + maybeNewsitem)
+      log.info("Message mapped to accepted newsitem: " + maybeNewsitem)
 
     } catch {
       case e: Exception =>

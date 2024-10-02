@@ -21,7 +21,8 @@ import scala.concurrent.Future
 
   private val FEED_READER_PROFILE_NAME = "feedreader"
 
-  @Scheduled(cron = "0 */10 * * * *")
+  // Disabled in favour of Kafka message queue
+  //@Scheduled(cron = "0 */10 * * * *")
   def readFeeds(): Unit = {
 
     def queueAllFeeds(feeds: Seq[Feed], asUser: User): Unit = {
