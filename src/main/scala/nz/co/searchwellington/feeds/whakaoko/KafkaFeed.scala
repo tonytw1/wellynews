@@ -44,7 +44,7 @@ class KafkaFeed(mongoRepository: MongoRepository,
           feedReaderUser <- maybeFeedReaderUser
         } yield {
           feedItemAcceptanceDecider.getAcceptanceErrors(feedItem, feed.getAcceptancePolicy).flatMap { acceptanceErrors =>
-            if (acceptanceErrors.isEmpty) {
+            if (feed.acceptance.shouldAcceptFeedItems() && acceptanceErrors.isEmpty) {
               feedReaderUpdateService.acceptFeeditem(feedReaderUser, feedItem, feed, feedItem.categories.getOrElse(Seq.empty)).map { acceptedNewsitem =>
                 log.info("Feed item accepted as news item: " + acceptedNewsitem)
                 acceptedNewsitem
