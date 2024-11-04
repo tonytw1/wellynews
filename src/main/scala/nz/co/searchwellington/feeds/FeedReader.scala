@@ -53,7 +53,7 @@ import scala.concurrent.{ExecutionContext, Future}
 
             contentUpdateService.update(feed.copy(
               last_read = Some(DateTime.now.toDate),
-              latestItemDate = latestPublicationDateOf(feedNewsitems),
+              latestItemDate = latestPublicationDateOf(feedNewsitems),  // TODO latestItemDate needs to be updated for all feed acceptance routes; kafka and manual acceptance
               httpStatus = Some(newHttpStatus)
             )).map { _ =>
               acceptedNewsitems.size
