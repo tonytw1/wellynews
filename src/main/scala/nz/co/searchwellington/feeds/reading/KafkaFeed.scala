@@ -1,4 +1,4 @@
-package nz.co.searchwellington.feeds.whakaoko
+package nz.co.searchwellington.feeds.reading
 
 import nz.co.searchwellington.ReasonableWaits
 import nz.co.searchwellington.feeds.whakaoko.model.FeedItem
