@@ -12,7 +12,7 @@ steps:
 - name: 'docker/compose:1.19.0'
   args: [ '-f', 'docker/docker-compose.yml', 'down' ]
 images:
-- 'europe-west2-docker.pkg.dev/$PROJECT_ID/eelpie-docker/wellynews'
+- 'europe-west2-docker.pkg.dev/eelpie-docker/$PROJECT_ID/wellynews'
 options:
   machineType: 'E2_HIGHCPU_8'
 timeout: 600s
