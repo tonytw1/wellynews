@@ -1,19 +1,20 @@
 package nz.co.searchwellington.feeds
 
-import nz.co.searchwellington.controllers.submission.EndUserInputs
 import nz.co.searchwellington.feeds.whakaoko.model.FeedItem
 import nz.co.searchwellington.model.FeedAcceptancePolicy
 import nz.co.searchwellington.repositories.SuppressionDAO
 import nz.co.searchwellington.repositories.mongo.MongoRepository
-import nz.co.searchwellington.urls.UrlCleaner
+import nz.co.searchwellington.urls.{UrlCleaner, UrlFilters}
 import org.apache.commons.logging.LogFactory
 import org.joda.time.DateTime
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
 
+import java.net.URL
 import scala.concurrent.{ExecutionContext, Future}
+import scala.util.Try
 
-@Component class FeedItemAcceptanceDecider @Autowired()(mongoRepository: MongoRepository, suppressionDAO: SuppressionDAO, val urlCleaner: UrlCleaner) extends EndUserInputs {
+@Component class FeedItemAcceptanceDecider @Autowired()(mongoRepository: MongoRepository, suppressionDAO: SuppressionDAO) {
 
   private val log = LogFactory.getLog(classOf[FeedItemAcceptanceDecider])
 
@@ -100,13 +101,22 @@ import scala.concurrent.{ExecutionContext, Future}
       alreadyHaveAnItemWithTheSameHeadlineFromTheSamePublisherWithinTheLastMonth)
 
 
+    def cleanUrl(urlString: String): Either[Throwable, URL] = {
+      // Trim and add prefix is missing from user submitted input
+      val cleanedString = UrlFilters.addHttpPrefixIfMissing(urlString.trim)
+      Try {
+        val url = new URL(cleanedString)
+        url
+      }.toEither
+    }
+
     cleanUrl(feedItem.url).toOption.map { url =>
       Future.sequence(reasonsToRejectFeedItems.map(reason => reason(feedItem, url.toExternalForm))).map { possibleObjections =>
         possibleObjections.flatten
       }
 
     }.getOrElse {
-      Future.successful(Seq("Invalid URL"))
+      Future.successful(Seq("Invalid URL: " + feedItem.url))
     }
   }
 
