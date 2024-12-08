@@ -1,9 +1,11 @@
 package nz.co.searchwellington.feeds
 
+import nz.co.searchwellington.controllers.submission.EndUserInputs
 import nz.co.searchwellington.feeds.whakaoko.model.FeedItem
 import nz.co.searchwellington.model.FeedAcceptancePolicy
 import nz.co.searchwellington.repositories.SuppressionDAO
 import nz.co.searchwellington.repositories.mongo.MongoRepository
+import nz.co.searchwellington.urls.UrlCleaner
 import org.apache.commons.logging.LogFactory
 import org.joda.time.DateTime
 import org.springframework.beans.factory.annotation.Autowired
@@ -11,19 +13,20 @@ import org.springframework.stereotype.Component
 
 import scala.concurrent.{ExecutionContext, Future}
 
-@Component class FeedItemAcceptanceDecider @Autowired()(mongoRepository: MongoRepository, suppressionDAO: SuppressionDAO) {
+@Component class FeedItemAcceptanceDecider @Autowired()(mongoRepository: MongoRepository, suppressionDAO: SuppressionDAO, val urlCleaner: UrlCleaner) extends EndUserInputs {
 
   private val log = LogFactory.getLog(classOf[FeedItemAcceptanceDecider])
 
   def getAcceptanceErrors(feedItem: FeedItem, acceptancePolicy: FeedAcceptancePolicy)(implicit ec: ExecutionContext): Future[Seq[String]] = {
-    val cannotBeSuppressed: FeedItem => Future[Option[String]] = (feedItem: FeedItem) => {
+
+    val cannotBeSuppressed = (feedItem: FeedItem, url: String) => {
       suppressionDAO.isSupressed(feedItem.url).map { isSuppressed =>
         log.info("Is feed item url '" + feedItem.url + "' suppressed: " + isSuppressed)
         if (isSuppressed) Some("This item is suppressed") else None
       }
     }
 
-    val titleCannotBeBlank = (feedItem: FeedItem) => {
+    val titleCannotBeBlank = (feedItem: FeedItem, url: String) => {
       Future.successful {
         if (feedItem.title.forall(_.trim.isEmpty)) {
           Some("Item has no title")
@@ -33,7 +36,7 @@ import scala.concurrent.{ExecutionContext, Future}
       }
     }
 
-    val cannotBeMoreThanOneWeekOld = (feedItem: FeedItem) => {
+    val cannotBeMoreThanOneWeekOld = (feedItem: FeedItem, url: String) => {
       Future.successful {
         if (acceptancePolicy == FeedAcceptancePolicy.ACCEPT_EVEN_WITHOUT_DATES) {
           None
@@ -57,7 +60,7 @@ import scala.concurrent.{ExecutionContext, Future}
       }
     }
 
-    val cannotBeMoreThanOneWeekInTheFuture = (feedItem: FeedItem) => {
+    val cannotBeMoreThanOneWeekInTheFuture = (feedItem: FeedItem, url: String) => {
       Future.successful {
         feedItem.date.flatMap { date =>
           val oneWeekFromNow = DateTime.now.plusWeeks(1)
@@ -71,12 +74,12 @@ import scala.concurrent.{ExecutionContext, Future}
       }
     }
 
-    val cannotAlreadyHaveThisFeedItem = (feedItem: FeedItem) => {
-      val eventualAlreadyHaveThisFeedItem = mongoRepository.getResourceByUrl(feedItem.url).map(_.nonEmpty)
+    val cannotAlreadyHaveThisFeedItem = (feedItem: FeedItem, url: String) => {
+      val eventualAlreadyHaveThisFeedItem = mongoRepository.getResourceByUrl(url).map(_.nonEmpty)
       eventualAlreadyHaveThisFeedItem.map { alreadyHaveThisFeedItem =>
-        log.info("Resource with url '" + feedItem.url + "' already exists: " + alreadyHaveThisFeedItem)
+        log.info("Resource with url '" + url + "' already exists: " + alreadyHaveThisFeedItem)
         if (alreadyHaveThisFeedItem) {
-          log.debug("A resource with url '" + feedItem.url + "' already exists; not accepting.")
+          log.debug("A resource with url '" + url + "' already exists; not accepting.")
           Some("Item already exists")
         } else {
           None
@@ -84,7 +87,7 @@ import scala.concurrent.{ExecutionContext, Future}
       }
     }
 
-    val alreadyHaveAnItemWithTheSameHeadlineFromTheSamePublisherWithinTheLastMonth = (_: FeedItem) => {
+    val alreadyHaveAnItemWithTheSameHeadlineFromTheSamePublisherWithinTheLastMonth = (_: FeedItem, url: String) => {
       Future.successful(None)
     } // TODO implement me
 
@@ -96,8 +99,14 @@ import scala.concurrent.{ExecutionContext, Future}
       cannotBeMoreThanOneWeekInTheFuture,
       alreadyHaveAnItemWithTheSameHeadlineFromTheSamePublisherWithinTheLastMonth)
 
-    Future.sequence(reasonsToRejectFeedItems.map(reason => reason(feedItem))).map { possibleObjections =>
-      possibleObjections.flatten
+
+    cleanUrl(feedItem.url).toOption.map { url =>
+      Future.sequence(reasonsToRejectFeedItems.map(reason => reason(feedItem, url.toExternalForm))).map { possibleObjections =>
+        possibleObjections.flatten
+      }
+
+    }.getOrElse {
+      Future.successful(Seq("Invalid URL"))
     }
   }
 
