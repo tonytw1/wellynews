@@ -18,7 +18,7 @@ import scala.concurrent.{ExecutionContext, Future}
   def getAcceptanceErrors(feedItem: FeedItem, acceptancePolicy: FeedAcceptancePolicy)(implicit ec: ExecutionContext): Future[Seq[String]] = {
     val cannotBeSuppressed: FeedItem => Future[Option[String]] = (feedItem: FeedItem) => {
       suppressionDAO.isSupressed(feedItem.url).map { isSuppressed =>
-        log.debug("Is feed item url '" + feedItem.url + "' suppressed: " + isSuppressed)
+        log.info("Is feed item url '" + feedItem.url + "' suppressed: " + isSuppressed)
         if (isSuppressed) Some("This item is suppressed") else None
       }
     }
@@ -74,6 +74,7 @@ import scala.concurrent.{ExecutionContext, Future}
     val cannotAlreadyHaveThisFeedItem = (feedItem: FeedItem) => {
       val eventualAlreadyHaveThisFeedItem = mongoRepository.getResourceByUrl(feedItem.url).map(_.nonEmpty)
       eventualAlreadyHaveThisFeedItem.map { alreadyHaveThisFeedItem =>
+        log.info("Resource with url '" + feedItem.url + "' already exists: " + alreadyHaveThisFeedItem)
         if (alreadyHaveThisFeedItem) {
           log.debug("A resource with url '" + feedItem.url + "' already exists; not accepting.")
           Some("Item already exists")
