@@ -10,7 +10,7 @@ import org.joda.time.DateTime
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
 
-import java.net.URL
+import java.net.{MalformedURLException, URISyntaxException, URL}
 import scala.concurrent.{ExecutionContext, Future}
 import scala.util.Try
 
@@ -102,11 +102,29 @@ import scala.util.Try
 
 
     def cleanUrl(urlString: String): Either[Throwable, URL] = {
+
+      def cleanSubmittedItemUrl(url: URL): URL = try {  // TODO duplication
+        // Resolve short urls
+        var expanded = url
+
+        // Strip obvious per request artifacts from the url to help with duplicate detection
+        expanded = UrlFilters.stripUTMParams(expanded)
+        expanded = UrlFilters.stripPhpSession(expanded)
+
+        log.debug("Cleaned url is: " + expanded.toExternalForm)
+        expanded
+
+      } catch {
+        case _: URISyntaxException | _: MalformedURLException =>
+          log.warn("Invalid URL given; returning unaltered: " + url.toExternalForm)
+          url
+      }
+
       // Trim and add prefix is missing from user submitted input
       val cleanedString = UrlFilters.addHttpPrefixIfMissing(urlString.trim)
       Try {
         val url = new URL(cleanedString)
-        url
+        cleanSubmittedItemUrl(url)
       }.toEither
     }
 
