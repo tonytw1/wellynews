@@ -10,7 +10,7 @@ RUN echo "networkaddress.cache.ttl=60" >> /opt/java/openjdk/conf/security/java.s
 
 COPY honeycomb/honeycomb-opentelemetry-javaagent-1.4.2.jar /opt/honeycomb-opentelemetry-javaagent-1.4.2.jar
 
-ENV JAVA_TOOL_OPTIONS="-XshowSettings:vm -XX:+PrintCommandLineFlags -XX:MaxRAMPercentage=75 -javaagent:/opt/honeycomb-opentelemetry-javaagent.jar"
+ENV JAVA_TOOL_OPTIONS="-XshowSettings -XX:+PrintCommandLineFlags -XX:MaxRAMPercentage=75 -javaagent:/opt/honeycomb-opentelemetry-javaagent.jar"
 
 ENTRYPOINT ["java", "-jar", "/opt/wellynews/wellynews-0.0.1-SNAPSHOT.jar"]
 CMD ["--spring.config.location=file:/opt/wellynews/application.properties"]
