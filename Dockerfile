@@ -1,4 +1,4 @@
-FROM eclipse-temurin:17-alpine
+FROM eclipse-temurin:25-jre-alpine
 COPY target/wellynews-0.0.1-SNAPSHOT.jar /opt/wellynews/wellynews-0.0.1-SNAPSHOT.jar
 
 COPY certs/gdig2.crt gdig2.crt
@@ -10,5 +10,7 @@ RUN echo "networkaddress.cache.ttl=60" >> /opt/java/openjdk/conf/security/java.s
 
 COPY honeycomb/honeycomb-opentelemetry-javaagent-1.4.2.jar /opt/honeycomb-opentelemetry-javaagent-1.4.2.jar
 
-CMD ["java", "-XshowSettings:vm", "-XX:+PrintCommandLineFlags", "-XX:MaxRAMPercentage=75", "-javaagent:/opt/honeycomb-opentelemetry-javaagent-1.4.2.jar", "-jar","/opt/wellynews/wellynews-0.0.1-SNAPSHOT.jar", "--spring.config.location=/opt/wellynews/conf/wellynews.properties"]
+ENV JAVA_TOOL_OPTIONS="-XshowSettings:vm -XX:+PrintCommandLineFlags -XX:MaxRAMPercentage=75 -javaagent:/opt/honeycomb-opentelemetry-javaagent.jar"
 
+ENTRYPOINT ["java", "-jar", "/opt/wellynews/app.jar"]
+CMD ["--spring.config.location=file:/opt/wellynews/application.properties"]
